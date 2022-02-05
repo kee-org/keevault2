@@ -1,0 +1,68 @@
+{
+    "dart.lineLength": 120,
+    "[dart]": {
+        "editor.rulers": [
+            80,
+            120
+        ],
+    },
+    "cSpell.words": [
+        "analyzer",
+        "analyzes",
+        "applocker",
+        "Autofilling",
+        "Autovalidate",
+        "Behavior",
+        "bloclistener",
+        "color",
+        "Colors",
+        "Compat",
+        "creds",
+        "Derivator",
+        "derivators",
+        "Dialog",
+        "FFTpassword",
+        "FFTtext",
+        "FFTusername",
+        "fluro",
+        "fromLTRB",
+        "kdbxstring",
+        "keepass",
+        "keevault",
+        "keevaultpendingautofillassociations",
+        "keyfile",
+        "keyvalue",
+        "oneplus",
+        "otpauth",
+        "Parcelable",
+        "pointycastle",
+        "quickunlock",
+        "Rect",
+        "reemit",
+        "reenter",
+        "sipi",
+        "textfield",
+        "treeview",
+        "unfocus",
+        "Unlocker",
+        "unprotect",
+        "yMMMMEEEEd",
+        "zxcvbn"
+    ],
+    "cSpell.ignorePaths": [
+        "**/generated/**",
+        "phonetic.dart",
+        ".git",                // Ignore the .git directory
+        "*.dll",               // Ignore all .dll files.
+        "**/*.dll"             // Ignore all .dll files
+    ],
+    "dart.flutterSdkPath": ".fvm/flutter_sdk",
+    // Remove .fvm files from search
+    "search.exclude": {
+        "**/.fvm": true
+    },
+    // Remove from file watching
+    "files.watcherExclude": {
+        "**/.fvm": true
+    }
+}

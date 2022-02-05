@@ -1,0 +1,6 @@
+* There is now a free version of the app which requires no subscription! More details will be published soon at https://forum.kee.pm/t/kee-vault-2-is-free/3749
+* Improved fingerprint authentication:- options for how often you'll be asked for your fingerprint or master password
+* Small file attachments can now be added to entries
+* Entries can store and display a TOTP
+* Entry history can be reviewed and restored if required
+* Fixed several bugs and improved performance of some parts of the app

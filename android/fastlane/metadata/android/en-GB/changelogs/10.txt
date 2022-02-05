@@ -1,0 +1,2 @@
+* Fixes autofill bug and failure of entries with some missing fields
+* Adds more details to the Help page

@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "keevault debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "--dart-define",
+                "KEEVAULT_STAGE=dev",
+                "--dart-define",
+                "KEEVAULT_CHANNEL=dev"
+            ]
+        },
+        {
+            "name": "keevault beta debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "--dart-define",
+                "KEEVAULT_STAGE=beta",
+                "--dart-define",
+                "KEEVAULT_CHANNEL=dev"
+            ]
+        },
+        {
+            "name": "keevault beta profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define",
+                "KEEVAULT_STAGE=beta",
+                "--dart-define",
+                "KEEVAULT_CHANNEL=dev"
+            ]
+        }
+    ]
+}

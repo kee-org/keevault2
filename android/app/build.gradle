@@ -1,0 +1,132 @@
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new FileNotFoundException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+def dartEnvironmentVariables = [
+    KEEVAULT_STAGE: 'dev',
+    KEEVAULT_CHANNEL: 'dev'
+];
+
+if (project.hasProperty('dart-defines')) {
+    dartEnvironmentVariables = dartEnvironmentVariables + project.property('dart-defines')
+        .split(',')
+        .collectEntries { entry ->
+            def pair = new String(entry.decodeBase64(), 'UTF-8').split('=')
+            [(pair.first()): pair.last()]
+        }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
+// Kee Vault services stage
+Map<String, Map<String, String>> stages = [
+dev: [
+    nameSuffix: ' alpha',
+    idSuffix: '.alpha'
+],
+beta: [
+    nameSuffix: ' beta',
+    idSuffix: '.beta'
+],
+prod: [
+    nameSuffix: '',
+    idSuffix: ''
+]]
+
+// Distribution channel
+Map<String, Map<String, String>> channels = [
+dev: [
+    nameSuffix: ' (dev)',
+    idSuffix: '.dev',
+    symbolLevel: null,
+    signingConfig: 'debug'
+],
+sideload: [
+    nameSuffix: ' (SL)',
+    idSuffix: '.sl',
+    symbolLevel: null,
+    signingConfig: 'debug'
+],
+play: [
+    nameSuffix: '',
+    idSuffix: '',
+    symbolLevel: 'FULL',
+    signingConfig: 'play'
+]]
+
+def idSuffix = stages[dartEnvironmentVariables.KEEVAULT_STAGE].idSuffix + channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].idSuffix
+def nameSuffix = stages[dartEnvironmentVariables.KEEVAULT_STAGE].nameSuffix + channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].nameSuffix
+def symbolLevel = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].symbolLevel
+def chosenSigningConfig = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].signingConfig
+
+android {
+    compileSdkVersion 31
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    signingConfigs{
+        play {
+            keyAlias 'kv-play'
+            keyPassword System.getenv('KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD')
+            storeFile file(System.getenv('HOME') + '/keystore-kv-play.pfx')
+            storePassword System.getenv('KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD')
+            storeType 'pkcs12'
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.keevault.keevault"
+        applicationIdSuffix idSuffix
+        minSdkVersion 26
+        targetSdkVersion 30
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        resValue "string", "app_name", "Kee Vault" + nameSuffix
+        resValue "string", "flutter_autofill_service_label", "Kee Vault" + nameSuffix
+        ndk.debugSymbolLevel = symbolLevel
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs[chosenSigningConfig]
+        }
+        debug {
+            applicationIdSuffix ".debug"
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}

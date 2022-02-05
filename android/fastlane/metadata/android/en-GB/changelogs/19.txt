@@ -1,0 +1,3 @@
+* Improved the autofill feature - including saving new entries from the autofill system
+* Fixed several bugs and improved performance of some parts of the app
+* Now uses Flutter v2.8

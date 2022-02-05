@@ -1,0 +1,70 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+					"--dart-define",
+					"KEEVAULT_STAGE=beta",
+					"--dart-define",
+					"KEEVAULT_CHANNEL=sideload"
+				
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter build apk beta sideload"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+					"--dart-define",
+					"KEEVAULT_STAGE=prod",
+					"--dart-define",
+					"KEEVAULT_CHANNEL=sideload"
+				
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter build apk prod sideload"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--debug",
+					"--dart-define",
+					"KEEVAULT_STAGE=beta",
+					"--dart-define",
+					"KEEVAULT_CHANNEL=sideload"
+				
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter build apk --debug beta sideload"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+					"--dart-define",
+					"KEEVAULT_STAGE=prod",
+					"--dart-define",
+					"KEEVAULT_CHANNEL=play"
+				
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter build apk prod play"
+		}
+	]
+}

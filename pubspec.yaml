@@ -1,0 +1,168 @@
+name: keevault
+description: A new Flutter project.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.1+19
+
+environment:
+  sdk: '>=2.15.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  logger: 1.1.0
+  logger_flutter: 
+    git:
+      url: https://github.com/kee-org/logger_flutter.git
+      ref: master
+  logging: ^1.0.2
+  kdbx:
+    git:
+      url: https://github.com/kee-org/kdbx.dart.git
+      ref: master
+  path_provider: ^2.0.8
+  biometric_storage:
+    git:
+      url: https://github.com/kee-org/biometric_storage.git
+      ref: keevault
+
+  package_info_plus: ^1.3.0
+  shared_preferences: ^2.0.12
+  flutter_settings_screens: ^0.3.2-null-safety
+  argon2_ffi:
+    git:
+      url: https://github.com/authpass/argon2_ffi.git
+      ref: 9d4a17689fc5b8db55a790860a85d190bdbd97e0
+  flutter_autofill_service:
+    git:
+      url: https://github.com/kee-org/flutter_autofill_service.git
+      ref: master
+  bloc: ^8.0.2
+  flutter_bloc: ^8.0.1
+  fluro: ^2.0.3
+  dio: ^4.0.4
+  crypto_keys: ^0.3.0
+  pointycastle: ^3.5.0
+  srp:
+    git:
+      url: https://github.com/kee-org/srp.dart.git
+      ref: master
+  animate_icons: ^2.0.0
+  animations: ^2.0.2
+  font_awesome_flutter: ^9.2.0
+  public_suffix: ^3.0.0
+  url_launcher: ^6.0.18
+  otp: ^3.0.0-nullsafety.0
+  tuple: ^2.0.0
+  collection: ^1.15.0
+  jiffy: ^5.0.0
+  characters: ^1.2.0
+  flutter_treeview:
+    git:
+      url: https://github.com/kee-org/flutter_treeview.git
+      ref: 784c981fff170db41f376b517233f5a7363db9af
+  flutter_chips_input:
+    git:
+      url: https://github.com/kee-org/flutter_chips_input.git
+      ref: master
+  
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.4
+
+  flutter_persistent_queue:
+    git:
+      url: https://github.com/kee-org/flutter_persistent_queue
+      ref: 1af584c486f79745d82a370361d5dabf0770f18e
+
+  flutter_localizations:
+    sdk: flutter
+  matomo: ^1.1.0
+  file_picker: ^4.3.1
+  zxcvbn: ^1.0.0
+  flutter_rating_bar: ^4.0.0
+  mime: ^1.0.1
+  open_file: ^3.2.1
+  share_plus: ^3.0.4
+  path: ^1.8.0
+  permission_handler: ^8.3.0
+  flutter_file_dialog: ^2.3.0
+  base32: ^2.1.1
+  barcode_scan2: ^4.2.0
+  flutter_speed_dial: ^5.0.0+1
+  receive_intent:
+    git:
+      url: https://github.com/kee-org/receive_intent
+      ref: master
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: "^0.9.2"
+  flutter_lints: ^1.0.4
+  flutter_native_splash: ^1.3.3
+
+dependency_overrides:
+  # kdbx:
+  #   path: ../kdbx.dart/
+  # biometric_storage:
+  #   path: ../biometric_storage/
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true 
+  
+  assets:
+    - assets/
+  
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
+flutter_intl:
+  enabled: true
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/v-light-key-512.png"
+  remove_alpha_ios: true
+  

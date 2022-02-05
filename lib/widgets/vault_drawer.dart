@@ -1,0 +1,135 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:keevault/cubit/account_cubit.dart';
+import 'package:keevault/cubit/entry_cubit.dart';
+import 'package:keevault/cubit/vault_cubit.dart';
+import 'package:keevault/vault_backend/user.dart';
+import 'package:keevault/widgets/dialog_utils.dart';
+import '../generated/l10n.dart';
+
+class VaultDrawerWidget extends StatelessWidget {
+  const VaultDrawerWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final str = S.of(context);
+    return BlocBuilder<EntryCubit, EntryState>(builder: (context, entryState) {
+      return BlocBuilder<VaultCubit, VaultState>(builder: (context, state) {
+        final isSaveEnabled = entryState is! EntryLoaded &&
+            (state is VaultLoaded && state.vault.files.current.isDirty) &&
+            !(state is VaultSaving && state.locally);
+        return Row(
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  icon: _buildIcon(state, str),
+                  label: _buildTitle(state, str),
+                  onPressed: () {
+                    DialogUtils.showSimpleAlertDialog(context, null, _buildDescription(state, str),
+                        routeAppend: 'vaultStatusExplanation');
+                  },
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: isSaveEnabled
+                  ? () {
+                      User? user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+                      BlocProvider.of<VaultCubit>(context).save(user);
+                    }
+                  : null,
+              child: Text(str.save.toUpperCase()),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (state is VaultLoaded && state.vault.files.current.isDirty) {
+                    final proceed = await DialogUtils.showConfirmDialog(
+                        context: context,
+                        params: ConfirmDialogParams(
+                            content: str.appCannotLock,
+                            negativeButtonText: str.alertNo,
+                            positiveButtonText: str.discardChanges));
+                    if (!proceed) {
+                      return;
+                    }
+                  }
+                  BlocProvider.of<VaultCubit>(context).lock();
+                  BlocProvider.of<AccountCubit>(context).signout();
+                },
+                child: Text(str.lock.toUpperCase()),
+              ),
+            ),
+          ],
+        );
+      });
+    });
+  }
+
+  Icon _buildIcon(VaultState state, S str) {
+    if (state is VaultUploadCredentialsRequired) {
+      return Icon(Icons.error);
+    } else if (state is VaultSaving && state.remotely) {
+      return Icon(Icons.cloud_upload);
+    } else if (state is VaultSaving && state.locally) {
+      return Icon(Icons.save);
+    } else if (state is VaultRefreshing) {
+      return Icon(Icons.cloud_download);
+    } else if (state is VaultBackgroundError) {
+      return Icon(Icons.sync_problem);
+    } else if (state is VaultLoaded) {
+      if (state.vault.hasPendingChanges) {
+        Icon(Icons.sync_alt);
+      }
+      return Icon(Icons.check_circle);
+    }
+    return Icon(Icons.device_unknown);
+  }
+
+  Widget _buildTitle(VaultState state, S str) {
+    if (state is VaultUploadCredentialsRequired) {
+      return Text(str.vaultStatusActionNeeded);
+    } else if (state is VaultSaving && state.remotely) {
+      return Text(str.vaultStatusUploading);
+    } else if (state is VaultSaving && state.locally) {
+      return Text(str.vaultStatusSaving);
+    } else if (state is VaultRefreshing) {
+      return Text(str.vaultStatusRefreshing);
+    } else if (state is VaultBackgroundError) {
+      return Text(str.vaultStatusError);
+    } else if (state is VaultLoaded) {
+      if (state.vault.hasPendingChanges) {
+        return Text(str.vaultStatusSaveNeeded);
+      }
+      return Text(str.vaultStatusLoaded);
+    }
+    return Text(str.vaultStatusUnknownState);
+  }
+
+  String _buildDescription(VaultState state, S str) {
+    if (state is VaultUploadCredentialsRequired) {
+      return str.vaultStatusDescPasswordChanged;
+    } else if (state is VaultReconcilingUpload) {
+      return str.vaultStatusDescMerging;
+    } else if (state is VaultSaving && state.remotely) {
+      return str.vaultStatusDescUploading;
+    } else if (state is VaultSaving && state.locally) {
+      return str.vaultStatusDescSaving;
+    } else if (state is VaultRefreshing) {
+      return str.vaultStatusDescRefreshing;
+    } else if (state is VaultBackgroundError) {
+      return state.message;
+    } else if (state is VaultLoaded) {
+      if (state.vault.hasPendingChanges) {
+        return str.vaultStatusDescSaveNeeded;
+      }
+      return str.vaultStatusDescLoaded;
+    }
+    return str.vaultStatusDescUnknown;
+  }
+}

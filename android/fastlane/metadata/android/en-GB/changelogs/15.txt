@@ -1,0 +1,6 @@
+* There is now a free version of the app which requires no subscription! More details will be published soon at https://forum.kee.pm/t/kee-vault-2-is-free/3749
+* Improved fingerprint authentication feature:- option for how often you'll be asked for your master password instead (defaults to 60 days); option for how often you'll have to verify that it is you operating your device (defaults to 60 seconds); if you authenticate yourself to your phone and then open Kee Vault quickly enough, you don't have to authenticate again with Kee Vault
+* Small file attachements can now be added to entries
+* Entries can store and display a Time-based One Time Password (a common type of additional authentication for services)
+* Entry history can be reviewed and an entry can be reverted to an old version if required
+* Fixed several bugs, improved performance of some parts of the app and upgraded Flutter

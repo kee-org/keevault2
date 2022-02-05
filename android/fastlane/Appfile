@@ -1,0 +1,2 @@
+package_name("com.keevault.keevault")
+json_key_data_raw(ENV['KEEVAULT_ANDROID_PLAY_API_KEY_JSON'])
