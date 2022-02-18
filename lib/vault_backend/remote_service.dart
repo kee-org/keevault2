@@ -86,14 +86,18 @@ class RemoteService {
   //TODO:f: Perhaps introduce a delay for all but the first retry? varying based on type of error received.
   Future<Response<T>> _doRequest<T>(Options config, String path,
       {String? token, TokenRefreshFunction? tokenRefresh, Object? obj}) async {
-    var shouldHaveAToken = tokenRefresh != null;
+    var shouldGetNewTokenIfRequired = tokenRefresh != null;
     var haveAToken = token?.isNotEmpty ?? false;
-    if (shouldHaveAToken && !haveAToken) {
+    if (shouldGetNewTokenIfRequired && !haveAToken) {
       // If this fails, the exception will flow up to whatever made the original request
       // Retries are handled within the refresh function
       var tokens = await tokenRefresh();
       token = _findRequestToken(tokens);
       haveAToken = token?.isNotEmpty ?? false;
+      if (!haveAToken) {
+        // Can happen if user's subscription has expired while signed-in to the app
+        throw KeeSubscriptionExpiredException();
+      }
     }
     var retriesRemaining = 3;
     do {
@@ -104,7 +108,7 @@ class RemoteService {
         return response;
       } on DioError catch (e, s) {
         await e.handle(_name, s, retriesRemaining, () async {
-          if (shouldHaveAToken && retriesRemaining == 2) {
+          if (shouldGetNewTokenIfRequired && retriesRemaining == 2) {
             // We make one attempt to reauthenticate in case the token has
             // just expired since last used
             // Any exceptions thrown here won't be caught by the general

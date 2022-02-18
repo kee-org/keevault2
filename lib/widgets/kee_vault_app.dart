@@ -44,12 +44,12 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
     Routes.configureRoutes(router);
     AppConfig.router = router;
     userService = UserService(EnvironmentConfig.stage.toStage(), null);
-    storageservice = StorageService(EnvironmentConfig.stage.toStage(), userService.refresh);
+    storageService = StorageService(EnvironmentConfig.stage.toStage(), userService.refresh);
   }
 
   final QuickUnlocker quickUnlocker = QuickUnlocker();
   late UserService userService;
-  late StorageService storageservice;
+  late StorageService storageService;
 
   @override
   void initState() {
@@ -155,7 +155,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
                   create: (context) => VaultCubit(
                         userRepo,
                         quickUnlocker,
-                        RemoteVaultRepository(userService, storageservice),
+                        RemoteVaultRepository(userService, storageService),
                         LocalVaultRepository(quickUnlocker),
                         entryCubit,
                         autofillCubit.isAutofilling,

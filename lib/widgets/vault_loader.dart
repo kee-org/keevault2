@@ -85,6 +85,7 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final theme = Theme.of(context);
     return BlocConsumer<VaultCubit, VaultState>(builder: (context, state) {
       if (state is VaultInitial || state is VaultLoaded) {
         // Initial rendering of Vault contents can take more than one frame so keep the
@@ -116,7 +117,13 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
           showError: state.causedByInteraction,
         );
       } else if (state is VaultError) {
-        return Text('Error: ${state.message}');
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Error: ${state.message}',
+            style: theme.textTheme.bodyText1,
+          ),
+        );
       } else if (state is VaultDownloading) {
         return LoadingSpinner(tooltip: str.downloading);
       } else if (state is VaultOpening) {

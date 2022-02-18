@@ -249,6 +249,10 @@ class VaultCubit extends Cubit<VaultState> {
 
   Future emitVaultLoaded(LocalVaultFile vault, User? user,
       {bool immediateRemoteRefresh = true, required bool safe}) async {
+    if (user?.subscriptionStatus == AccountSubscriptionStatus.expired ||
+        user?.subscriptionStatus == AccountSubscriptionStatus.freeTrialAvailable) {
+      return;
+    }
     final rootGroup = vault.files.current.body.rootGroup;
     initAutofillPersistentQueue(rootGroup.uuid.uuidUrlSafe);
     if (isAutofilling()) {
@@ -281,6 +285,13 @@ class VaultCubit extends Cubit<VaultState> {
     } else {
       emit(VaultError(message));
     }
+  }
+
+  emitKeeMissingPrimaryDBExceptionError() {
+    const message =
+        "Couldn't find your Kee Vault. Probably there is an incomplete account reset in progress. Please close this app and sign in to Kee Vault using a different device or your web browser. Once you can see your vault there, save it, sign out and then open this app again and everything should be working.";
+    l.e(message);
+    emitError(message, forceNotLoaded: true);
   }
 
   Future<void> changeLocalPasswordFromRemote(User user, String pass) async {
@@ -374,6 +385,9 @@ class VaultCubit extends Cubit<VaultState> {
     } on KeeServiceTransportException catch (e) {
       final message = e.handle('Download error');
       emitError(message, forceNotLoaded: true);
+    } on KeeMissingPrimaryDBException {
+      emitKeeMissingPrimaryDBExceptionError();
+      return;
     } on Exception catch (e) {
       final message = 'Download error. There may be more information in this message: $e';
       l.e(message);
@@ -541,11 +555,19 @@ class VaultCubit extends Cubit<VaultState> {
       } on KeeLoginRequiredException {
         handleRefreshAuthError(s.vault);
         return;
+      } on KeeSubscriptionExpiredException {
+        emitError(
+            'Your subscription has just expired. Please click "Sign out" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don\'t panic. Unfortunately if you were in the middle of making a change, you will have to make it again when your subscription has been re-activated so we recommend doing so quickly while it is still fresh in your mind.',
+            forceNotLoaded: true);
+        return;
       } on KeeLoginFailedMITMException {
         rethrow;
       } on KeeServiceTransportException catch (e) {
         final message = e.handle('Background refresh error');
         emitError(message);
+        return;
+      } on KeeMissingPrimaryDBException {
+        emitKeeMissingPrimaryDBExceptionError();
         return;
       } on Exception catch (e) {
         final message =
@@ -595,7 +617,10 @@ class VaultCubit extends Cubit<VaultState> {
     }
 
     if (currentVaultFile == null || (!currentVaultFile!.files.current.isDirty && !entryBeingEdited)) {
-      emit(VaultRefreshCredentialsRequired(v, 'no message', false));
+      // Only emit if we aren't already showing the password field to the user
+      if (state is! VaultRefreshCredentialsRequired) {
+        emit(VaultRefreshCredentialsRequired(v, 'no message', false));
+      }
     } else {
       emitError(
           'Please save your vault now and/or kill and restart the app (an authorisation error has occurred while refreshing, possibly because of a recent password or subscription change)',
@@ -679,11 +704,21 @@ class VaultCubit extends Cubit<VaultState> {
     } catch (e) {
       // no action required
     }
-
-    if (currentVaultFile == null || (!currentVaultFile!.files.current.isDirty && !entryBeingEdited)) {
+    if (local.files.current.body.rootGroup.uuid != newCurrent!.body.rootGroup.uuid) {
+      // We must immediately apply the pending update to the active vault the user is viewing,
+      // even it leads to data loss (which would be in the old, already remotely deleted file)
+      return LocalVaultFile(
+        mergeResult.copyWithAppliedPendingUpdate(newCurrent),
+        DateTime.now(),
+        remote.persistedAt,
+        remote.uuid,
+        null,
+        null,
+      );
+    } else if (currentVaultFile == null || (!currentVaultFile!.files.current.isDirty && !entryBeingEdited)) {
       // We can immediately apply the pending update to the active vault the user is viewing
       return LocalVaultFile(
-        mergeResult.copyWithAppliedPendingUpdate(newCurrent!),
+        mergeResult.copyWithAppliedPendingUpdate(newCurrent),
         local.lastOpenedAt,
         local.persistedAt,
         local.uuid,
@@ -830,6 +865,9 @@ class VaultCubit extends Cubit<VaultState> {
         final message = e.handle('Error establishing current remote file version');
         emitError(message);
         return;
+      } on KeeMissingPrimaryDBException {
+        emitKeeMissingPrimaryDBExceptionError();
+        return;
       } on Exception catch (e) {
         final message =
             'Error establishing current remote file version. There may be more information in this message: $e';
@@ -857,6 +895,9 @@ class VaultCubit extends Cubit<VaultState> {
         } on KeeServiceTransportException catch (e) {
           final message = e.handle('Error while downloading more recent changes from remote');
           emitError(message);
+          return;
+        } on KeeMissingPrimaryDBException {
+          emitKeeMissingPrimaryDBExceptionError();
           return;
         } on Exception catch (e) {
           final message =
@@ -935,6 +976,9 @@ class VaultCubit extends Cubit<VaultState> {
             _generatorProfilesCubit, updatedLocalFile.files.current.body.meta.keeVaultSettings);
       } on KeeLoginRequiredException {
         handleUploadAuthError(vault, state is VaultSaving ? (state as VaultSaving).locally : false);
+        return;
+      } on KeeMissingPrimaryDBException {
+        emitKeeMissingPrimaryDBExceptionError();
         return;
       } on KeeServiceTransportException catch (e) {
         final message = e.handle('Error uploading');

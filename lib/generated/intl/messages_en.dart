@@ -394,6 +394,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Require full password every (days)"),
         "resetEntryToThis":
             MessageLookupByLibrary.simpleMessage("Reset entry to this state"),
+        "restartSubscription":
+            MessageLookupByLibrary.simpleMessage("Restart subscription"),
         "restore": MessageLookupByLibrary.simpleMessage("Restore"),
         "revertUnsavedWarning": MessageLookupByLibrary.simpleMessage(
             "Your unsaved changes will be permanently lost if you change to this older version now. Do you want to discard your changes?"),
@@ -447,6 +449,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "sortTitle": MessageLookupByLibrary.simpleMessage("Title"),
         "sortTitleReversed":
             MessageLookupByLibrary.simpleMessage("Title - reversed"),
+        "startFreeTrial":
+            MessageLookupByLibrary.simpleMessage("Start free trial"),
+        "startNewTrialError": MessageLookupByLibrary.simpleMessage(
+            "Sorry, we weren\'t able to restart your trial now. Please try again later and ask for help on the community forum if the problem continues."),
+        "startNewTrialSuccess":
+            MessageLookupByLibrary.simpleMessage("All done!"),
+        "subscriptionExpired":
+            MessageLookupByLibrary.simpleMessage("Subscription expired"),
+        "subscriptionExpiredDetails": MessageLookupByLibrary.simpleMessage(
+            "Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site."),
+        "subscriptionExpiredTrialAvailable": MessageLookupByLibrary.simpleMessage(
+            "Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account."),
         "tagRename": MessageLookupByLibrary.simpleMessage("Rename"),
         "text": MessageLookupByLibrary.simpleMessage("Text"),
         "textFilteringHint": MessageLookupByLibrary.simpleMessage(

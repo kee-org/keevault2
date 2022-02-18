@@ -2969,6 +2969,76 @@ class S {
       args: [],
     );
   }
+
+  /// `Subscription expired`
+  String get subscriptionExpired {
+    return Intl.message(
+      'Subscription expired',
+      name: 'subscriptionExpired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site.`
+  String get subscriptionExpiredDetails {
+    return Intl.message(
+      'Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site.',
+      name: 'subscriptionExpiredDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restart subscription`
+  String get restartSubscription {
+    return Intl.message(
+      'Restart subscription',
+      name: 'restartSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account.`
+  String get subscriptionExpiredTrialAvailable {
+    return Intl.message(
+      'Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account.',
+      name: 'subscriptionExpiredTrialAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start free trial`
+  String get startFreeTrial {
+    return Intl.message(
+      'Start free trial',
+      name: 'startFreeTrial',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sorry, we weren't able to restart your trial now. Please try again later and ask for help on the community forum if the problem continues.`
+  String get startNewTrialError {
+    return Intl.message(
+      'Sorry, we weren\'t able to restart your trial now. Please try again later and ask for help on the community forum if the problem continues.',
+      name: 'startNewTrialError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All done!`
+  String get startNewTrialSuccess {
+    return Intl.message(
+      'All done!',
+      name: 'startNewTrialSuccess',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

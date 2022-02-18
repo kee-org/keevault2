@@ -4,6 +4,7 @@ import '../cubit/account_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/vault_cubit.dart';
+import 'account_expired.dart';
 import 'loading_spinner.dart';
 import 'vault_account_credentials.dart';
 import 'vault_local_password_create.dart';
@@ -19,9 +20,9 @@ class AccountWrapperWidget extends StatefulWidget {
 
 class AccountWrapperState extends State<AccountWrapperWidget> {
   Future<void> _initVault(String password) async {
-    final AccountState state = BlocProvider.of<AccountCubit>(context).state;
-    if (state is AccountIdentified) {
-      final user = await BlocProvider.of<AccountCubit>(context).finishSignin(password);
+    final accountCubit = BlocProvider.of<AccountCubit>(context);
+    if (accountCubit.state is AccountIdentified) {
+      final user = await accountCubit.finishSignin(password);
       await BlocProvider.of<VaultCubit>(context).startup(user, password);
     } else {
       throw Exception('Account not identified yet');
@@ -75,6 +76,8 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
             );
           } else if (state is AccountAuthenticating) {
             return LoadingSpinner(tooltip: str.authenticating);
+          } else if (state is AccountExpired) {
+            return AccountExpiredWidget(trialAvailable: state.trialAvailable);
           } else if (state is AccountChosen || state is AccountLocalOnly) {
             return VaultLoaderWidget();
           }

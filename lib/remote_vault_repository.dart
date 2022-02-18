@@ -36,23 +36,44 @@ class RemoteVaultRepository {
     return lockedFile!;
   }
 
+  Future<String> latestEtag(User user) async {
+    var siList = await storageService.list(user);
+    if (siList.isEmpty) {
+      throw KeeMissingPrimaryDBException();
+    }
+    final latestEtag = await _headPrimaryFile(user, siList);
+    return latestEtag;
+  }
+
+  Future<LockedVaultFile> upload(User user, LockedVaultFile vault) async {
+    var siList = await storageService.list(user);
+    if (siList.isEmpty) {
+      throw KeeMissingPrimaryDBException();
+    }
+    var result = await _putPrimaryFile(user, vault.kdbxBytes, siList, vault.credentials);
+    return result;
+  }
+
   Future<LockedVaultFile?> _downloadPrimaryFile(User user, Credentials? kdbxCredentials, String? lastRemoteEtag) async {
-    var sis = await storageService.list(user);
+    var siList = await storageService.list(user);
+    if (siList.isEmpty) {
+      throw KeeMissingPrimaryDBException();
+    }
     if (lastRemoteEtag != null) {
-      final latestEtag = await _headPrimaryFile(user, sis);
+      final latestEtag = await _headPrimaryFile(user, siList);
       if (latestEtag == lastRemoteEtag) {
         return null;
       }
     }
-    final lockedFile = await _getPrimaryFile(user, kdbxCredentials, sis);
+    final lockedFile = await _getPrimaryFile(user, kdbxCredentials, siList);
     return lockedFile;
   }
 
-  Future<LockedVaultFile> _getPrimaryFile(User user, Credentials? kdbxCredentials, List<StorageItem> sis) async {
-    if (sis[0].urls == null) {
+  Future<LockedVaultFile> _getPrimaryFile(User user, Credentials? kdbxCredentials, List<StorageItem> siList) async {
+    if (siList[0].urls == null) {
       throw Exception('Missing URLs from storage service.');
     }
-    final dlUrl = sis[0].urls!.dl;
+    final dlUrl = siList[0].urls!.dl;
     final dio = Dio(BaseOptions(connectTimeout: 20000, receiveTimeout: 30000));
     var retriesRemaining = 3;
     do {
@@ -81,11 +102,11 @@ class RemoteVaultRepository {
   }
 
   Future<LockedVaultFile> _putPrimaryFile(
-      User user, Uint8List fileData, List<StorageItem> sis, Credentials? credentials) async {
-    if (sis[0].urls == null) {
+      User user, Uint8List fileData, List<StorageItem> siList, Credentials? credentials) async {
+    if (siList[0].urls == null) {
       throw Exception('Missing URLs from storage service.');
     }
-    final ulUrl = sis[0].urls!.ul;
+    final ulUrl = siList[0].urls!.ul;
     final dio = Dio(BaseOptions(connectTimeout: 20000, sendTimeout: 30000));
     var retriesRemaining = 3;
     do {
@@ -122,11 +143,11 @@ class RemoteVaultRepository {
     throw KeeUnexpectedException('Failed to put primary file for unknown reason');
   }
 
-  Future<String> _headPrimaryFile(User user, List<StorageItem> sis) async {
-    if (sis[0].urls == null) {
+  Future<String> _headPrimaryFile(User user, List<StorageItem> siList) async {
+    if (siList[0].urls == null) {
       throw Exception('Missing URLs from storage service.');
     }
-    final headUrl = sis[0].urls!.st;
+    final headUrl = siList[0].urls!.st;
     final dio = Dio(BaseOptions(connectTimeout: 20000, receiveTimeout: 15000));
     var retriesRemaining = 3;
     do {
@@ -144,17 +165,5 @@ class RemoteVaultRepository {
       }
     } while (retriesRemaining > 0);
     throw KeeUnexpectedException('Failed to head primary file for unknown reason');
-  }
-
-  Future<String> latestEtag(User user) async {
-    var sis = await storageService.list(user);
-    final latestEtag = await _headPrimaryFile(user, sis);
-    return latestEtag;
-  }
-
-  Future<LockedVaultFile> upload(User user, LockedVaultFile vault) async {
-    var sis = await storageService.list(user);
-    var result = await _putPrimaryFile(user, vault.kdbxBytes, sis, vault.credentials);
-    return result;
   }
 }
