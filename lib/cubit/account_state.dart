@@ -43,4 +43,18 @@ class AccountAuthenticationBypassed extends AccountChosen {
   const AccountAuthenticationBypassed(User user) : super(user);
 }
 
+class AccountExpired extends AccountAuthenticated {
+  final bool trialAvailable;
+  const AccountExpired(User user, this.trialAvailable) : super(user);
+}
+
+class AccountTrialRestartStarted extends AccountExpired {
+  const AccountTrialRestartStarted(User user, bool trialAvailable) : super(user, trialAvailable);
+}
+
+class AccountTrialRestartFinished extends AccountExpired {
+  final bool success;
+  const AccountTrialRestartFinished(User user, bool trialAvailable, this.success) : super(user, trialAvailable);
+}
+
 class AccountError extends AccountState {}

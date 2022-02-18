@@ -99,13 +99,7 @@ class AccountCubit extends Cubit<AccountState> {
     User user = currentUser;
     emit(AccountAuthenticating(user));
     try {
-      ProtectedValue key = ProtectedValue.fromString(password);
-      user = await _userRepo.finishSignin(key, user);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user.current.email', user.email!);
-      await _userRepo.setQuickUnlockUser(user);
-      emit(AccountAuthenticated(user));
-      l.d('sign in complete');
+      user = await _finaliseSignin(user, password);
     } on KeeLoginFailedMITMException {
       rethrow;
     } on KeeLoginRequiredException {
@@ -124,6 +118,13 @@ class AccountCubit extends Cubit<AccountState> {
     return user;
   }
 
+  // Differences from finishSignin:
+  // 1. starts signin too, with no intermediate AccountIdentified state since we don't
+  // want to update the UI until the process has completed.
+  // 2. network errors result in a reset to the AccountChosen state rather than bypassing the need for
+  // authentication because... not sure. Probably we previously signed in successfully
+  // to have reached this point so an error would be unexpected... but this warrants
+  // closer inspection one day, especially if offline authentication bugs are found.
   Future<User> fullSignin(String password) async {
     l.d('starting a full sign in procedure');
     User user = currentUser;
@@ -131,13 +132,7 @@ class AccountCubit extends Cubit<AccountState> {
     try {
       user = await _userRepo.startSignin(user);
       emit(AccountAuthenticating(user));
-      ProtectedValue key = ProtectedValue.fromString(password);
-      user = await _userRepo.finishSignin(key, user);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user.current.email', user.email!);
-      await _userRepo.setQuickUnlockUser(user);
-      emit(AccountAuthenticated(user));
-      l.d('sign in complete');
+      user = await _finaliseSignin(user, password);
     } on KeeLoginFailedMITMException {
       rethrow;
     } on KeeLoginRequiredException {
@@ -150,6 +145,38 @@ class AccountCubit extends Cubit<AccountState> {
       emit(AccountChosen(user));
     }
     return user;
+  }
+
+  Future<User> _finaliseSignin(User user, String password) async {
+    ProtectedValue key = ProtectedValue.fromString(password);
+    user = await _userRepo.finishSignin(key, user);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user.current.email', user.email!);
+    await _userRepo.setQuickUnlockUser(user);
+    final subscriptionStatus = user.subscriptionStatus;
+    if (subscriptionStatus == AccountSubscriptionStatus.current) {
+      emit(AccountAuthenticated(user));
+    } else if (subscriptionStatus == AccountSubscriptionStatus.freeTrialAvailable) {
+      emit(AccountExpired(user, true));
+    } else if (user.subscriptionStatus == AccountSubscriptionStatus.expired) {
+      emit(AccountExpired(user, false));
+    } else {
+      throw Exception(
+          'Unknown account status. Unable to proceed. This is probably a bug so please report it along with details of the Kee Vault service subscription you are trying to use (if any)');
+    }
+    l.d('sign in complete');
+    return user;
+  }
+
+  Future<void> restartTrial() async {
+    final AccountState currentState = state;
+    if (currentState is AccountExpired && (currentState.user.email?.isNotEmpty ?? false)) {
+      emit(AccountTrialRestartStarted(currentState.user, currentState.trialAvailable));
+      l.d('restarting user subscription trial');
+      final success = await _userRepo.restartTrial(currentState.user);
+      l.d('restarted user subscription trial: $success');
+      emit(AccountTrialRestartFinished(currentState.user, currentState.trialAvailable, success));
+    }
   }
 
   Future<void> signout() async {

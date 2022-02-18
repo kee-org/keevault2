@@ -290,5 +290,12 @@
   "createNewEntry": "Create new entry",
   "autofillNewEntryMakeChangesThenDone": "Entry saved. Make changes below if you want and then click \"Done\" above.",
   "done": "Done",
-  "offerToSave": "Offer to save passwords"
+  "offerToSave": "Offer to save passwords",
+  "subscriptionExpired": "Subscription expired",
+  "subscriptionExpiredDetails": "Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site.",
+  "restartSubscription": "Restart subscription",
+  "subscriptionExpiredTrialAvailable": "Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account.",
+  "startFreeTrial": "Start free trial",
+  "startNewTrialError": "Sorry, we weren't able to restart your trial now. Please try again later and ask for help on the community forum if the problem continues.",
+  "startNewTrialSuccess": "All done!"
 }

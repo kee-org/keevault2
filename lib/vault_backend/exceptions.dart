@@ -87,3 +87,5 @@ class KeeInvalidJWTException extends KeeException {}
 class KeeInvalidClaimException extends KeeException {}
 
 class KeeInvalidClaimIssuerException extends KeeException {}
+
+class KeeSubscriptionExpiredException extends KeeException {}

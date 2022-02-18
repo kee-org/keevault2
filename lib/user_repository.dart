@@ -29,6 +29,10 @@ class UserRepository {
     return user;
   }
 
+  Future<bool> restartTrial(User user) async {
+    return await userService.restartTrial(user);
+  }
+
   Future<User> finishSignin(ProtectedValue key, User user) async {
     if (user.emailHashed == null) throw KeeInvalidStateException();
     if (user.email?.isEmpty ?? true) throw KeeInvalidStateException();

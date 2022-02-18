@@ -166,16 +166,30 @@ class LocalVaultRepository {
       throw Exception("Missing remote merge target. Can't proceed with merge.");
     }
     final secondKdbx = remote.kdbx;
-    firstKdbx.merge(secondKdbx);
-    final kdbxData = await kdbxFormat().save(firstKdbx);
+    Uint8List kdbxData;
+    KdbxFile finalKdbx;
+    try {
+      firstKdbx.merge(secondKdbx);
+      finalKdbx = firstKdbx;
+      kdbxData = await kdbxFormat().save(firstKdbx);
+    } on KdbxUnsupportedException catch (e) {
+      final backupFilename =
+          '${directory.path}/${user.emailHashedB64url}/backup-${DateTime.now().millisecondsSinceEpoch}.kdbx';
+      l.w('Merge from remote failed! Most likely this is due to the user resetting their account on another device and then signing in to this device AND they reset their password to the same as it was before. We will create a backup file at $backupFilename just in case manual recovery becomes critical. Detailed reason: ${e.hint}');
+      final backupFile = File(backupFilename);
+      await file.copy(backupFilename);
+      finalKdbx = secondKdbx;
+      kdbxData = await kdbxFormat().save(secondKdbx);
+    }
+
     await file.writeAsBytes(kdbxData, flush: true);
     final persistedTime = DateTime.now();
 
-    // firstKdbx.credentials were updated by the KDBX library to match the set with the latest modifiedAt timestamp
+    // finalKdbx.credentials were updated by the KDBX library to match the set with the latest modifiedAt timestamp
     return local.files.copyWithMergeResult(
-      firstKdbx,
-      LockedVaultFile(kdbxData, persistedTime, firstKdbx.credentials, null, null),
-      LockedVaultFile(kdbxData, persistedTime, firstKdbx.credentials, null, null),
+      finalKdbx,
+      LockedVaultFile(kdbxData, persistedTime, finalKdbx.credentials, null, null),
+      LockedVaultFile(kdbxData, persistedTime, finalKdbx.credentials, null, null),
     );
   }
 

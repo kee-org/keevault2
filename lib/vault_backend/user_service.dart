@@ -119,6 +119,18 @@ class UserService {
     }
   }
 
+  Future<bool> restartTrial(User user, [List<int>? hashedMasterKey]) async {
+    if (user.emailHashed?.isEmpty ?? true) throw KeeInvalidStateException();
+
+    try {
+      await _service.getRequest<String>('restartTrial/', user.tokens?.identity);
+    } catch (error) {
+      l.e('Trial reset failed because: $error');
+      return false;
+    }
+    return true;
+  }
+
   Future<void> _parseJWTs(User user, List<String> jwts) async {
     user.tokens = Tokens();
 

@@ -21,7 +21,12 @@ class StorageService {
   // any client utilising this library should perform a sanity check that ensures we're not called if
   // we have no storage token but if not for any reason, the underlying request will be made without
   // the necessary authentication token and a max-retry (3ish) algorithm will kick in, returning an
-  // authorisation error to the calling client
+  // authorisation error to the calling client.
+  //
+  // An interesting edge case is when the user's account expires while their app session is still
+  // active. Once the storage token expires and a request is made for a new one, the end result
+  // will be an authorisation exception and the user will have to sign in again, at which point
+  // the usual sign-in message explaining the problem can be displayed to them.
 
   Future<List<StorageItem>> list(User user) async {
     String? storageToken;
@@ -33,9 +38,17 @@ class StorageService {
       final request = _service.getRequest<String>('meta/', storageToken, () => _userRefresh(user));
       final response = await request;
       final list = json.decode(response.data!);
-      _cachedStorageItemLinks = list.map<StorageItem>((s) => StorageItem.fromJson(s)).toList();
-      _cachedStorageToken = user.tokens?.storage;
-      _cachedTime = DateTime.now();
+      List<StorageItem> siList = list.map<StorageItem>((s) => StorageItem.fromJson(s)).toList();
+
+      // Don't cache empty responses (indicates user is part-way through an account reset process
+      // and will want a more interactive update than we usually offer)
+      if (siList.isNotEmpty) {
+        _cachedStorageItemLinks = siList;
+        _cachedStorageToken = user.tokens?.storage;
+        _cachedTime = DateTime.now();
+      } else {
+        _cachedStorageItemLinks = null;
+      }
     }
     return _cachedStorageItemLinks ?? [];
   }
