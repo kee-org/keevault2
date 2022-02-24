@@ -27,12 +27,12 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final AccountState state = accountCubit.state;
     User user;
-    if (state is AccountAuthenticated || state is AccountAuthenticationBypassed) {
-      user = await accountCubit.fullSignin(password);
-    } else if (state is AccountIdentified) {
+    if (state is AccountIdentified) {
       user = await accountCubit.finishSignin(password);
+    } else if (state is AccountChosen) {
+      user = await accountCubit.fullSignin(password);
     } else {
-      throw Exception('Account not identified yet');
+      throw Exception('Account not chosen yet');
     }
     await vaultCubit.download(user, Credentials(ProtectedValue.fromString(password)));
   }
