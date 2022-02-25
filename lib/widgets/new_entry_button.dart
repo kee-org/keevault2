@@ -51,7 +51,7 @@ class NewEntryButton extends StatelessWidget {
               if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                 entryCubit.endCreating(currentFile);
                 final filterCubit = BlocProvider.of<FilterCubit>(context);
-                filterCubit.reFilter(currentFile.tags);
+                filterCubit.reFilter(currentFile.tags, currentFile.body.rootGroup);
               } else {
                 entryCubit.endCreating(null);
               }

@@ -26,7 +26,7 @@ class FilterCubit extends Cubit<FilterState> {
     ));
   }
 
-  changeGroup(String? uuid) {
+  void changeGroup(String? uuid) {
     final fa = state as FilterActive;
     emit(FilterActive(
       uuid ?? fa.rootGroupUuid,
@@ -39,7 +39,7 @@ class FilterCubit extends Cubit<FilterState> {
     ));
   }
 
-  changeText(String text) {
+  void changeText(String text) {
     final fa = state as FilterActive;
     emit(FilterActive(
       fa.groupUuid,
@@ -52,7 +52,7 @@ class FilterCubit extends Cubit<FilterState> {
     ));
   }
 
-  toggleTag(String tagInput) {
+  void toggleTag(String tagInput) {
     final fa = state as FilterActive;
     final tag = tagInput.toLowerCase();
     final newList = fa.tags.toList();
@@ -71,7 +71,7 @@ class FilterCubit extends Cubit<FilterState> {
     ));
   }
 
-  toggleColor(EntryColor color) {
+  void toggleColor(EntryColor color) {
     final fa = state as FilterActive;
     final newList = fa.colors.toList();
     final didRemoveColor = newList.remove(color);
@@ -102,17 +102,30 @@ class FilterCubit extends Cubit<FilterState> {
     ));
   }
 
-  void reFilter(List<String> validTags) {
+  // When filterable criteria have changed, we need to call this so that the configured
+  // set of filters being applied to the entry list contain only valid filter values.
+  // For example, ensure no tags are filtered if all entries with that tag have now
+  // been removed from the database and ensure that groups which are no longer present
+  // in the file are no longer targetted by the filter (even if the root group has
+  // changed, which it can in rare circumstances around account reset operations).
+  // More specific methods can be called if it is known that only a subset of the filters
+  // may have changed (such as deleting a group)
+  void reFilter(List<String> validTags, KdbxGroup rootGroup) {
     final validTagsLowerCase = validTags.map((t) => t.toLowerCase()).toList();
     final fa = state as FilterActive;
+    final allCurrentGroups = rootGroup.getAllGroups();
+    final rootGroupUuid = allCurrentGroups.containsKey(fa.rootGroupUuid) ? fa.rootGroupUuid : rootGroup.uuid.uuid;
+    //TODO:f: Could try to select parent group instead of root group?
+    final groupUuid = allCurrentGroups.containsKey(fa.groupUuid) ? fa.groupUuid : rootGroup.uuid.uuid;
+
     emit(FilterActive(
-      fa.groupUuid,
+      groupUuid,
       fa.includeChildGroups,
       fa.colors,
       fa.tags.where((t) => validTagsLowerCase.contains(t)).toList(),
       fa.text,
       fa.textOptions,
-      fa.rootGroupUuid,
+      rootGroupUuid,
     ));
   }
 

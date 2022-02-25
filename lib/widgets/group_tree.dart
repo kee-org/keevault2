@@ -334,6 +334,10 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
         OutlinedButton(
           child: Text(str.detDelEntry.toUpperCase()),
           onPressed: () {
+            if (isSelected) {
+              //TODO:f: Could try to select parent group instead of root group?
+              BlocProvider.of<FilterCubit>(context).changeGroup(null);
+            }
             _deleteGroup(uuid, false);
           },
         ),
