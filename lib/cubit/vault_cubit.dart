@@ -1004,6 +1004,11 @@ class VaultCubit extends Cubit<VaultState> {
     return currentVaultFile!.files.current.body.rootGroup.getAllGroups()[uuid];
   }
 
+  KdbxGroup findGroupByUuidOrRoot(String uuid) {
+    return currentVaultFile!.files.current.body.rootGroup.getAllGroups()[uuid] ??
+        currentVaultFile!.files.current.body.rootGroup;
+  }
+
   KdbxEntry createEntry({
     required KdbxGroup group,
   }) {

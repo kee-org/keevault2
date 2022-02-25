@@ -33,7 +33,7 @@ class EntryListWidget extends StatelessWidget {
             if (state is FilterActive) {
               final filterCubit = BlocProvider.of<FilterCubit>(context);
               final vaultCubit = BlocProvider.of<VaultCubit>(context);
-              final group = vaultCubit.findGroupByUuid(state.groupUuid)!;
+              final group = vaultCubit.findGroupByUuidOrRoot(state.groupUuid);
               final entries = state.includeChildGroups ? group.getAllEntriesExceptBin().values : group.entries.values;
 
               // This won't catch every case where there are no entries in the Vault
@@ -241,7 +241,7 @@ class EntryListItemWidget extends StatelessWidget {
                           final entryCubit = BlocProvider.of<EntryCubit>(context);
                           entryCubit.revertToHistoryEntry(entry, index);
                           final filterCubit = BlocProvider.of<FilterCubit>(context);
-                          filterCubit.reFilter(entry.file!.tags);
+                          filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
                           close(returnValue: false);
                           //TODO:f: Maybe one day we can automatically reopen the container with the updated information?
                           //   BlocProvider.of<EntryCubit>(context).startEditing(entry);
@@ -251,7 +251,7 @@ class EntryListItemWidget extends StatelessWidget {
                           final entryCubit = BlocProvider.of<EntryCubit>(context);
                           entryCubit.removeHistoryEntry(entry, index);
                           final filterCubit = BlocProvider.of<FilterCubit>(context);
-                          filterCubit.reFilter(entry.file!.tags);
+                          filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
                           close(returnValue: false);
                         },
                       );
@@ -261,7 +261,7 @@ class EntryListItemWidget extends StatelessWidget {
                       if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                         entryCubit.endEditing(entry);
                         final filterCubit = BlocProvider.of<FilterCubit>(context);
-                        filterCubit.reFilter(entry.file!.tags);
+                        filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?
                       } else {
                         entryCubit.endEditing(null);

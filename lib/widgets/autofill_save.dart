@@ -78,7 +78,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
       // want the filter options to reflect any changes made while
       // adding this new entry
       final filterCubit = BlocProvider.of<FilterCubit>(context);
-      filterCubit.reFilter(tags);
+      filterCubit.reFilter(tags, vaultCubit.currentVaultFile!.files.current.body.rootGroup);
     } else {
       entryCubit.endEditing(null);
 
