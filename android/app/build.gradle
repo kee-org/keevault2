@@ -87,9 +87,6 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
-    }
 
     signingConfigs{
         play {
@@ -120,6 +117,9 @@ android {
         debug {
             applicationIdSuffix ".debug"
         }
+    }
+    lint {
+        disable 'InvalidPackage'
     }
 }
 
