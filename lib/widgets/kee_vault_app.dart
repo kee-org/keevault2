@@ -104,6 +104,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
               primaryColorDark: palette[700],
             ).copyWith(
               surface: Colors.grey[850],
+              // ignore: deprecated_member_use
               secondaryVariant: palette[700],
             ),
           )
@@ -117,6 +118,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
               primaryColorDark: palette[700],
             ).copyWith(
               surface: Colors.grey[100],
+              // ignore: deprecated_member_use
               secondaryVariant: palette[700],
             ),
           );

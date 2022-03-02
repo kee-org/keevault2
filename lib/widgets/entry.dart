@@ -716,7 +716,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Colors.black87;
+    const color = Colors.black87;
     final theme = Theme.of(context);
     final str = S.of(context);
 

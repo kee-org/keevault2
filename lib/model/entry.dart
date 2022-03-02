@@ -284,6 +284,7 @@ class EntryViewModel {
     } on FormatException catch (e, stackTrace) {
       // ignore format exception from base32 decoding.
       l.w('Error decoding base32 secret', e, stackTrace);
+      return null;
     } catch (e, stackTrace) {
       l.w('Error while parsing OTP format', e, stackTrace);
       throw FormatException('Error parsing Tray OTP Format $e');

@@ -176,7 +176,6 @@ class LocalVaultRepository {
       final backupFilename =
           '${directory.path}/${user.emailHashedB64url}/backup-${DateTime.now().millisecondsSinceEpoch}.kdbx';
       l.w('Merge from remote failed! Most likely this is due to the user resetting their account on another device and then signing in to this device AND they reset their password to the same as it was before. We will create a backup file at $backupFilename just in case manual recovery becomes critical. Detailed reason: ${e.hint}');
-      final backupFile = File(backupFilename);
       await file.copy(backupFilename);
       finalKdbx = secondKdbx;
       kdbxData = await kdbxFormat().save(secondKdbx);
