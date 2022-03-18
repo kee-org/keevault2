@@ -3039,6 +3039,146 @@ class S {
       args: [],
     );
   }
+
+  /// `Want to hear about new features?`
+  String get bannerMsg1TitleA {
+    return Intl.message(
+      'Want to hear about new features?',
+      name: 'bannerMsg1TitleA',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Want to hear about new features and how to register for automatic backups and access from your other devices?`
+  String get bannerMsg1TitleB {
+    return Intl.message(
+      'Want to hear about new features and how to register for automatic backups and access from your other devices?',
+      name: 'bannerMsg1TitleB',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The same privacy policy applies as when you started using the app. In brief, we'll protect (encrypt) your email address when we store it and will never share it or use it for anything you haven't agreed to. You can unsubscribe easily from each email we send to you.`
+  String get prcRegistrationPrivacy1 {
+    return Intl.message(
+      'The same privacy policy applies as when you started using the app. In brief, we\'ll protect (encrypt) your email address when we store it and will never share it or use it for anything you haven\'t agreed to. You can unsubscribe easily from each email we send to you.',
+      name: 'prcRegistrationPrivacy1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can review the full policy here:`
+  String get prcRegistrationPrivacy2 {
+    return Intl.message(
+      'You can review the full policy here:',
+      name: 'prcRegistrationPrivacy2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign up to receive emails`
+  String get prcRegistrationSignUpButton {
+    return Intl.message(
+      'Sign up to receive emails',
+      name: 'prcRegistrationSignUpButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remind me...`
+  String get prcRegistrationReminderDelayRemindMe {
+    return Intl.message(
+      'Remind me...',
+      name: 'prcRegistrationReminderDelayRemindMe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `in 3 days`
+  String get prcRegistrationReminderDelay3days {
+    return Intl.message(
+      'in 3 days',
+      name: 'prcRegistrationReminderDelay3days',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `in 3 weeks`
+  String get prcRegistrationReminderDelay3weeks {
+    return Intl.message(
+      'in 3 weeks',
+      name: 'prcRegistrationReminderDelay3weeks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `in 3 months`
+  String get prcRegistrationReminderDelay3months {
+    return Intl.message(
+      'in 3 months',
+      name: 'prcRegistrationReminderDelay3months',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `never`
+  String get prcRegistrationReminderDelayNever {
+    return Intl.message(
+      'never',
+      name: 'prcRegistrationReminderDelayNever',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy Statement`
+  String get privacyStatement {
+    return Intl.message(
+      'Privacy Statement',
+      name: 'privacyStatement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes please`
+  String get alertYesPlease {
+    return Intl.message(
+      'Yes please',
+      name: 'alertYesPlease',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sorry, we weren't able to register your email address now. Please check that you have a good network connection and try again or ask for help on the community forum if the problem continues.`
+  String get prcRegistrationError {
+    return Intl.message(
+      'Sorry, we weren\'t able to register your email address now. Please check that you have a good network connection and try again or ask for help on the community forum if the problem continues.',
+      name: 'prcRegistrationError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Success! Please check your emails soon to confirm that you want to receive updates from us.`
+  String get prcRegistrationSuccess {
+    return Intl.message(
+      'Success! Please check your emails soon to confirm that you want to receive updates from us.',
+      name: 'prcRegistrationSuccess',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

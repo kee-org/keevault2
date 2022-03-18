@@ -22,6 +22,7 @@ class DialogUtils {
         routeSettings: RouteSettings(name: routeName + routeAppend),
         builder: (context) {
           return AlertDialog(
+            scrollable: true,
             title: title == null ? null : Text(title),
             content: Text(content),
             actions: <Widget>[
@@ -49,6 +50,7 @@ class DialogUtils {
         routeSettings: RouteSettings(name: '/dialog/alert/error${routeAppend?.prepend('/') ?? ''}'),
         builder: (context) {
           return AlertDialog(
+            scrollable: true,
             title: title == null ? null : Text(title),
             content: SingleChildScrollView(
                 child: Column(
@@ -121,6 +123,7 @@ class ConfirmDialog extends StatelessWidget with DialogMixin<bool> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: params.title != null ? Text(params.title!) : null,
       content: Text(params.content),
       actions: <Widget>[
@@ -216,6 +219,7 @@ class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBin
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AlertDialog(
+      scrollable: true,
       title: widget.title == null ? null : Text(widget.title!),
       content: Container(
         constraints: const BoxConstraints(minWidth: 400.0),

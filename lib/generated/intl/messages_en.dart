@@ -64,6 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "alertNo": MessageLookupByLibrary.simpleMessage("No"),
         "alertOk": MessageLookupByLibrary.simpleMessage("OK"),
         "alertYes": MessageLookupByLibrary.simpleMessage("Yes"),
+        "alertYesPlease": MessageLookupByLibrary.simpleMessage("Yes please"),
         "androidAppIdsToMatch": MessageLookupByLibrary.simpleMessage(
             "Android app technical names to match"),
         "appCannotLock": MessageLookupByLibrary.simpleMessage(
@@ -83,6 +84,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "autofilling": MessageLookupByLibrary.simpleMessage("Autofilling"),
         "automaticallySignInFor": MessageLookupByLibrary.simpleMessage(
             "Automatically sign-in for (seconds)"),
+        "bannerMsg1TitleA": MessageLookupByLibrary.simpleMessage(
+            "Want to hear about new features?"),
+        "bannerMsg1TitleB": MessageLookupByLibrary.simpleMessage(
+            "Want to hear about new features and how to register for automatic backups and access from your other devices?"),
         "biometricSignIn":
             MessageLookupByLibrary.simpleMessage("Biometric sign-in"),
         "biometricsStoreDescription": MessageLookupByLibrary.simpleMessage(
@@ -371,7 +376,29 @@ class MessageLookup extends MessageLookupByLibrary {
             "quickly scan QR codes (barcodes)"),
         "permissionSettingsOpenError": MessageLookupByLibrary.simpleMessage(
             "Sorry, your device did not allow us to open the settings for this app. Please use your device settings app to find and change the permissions settings for Kee Vault and then return here to try again."),
+        "prcRegistrationError": MessageLookupByLibrary.simpleMessage(
+            "Sorry, we weren\'t able to register your email address now. Please check that you have a good network connection and try again or ask for help on the community forum if the problem continues."),
+        "prcRegistrationPrivacy1": MessageLookupByLibrary.simpleMessage(
+            "The same privacy policy applies as when you started using the app. In brief, we\'ll protect (encrypt) your email address when we store it and will never share it or use it for anything you haven\'t agreed to. You can unsubscribe easily from each email we send to you."),
+        "prcRegistrationPrivacy2": MessageLookupByLibrary.simpleMessage(
+            "You can review the full policy here:"),
+        "prcRegistrationReminderDelay3days":
+            MessageLookupByLibrary.simpleMessage("in 3 days"),
+        "prcRegistrationReminderDelay3months":
+            MessageLookupByLibrary.simpleMessage("in 3 months"),
+        "prcRegistrationReminderDelay3weeks":
+            MessageLookupByLibrary.simpleMessage("in 3 weeks"),
+        "prcRegistrationReminderDelayNever":
+            MessageLookupByLibrary.simpleMessage("never"),
+        "prcRegistrationReminderDelayRemindMe":
+            MessageLookupByLibrary.simpleMessage("Remind me..."),
+        "prcRegistrationSignUpButton":
+            MessageLookupByLibrary.simpleMessage("Sign up to receive emails"),
+        "prcRegistrationSuccess": MessageLookupByLibrary.simpleMessage(
+            "Success! Please check your emails soon to confirm that you want to receive updates from us."),
         "preset": MessageLookupByLibrary.simpleMessage("Preset"),
+        "privacyStatement":
+            MessageLookupByLibrary.simpleMessage("Privacy Statement"),
         "protectField": MessageLookupByLibrary.simpleMessage("Protect field"),
         "protectedClickToReveal": MessageLookupByLibrary.simpleMessage(
             "Protected field. Click to reveal."),
