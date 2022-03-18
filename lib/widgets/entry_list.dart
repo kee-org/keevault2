@@ -7,6 +7,8 @@ import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/cubit/sort_cubit.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:keevault/widgets/entry.dart';
+import 'package:keevault/widgets/in_app_messenger.dart';
+import '../cubit/interaction_cubit.dart';
 import '../cubit/vault_cubit.dart';
 import 'package:animations/animations.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -256,10 +258,12 @@ class EntryListItemWidget extends StatelessWidget {
                         },
                       );
                     },
-                    onClosed: (bool? keepChanges) {
+                    onClosed: (bool? keepChanges) async {
                       final entryCubit = BlocProvider.of<EntryCubit>(context);
                       if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                         entryCubit.endEditing(entry);
+                        await BlocProvider.of<InteractionCubit>(context).entrySaved();
+                        await InAppMessengerWidget.of(context).showIfAppropriate(context);
                         final filterCubit = BlocProvider.of<FilterCubit>(context);
                         filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?

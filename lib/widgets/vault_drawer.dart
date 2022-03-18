@@ -5,6 +5,7 @@ import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/vault_backend/user.dart';
 import 'package:keevault/widgets/dialog_utils.dart';
+import '../cubit/interaction_cubit.dart';
 import '../generated/l10n.dart';
 
 class VaultDrawerWidget extends StatelessWidget {
@@ -37,7 +38,8 @@ class VaultDrawerWidget extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: isSaveEnabled
-                  ? () {
+                  ? () async {
+                      await BlocProvider.of<InteractionCubit>(context).databaseSaved();
                       User? user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
                       BlocProvider.of<VaultCubit>(context).save(user);
                     }

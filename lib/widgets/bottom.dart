@@ -8,6 +8,7 @@ import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/vault_backend/user.dart';
+import '../cubit/interaction_cubit.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
 import 'vault_drawer.dart';
@@ -316,8 +317,9 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
       opacity: widget.visible ? 1.0 : 0.0,
       duration: Duration(milliseconds: 300),
       child: OutlinedButton(
-          onPressed: () {
+          onPressed: () async {
             if (!widget.visible) return;
+            await BlocProvider.of<InteractionCubit>(context).databaseSaved();
             final cubit = BlocProvider.of<VaultCubit>(context);
             final accCubit = BlocProvider.of<AccountCubit>(context);
             cubit.save(accCubit.currentUserIfKnown);

@@ -8,6 +8,7 @@ import 'package:keevault/widgets/vault_imported.dart';
 import '../cubit/account_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/interaction_cubit.dart';
 import '../cubit/vault_cubit.dart';
 import 'package:kdbx/kdbx.dart';
 import 'loading_spinner.dart';
@@ -147,6 +148,7 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
         }
         BlocProvider.of<FilterCubit>(context)
             .start(state.vault.files.current.body.rootGroup.uuid.uuid, Settings.getValue<bool>('expandGroups', true));
+        await BlocProvider.of<InteractionCubit>(context).databaseOpened();
         AppConfig.router.navigateTo(context, Routes.vault, replace: true);
       }
     });

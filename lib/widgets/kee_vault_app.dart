@@ -16,6 +16,7 @@ import 'package:keevault/quick_unlocker.dart';
 import 'package:keevault/config/environment_config.dart';
 import 'package:matomo/matomo.dart';
 import '../colors.dart';
+import '../cubit/interaction_cubit.dart';
 import '../remote_vault_repository.dart';
 import '../user_repository.dart';
 import '../vault_backend/storage_service.dart';
@@ -27,6 +28,8 @@ import 'package:fluro/fluro.dart';
 import '../config/app.dart';
 import '../config/routes.dart';
 import 'package:receive_intent/receive_intent.dart' as ri;
+
+import 'in_app_messenger.dart';
 
 class KeeVaultApp extends TraceableStatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -169,23 +172,27 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
               BlocProvider(create: (context) => SortCubit()),
               BlocProvider(create: (context) => autofillCubit),
               BlocProvider(create: (context) => generatorProfilesCubit),
+              BlocProvider(create: (context) => InteractionCubit()),
             ],
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              localizationsDelegates: const [
-                S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              navigatorKey: widget.navigatorKey,
-              supportedLocales: S.delegate.supportedLocales,
-              title: 'Kee Vault',
-              theme: getThemeData(false, palette),
-              darkTheme: getThemeData(true, palette),
-              themeMode: (appSettingsState as AppSettingsBasic).themeMode,
-              onGenerateRoute: AppConfig.router.generator,
-              initialRoute: '/',
+            child: InAppMessengerWidget(
+              appSettingsState: appSettingsState,
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                localizationsDelegates: const [
+                  S.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                navigatorKey: widget.navigatorKey,
+                supportedLocales: S.delegate.supportedLocales,
+                title: 'Kee Vault',
+                theme: getThemeData(false, palette),
+                darkTheme: getThemeData(true, palette),
+                themeMode: (appSettingsState as AppSettingsBasic).themeMode,
+                onGenerateRoute: AppConfig.router.generator,
+                initialRoute: '/',
+              ),
             ),
           );
         },

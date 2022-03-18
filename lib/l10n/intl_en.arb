@@ -297,5 +297,20 @@
   "subscriptionExpiredTrialAvailable": "Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account.",
   "startFreeTrial": "Start free trial",
   "startNewTrialError": "Sorry, we weren't able to restart your trial now. Please try again later and ask for help on the community forum if the problem continues.",
-  "startNewTrialSuccess": "All done!"
+  "startNewTrialSuccess": "All done!",
+  "bannerMsg1TitleA": "Want to hear about new features?",
+  "bannerMsg1TitleB": "Want to hear about new features and how to register for automatic backups and access from your other devices?",
+  "prcRegistrationPrivacy1": "The same privacy policy applies as when you started using the app. In brief, we'll protect (encrypt) your email address when we store it and will never share it or use it for anything you haven't agreed to. You can unsubscribe easily from each email we send to you.",
+  "prcRegistrationPrivacy2": "You can review the full policy here:",
+  "prcRegistrationSignUpButton": "Sign up to receive emails",
+  "prcRegistrationReminderDelayRemindMe": "Remind me...",
+  "prcRegistrationReminderDelay3days": "in 3 days",
+  "prcRegistrationReminderDelay3weeks": "in 3 weeks",
+  "prcRegistrationReminderDelay3months": "in 3 months",
+  "prcRegistrationReminderDelayNever": "never",
+  "privacyStatement": "Privacy Statement",
+  "alertYesPlease": "Yes please",
+  "prcRegistrationError": "Sorry, we weren't able to register your email address now. Please check that you have a good network connection and try again or ask for help on the community forum if the problem continues.",
+  "prcRegistrationSuccess": "Success! Please check your emails soon to confirm that you want to receive updates from us."
+  
 }

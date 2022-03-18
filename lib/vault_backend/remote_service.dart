@@ -16,19 +16,22 @@ const Map<Stage, Map<String, String>> endpoints = {
     'storage': 'https://s-dev.kee.pm/',
     'identity': 'https://id-dev.kee.pm/',
     'messages': 'https://msg-dev.kee.pm/',
-    'reset': 'https://resetacc-dev.kee.pm/'
+    'reset': 'https://resetacc-dev.kee.pm/',
+    'mailer': 'https://mailerapi-dev.kee.pm/'
   },
   Stage.beta: {
     'storage': 'https://s-beta.kee.pm/',
     'identity': 'https://id-beta.kee.pm/',
     'messages': 'https://msg-beta.kee.pm/',
-    'reset': 'https://resetacc-beta.kee.pm/'
+    'reset': 'https://resetacc-beta.kee.pm/',
+    'mailer': 'https://mailerapi-beta.kee.pm/'
   },
   Stage.prod: {
     'storage': 'https://s.kee.pm/',
     'identity': 'https://id.kee.pm/',
     'messages': 'https://msg.kee.pm/',
-    'reset': 'https://resetacc.kee.pm/'
+    'reset': 'https://resetacc.kee.pm/',
+    'mailer': 'https://mailerapi.kee.pm/'
   }
 };
 
@@ -78,6 +81,8 @@ class RemoteService {
         return tokens.storage;
       case 'messages':
         return tokens.identity;
+      case 'mailer':
+        return null;
       default:
         throw Exception('Invalid RemoteService configuration. $_name token not known.');
     }
