@@ -5,6 +5,8 @@ import 'package:kdbx/kdbx.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
+import 'package:keevault/widgets/in_app_messenger.dart';
+import '../cubit/interaction_cubit.dart';
 import '../generated/l10n.dart';
 
 import 'entry.dart';
@@ -46,14 +48,17 @@ class NewEntryButton extends StatelessWidget {
                 deleteAt: (int index) {},
               );
             },
-            onClosed: (bool? keepChanges) {
+            onClosed: (bool? keepChanges) async {
               final entryCubit = BlocProvider.of<EntryCubit>(context);
               if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                 entryCubit.endCreating(currentFile);
+                await BlocProvider.of<InteractionCubit>(context).entrySaved();
+                await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryChanged);
                 final filterCubit = BlocProvider.of<FilterCubit>(context);
                 filterCubit.reFilter(currentFile.tags, currentFile.body.rootGroup);
               } else {
                 entryCubit.endCreating(null);
+                await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryUnchanged);
               }
             },
             closedBuilder: (context, open) {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'dialog_utils.dart';
 import 'package:keevault/generated/l10n.dart';
 
-class PRCDismissDialog extends StatelessWidget with DialogMixin<int> {
-  const PRCDismissDialog({Key? key}) : super(key: key);
+class BannerDismissDialog extends StatelessWidget with DialogMixin<int> {
+  const BannerDismissDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,34 +19,34 @@ class PRCDismissDialog extends StatelessWidget with DialogMixin<int> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.prcRegistrationReminderDelayRemindMe),
+              child: Text(str.bannerReminderDelayRemindMe),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(3),
-                child: Text(str.prcRegistrationReminderDelay3days.toUpperCase()),
+                child: Text(str.bannerReminderDelay3days.toUpperCase()),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(21),
-                child: Text(str.prcRegistrationReminderDelay3weeks.toUpperCase()),
+                child: Text(str.bannerReminderDelay3weeks.toUpperCase()),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(90),
-                child: Text(str.prcRegistrationReminderDelay3months.toUpperCase()),
+                child: Text(str.bannerReminderDelay3months.toUpperCase()),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(-1),
-                child: Text(str.prcRegistrationReminderDelayNever.toUpperCase()),
+                child: Text(str.bannerReminderDelayNever.toUpperCase()),
               ),
             ),
           ],
@@ -56,5 +56,5 @@ class PRCDismissDialog extends StatelessWidget with DialogMixin<int> {
   }
 
   @override
-  String get name => '/dialog/prcDismiss';
+  String get name => '/dialog/bannerRemindMeDismiss';
 }

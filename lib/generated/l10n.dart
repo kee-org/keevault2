@@ -1230,10 +1230,10 @@ class S {
     );
   }
 
-  /// `You have no password entries yet. Create one using the + button below.`
+  /// `You have no password entries yet. Create one using the + button below. If you have passwords already stored in the standard KDBX (KeePass) format you can import them.`
   String get noEntriesCreateNewInstruction {
     return Intl.message(
-      'You have no password entries yet. Create one using the + button below.',
+      'You have no password entries yet. Create one using the + button below. If you have passwords already stored in the standard KDBX (KeePass) format you can import them.',
       name: 'noEntriesCreateNewInstruction',
       desc: '',
       args: [],
@@ -2100,10 +2100,10 @@ class S {
     );
   }
 
-  /// `Save changes`
+  /// `Confirm changes`
   String get saveChanges {
     return Intl.message(
-      'Save changes',
+      'Confirm changes',
       name: 'saveChanges',
       desc: '',
       args: [],
@@ -3091,50 +3091,50 @@ class S {
   }
 
   /// `Remind me...`
-  String get prcRegistrationReminderDelayRemindMe {
+  String get bannerReminderDelayRemindMe {
     return Intl.message(
       'Remind me...',
-      name: 'prcRegistrationReminderDelayRemindMe',
+      name: 'bannerReminderDelayRemindMe',
       desc: '',
       args: [],
     );
   }
 
   /// `in 3 days`
-  String get prcRegistrationReminderDelay3days {
+  String get bannerReminderDelay3days {
     return Intl.message(
       'in 3 days',
-      name: 'prcRegistrationReminderDelay3days',
+      name: 'bannerReminderDelay3days',
       desc: '',
       args: [],
     );
   }
 
   /// `in 3 weeks`
-  String get prcRegistrationReminderDelay3weeks {
+  String get bannerReminderDelay3weeks {
     return Intl.message(
       'in 3 weeks',
-      name: 'prcRegistrationReminderDelay3weeks',
+      name: 'bannerReminderDelay3weeks',
       desc: '',
       args: [],
     );
   }
 
   /// `in 3 months`
-  String get prcRegistrationReminderDelay3months {
+  String get bannerReminderDelay3months {
     return Intl.message(
       'in 3 months',
-      name: 'prcRegistrationReminderDelay3months',
+      name: 'bannerReminderDelay3months',
       desc: '',
       args: [],
     );
   }
 
   /// `never`
-  String get prcRegistrationReminderDelayNever {
+  String get bannerReminderDelayNever {
     return Intl.message(
       'never',
-      name: 'prcRegistrationReminderDelayNever',
+      name: 'bannerReminderDelayNever',
       desc: '',
       args: [],
     );
@@ -3175,6 +3175,96 @@ class S {
     return Intl.message(
       'Success! Please check your emails soon to confirm that you want to receive updates from us.',
       name: 'prcRegistrationSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Entry updated. Don't forget to "Save" your Vault when you have finished creating and changing entries.`
+  String get makeMoreChangesOrSave1 {
+    return Intl.message(
+      'Entry updated. Don\'t forget to "Save" your Vault when you have finished creating and changing entries.',
+      name: 'makeMoreChangesOrSave1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You don't need to save after every change you make but make sure you save before closing the app or locking your Vault.`
+  String get makeMoreChangesOrSave2 {
+    return Intl.message(
+      'You don\'t need to save after every change you make but make sure you save before closing the app or locking your Vault.',
+      name: 'makeMoreChangesOrSave2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Beware that some devices will randomly delete unsaved data if you switch to using a different app for a little while.`
+  String get makeMoreChangesOrSave3 {
+    return Intl.message(
+      'Beware that some devices will randomly delete unsaved data if you switch to using a different app for a little while.',
+      name: 'makeMoreChangesOrSave3',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Vault is being saved when this lock icon is flashing at the bottom of the screen.`
+  String get bannerMsgSaving1 {
+    return Intl.message(
+      'Your Vault is being saved when this lock icon is flashing at the bottom of the screen.',
+      name: 'bannerMsgSaving1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Our high security protection is applied to your Vault every time you save it. This can take a little bit of time, and a slow internet connection can make it take longer too.`
+  String get bannerMsgSaving2 {
+    return Intl.message(
+      'Our high security protection is applied to your Vault every time you save it. This can take a little bit of time, and a slow internet connection can make it take longer too.',
+      name: 'bannerMsgSaving2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `For easier sign-in to your apps and websites, you need to change your device's Autofill provider to Kee Vault.`
+  String get bannerMsgAutofillDisabled {
+    return Intl.message(
+      'For easier sign-in to your apps and websites, you need to change your device\'s Autofill provider to Kee Vault.',
+      name: 'bannerMsgAutofillDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Everyone else is welcome to use the app for free without an account.`
+  String get everyoneElseCanUseForFree {
+    return Intl.message(
+      'Everyone else is welcome to use the app for free without an account.',
+      name: 'everyoneElseCanUseForFree',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `If you already have a Kee Vault account on the https://keevault.pm "Web App" you can sign-in below.`
+  String get existingUsersSignInBelow {
+    return Intl.message(
+      'If you already have a Kee Vault account on the https://keevault.pm "Web App" you can sign-in below.',
+      name: 'existingUsersSignInBelow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome to Kee Vault`
+  String get welcomeToKeeVault {
+    return Intl.message(
+      'Welcome to Kee Vault',
+      name: 'welcomeToKeeVault',
       desc: '',
       args: [],
     );

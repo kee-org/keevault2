@@ -11,6 +11,7 @@ import 'package:keevault/vault_backend/user.dart';
 import '../cubit/interaction_cubit.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
+import 'in_app_messenger.dart';
 import 'vault_drawer.dart';
 
 class BottomDrawerWidget extends StatelessWidget {
@@ -320,6 +321,7 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
           onPressed: () async {
             if (!widget.visible) return;
             await BlocProvider.of<InteractionCubit>(context).databaseSaved();
+            await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.vaultSaved);
             final cubit = BlocProvider.of<VaultCubit>(context);
             final accCubit = BlocProvider.of<AccountCubit>(context);
             cubit.save(accCubit.currentUserIfKnown);

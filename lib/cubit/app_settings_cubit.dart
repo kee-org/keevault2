@@ -9,18 +9,13 @@ part 'app_settings_state.dart';
 class AppSettingsCubit extends Cubit<AppSettingsState> {
   AppSettingsCubit()
       : super(AppSettingsBasic(
-            getThemeMode(Settings.getValue<String>('theme', 'sys')),
-            Settings.getValue('introShownVaultSummary', false),
-            InAppMessage.fromJson(Settings.getValue(
-                'iamEmailSignup',
-                InAppMessage(
-                  DateTime.fromMillisecondsSinceEpoch(0),
-                  Duration(days: 1),
-                  Duration(days: 3),
-                  DateTime.now().toUtc(),
-                  7,
-                  3,
-                ).toJson()))));
+          getThemeMode(Settings.getValue<String>('theme', 'sys')),
+          Settings.getValue('introShownVaultSummary', false),
+          InAppMessage.fromAppSetting('iamEmailSignup'),
+          InAppMessage.fromAppSetting('iamMakeMoreChangesOrSave'),
+          InAppMessage.fromAppSetting('iamSavingVault'),
+          InAppMessage.fromAppSetting('iamAutofillDisabled'),
+        ));
 
   static ThemeMode getThemeMode(String brightness) {
     if (brightness == 'lt') return ThemeMode.light;
@@ -37,17 +32,76 @@ class AppSettingsCubit extends Cubit<AppSettingsState> {
     emit((state as AppSettingsBasic).copyWith(introShownVaultSummary: true));
   }
 
-  Future<void> iamEmailSignupDisplayed() async {
+  Future<void> iamEmailSignupSuppressUntil(DateTime suppressUntil) async {
+    final asbState = state as AppSettingsBasic;
+    final newMessageState = asbState.iamEmailSignup.copyWith(suppressUntilTime: suppressUntil);
+    await Settings.setValue('iamEmailSignup', newMessageState.toJson());
+    emit((state as AppSettingsBasic).copyWith(iamEmailSignup: newMessageState));
+  }
+
+  Future<void> iamMakeMoreChangesOrSaveSuppressUntil(DateTime suppressUntil) async {
+    final asbState = state as AppSettingsBasic;
+    final newMessageState = asbState.iamMakeMoreChangesOrSave.copyWith(suppressUntilTime: suppressUntil);
+    await Settings.setValue('iamMakeMoreChangesOrSave', newMessageState.toJson());
+    emit((state as AppSettingsBasic).copyWith(iamMakeMoreChangesOrSave: newMessageState));
+  }
+
+  Future<void> iamSavingVaultSuppressUntil(DateTime suppressUntil) async {
+    final asbState = state as AppSettingsBasic;
+    final newMessageState = asbState.iamSavingVault.copyWith(suppressUntilTime: suppressUntil);
+    await Settings.setValue('iamSavingVault', newMessageState.toJson());
+    emit((state as AppSettingsBasic).copyWith(iamSavingVault: newMessageState));
+  }
+
+  Future<void> iamAutofillDisabledSuppressUntil(DateTime suppressUntil) async {
+    final asbState = state as AppSettingsBasic;
+    final newMessageState = asbState.iamAutofillDisabled.copyWith(suppressUntilTime: suppressUntil);
+    await Settings.setValue('iamAutofillDisabled', newMessageState.toJson());
+    emit((state as AppSettingsBasic).copyWith(iamAutofillDisabled: newMessageState));
+  }
+
+  Future<void> iamDisplayed(iamName) async {
+    switch (iamName) {
+      case 'iamEmailSignup':
+        await _iamEmailSignupDisplayed();
+        break;
+      case 'iamMakeMoreChangesOrSave':
+        await _iamMakeMoreChangesOrSaveDisplayed();
+        break;
+      case 'iamSavingVault':
+        await _iamSavingVaultDisplayed();
+        break;
+      case 'iamAutofillDisabled':
+        await _iamAutofillDisabledDisplayed();
+        break;
+    }
+  }
+
+  Future<void> _iamEmailSignupDisplayed() async {
     final asbState = state as AppSettingsBasic;
     final newMessageState = asbState.iamEmailSignup.copyWith(lastDisplayed: DateTime.now().toUtc());
     await Settings.setValue('iamEmailSignup', newMessageState.toJson());
     emit((state as AppSettingsBasic).copyWith(iamEmailSignup: newMessageState));
   }
 
-  Future<void> iamEmailSignupSuppressUntil(DateTime suppressUntil) async {
+  Future<void> _iamMakeMoreChangesOrSaveDisplayed() async {
     final asbState = state as AppSettingsBasic;
-    final newMessageState = asbState.iamEmailSignup.copyWith(suppressUntilTime: suppressUntil);
-    await Settings.setValue('iamEmailSignup', newMessageState.toJson());
-    emit((state as AppSettingsBasic).copyWith(iamEmailSignup: newMessageState));
+    final newMessageState = asbState.iamMakeMoreChangesOrSave.copyWith(lastDisplayed: DateTime.now().toUtc());
+    await Settings.setValue('iamMakeMoreChangesOrSave', newMessageState.toJson());
+    emit((state as AppSettingsBasic).copyWith(iamMakeMoreChangesOrSave: newMessageState));
+  }
+
+  Future<void> _iamSavingVaultDisplayed() async {
+    final asbState = state as AppSettingsBasic;
+    final newMessageState = asbState.iamSavingVault.copyWith(lastDisplayed: DateTime.now().toUtc());
+    await Settings.setValue('iamSavingVault', newMessageState.toJson());
+    emit((state as AppSettingsBasic).copyWith(iamSavingVault: newMessageState));
+  }
+
+  Future<void> _iamAutofillDisabledDisplayed() async {
+    final asbState = state as AppSettingsBasic;
+    final newMessageState = asbState.iamAutofillDisabled.copyWith(lastDisplayed: DateTime.now().toUtc());
+    await Settings.setValue('iamAutofillDisabled', newMessageState.toJson());
+    emit((state as AppSettingsBasic).copyWith(iamAutofillDisabled: newMessageState));
   }
 }

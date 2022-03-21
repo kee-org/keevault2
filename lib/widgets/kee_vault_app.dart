@@ -176,6 +176,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
             ],
             child: InAppMessengerWidget(
               appSettingsState: appSettingsState,
+              navigatorKey: widget.navigatorKey,
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 localizationsDelegates: const [

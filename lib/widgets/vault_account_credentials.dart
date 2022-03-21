@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 
@@ -38,24 +37,17 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: RichText(
-            text: TextSpan(
-              style: theme.textTheme.headline6,
-              children: <TextSpan>[
-                TextSpan(
-                  text: 'Sign in to your Kee Vault account or ',
-                  style: theme.textTheme.headline6,
-                ),
-                TextSpan(
-                  text: 'use the app for free',
-                  style: theme.textTheme.headline6!.copyWith(color: theme.primaryColor),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      widget.onLocalOnlyRequested();
-                    },
-                ),
-              ],
-            ),
+          child: Text(
+            str.welcomeToKeeVault,
+            style: theme.textTheme.headlineSmall,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0, bottom: 8, right: 8),
+          child: Text(
+            str.existingUsersSignInBelow,
+            style: theme.textTheme.titleMedium
+                ?.copyWith(height: 1.4, fontSize: (theme.textTheme.titleMedium!.fontSize ?? 14) - 1),
           ),
         ),
         Padding(
@@ -84,7 +76,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                       await widget.onSubmit(value);
                     }
                   },
-                  autofocus: true,
+                  autofocus: false,
                 ),
               ),
               Padding(
@@ -95,6 +87,21 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                 ),
               ),
             ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            str.everyoneElseCanUseForFree,
+            style: theme.textTheme.titleMedium
+                ?.copyWith(height: 1.4, fontSize: (theme.textTheme.titleMedium!.fontSize ?? 14) - 1),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: ElevatedButton(
+            onPressed: widget.onLocalOnlyRequested,
+            child: Text('Use app for free'),
           ),
         ),
       ]),
