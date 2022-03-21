@@ -88,6 +88,22 @@ class MessageLookup extends MessageLookupByLibrary {
             "Want to hear about new features?"),
         "bannerMsg1TitleB": MessageLookupByLibrary.simpleMessage(
             "Want to hear about new features and how to register for automatic backups and access from your other devices?"),
+        "bannerMsgAutofillDisabled": MessageLookupByLibrary.simpleMessage(
+            "For easier sign-in to your apps and websites, you need to change your device\'s Autofill provider to Kee Vault."),
+        "bannerMsgSaving1": MessageLookupByLibrary.simpleMessage(
+            "Your Vault is being saved when this lock icon is flashing at the bottom of the screen."),
+        "bannerMsgSaving2": MessageLookupByLibrary.simpleMessage(
+            "Our high security protection is applied to your Vault every time you save it. This can take a little bit of time, and a slow internet connection can make it take longer too."),
+        "bannerReminderDelay3days":
+            MessageLookupByLibrary.simpleMessage("in 3 days"),
+        "bannerReminderDelay3months":
+            MessageLookupByLibrary.simpleMessage("in 3 months"),
+        "bannerReminderDelay3weeks":
+            MessageLookupByLibrary.simpleMessage("in 3 weeks"),
+        "bannerReminderDelayNever":
+            MessageLookupByLibrary.simpleMessage("never"),
+        "bannerReminderDelayRemindMe":
+            MessageLookupByLibrary.simpleMessage("Remind me..."),
         "biometricSignIn":
             MessageLookupByLibrary.simpleMessage("Biometric sign-in"),
         "biometricsStoreDescription": MessageLookupByLibrary.simpleMessage(
@@ -177,7 +193,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("New URL (include https://)"),
         "errorCorruptField": MessageLookupByLibrary.simpleMessage(
             " : A field in this entry is corrupt. Please check the \'Help > Console log\' for details."),
+        "everyoneElseCanUseForFree": MessageLookupByLibrary.simpleMessage(
+            "Everyone else is welcome to use the app for free without an account."),
         "exact": MessageLookupByLibrary.simpleMessage("Exact"),
+        "existingUsersSignInBelow": MessageLookupByLibrary.simpleMessage(
+            "If you already have a Kee Vault account on the https://keevault.pm \"Web App\" you can sign-in below."),
         "export": MessageLookupByLibrary.simpleMessage("Export"),
         "exportAnyway": MessageLookupByLibrary.simpleMessage("Export anyway"),
         "exportDirtyFileWarning": MessageLookupByLibrary.simpleMessage(
@@ -303,6 +323,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "lock": MessageLookupByLibrary.simpleMessage("Lock"),
         "longPressGroupExplanation": MessageLookupByLibrary.simpleMessage(
             "Long-press on a group to rename, move or delete it, or to create a new subgroup."),
+        "makeMoreChangesOrSave1": MessageLookupByLibrary.simpleMessage(
+            "Entry updated. Don\'t forget to \"Save\" your Vault when you have finished creating and changing entries."),
+        "makeMoreChangesOrSave2": MessageLookupByLibrary.simpleMessage(
+            "You don\'t need to save after every change you make but make sure you save before closing the app or locking your Vault."),
+        "makeMoreChangesOrSave3": MessageLookupByLibrary.simpleMessage(
+            "Beware that some devices will randomly delete unsaved data if you switch to using a different app for a little while."),
         "manageAccount": MessageLookupByLibrary.simpleMessage("Manage account"),
         "manageAccountDetail": MessageLookupByLibrary.simpleMessage(
             "Manage your Kee Vault account"),
@@ -339,7 +365,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "New password (please repeat)"),
         "newProfile": MessageLookupByLibrary.simpleMessage("New profile"),
         "noEntriesCreateNewInstruction": MessageLookupByLibrary.simpleMessage(
-            "You have no password entries yet. Create one using the + button below."),
+            "You have no password entries yet. Create one using the + button below. If you have passwords already stored in the standard KDBX (KeePass) format you can import them."),
         "notSignedIn": MessageLookupByLibrary.simpleMessage("Not signed in"),
         "notes": MessageLookupByLibrary.simpleMessage("Notes"),
         "offerToSave":
@@ -382,16 +408,6 @@ class MessageLookup extends MessageLookupByLibrary {
             "The same privacy policy applies as when you started using the app. In brief, we\'ll protect (encrypt) your email address when we store it and will never share it or use it for anything you haven\'t agreed to. You can unsubscribe easily from each email we send to you."),
         "prcRegistrationPrivacy2": MessageLookupByLibrary.simpleMessage(
             "You can review the full policy here:"),
-        "prcRegistrationReminderDelay3days":
-            MessageLookupByLibrary.simpleMessage("in 3 days"),
-        "prcRegistrationReminderDelay3months":
-            MessageLookupByLibrary.simpleMessage("in 3 months"),
-        "prcRegistrationReminderDelay3weeks":
-            MessageLookupByLibrary.simpleMessage("in 3 weeks"),
-        "prcRegistrationReminderDelayNever":
-            MessageLookupByLibrary.simpleMessage("never"),
-        "prcRegistrationReminderDelayRemindMe":
-            MessageLookupByLibrary.simpleMessage("Remind me..."),
         "prcRegistrationSignUpButton":
             MessageLookupByLibrary.simpleMessage("Sign up to receive emails"),
         "prcRegistrationSuccess": MessageLookupByLibrary.simpleMessage(
@@ -427,7 +443,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "revertUnsavedWarning": MessageLookupByLibrary.simpleMessage(
             "Your unsaved changes will be permanently lost if you change to this older version now. Do you want to discard your changes?"),
         "save": MessageLookupByLibrary.simpleMessage("Save"),
-        "saveChanges": MessageLookupByLibrary.simpleMessage("Save changes"),
+        "saveChanges": MessageLookupByLibrary.simpleMessage("Confirm changes"),
         "saveExplainerAlertTitle":
             MessageLookupByLibrary.simpleMessage("Saving..."),
         "search": MessageLookupByLibrary.simpleMessage("Search"),
@@ -542,6 +558,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "visitTheForum":
             MessageLookupByLibrary.simpleMessage("Visit the forum"),
         "website": MessageLookupByLibrary.simpleMessage("Website"),
+        "welcomeToKeeVault":
+            MessageLookupByLibrary.simpleMessage("Welcome to Kee Vault"),
         "welcome_message": m10,
         "willTrySamePasswordFirst": MessageLookupByLibrary.simpleMessage(
             "We\'ll try using the same password you have used to open your current Kee Vault. If that doesn\'t work, you can type in the correct password in a moment."),

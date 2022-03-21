@@ -8,6 +8,8 @@ import 'package:keevault/cubit/sort_cubit.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:keevault/widgets/entry.dart';
 import 'package:keevault/widgets/in_app_messenger.dart';
+import '../config/app.dart';
+import '../config/routes.dart';
 import '../cubit/interaction_cubit.dart';
 import '../cubit/vault_cubit.dart';
 import 'package:animations/animations.dart';
@@ -42,12 +44,20 @@ class EntryListWidget extends StatelessWidget {
               // but will work for the most important (first-time view of a new KDBX file) and is fast.
               final emptyVault = entries.isEmpty && state.groupUuid == state.rootGroupUuid && state.includeChildGroups;
               if (emptyVault) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    str.noEntriesCreateNewInstruction,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        str.noEntriesCreateNewInstruction,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ),
+                    OutlinedButton(
+                      child: Text(str.import),
+                      onPressed: () => {AppConfig.router.navigateTo(context, Routes.importExport)},
+                    )
+                  ],
                 );
               }
 
@@ -263,12 +273,13 @@ class EntryListItemWidget extends StatelessWidget {
                       if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                         entryCubit.endEditing(entry);
                         await BlocProvider.of<InteractionCubit>(context).entrySaved();
-                        await InAppMessengerWidget.of(context).showIfAppropriate(context);
+                        await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryChanged);
                         final filterCubit = BlocProvider.of<FilterCubit>(context);
                         filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?
                       } else {
                         entryCubit.endEditing(null);
+                        await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryUnchanged);
                       }
                     },
                     closedBuilder: (context, open) {

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:keevault/widgets/prc_privacy_dialog.dart';
-import 'package:url_launcher/link.dart';
-
 import '../config/environment_config.dart';
 import '../vault_backend/mailer_service.dart';
 import 'dialog_utils.dart';

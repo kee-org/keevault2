@@ -178,7 +178,7 @@ class EntryHistoryItem extends StatelessWidget {
                                   padding: EdgeInsets.all(0.0),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),
                                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  labelPadding: EdgeInsets.only(left: 8.0),
+                                  labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
                                 ),
                               ))
                           .toList(),

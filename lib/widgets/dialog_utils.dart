@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -106,8 +105,8 @@ class ConfirmDialogParams {
   ConfirmDialogParams({
     this.title,
     required this.content,
-    this.positiveButtonText = 'Ok',
-    this.negativeButtonText = 'Cancel',
+    this.positiveButtonText = 'OK',
+    this.negativeButtonText = 'CANCEL',
   });
 
   final String? title;
@@ -180,14 +179,12 @@ class SimplePromptDialog extends StatefulWidget with DialogMixin<String> {
 class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBindingObserver {
   late TextEditingController _controller;
   AppLifecycleState? _previousState;
-  String? _previousClipboard;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
     WidgetsBinding.instance!.addObserver(this);
-    _readClipboard();
   }
 
   @override
@@ -196,28 +193,17 @@ class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBin
     super.dispose();
   }
 
-  Future<void> _readClipboard({bool setIfChanged = false}) async {
-    final text = await _getClipboardText();
-    if (setIfChanged && text != _previousClipboard && text != null) {
-      _controller.text = text;
-      _controller.selection = TextSelection(baseOffset: 0, extentOffset: text.length);
-    }
-    _previousClipboard = text;
-  }
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     l.d('lifecycle state changed to $state (was: $_previousState)');
-    if (state == AppLifecycleState.resumed) {
-      _readClipboard(setIfChanged: true);
-    }
     _previousState = state;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final str = S.of(context);
     return AlertDialog(
       scrollable: true,
       title: widget.title == null ? null : Text(widget.title!),
@@ -264,19 +250,15 @@ class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBin
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel'),
+          child: Text(str.alertCancel.toUpperCase()),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop(_controller.text);
           },
-          child: const Text('Ok'),
+          child: Text(str.alertOk.toUpperCase()),
         ),
       ],
     );
   }
-}
-
-Future<String?> _getClipboardText() async {
-  return (await Clipboard.getData('text/plain'))?.text;
 }
