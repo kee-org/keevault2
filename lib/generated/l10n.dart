@@ -3279,6 +3279,66 @@ class S {
       args: [],
     );
   }
+
+  /// `Forgot your password or unsure if you have a Kee Vault account?`
+  String get forgotPasswordOrCheckAccount {
+    return Intl.message(
+      'Forgot your password or unsure if you have a Kee Vault account?',
+      name: 'forgotPasswordOrCheckAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can reset your password using the Kee Vault "Web App" (version 1).`
+  String get resetPasswordInstructions {
+    return Intl.message(
+      'You can reset your password using the Kee Vault "Web App" (version 1).',
+      name: 'resetPasswordInstructions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start account reset`
+  String get startAccountReset {
+    return Intl.message(
+      'Start account reset',
+      name: 'startAccountReset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with {email}`
+  String prcSignupOrAccountStatusCheck(Object email) {
+    return Intl.message(
+      'You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with $email',
+      name: 'prcSignupOrAccountStatusCheck',
+      desc: '',
+      args: [email],
+    );
+  }
+
+  /// `Agree and check account status`
+  String get agreeAndCheckAccountStatus {
+    return Intl.message(
+      'Agree and check account status',
+      name: 'agreeAndCheckAccountStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The "Big Tech" companies prohibit us from directly linking to the account registration page on our website.`
+  String get bigTechAntiCompetitionStatement {
+    return Intl.message(
+      'The "Big Tech" companies prohibit us from directly linking to the account registration page on our website.',
+      name: 'bigTechAntiCompetitionStatement',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

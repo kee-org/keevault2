@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/vault_cubit.dart';
 import 'account_expired.dart';
 import 'loading_spinner.dart';
+import 'reset_account_prompt_dialog.dart';
 import 'vault_account_credentials.dart';
 import 'vault_local_password_create.dart';
 import 'vault_password_credentials.dart';
@@ -69,10 +70,29 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
           } else if (state is AccountIdentifying) {
             return LoadingSpinner(tooltip: str.identifying);
           } else if (state is AccountIdentified) {
-            return VaultPasswordCredentialsWidget(
-              reason: str.welcome_message(state.user.email ?? ''),
-              onSubmit: _initVault,
-              showError: state.causedByInteraction,
+            return Column(
+              children: [
+                VaultPasswordCredentialsWidget(
+                  reason: str.welcome_message(state.user.email ?? ''),
+                  onSubmit: _initVault,
+                  showError: state.causedByInteraction,
+                ),
+                Visibility(
+                  visible: state.user.email?.isNotEmpty ?? false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: TextButton(
+                      onPressed: () => ResetAccountPromptDialog(
+                        emailAddress: state.user.email!,
+                      ).show(context),
+                      child: Text(
+                        str.forgotPasswordOrCheckAccount,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             );
           } else if (state is AccountAuthenticating) {
             return LoadingSpinner(tooltip: str.authenticating);

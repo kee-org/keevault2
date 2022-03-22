@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keevault/widgets/prc_privacy_dialog.dart';
+import 'package:matomo/matomo.dart';
 import '../config/environment_config.dart';
 import '../vault_backend/mailer_service.dart';
 import 'dialog_utils.dart';
@@ -7,7 +8,7 @@ import 'package:keevault/generated/l10n.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:keevault/logging/logger.dart';
 
-class PRCSignupPromptDialog extends StatefulWidget with DialogMixin<bool> {
+class PRCSignupPromptDialog extends TraceableStatefulWidget with DialogMixin<bool> {
   const PRCSignupPromptDialog({
     Key? key,
   }) : super(key: key);
@@ -57,11 +58,12 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog> with Widg
         error = false;
       });
       final mailerService = MailerService(EnvironmentConfig.stage.toStage(), null);
-      final result = await mailerService.signup(_controller.text);
+      final result = await mailerService.signup(_controller.text.toLowerCase());
       if (result) {
         l.d('signup successful');
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
+        MatomoTracker.trackEvent('prcSignup', 'free');
       } else {
         l.e('signup failed');
         setState(() {
@@ -104,7 +106,7 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog> with Widg
                   maxLines: 1,
                   onEditingComplete: loading ? null : signup,
                   validator: (val) =>
-                      !EmailValidator.validate(val ?? '', true) ? 'Not a valid email address. Please try again.' : null,
+                      !EmailValidator.validate(val ?? '') ? 'Not a valid email address. Please try again.' : null,
                   style: theme.textTheme.subtitle1!.copyWith(color: theme.colorScheme.tertiary),
                 ),
               ),
