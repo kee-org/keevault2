@@ -321,5 +321,11 @@
   "everyoneElseCanUseForFree": "Everyone else is welcome to use the app for free without an account.",
   "existingUsersSignInBelow": "If you already have a Kee Vault account on the https://keevault.pm \"Web App\" you can sign-in below.",
   "welcomeToKeeVault": "Welcome to Kee Vault",
-  "vaultTooLarge": "Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again."
+  "vaultTooLarge": "Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again.",
+  "forgotPasswordOrCheckAccount": "Forgot your password or unsure if you have a Kee Vault account?",
+  "resetPasswordInstructions": "You can reset your password using the Kee Vault \"Web App\" (version 1).",
+  "startAccountReset": "Start account reset",
+  "prcSignupOrAccountStatusCheck": "You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with {email}",
+  "agreeAndCheckAccountStatus": "Agree and check account status",
+  "bigTechAntiCompetitionStatement": "The \"Big Tech\" companies prohibit us from directly linking to the account registration page on our website."
 }

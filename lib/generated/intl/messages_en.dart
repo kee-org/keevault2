@@ -39,12 +39,15 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m7(action) =>
       "Sorry, we can\'t ${action} unless you grant us permission. Please grant the permission in your settings and then try again.";
 
-  static String m8(count) => "${count} bytes";
+  static String m8(email) =>
+      "You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with ${email}";
 
-  static String m9(error) =>
+  static String m9(count) => "${count} bytes";
+
+  static String m10(error) =>
       "Unexpected error. Sorry! Please let us know, then close and restart the app. Details: ${error}";
 
-  static String m10(email) => "Welcome ${email}";
+  static String m11(email) => "Welcome ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -58,6 +61,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Additional characters"),
         "additionalUrlsToMatch":
             MessageLookupByLibrary.simpleMessage("Additional URLs to match"),
+        "agreeAndCheckAccountStatus": MessageLookupByLibrary.simpleMessage(
+            "Agree and check account status"),
         "alertCancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "alertClose": MessageLookupByLibrary.simpleMessage("Close"),
         "alertCopy": MessageLookupByLibrary.simpleMessage("Copy"),
@@ -104,6 +109,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("never"),
         "bannerReminderDelayRemindMe":
             MessageLookupByLibrary.simpleMessage("Remind me..."),
+        "bigTechAntiCompetitionStatement": MessageLookupByLibrary.simpleMessage(
+            "The \"Big Tech\" companies prohibit us from directly linking to the account registration page on our website."),
         "biometricSignIn":
             MessageLookupByLibrary.simpleMessage("Biometric sign-in"),
         "biometricsStoreDescription": MessageLookupByLibrary.simpleMessage(
@@ -215,6 +222,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Show matching entries"),
         "filteredByCriteria": m5,
         "footerTitleGen": MessageLookupByLibrary.simpleMessage("Generate"),
+        "forgotPasswordOrCheckAccount": MessageLookupByLibrary.simpleMessage(
+            "Forgot your password or unsure if you have a Kee Vault account?"),
         "freeUserTermsPopup1": MessageLookupByLibrary.simpleMessage(
             "By using this app for free without an associated Kee Vault account, you are bound by the same terms and privacy policy as a user with an Account."),
         "freeUserTermsPopup2": MessageLookupByLibrary.simpleMessage(
@@ -412,6 +421,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sign up to receive emails"),
         "prcRegistrationSuccess": MessageLookupByLibrary.simpleMessage(
             "Success! Please check your emails soon to confirm that you want to receive updates from us."),
+        "prcSignupOrAccountStatusCheck": m8,
         "preset": MessageLookupByLibrary.simpleMessage("Preset"),
         "privacyStatement":
             MessageLookupByLibrary.simpleMessage("Privacy Statement"),
@@ -437,6 +447,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Require full password every (days)"),
         "resetEntryToThis":
             MessageLookupByLibrary.simpleMessage("Reset entry to this state"),
+        "resetPasswordInstructions": MessageLookupByLibrary.simpleMessage(
+            "You can reset your password using the Kee Vault \"Web App\" (version 1)."),
         "restartSubscription":
             MessageLookupByLibrary.simpleMessage("Restart subscription"),
         "restore": MessageLookupByLibrary.simpleMessage("Restore"),
@@ -482,7 +494,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Showing all entries"),
         "signin": MessageLookupByLibrary.simpleMessage("Sign in"),
         "signout": MessageLookupByLibrary.simpleMessage("Sign out"),
-        "sizeBytes": m8,
+        "sizeBytes": m9,
         "sortCreated": MessageLookupByLibrary.simpleMessage("Newest"),
         "sortCreatedReversed": MessageLookupByLibrary.simpleMessage("Oldest"),
         "sortModified":
@@ -492,6 +504,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sortTitle": MessageLookupByLibrary.simpleMessage("Title"),
         "sortTitleReversed":
             MessageLookupByLibrary.simpleMessage("Title - reversed"),
+        "startAccountReset":
+            MessageLookupByLibrary.simpleMessage("Start account reset"),
         "startFreeTrial":
             MessageLookupByLibrary.simpleMessage("Start free trial"),
         "startNewTrialError": MessageLookupByLibrary.simpleMessage(
@@ -514,7 +528,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("This field is required"),
         "title": MessageLookupByLibrary.simpleMessage("title"),
         "tryAgain": MessageLookupByLibrary.simpleMessage("Try again"),
-        "unexpected_error": m9,
+        "unexpected_error": m10,
         "unlock": MessageLookupByLibrary.simpleMessage("Unlock"),
         "unlockRequired":
             MessageLookupByLibrary.simpleMessage("Unlock your Vault"),
@@ -562,7 +576,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "website": MessageLookupByLibrary.simpleMessage("Website"),
         "welcomeToKeeVault":
             MessageLookupByLibrary.simpleMessage("Welcome to Kee Vault"),
-        "welcome_message": m10,
+        "welcome_message": m11,
         "willTrySamePasswordFirst": MessageLookupByLibrary.simpleMessage(
             "We\'ll try using the same password you have used to open your current Kee Vault. If that doesn\'t work, you can type in the correct password in a moment."),
         "yourPasswordEntries":

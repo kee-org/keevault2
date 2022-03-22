@@ -85,6 +85,7 @@ class InAppMessengerWidget extends InheritedWidget {
           onPressed: () async {
             final completed = await PRCSignupPromptDialog().show(context);
             if (completed ?? false) {
+              await BlocProvider.of<AppSettingsCubit>(context).iamEmailSignupSuppressUntil(DateTime(2122));
               ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
             }
           },
