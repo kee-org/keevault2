@@ -320,5 +320,6 @@
   "bannerMsgAutofillDisabled": "For easier sign-in to your apps and websites, you need to change your device's Autofill provider to Kee Vault.",
   "everyoneElseCanUseForFree": "Everyone else is welcome to use the app for free without an account.",
   "existingUsersSignInBelow": "If you already have a Kee Vault account on the https://keevault.pm \"Web App\" you can sign-in below.",
-  "welcomeToKeeVault": "Welcome to Kee Vault"
+  "welcomeToKeeVault": "Welcome to Kee Vault",
+  "vaultTooLarge": "Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again."
 }

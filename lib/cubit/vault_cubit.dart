@@ -19,6 +19,7 @@ import '../user_repository.dart';
 import '../vault_file.dart';
 import '../logging/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:keevault/generated/l10n.dart';
 
 part 'vault_state.dart';
 
@@ -859,7 +860,7 @@ class VaultCubit extends Cubit<VaultState> {
         remoteEtag = await _remoteVaultRepo.latestEtag(user);
       } on KeeLoginRequiredException {
         l.w('Unable to determine latest remote file etag due to authentication error. User recently changed password elsewhere?');
-        handleUploadAuthError(vault, state is VaultSaving ? (state as VaultSaving).locally : false);
+        handleUploadAuthError(updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false);
         return;
       } on KeeServiceTransportException catch (e) {
         final message = e.handle('Error establishing current remote file version');
@@ -882,7 +883,8 @@ class VaultCubit extends Cubit<VaultState> {
       if (remoteEtag != lastRemoteEtag) {
         // files.current and files.remoteMergeTarget start the same when this function begins but user may modify current at any time (e.g. if we wait for remote HEAD for a long time).
 
-        emit(VaultReconcilingUpload(vault, state is VaultSaving ? (state as VaultSaving).locally : false, true));
+        emit(VaultReconcilingUpload(
+            updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false, true));
         RemoteVaultFile latestRemoteFile;
         LockedVaultFile? latestLockedRemoteFile;
         try {
@@ -890,7 +892,7 @@ class VaultCubit extends Cubit<VaultState> {
         } on KeeLoginRequiredException {
           // This should be rare because we've recently retrieved or checked our download auth token but can happen sometimes, maybe on very slow networks when the user is changing their master password elsewhere concurrently.
           l.w('Unable to download latest remote file for local merging due to authentication error. User recently changed password elsewhere?');
-          handleUploadAuthError(vault, state is VaultSaving ? (state as VaultSaving).locally : false);
+          handleUploadAuthError(updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false);
           return;
         } on KeeServiceTransportException catch (e) {
           final message = e.handle('Error while downloading more recent changes from remote');
@@ -943,7 +945,7 @@ class VaultCubit extends Cubit<VaultState> {
           return;
         }
         try {
-          final updatedVaultFile = await _updateLocalVaultFile(user, vault, latestRemoteFile);
+          final updatedVaultFile = await _updateLocalVaultFile(user, updatedLocalFile, latestRemoteFile);
           if (updatedVaultFile == null) {
             throw Exception('Unexpected error while updating local vault file.');
           }
@@ -966,16 +968,40 @@ class VaultCubit extends Cubit<VaultState> {
       } else {
         l.d('no merge with remote contents required');
       }
+
+      // The server will enforce a maximum length but we don't want to waste bandwidth by sending
+      // a file we know is too large. User could resolve in this app instance or on a
+      // remote instance because the next upload attempt would find that a new smaller file
+      // has been stored remotely. Of course, the merge operation from remote is broadly
+      // conservative so they may not free up as much space as expected but it will
+      // work in some situations.
+      if (updatedLocalFile.files.remoteMergeTargetLocked.kdbxBytes.length > 10000000) {
+        final message = S.current.vaultTooLarge;
+        l.w('Maximum vault size of 10MB has been exceeded. $message');
+        emitError(message, toast: true);
+        return;
+      }
+
       try {
         final uploadedLockedFile = await _remoteVaultRepo.upload(user, updatedLocalFile.files.remoteMergeTargetLocked);
         await prefs.setString('user.${user.email}.lastRemoteEtag', uploadedLockedFile.etag!);
         await prefs.setString('user.${user.email}.lastRemoteVersionId', uploadedLockedFile.versionId!);
+
+        // A pending upload doesn't stop us from beginning a new upload attempt so it's OK that
+        // we remain in that state until the process has completed successfully.
         await prefs.setBool('user.${user.email}.uploadPending', false);
         safeEmitLoaded(updatedLocalFile);
+
+        // Perhaps could do this after a redownload/merge too, to cover the case where
+        // that all works but the download fails and the user had made some remote changes
+        // to synced app settings. Could be a little risky to change config during the
+        // upload process though, if not now then when some future synced settings are
+        // added to the system. Since things appear to work well at the moment, we
+        // will defer this until a definitive real world benefit is confirmed.
         await SyncedAppSettings.import(
             _generatorProfilesCubit, updatedLocalFile.files.current.body.meta.keeVaultSettings);
       } on KeeLoginRequiredException {
-        handleUploadAuthError(vault, state is VaultSaving ? (state as VaultSaving).locally : false);
+        handleUploadAuthError(updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false);
         return;
       } on KeeMissingPrimaryDBException {
         emitKeeMissingPrimaryDBExceptionError();
