@@ -3269,6 +3269,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again.`
+  String get vaultTooLarge {
+    return Intl.message(
+      'Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again.',
+      name: 'vaultTooLarge',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
