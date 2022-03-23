@@ -2700,10 +2700,10 @@ class S {
     );
   }
 
-  /// `passwords don't match, please type it again`
+  /// `Passwords don't match, please type them again`
   String get setFilePassNotMatch {
     return Intl.message(
-      'passwords don\'t match, please type it again',
+      'Passwords don\'t match, please type them again',
       name: 'setFilePassNotMatch',
       desc: '',
       args: [],
@@ -3335,6 +3335,66 @@ class S {
     return Intl.message(
       'The "Big Tech" companies prohibit us from directly linking to the account registration page on our website.',
       name: 'bigTechAntiCompetitionStatement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Password`
+  String get changePassword {
+    return Intl.message(
+      'Change Password',
+      name: 'changePassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change the password you use to sign in to Kee Vault`
+  String get changePasswordDetail {
+    return Intl.message(
+      'Change the password you use to sign in to Kee Vault',
+      name: 'changePasswordDetail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `First, enter your current password.`
+  String get enterOldPassword {
+    return Intl.message(
+      'First, enter your current password.',
+      name: 'enterOldPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current Password`
+  String get currentPassword {
+    return Intl.message(
+      'Current Password',
+      name: 'currentPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current password is not correct`
+  String get currentPasswordNotCorrect {
+    return Intl.message(
+      'Current password is not correct',
+      name: 'currentPasswordNotCorrect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password changed. Use it when you next unlock Kee Vault.`
+  String get passwordChanged {
+    return Intl.message(
+      'Password changed. Use it when you next unlock Kee Vault.',
+      name: 'passwordChanged',
       desc: '',
       args: [],
     );

@@ -11,6 +11,7 @@ class Routes {
   static String importExport = '/import_export';
   static String settings = '/settings';
   static String help = '/help';
+  static String changePassword = '/change_password';
 
   static void configureRoutes(FluroRouter router) {
     router.notFoundHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
@@ -24,5 +25,6 @@ class Routes {
     router.define(settings, handler: settingsHandler);
     router.define(passwordPresetManager, handler: passwordPresetManagerHandler);
     router.define(help, handler: helpHandler);
+    router.define(changePassword, handler: changePasswordHandler);
   }
 }

@@ -264,7 +264,7 @@
   "setGenThemeDk": "Dark",
   "setGenTitlebarStyleDefault": "Default",
   "setGenShowSubgroups": "Show entries from all subgroups",
-  "setFilePassNotMatch": "passwords don't match, please type it again",
+  "setFilePassNotMatch": "Passwords don't match, please type them again",
   "signin": "Sign in",
   "signout": "Sign out",
   "createVault": "Create my Vault",
@@ -327,5 +327,11 @@
   "startAccountReset": "Start account reset",
   "prcSignupOrAccountStatusCheck": "You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with {email}",
   "agreeAndCheckAccountStatus": "Agree and check account status",
-  "bigTechAntiCompetitionStatement": "The \"Big Tech\" companies prohibit us from directly linking to the account registration page on our website."
+  "bigTechAntiCompetitionStatement": "The \"Big Tech\" companies prohibit us from directly linking to the account registration page on our website.",
+  "changePassword": "Change Password",
+  "changePasswordDetail": "Change the password you use to sign in to Kee Vault",
+  "enterOldPassword": "First, enter your current password.",
+  "currentPassword": "Current Password",
+  "currentPasswordNotCorrect": "Current password is not correct",
+  "passwordChanged": "Password changed. Use it when you next unlock Kee Vault."
 }

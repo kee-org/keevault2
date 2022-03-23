@@ -1168,4 +1168,21 @@ class VaultCubit extends Cubit<VaultState> {
     }
     return localFileExists && !importAlreadyPerformed;
   }
+
+  Future<void> changeFreeUserPassword(String password) async {
+    VaultState s = state;
+    if (s is VaultSaving) {
+      const message = 'Can\'t change password while vault is being saved. Try again later.';
+      l.e(message);
+      throw Exception(message);
+    }
+    if (s is VaultLoaded) {
+      l.d('changing KDBX password');
+      final protectedValue = ProtectedValue.fromString(password);
+      final creds = Credentials(protectedValue);
+      s.vault.files.current.changeCredentials(creds);
+      await save(null);
+      l.d('KDBX password changed');
+    }
+  }
 }

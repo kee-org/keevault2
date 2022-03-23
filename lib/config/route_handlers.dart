@@ -6,6 +6,7 @@ import 'package:keevault/widgets/password_generator.dart';
 import 'package:keevault/widgets/password_preset_manager.dart';
 import 'package:keevault/widgets/settings.dart';
 import 'package:keevault/widgets/vault.dart';
+import '../widgets/change_password.dart';
 import '../widgets/root.dart';
 
 var rootHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
@@ -34,4 +35,8 @@ var passwordPresetManagerHandler = Handler(handlerFunc: (BuildContext? context, 
 
 var helpHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
   return const HelpWidget();
+});
+
+var changePasswordHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+  return const ChangePasswordWidget();
 });

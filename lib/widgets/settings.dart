@@ -31,11 +31,11 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     final str = S.of(context);
 
     return BlocBuilder<AccountCubit, AccountState>(builder: (context, accountState) {
-      final accountChildren = [];
+      final accessChildren = [];
       if (accountState is AccountChosen) {
         final userEmail = accountState.user.email;
         if (userEmail != null) {
-          accountChildren.add(SettingsContainer(
+          accessChildren.add(SettingsContainer(
             children: [
               Column(children: [
                 Padding(
@@ -58,7 +58,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             ],
           ));
 
-          accountChildren.add(SettingsContainer(
+          accessChildren.add(SettingsContainer(
             children: [
               Column(children: [
                 Padding(
@@ -83,6 +83,18 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             ],
           ));
         }
+      } else {
+        accessChildren.add(
+          SimpleSettingsTile(
+            title: str.changePassword,
+            subtitle: str.changePasswordDetail,
+            onTap: () => AppConfig.router.navigateTo(
+              context,
+              Routes.changePassword,
+              transition: TransitionType.inFromRight,
+            ),
+          ),
+        );
       }
       return BlocBuilder<AutofillCubit, AutofillState>(builder: (context, autofillState) {
         return SettingsScreen(
@@ -140,7 +152,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 //   title: str.rememberFilterGroup,
                 //   defaultValue: false,
                 // ),
-                ...accountChildren,
+                ...accessChildren,
               ],
               title: str.menuSetGeneral,
             ),

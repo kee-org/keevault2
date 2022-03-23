@@ -116,6 +116,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "biometricsStoreDescription": MessageLookupByLibrary.simpleMessage(
             "Access your passwords faster by protecting your password with biometrics"),
         "cancelExportOrImport": m1,
+        "changePassword":
+            MessageLookupByLibrary.simpleMessage("Change Password"),
+        "changePasswordDetail": MessageLookupByLibrary.simpleMessage(
+            "Change the password you use to sign in to Kee Vault"),
         "chooseAPassword":
             MessageLookupByLibrary.simpleMessage("Please choose a password"),
         "chooseAnIcon": MessageLookupByLibrary.simpleMessage("Choose an icon"),
@@ -139,6 +143,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Create secure password"),
         "createVault": MessageLookupByLibrary.simpleMessage("Create my Vault"),
         "creating": MessageLookupByLibrary.simpleMessage("Creating"),
+        "currentPassword":
+            MessageLookupByLibrary.simpleMessage("Current Password"),
+        "currentPasswordNotCorrect": MessageLookupByLibrary.simpleMessage(
+            "Current password is not correct"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "deleteAttachment":
             MessageLookupByLibrary.simpleMessage("Delete attachment"),
@@ -183,6 +191,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "enterNewPresetName": MessageLookupByLibrary.simpleMessage(
             "Enter the new name for the preset"),
         "enterNumberBetweenXAndY": m4,
+        "enterOldPassword": MessageLookupByLibrary.simpleMessage(
+            "First, enter your current password."),
         "enter_your_account_password":
             MessageLookupByLibrary.simpleMessage("Enter your account password"),
         "enter_your_email_address":
@@ -399,6 +409,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "otpManualTitle": MessageLookupByLibrary.simpleMessage(
             "Time-based One Time Password"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "passwordChanged": MessageLookupByLibrary.simpleMessage(
+            "Password changed. Use it when you next unlock Kee Vault."),
         "permanentlyDeleteGroupConfirm": MessageLookupByLibrary.simpleMessage(
             "Permanently delete the group and all entries within it?"),
         "permissionDeniedError": m6,
@@ -475,7 +487,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Sign in failed because the response we received from the server indicates that it may be compromised. The most likely explanation is that someone near you or at your internet service provider is attempting to interfere with the secure connection and connect you to a malicious server (A Miscreant In The Middle attack). Find a different internet connection immediately, shut down the Kee Vault app and try again. If it keeps happening, your local device may be compromised. The security of your Kee Vault remains intact so you need not panic. More information about the error is available at https://forum.kee.pm/"),
         "setDefault": MessageLookupByLibrary.simpleMessage("Set as default"),
         "setFilePassNotMatch": MessageLookupByLibrary.simpleMessage(
-            "passwords don\'t match, please type it again"),
+            "Passwords don\'t match, please type them again"),
         "setGenShowSubgroups": MessageLookupByLibrary.simpleMessage(
             "Show entries from all subgroups"),
         "setGenTheme": MessageLookupByLibrary.simpleMessage("Theme"),
