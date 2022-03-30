@@ -55,6 +55,29 @@ class _HelpWidgetState extends State<HelpWidget> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                  child: Text(
+                    'Documentation',
+                    style: theme.textTheme.headline6,
+                  ),
+                ),
+                Text(
+                    "We have carefully designed Kee Vault so that the fastest way for you to work out how to use it should be discoverable directly within the app itself so don't be afraid to try ideas out yourself - you're probably right! For some of the more complex aspects of the app or Kee Vault service, we maintain a set of documents on our community forum."),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: OutlinedButton(
+                      onPressed: () => {DialogUtils.openUrl('https://forum.kee.pm/tags/c/kee-vault/9/documentation')},
+                      child: Text(str.viewDocumentation)),
+                ),
+                Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                  child: Text(
+                    'Feedback and other support',
+                    style: theme.textTheme.headline6,
+                  ),
+                ),
                 Text(
                     "Something not quite right? Don't worry, our community forum will help you and you can start your own topic if you can't find what you need already."),
                 Padding(

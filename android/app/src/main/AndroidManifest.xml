@@ -54,6 +54,12 @@
             android:value="com.keevault.keevault.AutofillActivity" />
         <meta-data android:name="com.keevault.flutter_autofill_service.SAVE_ACTIVITY_NAME"
             android:value="com.keevault.keevault.MainActivity" />
+        <meta-data
+            android:name="com.keevault.flutter_autofill_service.service_short_name"
+            android:value="Kee Vault" />
+        <meta-data
+            android:name="com.keevault.flutter_autofill_service.match_header_drawable_name"
+            android:value="ic_v_light_key_24dp" />
 
         <service
             android:name="com.keevault.flutter_autofill_service.FlutterAutofillService"
@@ -63,6 +69,9 @@
             <meta-data
                 android:name="com.keevault.flutter_autofill_service.unlock_label"
                 android:value="Autofill with Kee Vault" />
+            <meta-data
+                android:name="com.keevault.flutter_autofill_service.unlock_drawable_name"
+                android:value="ic_v_light_key_24dp" />
         </service>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>

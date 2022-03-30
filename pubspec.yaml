@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.3+21
+version: 1.0.4+22
 
 environment:
   sdk: '>=2.16.0 <3.0.0'
@@ -53,7 +53,7 @@ dependencies:
   bloc: ^8.0.3
   flutter_bloc: ^8.0.1
   fluro: ^2.0.3
-  dio: ^4.0.4
+  dio: 4.0.4 # locked on 20220329 due to large changes in patch release a few minutes before we finalised first potential app release version
   crypto_keys: ^0.3.0
   pointycastle: ^3.5.1
   srp:
@@ -62,7 +62,7 @@ dependencies:
       ref: master
   animate_icons: ^2.0.0
   animations: ^2.0.2
-  font_awesome_flutter: ^9.2.0
+  font_awesome_flutter: ^10.1.0
   public_suffix: ^3.0.0
   url_launcher: ^6.0.20
   otp: ^3.0.2
@@ -96,7 +96,7 @@ dependencies:
   flutter_rating_bar: ^4.0.0
   mime: ^1.0.1
   open_file: ^3.2.1
-  share_plus: ^3.1.0
+  share_plus: ^4.0.3
   path: ^1.8.0
   permission_handler: ^9.2.0
   flutter_file_dialog: ^2.3.0
@@ -107,7 +107,7 @@ dependencies:
     git:
       url: https://github.com/kee-org/receive_intent
       ref: master
-  flutter_native_splash: ^2.0.5
+  flutter_native_splash: ^2.1.2+1
   platform: ^3.1.0
   email_validator: ^2.0.1
 
@@ -118,8 +118,9 @@ dev_dependencies:
   flutter_lints: ^1.0.4
 
 dependency_overrides:
-  # kdbx:
-  #   path: ../kdbx.dart/
+  collection: 1.15.0 # xml dependency is incorrectly declared incompatible with stable version of flutter sdk
+  # flutter_autofill_service:
+  #   path: ../flutter_autofill_service/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

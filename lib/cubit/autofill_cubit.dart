@@ -173,7 +173,7 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   List<KdbxEntry> _findMatchesByPackageName(AutofillMetadata androidMetadata, KdbxFile current) {
     final matches = <KdbxEntry>[];
-    matches.addAll(current.body.rootGroup.getAllEntries().values.where((entry) =>
+    matches.addAll(current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) =>
         !entry.browserSettings.hide &&
         entry.androidPackageNames.any((pn) => androidMetadata.packageNames.contains(pn))));
     return matches;
@@ -203,7 +203,7 @@ class AutofillCubit extends Cubit<AutofillState> {
     final matchAccuracyDomainOverride = MatchAccuracy.values.singleWhereOrNull(
         (val) => val.name == current.body.meta.browserSettings.matchedURLAccuracyOverrides[registrableDomain]);
 
-    matches.addAll(current.body.rootGroup.getAllEntries().values.where((entry) {
+    matches.addAll(current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) {
       if (entry.browserSettings.hide) {
         return false;
       }
