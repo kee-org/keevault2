@@ -3399,6 +3399,16 @@ class S {
       args: [],
     );
   }
+
+  /// `View documentation`
+  String get viewDocumentation {
+    return Intl.message(
+      'View documentation',
+      name: 'viewDocumentation',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -333,5 +333,6 @@
   "enterOldPassword": "First, enter your current password.",
   "currentPassword": "Current Password",
   "currentPasswordNotCorrect": "Current password is not correct",
-  "passwordChanged": "Password changed. Use it when you next unlock Kee Vault."
+  "passwordChanged": "Password changed. Use it when you next unlock Kee Vault.",
+  "viewDocumentation": "View documentation"
 }

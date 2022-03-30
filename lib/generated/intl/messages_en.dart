@@ -583,6 +583,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Uploading"),
         "vaultTooLarge": MessageLookupByLibrary.simpleMessage(
             "Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again."),
+        "viewDocumentation":
+            MessageLookupByLibrary.simpleMessage("View documentation"),
         "visitTheForum":
             MessageLookupByLibrary.simpleMessage("Visit the forum"),
         "website": MessageLookupByLibrary.simpleMessage("Website"),
