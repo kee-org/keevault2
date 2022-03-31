@@ -6,7 +6,9 @@ import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/widgets/in_app_messenger.dart';
+import '../cubit/account_cubit.dart';
 import '../cubit/interaction_cubit.dart';
+import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
 
 import 'entry.dart';
@@ -58,6 +60,8 @@ class NewEntryButton extends StatelessWidget {
                 filterCubit.reFilter(currentFile.tags, currentFile.body.rootGroup);
               } else {
                 entryCubit.endCreating(null);
+                final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                vaultCubit.applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
                 await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryUnchanged);
               }
             },

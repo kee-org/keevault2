@@ -10,6 +10,7 @@ import 'package:keevault/widgets/entry.dart';
 import 'package:keevault/widgets/in_app_messenger.dart';
 import '../config/app.dart';
 import '../config/routes.dart';
+import '../cubit/account_cubit.dart';
 import '../cubit/interaction_cubit.dart';
 import '../cubit/vault_cubit.dart';
 import 'package:animations/animations.dart';
@@ -279,6 +280,7 @@ class EntryListItemWidget extends StatelessWidget {
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?
                       } else {
                         entryCubit.endEditing(null);
+                        vaultCubit.applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
                         await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryUnchanged);
                       }
                     },

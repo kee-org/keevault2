@@ -648,6 +648,28 @@ class VaultCubit extends Cubit<VaultState> {
     }
   }
 
+  Future<void> applyPendingChangesIfSafe(User? user) async {
+    if (currentVaultFile != null &&
+        currentVaultFile!.files.hasPendingChanges &&
+        !currentVaultFile!.files.current.isDirty) {
+      final newCurrent = await currentVaultFile!.files.pending;
+      if (newCurrent != null) {
+        emitVaultLoaded(
+            LocalVaultFile(
+              currentVaultFile!.files.copyWithAppliedPendingUpdate(newCurrent),
+              currentVaultFile!.lastOpenedAt,
+              currentVaultFile!.persistedAt,
+              currentVaultFile!.uuid,
+              currentVaultFile!.etag,
+              currentVaultFile!.versionId,
+            ),
+            user,
+            immediateRemoteRefresh: false,
+            safe: true);
+      }
+    }
+  }
+
   Future<void> create(String password) async {
     try {
       l.d('creating new local vault');

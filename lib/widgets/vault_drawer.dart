@@ -88,7 +88,7 @@ class VaultDrawerWidget extends StatelessWidget {
       return Icon(Icons.sync_problem);
     } else if (state is VaultLoaded) {
       if (state.vault.hasPendingChanges) {
-        Icon(Icons.sync_alt);
+        return Icon(Icons.sync_lock);
       }
       return Icon(Icons.check_circle);
     }

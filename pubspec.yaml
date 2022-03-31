@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.4+22
+version: 1.0.5+23
 
 environment:
   sdk: '>=2.16.0 <3.0.0'
@@ -119,8 +119,8 @@ dev_dependencies:
 
 dependency_overrides:
   collection: 1.15.0 # xml dependency is incorrectly declared incompatible with stable version of flutter sdk
-  # flutter_autofill_service:
-  #   path: ../flutter_autofill_service/
+  # kdbx:
+  #   path: ../kdbx.dart/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -54,9 +54,9 @@ class VaultFileVersions {
     );
   }
 
-  VaultFileVersions copyWithAppliedPendingUpdate(KdbxFile current) {
+  VaultFileVersions copyWithAppliedPendingUpdate(KdbxFile newCurrent) {
     return VaultFileVersions(
-      current: current,
+      current: newCurrent,
       pending: null,
       pendingLocked: null,
       remoteMergeTarget: _remoteMergeTarget,
