@@ -210,10 +210,11 @@ class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBin
       content: Container(
         constraints: const BoxConstraints(minWidth: 400.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Visibility(
               visible: widget.bodyText?.isNotEmpty ?? false,
-              child: Expanded(
+              child: Flexible(
                 child: Text(
                   widget.bodyText ?? '',
                   style: theme.textTheme.bodyText2,
