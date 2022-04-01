@@ -179,7 +179,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                                 strokeWidth: 3,
                               ),
                             )
-                          : Text(str.createVault),
+                          : Text(str.changePassword),
                     ),
                   ),
                 ]),
