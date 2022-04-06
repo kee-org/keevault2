@@ -52,17 +52,18 @@ class NewEntryButton extends StatelessWidget {
             },
             onClosed: (bool? keepChanges) async {
               final entryCubit = BlocProvider.of<EntryCubit>(context);
+              final iam = InAppMessengerWidget.of(context);
               if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                 entryCubit.endCreating(currentFile);
-                await BlocProvider.of<InteractionCubit>(context).entrySaved();
-                await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryChanged);
                 final filterCubit = BlocProvider.of<FilterCubit>(context);
+                await BlocProvider.of<InteractionCubit>(context).entrySaved();
+                await iam.showIfAppropriate(InAppMessageTrigger.entryChanged);
                 filterCubit.reFilter(currentFile.tags, currentFile.body.rootGroup);
               } else {
                 entryCubit.endCreating(null);
                 final vaultCubit = BlocProvider.of<VaultCubit>(context);
                 vaultCubit.applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
-                await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryUnchanged);
+                await iam.showIfAppropriate(InAppMessageTrigger.entryUnchanged);
               }
             },
             closedBuilder: (context, open) {

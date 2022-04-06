@@ -43,6 +43,9 @@ class BottomDrawerWidget extends StatelessWidget {
                   if (state is VaultLoaded && !autofillSimpleUIMode(autoFillState)) Divider(),
                   AccountDrawerWidget(emailAddress: emailAddress, user: user, str: str),
                   Divider(),
+                  // Maybe small chance of context being lost in between navigator pop and next navigation request?
+                  // Hasn't happened yet and may not be possible but if mysterious WTF errors are thrown on navigation
+                  // on some devices, could look there as a starting point.
                   if (state is VaultLoaded && !autofillSimpleUIMode(autoFillState))
                     ListTile(
                       leading: Icon(Icons.flash_on),
@@ -320,11 +323,12 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
       child: OutlinedButton(
           onPressed: () async {
             if (!widget.visible) return;
-            await BlocProvider.of<InteractionCubit>(context).databaseSaved();
-            await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.vaultSaved);
-            final cubit = BlocProvider.of<VaultCubit>(context);
+            final iam = InAppMessengerWidget.of(context);
+            final vaultCubit = BlocProvider.of<VaultCubit>(context);
             final accCubit = BlocProvider.of<AccountCubit>(context);
-            cubit.save(accCubit.currentUserIfKnown);
+            await BlocProvider.of<InteractionCubit>(context).databaseSaved();
+            await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
+            vaultCubit.save(accCubit.currentUserIfKnown);
           },
           child: Text(widget.title)),
     );

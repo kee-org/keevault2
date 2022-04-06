@@ -64,8 +64,11 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
 
   onEndEditing(bool keepChanges, VaultCubit vaultCubit, List<String> tags) async {
     final entryCubit = BlocProvider.of<EntryCubit>(context);
+    final autofillCubit = BlocProvider.of<AutofillCubit>(context);
     if (keepChanges && (entryCubit.state as EntryLoaded).entry.isDirty) {
       entryCubit.endEditing(newEntry);
+
+      final filterCubit = BlocProvider.of<FilterCubit>(context);
 
       // We skip remote upload for now because it could take a long time
       // and interrupt the user's priority task for too long.
@@ -77,7 +80,6 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
       // User may return to this Kee Vault instance in future and will
       // want the filter options to reflect any changes made while
       // adding this new entry
-      final filterCubit = BlocProvider.of<FilterCubit>(context);
       filterCubit.reFilter(tags, vaultCubit.currentVaultFile!.files.current.body.rootGroup);
     } else {
       entryCubit.endEditing(null);
@@ -92,7 +94,6 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
       );
     }
 
-    final autofillCubit = BlocProvider.of<AutofillCubit>(context);
     autofillCubit.finishSaving();
   }
 

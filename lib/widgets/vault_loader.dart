@@ -149,7 +149,8 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
         BlocProvider.of<FilterCubit>(context)
             .start(state.vault.files.current.body.rootGroup.uuid.uuid, Settings.getValue<bool>('expandGroups', true));
         await BlocProvider.of<InteractionCubit>(context).databaseOpened();
-        AppConfig.router.navigateTo(context, Routes.vault, replace: true);
+        // context my have become detached from widget tree by this point
+        AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.vault, replace: true);
       }
     });
   }
