@@ -223,8 +223,9 @@ class _EntryMoveTreeListWidgetState extends _MoveTreeListWidgetState {
             supportParentDoubleTap: false,
             onNodeTap: (key) {
               Node<String>? selectedNode = _treeViewController.getNode(key);
+              final nav = Navigator.of(context);
               BlocProvider.of<EntryCubit>(context).updateGroupByUUID(uuid: selectedNode!.data!);
-              Navigator.of(context).pop(true);
+              nav.pop(true);
             },
             onExpansionChanged: (String key, bool expanded) {
               Node<String>? node = _treeViewController.getNode(key);

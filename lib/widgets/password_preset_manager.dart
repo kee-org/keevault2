@@ -202,6 +202,10 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                         OutlinedButton(
                             child: Text(str.alertCancel.toUpperCase()),
                             onPressed: () {
+                              // Potential loss of context here but I think because the generator profiles cubit emit
+                              // is the last thing to happen in the discardNewProfile task Flutter won't have had a
+                              // chance to draw a new frame and detach this defunct widget from the context. If WTFs
+                              // happen around here though, this is a strong candidate for the cause of the problem.
                               final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
                               cubit.discardNewProfile();
                               Navigator.of(context).pop(true);
@@ -209,6 +213,7 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                         OutlinedButton(
                             child: Text(str.add.toUpperCase()),
                             onPressed: () async {
+                              // Potential loss of context here as per above comment
                               final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
                               cubit.addNewProfile();
                               Navigator.of(context).pop(true);

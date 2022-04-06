@@ -63,10 +63,12 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> {
       final result = await mailerService.signup(_controller.text.toLowerCase());
       if (result) {
         l.d('signup successful');
+        final sm = ScaffoldMessenger.of(context);
+        final appSettingsCubit = BlocProvider.of<AppSettingsCubit>(context);
         Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
+        sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
         MatomoTracker.trackEvent('prcSignup', 'home');
-        await BlocProvider.of<AppSettingsCubit>(context).iamEmailSignupSuppressUntil(DateTime(2122));
+        await appSettingsCubit.iamEmailSignupSuppressUntil(DateTime(2122));
       } else {
         l.e('signup failed');
         setState(() {

@@ -271,17 +271,18 @@ class EntryListItemWidget extends StatelessWidget {
                     },
                     onClosed: (bool? keepChanges) async {
                       final entryCubit = BlocProvider.of<EntryCubit>(context);
+                      final iam = InAppMessengerWidget.of(context);
                       if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                         entryCubit.endEditing(entry);
-                        await BlocProvider.of<InteractionCubit>(context).entrySaved();
-                        await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryChanged);
                         final filterCubit = BlocProvider.of<FilterCubit>(context);
+                        await BlocProvider.of<InteractionCubit>(context).entrySaved();
+                        await iam.showIfAppropriate(InAppMessageTrigger.entryChanged);
                         filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?
                       } else {
                         entryCubit.endEditing(null);
                         vaultCubit.applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
-                        await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.entryUnchanged);
+                        await iam.showIfAppropriate(InAppMessageTrigger.entryUnchanged);
                       }
                     },
                     closedBuilder: (context, open) {

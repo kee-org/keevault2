@@ -37,15 +37,19 @@ class KeeVaultApp extends TraceableStatefulWidget {
   const KeeVaultApp({Key? key, required this.navigatorKey}) : super(key: key);
   @override
   State createState() {
-    return KeeVaultAppState();
+    //TODO:f: Perhaps there is some other place we can assign the AppConfig state
+    // rather than in this widget state constructor? Appears to work just fine though.
+    // ignore: no_logic_in_create_state
+    return KeeVaultAppState(navigatorKey);
   }
 }
 
 class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
-  KeeVaultAppState() {
+  KeeVaultAppState(GlobalKey<NavigatorState> navigatorKey) {
     final router = FluroRouter();
     Routes.configureRoutes(router);
     AppConfig.router = router;
+    AppConfig.navigatorKey = navigatorKey;
     userService = UserService(EnvironmentConfig.stage.toStage(), null);
     storageService = StorageService(EnvironmentConfig.stage.toStage(), userService.refresh);
   }

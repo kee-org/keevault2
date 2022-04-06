@@ -40,10 +40,13 @@ class VaultDrawerWidget extends StatelessWidget {
             ElevatedButton(
               onPressed: isSaveEnabled
                   ? () async {
+                      final iam = InAppMessengerWidget.of(context);
+                      final accountCubit = BlocProvider.of<AccountCubit>(context);
+                      final vaultCubit = BlocProvider.of<VaultCubit>(context);
                       await BlocProvider.of<InteractionCubit>(context).databaseSaved();
-                      await InAppMessengerWidget.of(context).showIfAppropriate(InAppMessageTrigger.vaultSaved);
-                      User? user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-                      BlocProvider.of<VaultCubit>(context).save(user);
+                      await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
+                      User? user = accountCubit.currentUserIfKnown;
+                      vaultCubit.save(user);
                     }
                   : null,
               child: Text(str.save.toUpperCase()),
