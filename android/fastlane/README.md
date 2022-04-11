@@ -39,6 +39,14 @@ release to internal testers only
 
 Promote to limited set of testers
 
+### android beta
+
+```sh
+[bundle exec] fastlane android beta
+```
+
+Promote to all beta testers
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

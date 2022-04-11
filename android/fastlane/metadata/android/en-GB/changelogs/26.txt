@@ -1,0 +1,8 @@
+* Autofill: improvements to field match algorithms, including workaround for badly behaved search boxes like the Youtube app
+* Autofill: Icon and number of matches now shown (Android 9+)
+* Autofill: Icons now work on dark and light system themes
+* Autofill: Recycle bin contents are no longer included in results
+* Free users can now change their password
+* Various tips/messages to help new users
+* Fixed several bugs and improved performance of some parts of the app
+* Now uses Flutter v2.10

@@ -2,14 +2,15 @@
 
 **These instructions only work for luckyrat.**
 
-## Release to "internal" testing group
-
+## Before any of the below tasks
 
 (For new client machines) check that ~/keystore-kv-play.jks exists
 cd android
 Set env variables by executing the code in the "Setup Env" field of these entries:
 1. "Google Play Console API"
 2. "Android kv-play keystore"
+
+## Release to "internal" testing group
 
 ```
 flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play
