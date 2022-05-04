@@ -64,7 +64,10 @@ class VaultImportedWidget extends StatelessWidget {
               ),
               TextSpan(
                 text: str.thisCommunityForumTopic,
-                style: theme.textTheme.bodyText2!.copyWith(color: theme.primaryColor),
+                style: theme.textTheme.bodyText2!.copyWith(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.w900,
+                ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     DialogUtils.openUrl('https://forum.kee.pm/t/kee-vault-2-imported-entries/3852');
@@ -91,7 +94,10 @@ class VaultImportedWidget extends StatelessWidget {
               ),
               TextSpan(
                 text: str.thisCommunityForumTopic,
-                style: theme.textTheme.bodyText2!.copyWith(color: theme.primaryColor),
+                style: theme.textTheme.bodyText2!.copyWith(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.w900,
+                ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     DialogUtils.openUrl('https://forum.kee.pm/t/kee-vault-2-imported-entries/3852');
