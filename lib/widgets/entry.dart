@@ -731,7 +731,10 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
           ),
           child: Text(
             '*anythIng*',
-            style: TextStyle(color: color.withOpacity(0)),
+            style: TextStyle(
+              color: color.withOpacity(0),
+              fontSize: 16,
+            ),
           ),
         ),
         Positioned.fill(
