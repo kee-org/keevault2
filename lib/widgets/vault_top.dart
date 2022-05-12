@@ -36,7 +36,6 @@ class _BackdropTitle extends StatelessWidget {
           style: const TextStyle(color: Colors.white, fontSize: 18.0),
           decoration: InputDecoration(
             suffixIcon: Icon(
-              //TODO:f: Replace with loading spinner if instant search takes longer than a fraction of a second
               Icons.search,
               semanticLabel: 'search',
               color: Colors.white,

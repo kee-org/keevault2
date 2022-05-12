@@ -171,8 +171,6 @@ class LocalVaultFile extends VaultFile {
 
   bool get hasPendingChanges => files.hasPendingChanges;
 
-  //TODO:f: Could defer the 2nd read operation when user is free only - would only
-  //be needed when they attach to a remote account
   static Future<LocalVaultFile> unlock(LockedVaultFile lockedKdbx, {bool importOnly = false}) async {
     KdbxFile current;
     KdbxFile? remoteMergeTarget;

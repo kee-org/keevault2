@@ -42,7 +42,7 @@ class AutofillCubit extends Cubit<AutofillState> {
         // latest that user has completed.
         //
         // A first simple attempt at a solution is below
-        //TODO:f: More reliable way to determine it's a new request (e.g. parcelable unique ID?)
+        // See https://github.com/kee-org/keevault2/issues/9 for next steps
         final newRequest = (state as AutofillModeActive).androidMetadata.toJson() != androidMetadata!.toJson();
         if (!newRequest) {
           return;

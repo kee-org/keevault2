@@ -125,7 +125,10 @@ class LocalVaultRepository {
       null,
       null,
     );
-    //TODO:f Check whether the output of create() can be used instead of unlocking again
+    // Potentially could use the output of create() above instead of unlocking again but
+    // this extra work does also act as a sanity check to fail early if something has
+    // gone wrong with the credentials or initial KDBX storage so the one-off performance
+    // gain is probably not worth even thinking about in any more detail.
     final loadedKdbx = await kdbxFormat().read(saved, credentials);
     return LocalVaultFile(
       VaultFileVersions(

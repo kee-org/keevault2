@@ -88,7 +88,6 @@ class RemoteService {
     }
   }
 
-  //TODO:f: Perhaps introduce a delay for all but the first retry? varying based on type of error received.
   Future<Response<T>> _doRequest<T>(Options config, String path,
       {String? token, TokenRefreshFunction? tokenRefresh, Object? obj}) async {
     var shouldGetNewTokenIfRequired = tokenRefresh != null;

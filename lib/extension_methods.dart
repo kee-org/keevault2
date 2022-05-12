@@ -103,7 +103,6 @@ extension DioHelperHandleException on DioError {
         throw KeeServerTimeoutException();
       }
       if (type == DioErrorType.other) {
-        //TODO:f: Maybe can be more specific? ... if (e.error is SocketException && e.error.osError is OSError && e.error.osError.errorCode == 7)
         throw KeeServerUnreachableException();
       }
       throw KeeUnexpectedException('[$context] DioError with no response', this, s);

@@ -115,7 +115,6 @@ class FilterCubit extends Cubit<FilterState> {
     final fa = state as FilterActive;
     final allCurrentGroups = rootGroup.getAllGroups();
     final rootGroupUuid = allCurrentGroups.containsKey(fa.rootGroupUuid) ? fa.rootGroupUuid : rootGroup.uuid.uuid;
-    //TODO:f: Could try to select parent group instead of root group?
     final groupUuid = allCurrentGroups.containsKey(fa.groupUuid) ? fa.groupUuid : rootGroup.uuid.uuid;
 
     emit(FilterActive(
