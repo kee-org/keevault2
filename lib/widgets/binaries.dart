@@ -218,7 +218,7 @@ class BinaryCardWidget extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed: () async {
-                    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
                       final attachmentSource = AttachmentSourceKdbx();
                       final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
                       final mimeType = lookupMimeType(
@@ -272,7 +272,7 @@ class BinaryCardWidget extends StatelessWidget {
                   itemBuilder: (context) => [
                     PopupMenuItem(
                       onTap: () async {
-                        WidgetsBinding.instance?.addPostFrameCallback((_) async {
+                        WidgetsBinding.instance.addPostFrameCallback((_) async {
                           final permissionResult = await tryToGetPermission(
                             context,
                             Permission.storage,
@@ -316,7 +316,7 @@ class BinaryCardWidget extends StatelessWidget {
                     if (!readOnly)
                       PopupMenuItem(
                         onTap: () async {
-                          WidgetsBinding.instance?.addPostFrameCallback((_) async {
+                          WidgetsBinding.instance.addPostFrameCallback((_) async {
                             final proceed = await DialogUtils.showConfirmDialog(
                                 context: context,
                                 params: ConfirmDialogParams(content: str.attachmentConfirmDelete(attachment.key.key)));

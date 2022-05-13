@@ -311,7 +311,7 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
     const double layerTitleHeight = 48.0;
-    final double bottomAppBarHeight = WidgetsBinding.instance!.window.viewInsets.bottom <= 0.0 ? 48.0 : 0;
+    final double bottomAppBarHeight = WidgetsBinding.instance.window.viewInsets.bottom <= 0.0 ? 48.0 : 0;
     final Size layerSize = constraints.biggest;
     final double layerTop = layerSize.height - layerTitleHeight - bottomAppBarHeight;
 

@@ -33,12 +33,12 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog> with Widg
     _controller = TextEditingController();
     loading = false;
     error = false;
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

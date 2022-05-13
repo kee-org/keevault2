@@ -29,7 +29,7 @@ Future<PermissionResult> tryToGetPermission(
               positiveButtonText: str.openSettings,
               negativeButtonText: negativeConsequence,
             ))) {
-          WidgetsBinding.instance?.addPostFrameCallback((_) async {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
             if (!await openAppSettings()) {
               await DialogUtils.showSimpleAlertDialog(
                 context,

@@ -61,14 +61,14 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) => Jiffy.locale('en_gb'));
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => Jiffy.locale('en_gb'));
+    WidgetsBinding.instance.addObserver(this);
     _initReceiveIntentSubscription();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _receiveIntentSubscription?.cancel();
     super.dispose();
   }
