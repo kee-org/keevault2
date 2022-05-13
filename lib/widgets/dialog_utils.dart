@@ -85,7 +85,7 @@ class DialogUtils {
   }
 
   static Future<bool> openUrl(String url) async {
-    return await launch(url, forceSafariVC: false, forceWebView: false);
+    return await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 
   static Future<bool> showConfirmDialog({
@@ -184,12 +184,12 @@ class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBin
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

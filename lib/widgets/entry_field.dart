@@ -414,7 +414,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
           _controller.text = widget.field.textValue;
           _controller.selection = TextSelection(baseOffset: 0, extentOffset: _controller.text.length);
           _isValueObscured = false;
-          WidgetsBinding.instance!.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             _focusNode.requestFocus();
             l.d('requesting focus.');
           });

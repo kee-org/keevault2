@@ -297,7 +297,7 @@ class EntryListItemWidget extends StatelessWidget {
                             ? IconButton(
                                 icon: Icon(Icons.open_in_new),
                                 onPressed: () async {
-                                  await launch(url, forceSafariVC: false, forceWebView: false);
+                                  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
                                 })
                             : null,
                         onTap: () {

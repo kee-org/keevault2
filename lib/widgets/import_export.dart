@@ -174,12 +174,12 @@ class ImportExportWidget extends TraceableStatelessWidget {
         }
       } on KdbxUnsupportedException catch (e) {
         l.e('Import failed: $e');
-        WidgetsBinding.instance?.addPostFrameCallback((_) async {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
           DialogUtils.showErrorDialog(context, str.importError, str.importErrorKdbx + e.hint);
         });
       } on Exception catch (e, st) {
         l.e('Import failed: $e ; $st');
-        WidgetsBinding.instance?.addPostFrameCallback((_) async {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
           DialogUtils.showErrorDialog(context, str.importError, str.importErrorDetails);
         });
       }

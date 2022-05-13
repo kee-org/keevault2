@@ -274,7 +274,7 @@ class VaultCubit extends Cubit<VaultState> {
     }
     await SyncedAppSettings.import(_generatorProfilesCubit, vault.files.current.body.meta.keeVaultSettings);
     if (user != null && !isAutofilling() && immediateRemoteRefresh) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         await refresh(user);
       });
     }

@@ -48,7 +48,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> {
       setState(() {
         validationError = true;
       });
-      WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         formKey.currentState?.validate();
       });
       return;
