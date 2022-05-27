@@ -6,7 +6,7 @@ on:
 
 jobs:
   setupAndTest:
-    name: Build and release Google play to internal channel
+    name: Build and release Google play to beta channel
 
     runs-on: ubuntu-latest
 
@@ -63,6 +63,19 @@ jobs:
           fileName: keystore-kv-play.pfx
           encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
 
+      - name: Build Android App APK for beta cloud service
+        run: flutter build apk --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
+
+      - uses: hkusu/s3-upload-action@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_APK_BETA }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_APK_BETA }}
+          aws-region: 'eu-west-2'
+          aws-bucket: ${{ secrets.AWS_BUCKET_APK_BETA }}
+          file-path: './build/app/outputs/flutter-apk/app-release.apk'
+          content-type: 'application/vnd.android.package-archive'
+          public: true
+
       - name: Build Android App Bundle
         env:
           KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
@@ -76,9 +89,10 @@ jobs:
           bundler: 2.2.26
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
-      - name: Release to Google Play (internal)
+      - name: Release to Google Play (beta)
         env:
           KEEVAULT_ANDROID_PLAY_API_KEY_JSON: ${{ secrets.KEEVAULT_ANDROID_PLAY_API_KEY_JSON }}
         run: |
           cd android
-          bundle exec fastlane internal
+          bundle exec fastlane beta
+

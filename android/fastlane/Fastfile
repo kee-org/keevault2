@@ -21,37 +21,22 @@ platform :android do
     gradle(task: "test")
   end
 
-  desc "release to internal testers only"
-  lane :internal do
+  desc "release to all beta testers"
+  lane :beta do
   upload_to_play_store(
     aab: "../build/app/outputs/bundle/release/app-release.aab",
-    track: "internal",
-    skip_upload_apk: true,
-    skip_upload_changelogs: true,
-    skip_upload_images: true,
-    skip_upload_screenshots: true,
-    skip_upload_metadata: true,
-    version_name: flutter_version()["version_code"] + " (" + flutter_version()["version_name"] + ")"
-  )
-  end
-
-  desc "Promote to limited set of testers"
-  lane :alpha do
-  upload_to_play_store(
-    track: "internal",
-    track_promote_to: "alpha",
-    skip_upload_aab: true,
+    track: "beta",
     skip_upload_apk: true,
     skip_upload_changelogs: false,
     skip_upload_images: false,
     skip_upload_screenshots: false,
     skip_upload_metadata: false,
-    version_code: flutter_version()["version_code"] 
+    version_name: flutter_version()["version_code"] + " (" + flutter_version()["version_name"] + ")"
   )
   end
 
   desc "Promote to all beta testers"
-  lane :beta do
+  lane :promote-to-beta do
   upload_to_play_store(
     track: "alpha",
     track_promote_to: "beta",
