@@ -1,0 +1,3 @@
+* Minor usability and appearance improvements
+* Removed an unused permission
+* Improved performance and reliability by upgrading our code to use the latest version of Flutter
