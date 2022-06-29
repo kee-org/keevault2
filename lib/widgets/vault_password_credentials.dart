@@ -22,7 +22,7 @@ class VaultPasswordCredentialsWidget extends StatefulWidget {
   final BiometricCallback? forceBiometric;
 
   @override
-  _VaultPasswordCredentialsWidgetState createState() => _VaultPasswordCredentialsWidgetState();
+  State<VaultPasswordCredentialsWidget> createState() => _VaultPasswordCredentialsWidgetState();
 }
 
 class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredentialsWidget> {

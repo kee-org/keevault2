@@ -164,7 +164,7 @@ class UserService {
             break;
         }
       } catch (e) {
-        l.w('Token error: ' + e.toString());
+        l.w('Token error: $e');
       }
     }
 

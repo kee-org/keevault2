@@ -170,7 +170,7 @@ class SimplePromptDialog extends StatefulWidget with DialogMixin<String> {
   final Widget? icon;
 
   @override
-  _SimplePromptDialogState createState() => _SimplePromptDialogState();
+  State<SimplePromptDialog> createState() => _SimplePromptDialogState();
 
   @override
   String get name => '/dialog/prompt/simple';

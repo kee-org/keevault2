@@ -97,8 +97,9 @@ AppBar vaultTopBarWidget(
     actions: [
       PopupMenuButton(
           icon: Icon(Icons.sort),
-          itemBuilder: (BuildContext _context) {
+          itemBuilder: (BuildContext context) {
             final currentMode = (sortCubit.state is SortedState) ? (sortCubit.state as SortedState).mode : null;
+            final navigator = Navigator.of(context);
             return <PopupMenuEntry>[
               PopupMenuItem(
                 child: ListTile(
@@ -106,7 +107,7 @@ AppBar vaultTopBarWidget(
                   title: Text(str.sortTitle),
                   onTap: () async {
                     await sortCubit.reorder(SortMode.titleAsc);
-                    Navigator.pop(context);
+                    navigator.pop();
                   },
                 ),
               ),
@@ -116,7 +117,7 @@ AppBar vaultTopBarWidget(
                   title: Text(str.sortTitleReversed),
                   onTap: () async {
                     await sortCubit.reorder(SortMode.titleDesc);
-                    Navigator.pop(context);
+                    navigator.pop();
                   },
                 ),
               ),
@@ -126,7 +127,7 @@ AppBar vaultTopBarWidget(
                   title: Text(str.sortModified),
                   onTap: () async {
                     await sortCubit.reorder(SortMode.modifiedDesc);
-                    Navigator.pop(context);
+                    navigator.pop();
                   },
                 ),
               ),
@@ -136,7 +137,7 @@ AppBar vaultTopBarWidget(
                   title: Text(str.sortModifiedReversed),
                   onTap: () async {
                     await sortCubit.reorder(SortMode.modifiedAsc);
-                    Navigator.pop(context);
+                    navigator.pop();
                   },
                 ),
               ),
@@ -146,7 +147,7 @@ AppBar vaultTopBarWidget(
                   title: Text(str.sortCreated),
                   onTap: () async {
                     await sortCubit.reorder(SortMode.createdDesc);
-                    Navigator.pop(context);
+                    navigator.pop();
                   },
                 ),
               ),
@@ -156,7 +157,7 @@ AppBar vaultTopBarWidget(
                   title: Text(str.sortCreatedReversed),
                   onTap: () async {
                     await sortCubit.reorder(SortMode.createdAsc);
-                    Navigator.pop(context);
+                    navigator.pop();
                   },
                 ),
               ),

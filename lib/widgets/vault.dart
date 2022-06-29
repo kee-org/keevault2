@@ -29,7 +29,7 @@ class VaultWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _VaultWidgetState createState() => _VaultWidgetState();
+  State<VaultWidget> createState() => _VaultWidgetState();
 }
 
 class _VaultWidgetState extends State<VaultWidget> {
@@ -239,7 +239,7 @@ class _FrontLayer extends StatelessWidget {
           if (color && state.colors.length == 1) str.color.toLowerCase(),
         ];
         return str.filteredByCriteria(criteria.length > 2
-            ? criteria.getRange(0, criteria.length - 1).join(', ') + ' and ' + criteria.last
+            ? '${criteria.getRange(0, criteria.length - 1).join(', ')} and ${criteria.last}'
             : criteria.join(' and '));
       }
     }
@@ -264,7 +264,7 @@ class Backdrop extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _BackdropState createState() => _BackdropState();
+  State<Backdrop> createState() => _BackdropState();
 }
 
 class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin {
@@ -324,8 +324,8 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
       key: _backdropKey,
       children: <Widget>[
         ExcludeSemantics(
-          child: widget.backLayer,
           excluding: _frontLayerVisible,
+          child: widget.backLayer,
         ),
         PositionedTransition(
           rect: layerAnimation,

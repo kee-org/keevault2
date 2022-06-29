@@ -220,11 +220,11 @@ class BottomBarWidget extends StatelessWidget {
               ),
               VaultStatusIconWidget(),
               Visibility(
-                child: sipi,
                 maintainSize: true,
                 maintainAnimation: true,
                 maintainState: true,
                 visible: loadedVaultState is VaultSaving,
+                child: sipi,
               ),
               Spacer(),
               SaveButtonWidget(
@@ -311,7 +311,7 @@ class SaveButtonWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SaveButtonWidgetState createState() => _SaveButtonWidgetState();
+  State<SaveButtonWidget> createState() => _SaveButtonWidgetState();
 }
 
 class _SaveButtonWidgetState extends State<SaveButtonWidget> {

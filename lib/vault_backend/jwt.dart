@@ -47,7 +47,7 @@ class JWT {
       throw KeeInvalidClaimException();
     }
 
-    final data = utf8.encode(sigParts[0] + '.' + sigParts[1]);
+    final data = utf8.encode('${sigParts[0]}.${sigParts[1]}');
 
     // Untrusted source might tell us which key to use but they can't actually pick the
     // key material so we only have to defend against cross-stage server-side breaches

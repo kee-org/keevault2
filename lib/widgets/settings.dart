@@ -22,7 +22,7 @@ class SettingsWidget extends TraceableStatefulWidget {
   }) : super(key: key);
 
   @override
-  _SettingsWidgetState createState() => _SettingsWidgetState();
+  State<SettingsWidget> createState() => _SettingsWidgetState();
 }
 
 class _SettingsWidgetState extends State<SettingsWidget> {
@@ -101,6 +101,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           title: str.settings,
           children: [
             SettingsGroup(
+              title: str.setGenTheme,
               children: [
                 RadioSettingsTile<String>(
                   title: str.setGenTheme,
@@ -117,9 +118,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   },
                 ),
               ],
-              title: str.setGenTheme,
             ),
-            SettingsGroup(children: [
+            SettingsGroup(title: str.deviceSettings, children: [
               Visibility(
                 visible: autofillState is AutofillAvailable,
                 child: SettingsContainer(
@@ -129,8 +129,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 ),
               ),
               BiometricSettingWidget(),
-            ], title: str.deviceSettings),
+            ]),
             SettingsGroup(
+              title: str.menuSetGeneral,
               children: [
                 SimpleSettingsTile(
                   title: str.genPsTitle,
@@ -154,7 +155,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 // ),
                 ...accessChildren,
               ],
-              title: str.menuSetGeneral,
             ),
           ],
         );
@@ -167,7 +167,7 @@ class BiometricSettingWidget extends StatefulWidget {
   const BiometricSettingWidget({Key? key}) : super(key: key);
 
   @override
-  _BiometricSettingWidgetState createState() => _BiometricSettingWidgetState();
+  State<BiometricSettingWidget> createState() => _BiometricSettingWidgetState();
 }
 
 class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
@@ -244,7 +244,7 @@ class AutofillStatusWidget extends StatefulWidget {
   const AutofillStatusWidget({Key? key, required this.isEnabled}) : super(key: key);
 
   @override
-  _AutofillStatusWidgetState createState() => _AutofillStatusWidgetState();
+  State<AutofillStatusWidget> createState() => _AutofillStatusWidgetState();
 }
 
 class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
@@ -279,10 +279,10 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
         child: Column(children: [
           Visibility(
             visible: widget.isEnabled,
+            replacement: Text(str.enableAutofillRequired(_packageInfo.appName)),
             child: Text(
               str.autofillEnabled,
             ),
-            replacement: Text(str.enableAutofillRequired(_packageInfo.appName)),
           ),
           Visibility(
             visible: !widget.isEnabled,

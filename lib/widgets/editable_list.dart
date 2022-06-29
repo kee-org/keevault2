@@ -18,7 +18,7 @@ class EditableListWidget<T> extends StatefulWidget {
       : super(key: key);
 
   @override
-  _EditableListWidgetState<T> createState() => _EditableListWidgetState<T>();
+  State<EditableListWidget<T>> createState() => _EditableListWidgetState<T>();
 }
 
 class _EditableListWidgetState<T> extends State<EditableListWidget<T>> {

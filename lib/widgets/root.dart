@@ -28,13 +28,15 @@ class RootWidgetState extends State<RootWidget> {
 
   // Cubit startup functions are idempotent
   Future<void> _startup() async {
+    final accountCubit = BlocProvider.of<AccountCubit>(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     await BlocProvider.of<AutofillCubit>(context).refresh();
-    await BlocProvider.of<AccountCubit>(context).startup();
-    final AccountState state = BlocProvider.of<AccountCubit>(context).state;
+    await accountCubit.startup();
+    final AccountState state = accountCubit.state;
     if (state is AccountChosen) {
-      await BlocProvider.of<VaultCubit>(context).startup(state.user, null);
+      await vaultCubit.startup(state.user, null);
     } else if (state is AccountLocalOnly) {
-      await BlocProvider.of<VaultCubit>(context).startupFreeMode(null);
+      await vaultCubit.startupFreeMode(null);
     }
   }
 

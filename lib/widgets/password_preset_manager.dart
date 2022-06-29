@@ -18,7 +18,7 @@ class PasswordPresetManagerWidget extends TraceableStatefulWidget {
   }) : super(key: key);
 
   @override
-  _PasswordPresetManagerWidgetState createState() => _PasswordPresetManagerWidgetState();
+  State<PasswordPresetManagerWidget> createState() => _PasswordPresetManagerWidgetState();
 }
 
 class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidget> {
@@ -100,7 +100,6 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                   child: Visibility(
                                     visible: generatorState.profileSettings.defaultProfileName ==
                                         generatorState.all[index].name,
-                                    child: Text(str.genPsDefault),
                                     replacement: Visibility(
                                       visible: !generatorState.profileSettings.disabled
                                           .contains(generatorState.all[index].name),
@@ -112,6 +111,7 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                         },
                                       ),
                                     ),
+                                    child: Text(str.genPsDefault),
                                   ),
                                 ),
                               ],
@@ -123,13 +123,13 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                 children: [
                                   TextButton(
                                     onPressed: () async {
+                                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
                                       final newName = await SimplePromptDialog(
                                         title: str.renamingPreset,
                                         labelText: str.enterNewPresetName,
                                         initialValue: generatorState.all[index].name,
                                       ).show(context);
                                       if (newName != null) {
-                                        final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
                                         cubit.renameProfile(generatorState.all[index].name, newName);
                                       }
                                     },

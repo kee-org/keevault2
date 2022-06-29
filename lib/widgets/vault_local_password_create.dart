@@ -16,7 +16,7 @@ class VaultLocalOnlyCreateWidget extends StatefulWidget {
   final SubmitCallback onSubmit;
 
   @override
-  _VaultLocalOnlyCreateWidgetState createState() => _VaultLocalOnlyCreateWidgetState();
+  State<VaultLocalOnlyCreateWidget> createState() => _VaultLocalOnlyCreateWidgetState();
 }
 
 class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget> {

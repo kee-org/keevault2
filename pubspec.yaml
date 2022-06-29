@@ -15,10 +15,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.9+31
+version: 1.0.9+32
 
 environment:
-  sdk: '>=2.16.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -109,6 +109,11 @@ dependencies:
   flutter_native_splash: ^2.1.2+1
   platform: ^3.1.0
   email_validator: ^2.0.1
+  convert: ^3.0.2
+  meta: ^1.7.0
+  argon2_ffi_base: ^1.1.1
+  uuid: ^3.0.6
+  clock: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -120,10 +125,10 @@ dev_dependencies:
 dependency_overrides:
   # flutter_autofill_service:
   #   path: ../flutter_autofill_service/
-  biometric_storage:
-    path: ../biometric_storage/
-  kdbx:
-    path: ../kdbx.dart/
+  # biometric_storage:
+  #   path: ../biometric_storage/
+  # kdbx:
+  #   path: ../kdbx.dart/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

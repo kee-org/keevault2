@@ -117,7 +117,7 @@ class KeeVaultAccountAttachmentMetadata {
 //TODO:f: finalise prefix identifier choice
   static const prefixIdentifier = 'https://s.kee.pm/a ';
 
-  static late final prefixIdentifierBytes = utf8.encode(prefixIdentifier);
+  static final prefixIdentifierBytes = utf8.encode(prefixIdentifier);
 
   Map<String, dynamic> toMap() {
     return {
@@ -273,6 +273,7 @@ class BinaryCardWidget extends StatelessWidget {
                     PopupMenuItem(
                       onTap: () async {
                         WidgetsBinding.instance.addPostFrameCallback((_) async {
+                          final sm = ScaffoldMessenger.of(context);
                           final permissionResult = await tryToGetPermission(
                             context,
                             Permission.storage,
@@ -292,11 +293,11 @@ class BinaryCardWidget extends StatelessWidget {
                               );
                               final outputFilename = await FlutterFileDialog.saveFile(params: params);
                               l.i('Exported attachment to $outputFilename');
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              sm.showSnackBar(SnackBar(
                                 content: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(S.of(context).exported),
+                                    Text(str.exported),
                                   ],
                                 ),
                                 duration: Duration(seconds: 3),

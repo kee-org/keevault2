@@ -56,6 +56,7 @@ class EntryWidget extends StatelessWidget {
       : super(key: key);
 
   void changeIcon(BuildContext context, EntryColor? color) async {
+    final cubit = BlocProvider.of<EntryCubit>(context);
     final iconPicked = await showDialog(
       barrierDismissible: true,
       context: context,
@@ -65,7 +66,6 @@ class EntryWidget extends StatelessWidget {
       ),
     );
     if (iconPicked != null) {
-      final cubit = BlocProvider.of<EntryCubit>(context);
       cubit.changeIcon(iconPicked is KdbxIcon ? iconPicked : null, iconPicked is KdbxCustomIcon ? iconPicked : null);
     }
   }
@@ -107,6 +107,7 @@ class EntryWidget extends StatelessWidget {
 
   Future<void> _attachFileContent(BuildContext context, String fileName, Uint8List bytes) async {
     final str = S.of(context);
+    final cubit = BlocProvider.of<EntryCubit>(context);
 
     if (bytes.lengthInBytes > 250 * 1024) {
       await DialogUtils.showErrorDialog(
@@ -128,7 +129,6 @@ class EntryWidget extends StatelessWidget {
       }
     }
 
-    final cubit = BlocProvider.of<EntryCubit>(context);
     cubit.attachFile(
       fileName: fileName,
       bytes: bytes,
@@ -137,6 +137,7 @@ class EntryWidget extends StatelessWidget {
 
   Future<void> _selectCustomKey(BuildContext context) async {
     final str = S.of(context);
+    final cubit = BlocProvider.of<EntryCubit>(context);
     final key = await SimplePromptDialog(
       title: str.detNetField,
       labelText: str.fieldName,
@@ -149,7 +150,6 @@ class EntryWidget extends StatelessWidget {
             displayName: key,
             value: '',
           ));
-      final cubit = BlocProvider.of<EntryCubit>(context);
       cubit.addField(field);
       //TODO:f focus keyboard on new field - maybe with an onNextAnimationFrame type of callback or maybe a bloclistener to inspect the old and new state
 
@@ -501,9 +501,8 @@ class EntryWidget extends StatelessWidget {
                                 child: Text(str.detCreated),
                               ),
                               Tooltip(
-                                message: Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd +
-                                    ' ' +
-                                    Jiffy(entry.createdTime.toLocal()).jms,
+                                message:
+                                    '${Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.createdTime.toLocal()).jms}',
                                 child: Text(Jiffy(entry.createdTime).fromNow()),
                               ),
                             ],
@@ -515,9 +514,8 @@ class EntryWidget extends StatelessWidget {
                                 child: Text(str.detUpdated),
                               ),
                               Tooltip(
-                                message: Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd +
-                                    ' ' +
-                                    Jiffy(entry.modifiedTime.toLocal()).jms,
+                                message:
+                                    '${Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.modifiedTime.toLocal()).jms}',
                                 child: Text(Jiffy(entry.modifiedTime).fromNow()),
                               ),
                             ],
@@ -560,6 +558,7 @@ class EntryWidget extends StatelessWidget {
                       label: str.addTOTPSecret,
                       child: Icon(Icons.lock_clock),
                       onTap: () async {
+                        final cubit = BlocProvider.of<EntryCubit>(context);
                         final totp = await _askForTotpSecret(context);
                         if (totp != null) {
                           final field = FieldViewModel.fromCustomAndBrowser(
@@ -567,7 +566,6 @@ class EntryWidget extends StatelessWidget {
                             ProtectedValue.fromString(totp.toUri().toString()),
                             null,
                           );
-                          final cubit = BlocProvider.of<EntryCubit>(context);
                           cubit.addField(field);
                         }
                       },
@@ -749,6 +747,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
                 sigmaY: 2,
               ),
               child: TextButton(
+                onPressed: onPressed,
                 child: Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.only(
@@ -762,7 +761,6 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
                     ),
                   ),
                 ),
-                onPressed: onPressed,
               ),
             ),
           ),

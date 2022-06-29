@@ -14,7 +14,7 @@ class HelpWidget extends TraceableStatefulWidget {
   }) : super(key: key);
 
   @override
-  _HelpWidgetState createState() => _HelpWidgetState();
+  State<HelpWidget> createState() => _HelpWidgetState();
 }
 
 class _HelpWidgetState extends State<HelpWidget> {

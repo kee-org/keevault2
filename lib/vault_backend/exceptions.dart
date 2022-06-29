@@ -34,11 +34,11 @@ class KeeServiceTransportException extends KeeException {
     } else if (this is KeeServerFailException) {
       message =
           "$category. There may be a fault with the Kee Vault service. Please let us know and we'll try to fix it soon.";
-      l.w(message + ' (500)');
+      l.w('$message (500)');
     } else if (this is KeeNotFoundException) {
       message =
           "$category. There may be a fault with the Kee Vault service. Please let us know and we'll try to fix it soon.";
-      l.w(message + ' (404)');
+      l.w('$message (404)');
     } else if (this is KeeServerTimeoutException) {
       message =
           '$category. It took too long, probably because your network connection is currently slow or unreliable. Please try again in a minute from a different location.';

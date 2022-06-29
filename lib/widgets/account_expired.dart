@@ -12,14 +12,14 @@ typedef SubmitCallback = Future<void> Function(String string);
 
 class AccountExpiredWidget extends StatefulWidget {
   const AccountExpiredWidget({
-    Key? key,
+    super.key,
     required this.trialAvailable,
-  }) : super(key: key);
+  });
 
   final bool trialAvailable;
 
   @override
-  _AccountExpiredWidgetState createState() => _AccountExpiredWidgetState();
+  State<AccountExpiredWidget> createState() => _AccountExpiredWidgetState();
 }
 
 class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
@@ -53,13 +53,14 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                         Text(str.startNewTrialSuccess),
                         ElevatedButton(
                           onPressed: () async {
-                            await BlocProvider.of<VaultCubit>(context).signout();
                             final accountCubit = BlocProvider.of<AccountCubit>(context);
+                            await BlocProvider.of<VaultCubit>(context).signout();
                             await accountCubit.signout();
                             // Potential loss of context here but I think because the account cubit emit is the
                             // last thing to happen in the signout task Flutter won't have had a chance to draw
                             // a new frame and detach this defunct widget from the context. If WTFs happen around
                             // here though, this is a strong candidate for the cause of the problem.
+                            // ignore: use_build_context_synchronously
                             AppConfig.router.navigateTo(context, Routes.root, clearStack: true);
                           },
                           child: Text(str.signin),
@@ -76,9 +77,10 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                         ElevatedButton(
                           onPressed: () async {
                             // Potential loss of context here as per above comment
-                            await BlocProvider.of<VaultCubit>(context).signout();
                             final accountCubit = BlocProvider.of<AccountCubit>(context);
+                            await BlocProvider.of<VaultCubit>(context).signout();
                             await accountCubit.signout();
+                            // ignore: use_build_context_synchronously
                             AppConfig.router.navigateTo(context, Routes.root, clearStack: true);
                           },
                           child: Text(str.signout),
@@ -113,11 +115,13 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                       icon: Text(str.restartSubscription),
                       label: Icon(Icons.open_in_new),
                       onPressed: () async {
+                        final accountCubit = BlocProvider.of<AccountCubit>(context);
+                        final vaultCubit = BlocProvider.of<VaultCubit>(context);
                         await DialogUtils.openUrl(EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount');
                         // Potential loss of context here as per earlier comment
-                        await BlocProvider.of<VaultCubit>(context).signout();
-                        final accountCubit = BlocProvider.of<AccountCubit>(context);
+                        await vaultCubit.signout();
                         await accountCubit.signout();
+                        // ignore: use_build_context_synchronously
                         AppConfig.router.navigateTo(context, Routes.root, clearStack: true);
                       },
                     );

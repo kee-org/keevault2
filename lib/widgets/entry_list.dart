@@ -176,6 +176,7 @@ class EntryListItemWidget extends StatelessWidget {
                     subtitle: Text('${entryListItemVM.username}\n${entryListItemVM.domain ?? ''}'),
                     leading: entryListItemVM.getIcon(32, Theme.of(context).brightness == Brightness.dark),
                     onTap: () async {
+                      final navigator = Navigator.of(context);
                       // This often doesn't have enough time to animate in to view but that's happy days.
                       showDialog(
                         context: context,
@@ -215,7 +216,7 @@ class EntryListItemWidget extends StatelessWidget {
                         autofillCubit.autofillWithListOfOneEntry(entry);
                       }
 
-                      Navigator.of(context).pop();
+                      navigator.pop();
                     },
                   );
                 } else {

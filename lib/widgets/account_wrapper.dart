@@ -22,9 +22,10 @@ class AccountWrapperWidget extends StatefulWidget {
 class AccountWrapperState extends State<AccountWrapperWidget> {
   Future<void> _initVault(String password) async {
     final accountCubit = BlocProvider.of<AccountCubit>(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     if (accountCubit.state is AccountIdentified) {
       final user = await accountCubit.finishSignin(password);
-      await BlocProvider.of<VaultCubit>(context).startup(user, password);
+      await vaultCubit.startup(user, password);
     } else {
       throw Exception('Account not identified yet');
     }
@@ -39,15 +40,16 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
     if (await vaultCubit.localFreeKdbxExists()) {
       await accountCubit.confirmLocalOnly();
-      await BlocProvider.of<VaultCubit>(context).startupFreeMode(null);
+      await vaultCubit.startupFreeMode(null);
     } else {
       accountCubit.requestLocalOnly();
     }
   }
 
   Future<void> _createLocalOnlyVault(String newPassword) async {
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     await BlocProvider.of<AccountCubit>(context).confirmLocalOnly();
-    await BlocProvider.of<VaultCubit>(context).create(newPassword);
+    await vaultCubit.create(newPassword);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user.current.freeImportedAt');
   }

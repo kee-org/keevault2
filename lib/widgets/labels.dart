@@ -11,7 +11,7 @@ class LabelsWidget extends StatefulWidget {
   const LabelsWidget({Key? key, required this.otherKnownTags, required this.tags}) : super(key: key);
 
   @override
-  _LabelsWidgetState createState() => _LabelsWidgetState();
+  State<LabelsWidget> createState() => _LabelsWidgetState();
 }
 
 class _LabelsWidgetState extends State<LabelsWidget> {
@@ -97,11 +97,11 @@ class _LabelsWidgetState extends State<LabelsWidget> {
           );
         },
         suggestionListBuilder: (context, child) => Material(
+          elevation: 4.0,
+          type: MaterialType.canvas,
           child: Container(
               color: theme.brightness == Brightness.dark ? Colors.grey.shade800 : theme.secondaryHeaderColor,
               child: child),
-          elevation: 4.0,
-          type: MaterialType.canvas,
         ),
       ),
     );

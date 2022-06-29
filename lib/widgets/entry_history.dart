@@ -52,6 +52,7 @@ class EntryHistoryWidget extends TraceableStatelessWidget {
                         final historyEntry = mapEntry.value;
                         return EntryHistoryItem(
                           revert: () async {
+                            final navigator = Navigator.of(context);
                             if (entry.isDirty) {
                               final proceed = await DialogUtils.showConfirmDialog(
                                   context: context,
@@ -72,7 +73,7 @@ class EntryHistoryWidget extends TraceableStatelessWidget {
                             if (!proceed) {
                               return;
                             }
-                            Navigator.of(context).pop(true);
+                            navigator.pop(true);
                             revertTo(historyIndex);
                           },
                           delete: () => {},
@@ -207,7 +208,7 @@ class EntryHistoryItem extends StatelessWidget {
                   ),
                   Tooltip(
                     message:
-                        Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd + ' ' + Jiffy(entry.createdTime.toLocal()).jms,
+                        '${Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.createdTime.toLocal()).jms}',
                     child: Text(Jiffy(entry.createdTime).fromNow()),
                   ),
                 ],
@@ -220,12 +221,12 @@ class EntryHistoryItem extends StatelessWidget {
                   ),
                   Tooltip(
                     message:
-                        Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd + ' ' + Jiffy(entry.modifiedTime.toLocal()).jms,
+                        '${Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.modifiedTime.toLocal()).jms}',
                     child: Text(Jiffy(entry.modifiedTime).fromNow()),
                   ),
                 ],
               ),
-              OutlinedButton(child: Text(str.resetEntryToThis), onPressed: revert),
+              OutlinedButton(onPressed: revert, child: Text(str.resetEntryToThis)),
             ],
           ),
         ),
@@ -292,7 +293,7 @@ class EntryHistoryFieldText extends StatefulWidget {
   final FieldViewModel field;
 
   @override
-  _EntryHistoryFieldTextState createState() => _EntryHistoryFieldTextState();
+  State<EntryHistoryFieldText> createState() => _EntryHistoryFieldTextState();
 }
 
 class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
@@ -413,12 +414,14 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
   }
 
   Future<bool> copyValue() async {
+    final sm = ScaffoldMessenger.of(context);
+    final str = S.of(context);
     await Clipboard.setData(ClipboardData(text: widget.field.textValue));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    sm.showSnackBar(SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(S.of(context).detFieldCopied),
+          Text(str.detFieldCopied),
         ],
       ),
       duration: Duration(seconds: 3),
@@ -453,7 +456,7 @@ class IntegrationSettingsHistoryWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _IntegrationSettingsHistoryWidgetState createState() => _IntegrationSettingsHistoryWidgetState();
+  State<IntegrationSettingsHistoryWidget> createState() => _IntegrationSettingsHistoryWidgetState();
 }
 
 class _IntegrationSettingsHistoryWidgetState extends State<IntegrationSettingsHistoryWidget> {

@@ -68,13 +68,13 @@ class NewEntryButton extends StatelessWidget {
             },
             closedBuilder: (context, open) {
               return FloatingActionButton(
-                child: Icon(Icons.add),
                 tooltip: str.createNewEntry,
                 onPressed: () {
                   FocusScope.of(context).unfocus();
                   BlocProvider.of<EntryCubit>(context).startCreating(currentFile);
                   open();
                 },
+                child: Icon(Icons.add),
               );
             },
           ),

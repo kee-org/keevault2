@@ -23,6 +23,28 @@ class LabelFilterWidget extends StatelessWidget {
               final filterState = state;
               return Visibility(
                 visible: vaultState.vault.files.current.tags.isNotEmpty,
+                replacement: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0, bottom: 8.0, left: 8.0, right: 8.0),
+                      child: Text(
+                        str.labelsExplanation,
+                        style: theme.textTheme.subtitle1,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(str.labelsExplanation2),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(str.labelAssignmentExplanation),
+                    ),
+                  ],
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
@@ -84,28 +106,6 @@ class LabelFilterWidget extends StatelessWidget {
                           )),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                replacement: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0, bottom: 8.0, left: 8.0, right: 8.0),
-                      child: Text(
-                        str.labelsExplanation,
-                        style: theme.textTheme.subtitle1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(str.labelsExplanation2),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(str.labelAssignmentExplanation),
                     ),
                   ],
                 ),

@@ -41,15 +41,15 @@ class RemoteService {
 
   RemoteService._(this._name, this._dio);
 
-  factory RemoteService(_stage, _name) {
-    var endpoint = endpoints[_stage]![_name]!;
+  factory RemoteService(stage, name) {
+    var endpoint = endpoints[stage]![name]!;
     var options = BaseOptions(
       baseUrl: endpoint,
       connectTimeout: 20000,
       receiveTimeout: 30000,
       contentType: 'text/plain',
     );
-    return RemoteService._(_name, Dio(options));
+    return RemoteService._(name, Dio(options));
   }
 
   Future<Response<T>> getRequest<T>(String path, [String? token, TokenRefreshFunction? tokenRefresh]) async {

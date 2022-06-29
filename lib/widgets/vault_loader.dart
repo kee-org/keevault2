@@ -138,6 +138,8 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
     }, listener: (context, state) async {
       if (state is VaultLoaded) {
         final AutofillState autofillState = BlocProvider.of<AutofillCubit>(context).state;
+        final filterContext = BlocProvider.of<FilterCubit>(context);
+        final interactionContext = BlocProvider.of<InteractionCubit>(context);
         if (autofillState is AutofillRequested && autofillState.enabled) {
           if (!autofillState.forceInteractive) {
             final matchFound = await BlocProvider.of<AutofillCubit>(context).autofillWithList(state.vault);
@@ -146,10 +148,11 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
             }
           }
         }
-        BlocProvider.of<FilterCubit>(context)
-            .start(state.vault.files.current.body.rootGroup.uuid.uuid, Settings.getValue<bool>('expandGroups', true));
-        await BlocProvider.of<InteractionCubit>(context).databaseOpened();
+        filterContext.start(
+            state.vault.files.current.body.rootGroup.uuid.uuid, Settings.getValue<bool>('expandGroups', true));
+        await interactionContext.databaseOpened();
         // context my have become detached from widget tree by this point
+        // but router requires we have it so have to use this hack
         AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.vault, replace: true);
       }
     });

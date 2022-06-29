@@ -138,6 +138,7 @@ class ImportExportWidget extends TraceableStatelessWidget {
 
   _import(BuildContext context, VaultLoaded vaultState) async {
     final str = S.of(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final permissionResult = await tryToGetPermission(
       context,
       Permission.storage,
@@ -167,8 +168,8 @@ class ImportExportWidget extends TraceableStatelessWidget {
             null,
             null,
           );
-          await BlocProvider.of<VaultCubit>(context)
-              .importKdbx(vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
+          await vaultCubit.importKdbx(
+              vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
         } else {
           // User canceled the picker
         }
@@ -188,6 +189,7 @@ class ImportExportWidget extends TraceableStatelessWidget {
 
   _export(BuildContext context, VaultLoaded state) async {
     final str = S.of(context);
+    final sm = ScaffoldMessenger.of(context);
 
     final EntryState entryState = BlocProvider.of<EntryCubit>(context).state;
     final loadedState = entryState is EntryLoaded ? entryState : null;
@@ -220,11 +222,11 @@ class ImportExportWidget extends TraceableStatelessWidget {
         );
         final outputFilename = await FlutterFileDialog.saveFile(params: params);
         l.i('Exported vault to $outputFilename');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        sm.showSnackBar(SnackBar(
           content: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(S.of(context).exported),
+              Text(str.exported),
             ],
           ),
           duration: Duration(seconds: 3),

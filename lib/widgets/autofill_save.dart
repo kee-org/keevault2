@@ -14,11 +14,11 @@ import 'entry.dart';
 
 class AutofillSaveWidget extends TraceableStatefulWidget {
   const AutofillSaveWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _AutofillSaveWidgetState createState() => _AutofillSaveWidgetState();
+  State<AutofillSaveWidget> createState() => _AutofillSaveWidgetState();
 }
 
 class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {

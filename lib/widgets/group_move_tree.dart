@@ -106,7 +106,7 @@ abstract class _MoveTreeListWidgetState<T extends MoveTreeListWidget> extends St
         buildWhen: (previous, current) => current is VaultLoaded,
         builder: (context, state) {
           if (state is VaultLoaded) {
-            TreeViewTheme _treeViewTheme = TreeViewTheme(
+            TreeViewTheme treeViewTheme = TreeViewTheme(
               labelOverflow: TextOverflow.ellipsis,
               colorScheme:
                   theme.colorScheme.copyWith(primary: theme.focusColor, onPrimary: theme.colorScheme.secondary),
@@ -138,7 +138,7 @@ abstract class _MoveTreeListWidgetState<T extends MoveTreeListWidget> extends St
                         style: theme.textTheme.headline6,
                       ),
                     ),
-                    Expanded(child: _buildTreeView(context, _treeViewTheme)),
+                    Expanded(child: _buildTreeView(context, treeViewTheme)),
                   ],
                 ),
               ),
@@ -148,7 +148,7 @@ abstract class _MoveTreeListWidgetState<T extends MoveTreeListWidget> extends St
         });
   }
 
-  Widget _buildTreeView(BuildContext context, TreeViewTheme _treeViewTheme);
+  Widget _buildTreeView(BuildContext context, TreeViewTheme treeViewTheme);
 }
 
 class GroupMoveTreeListWidget extends MoveTreeListWidget {
@@ -161,14 +161,14 @@ class GroupMoveTreeListWidget extends MoveTreeListWidget {
   }) : super(key: key, nodes: nodes, title: title);
 
   @override
-  _GroupMoveTreeListWidgetState createState() => _GroupMoveTreeListWidgetState();
+  State<GroupMoveTreeListWidget> createState() => _GroupMoveTreeListWidgetState();
 }
 
 class _GroupMoveTreeListWidgetState extends _MoveTreeListWidgetState<GroupMoveTreeListWidget> {
   late TreeViewController<String> _treeViewController = TreeViewController<String>(children: widget.nodes);
 
   @override
-  Widget _buildTreeView(BuildContext context, TreeViewTheme _treeViewTheme) {
+  Widget _buildTreeView(BuildContext context, TreeViewTheme treeViewTheme) {
     final selectedGroup = widget.initialSelectedUuid;
     _treeViewController = _treeViewController.copyWith(selectedKey: selectedGroup);
     return TreeView<String>(
@@ -191,7 +191,7 @@ class _GroupMoveTreeListWidgetState extends _MoveTreeListWidgetState<GroupMoveTr
             });
           }
         },
-        theme: _treeViewTheme);
+        theme: treeViewTheme);
   }
 }
 
@@ -203,14 +203,14 @@ class EntryMoveTreeListWidget extends MoveTreeListWidget {
   }) : super(key: key, nodes: nodes, title: title);
 
   @override
-  _EntryMoveTreeListWidgetState createState() => _EntryMoveTreeListWidgetState();
+  State<EntryMoveTreeListWidget> createState() => _EntryMoveTreeListWidgetState();
 }
 
-class _EntryMoveTreeListWidgetState extends _MoveTreeListWidgetState {
+class _EntryMoveTreeListWidgetState extends _MoveTreeListWidgetState<EntryMoveTreeListWidget> {
   late TreeViewController<String> _treeViewController = TreeViewController<String>(children: widget.nodes);
 
   @override
-  Widget _buildTreeView(BuildContext context, TreeViewTheme _treeViewTheme) {
+  Widget _buildTreeView(BuildContext context, TreeViewTheme treeViewTheme) {
     return BlocBuilder<EntryCubit, EntryState>(
       builder: (context, state) {
         if (state is! EntryLoaded) return Container();
@@ -236,7 +236,7 @@ class _EntryMoveTreeListWidgetState extends _MoveTreeListWidgetState {
                 });
               }
             },
-            theme: _treeViewTheme);
+            theme: treeViewTheme);
       },
     );
   }

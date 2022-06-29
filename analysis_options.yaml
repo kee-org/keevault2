@@ -25,6 +25,7 @@ linter:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
     # prefer_double_quotes: true
+    use_build_context_synchronously: false # Too hard to create dialogs and do route navigation without a context across async boundary. Just have to hope it's OK until a better approach is possible.
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
@@ -36,3 +37,4 @@ analyzer:
   exclude:
     - lib/generated/**
     - lib/phonetic.dart
+    - lib/generated_plugin_registrant.dart

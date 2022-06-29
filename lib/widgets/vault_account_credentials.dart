@@ -14,7 +14,7 @@ class VaultAccountCredentialsWidget extends StatefulWidget {
   final void Function() onLocalOnlyRequested;
 
   @override
-  _VaultAccountCredentialsWidgetState createState() => _VaultAccountCredentialsWidgetState();
+  State<VaultAccountCredentialsWidget> createState() => _VaultAccountCredentialsWidgetState();
 }
 
 class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsWidget> {

@@ -25,7 +25,7 @@ class IconChooser extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _IconChooserState createState() => _IconChooserState();
+  State<IconChooser> createState() => _IconChooserState();
 }
 
 class _IconChooserState extends State<IconChooser> {

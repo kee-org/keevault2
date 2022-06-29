@@ -13,7 +13,7 @@ class IntroVaultSummaryWidget extends StatefulWidget {
   final ThemeData theme;
 
   @override
-  _IntroVaultSummaryWidgetState createState() => _IntroVaultSummaryWidgetState();
+  State<IntroVaultSummaryWidget> createState() => _IntroVaultSummaryWidgetState();
 }
 
 class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with TickerProviderStateMixin {
@@ -128,8 +128,9 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                       ElevatedButton(
                         child: Text(str.gotIt),
                         onPressed: () async {
+                          final appSettings = BlocProvider.of<AppSettingsCubit>(context);
                           await _controller.reverse();
-                          BlocProvider.of<AppSettingsCubit>(context).completeIntroShownVaultSummary();
+                          appSettings.completeIntroShownVaultSummary();
                         },
                       )
                     ],

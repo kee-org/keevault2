@@ -144,6 +144,8 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                       onPressed: saving
                           ? null
                           : () async {
+                              final navigator = Navigator.of(context);
+                              final sm = ScaffoldMessenger.of(context);
                               setState(() {
                                 saveError = false;
                               });
@@ -157,11 +159,11 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                                   setState(() {
                                     saving = false;
                                   });
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(S.of(context).passwordChanged),
+                                  sm.showSnackBar(SnackBar(
+                                    content: Text(str.passwordChanged),
                                     duration: Duration(seconds: 4),
                                   ));
-                                  Navigator.pop(context);
+                                  navigator.pop();
                                 } on Exception {
                                   setState(() {
                                     saving = false;

@@ -11,7 +11,7 @@ class IntegrationSettingsWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _IntegrationSettingsWidgetState createState() => _IntegrationSettingsWidgetState();
+  State<IntegrationSettingsWidget> createState() => _IntegrationSettingsWidgetState();
 }
 
 class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
@@ -154,7 +154,7 @@ class MatchAccuracyRadioWidget extends StatefulWidget {
   const MatchAccuracyRadioWidget({Key? key, required this.minimumMatchAccuracy}) : super(key: key);
 
   @override
-  _MatchAccuracyRadioWidgetState createState() => _MatchAccuracyRadioWidgetState();
+  State<MatchAccuracyRadioWidget> createState() => _MatchAccuracyRadioWidgetState();
 }
 
 class _MatchAccuracyRadioWidgetState extends State<MatchAccuracyRadioWidget> with SingleTickerProviderStateMixin {

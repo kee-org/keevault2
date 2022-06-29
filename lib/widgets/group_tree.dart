@@ -162,7 +162,7 @@ class GroupTreeListWidget extends StatefulWidget {
     required this.selectedGroupUuid,
   }) : super(key: key);
   @override
-  _GroupTreeListWidgetState createState() => _GroupTreeListWidgetState();
+  State<GroupTreeListWidget> createState() => _GroupTreeListWidgetState();
 }
 
 class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
@@ -177,7 +177,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
         builder: (context, state) {
           if (state is VaultLoaded) {
             _treeViewController = TreeViewController<GroupData>(children: widget.nodes);
-            TreeViewTheme _treeViewTheme = TreeViewTheme(
+            TreeViewTheme treeViewTheme = TreeViewTheme(
               labelOverflow: TextOverflow.ellipsis,
               colorScheme:
                   theme.colorScheme.copyWith(primary: theme.focusColor, onPrimary: theme.colorScheme.secondary),
@@ -229,7 +229,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
                       }
                     },
                     nodeBuilder: _buildNodeContents,
-                    theme: _treeViewTheme);
+                    theme: treeViewTheme);
               },
             );
           }
@@ -238,14 +238,14 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
   }
 
   Widget _buildNodeContents(BuildContext context, Node<GroupData> node) {
-    TreeView<GroupData>? _treeView = TreeView.of<GroupData>(context);
-    assert(_treeView != null, 'TreeView must exist in context');
-    TreeViewTheme _theme = _treeView!.theme;
-    bool isSelected = _treeView.controller.selectedKey != null && _treeView.controller.selectedKey == node.key;
+    TreeView<GroupData>? treeView = TreeView.of<GroupData>(context);
+    assert(treeView != null, 'TreeView must exist in context');
+    TreeViewTheme theme = treeView!.theme;
+    bool isSelected = treeView.controller.selectedKey != null && treeView.controller.selectedKey == node.key;
     List<StatefulWidget> buttons = node.data!.uuid == _managedGroupUuid ? _buildButtons(node, isSelected) : [];
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: _theme.verticalSpacing ?? (_theme.dense ? 10 : 15),
+        vertical: theme.verticalSpacing ?? (theme.dense ? 10 : 15),
         horizontal: 0,
       ),
       child: Column(
@@ -258,16 +258,16 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
               Expanded(
                 child: Text(
                   node.label,
-                  softWrap: node.isParent ? _theme.parentLabelOverflow == null : _theme.labelOverflow == null,
-                  overflow: node.isParent ? _theme.parentLabelOverflow : _theme.labelOverflow,
+                  softWrap: node.isParent ? theme.parentLabelOverflow == null : theme.labelOverflow == null,
+                  overflow: node.isParent ? theme.parentLabelOverflow : theme.labelOverflow,
                   style: node.isParent
-                      ? _theme.parentLabelStyle.copyWith(
-                          fontWeight: _theme.parentLabelStyle.fontWeight,
-                          color: isSelected ? _theme.colorScheme.onPrimary : _theme.parentLabelStyle.color,
+                      ? theme.parentLabelStyle.copyWith(
+                          fontWeight: theme.parentLabelStyle.fontWeight,
+                          color: isSelected ? theme.colorScheme.onPrimary : theme.parentLabelStyle.color,
                         )
-                      : _theme.labelStyle.copyWith(
-                          fontWeight: _theme.labelStyle.fontWeight,
-                          color: isSelected ? _theme.colorScheme.onPrimary : null,
+                      : theme.labelStyle.copyWith(
+                          fontWeight: theme.labelStyle.fontWeight,
+                          color: isSelected ? theme.colorScheme.onPrimary : null,
                         ),
                 ),
               ),
@@ -389,13 +389,13 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
 
   void _newGroup(String uuid) async {
     final str = S.of(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final newName = await SimplePromptDialog(
       title: str.newGroup,
       labelText: str.groupNameNewExplanation,
     ).show(context);
     if (newName != null && newName.isNotEmpty) {
-      final cubit = BlocProvider.of<VaultCubit>(context);
-      cubit.createGroup(parent: uuid, name: newName);
+      vaultCubit.createGroup(parent: uuid, name: newName);
       setState(() {
         _managedGroupUuid = null;
       });
@@ -404,14 +404,14 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
 
   void _renameGroup(String uuid, String currentName) async {
     final str = S.of(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final newName = await SimplePromptDialog(
       title: str.tagRename,
       labelText: str.groupNameRenameExplanation,
       initialValue: currentName,
     ).show(context);
     if (newName != null && newName.isNotEmpty) {
-      final cubit = BlocProvider.of<VaultCubit>(context);
-      cubit.renameGroup(groupUuid: uuid, name: newName);
+      vaultCubit.renameGroup(groupUuid: uuid, name: newName);
       setState(() {
         _managedGroupUuid = null;
       });
@@ -420,6 +420,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
 
   void _deleteGroup(String uuid, bool permanent) async {
     final str = S.of(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final confirmed = await ConfirmDialog(
       params: ConfirmDialogParams(
         positiveButtonText: permanent ? str.detDelEntryPerm : str.detDelEntry,
@@ -428,8 +429,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
       ),
     ).show(context);
     if (confirmed != null && confirmed) {
-      final cubit = BlocProvider.of<VaultCubit>(context);
-      cubit.deleteGroup(groupUuid: uuid);
+      vaultCubit.deleteGroup(groupUuid: uuid);
       setState(() {
         _managedGroupUuid = null;
       });
@@ -438,6 +438,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
 
   void _emptyTrash() async {
     final str = S.of(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final confirmed = await ConfirmDialog(
       params: ConfirmDialogParams(
         positiveButtonText: str.detDelEntryPerm,
@@ -447,8 +448,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
       ),
     ).show(context);
     if (confirmed != null && confirmed) {
-      final cubit = BlocProvider.of<VaultCubit>(context);
-      cubit.emptyRecycleBin();
+      vaultCubit.emptyRecycleBin();
       setState(() {
         _managedGroupUuid = null;
       });

@@ -83,21 +83,25 @@ class InAppMessengerWidget extends InheritedWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () async {
+            final appSettings = BlocProvider.of<AppSettingsCubit>(context);
+            final sm = ScaffoldMessenger.of(context);
             final completed = await PRCSignupPromptDialog().show(context);
             if (completed ?? false) {
-              await BlocProvider.of<AppSettingsCubit>(context).iamEmailSignupSuppressUntil(DateTime(2122));
-              ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              await appSettings.iamEmailSignupSuppressUntil(DateTime(2122));
+              sm.hideCurrentMaterialBanner();
             }
           },
           child: Text(str.alertYesPlease.toUpperCase()),
         ),
         TextButton(
           onPressed: () async {
+            final appSettings = BlocProvider.of<AppSettingsCubit>(context);
+            final sm = ScaffoldMessenger.of(context);
             final waitForDays = await BannerDismissDialog().show(context) ?? -1;
             l.d('Will wait for $waitForDays days until reshowing this message');
-            await BlocProvider.of<AppSettingsCubit>(context).iamEmailSignupSuppressUntil(
+            await appSettings.iamEmailSignupSuppressUntil(
                 waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)));
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+            sm.hideCurrentMaterialBanner();
           },
           child: Text(str.alertNo.toUpperCase()),
         ),
@@ -129,8 +133,9 @@ class InAppMessengerWidget extends InheritedWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () async {
+            final sm = ScaffoldMessenger.of(context);
             await BlocProvider.of<AppSettingsCubit>(context).iamMakeMoreChangesOrSaveSuppressUntil(DateTime(2122));
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+            sm.hideCurrentMaterialBanner();
           },
           child: Text(str.gotIt.toUpperCase()),
         ),
@@ -147,18 +152,21 @@ class InAppMessengerWidget extends InheritedWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () async {
+            final sm = ScaffoldMessenger.of(context);
             await BlocProvider.of<AutofillCubit>(context).requestEnable();
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+            sm.hideCurrentMaterialBanner();
           },
           child: Text(str.enableAutofill.toUpperCase()),
         ),
         TextButton(
           onPressed: () async {
+            final sm = ScaffoldMessenger.of(context);
+            final appSettings = BlocProvider.of<AppSettingsCubit>(context);
             final waitForDays = await BannerDismissDialog().show(context) ?? -1;
             l.d('Will wait for $waitForDays days until reshowing this message');
-            await BlocProvider.of<AppSettingsCubit>(context).iamAutofillDisabledSuppressUntil(
+            await appSettings.iamAutofillDisabledSuppressUntil(
                 waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)));
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+            sm.hideCurrentMaterialBanner();
           },
           child: Text(str.alertNo.toUpperCase()),
         ),
@@ -187,8 +195,9 @@ class InAppMessengerWidget extends InheritedWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () async {
+            final sm = ScaffoldMessenger.of(context);
             await BlocProvider.of<AppSettingsCubit>(context).iamSavingVaultSuppressUntil(DateTime(2122));
-            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+            sm.hideCurrentMaterialBanner();
           },
           child: Text(str.gotIt.toUpperCase()),
         ),

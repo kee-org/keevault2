@@ -41,7 +41,7 @@ class EntryField extends StatefulWidget {
   @override
   // Ignoring because I can't work out why this can be a problem
   // ignore: no_logic_in_create_state
-  _EntryFieldState createState() => fieldType == FieldType.otp
+  State<EntryField> createState() => fieldType == FieldType.otp
       ? _OtpEntryFieldState()
       : fieldType == FieldType.checkbox
           ? _SwitchEntryFieldState()
@@ -103,13 +103,13 @@ class _SwitchEntryFieldState extends _EntryFieldState {
     final str = S.of(context);
     switch (entryAction) {
       case EntryAction.rename:
+        final cubit = BlocProvider.of<EntryCubit>(context);
         final newName = await SimplePromptDialog(
           title: str.renamingField,
           labelText: str.renameFieldEnterNewName,
           initialValue: widget.field.name,
         ).show(context);
         if (newName != null) {
-          final cubit = BlocProvider.of<EntryCubit>(context);
           cubit.renameField(widget.field.key, widget.field.browserModel?.displayName, newName);
         }
         break;
@@ -260,13 +260,13 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
         // only used by [_OtpEntryFieldState]
         throw UnsupportedError('Field does not support this action.');
       case EntryAction.rename:
+        final cubit = BlocProvider.of<EntryCubit>(context);
         final newName = await SimplePromptDialog(
           title: str.renamingField,
           labelText: str.renameFieldEnterNewName,
           initialValue: widget.field.name,
         ).show(context);
         if (newName != null) {
-          final cubit = BlocProvider.of<EntryCubit>(context);
           cubit.renameField(widget.field.key, widget.field.browserModel?.displayName, newName);
         }
         break;
@@ -390,12 +390,14 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
   }
 
   Future<bool> copyValue() async {
+    final sm = ScaffoldMessenger.of(context);
+    final str = S.of(context);
     await Clipboard.setData(ClipboardData(text: widget.field.textValue));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    sm.showSnackBar(SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(S.of(context).detFieldCopied),
+          Text(str.detFieldCopied),
         ],
       ),
       duration: Duration(seconds: 3),
@@ -549,12 +551,14 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
   @override
   Future<bool> copyValue() async {
     l.d('Copying OTP value.');
+    final sm = ScaffoldMessenger.of(context);
+    final str = S.of(context);
     await Clipboard.setData(ClipboardData(text: _currentOtp));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    sm.showSnackBar(SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(S.of(context).detFieldCopied),
+          Text(str.detFieldCopied),
         ],
       ),
       duration: Duration(seconds: 3),

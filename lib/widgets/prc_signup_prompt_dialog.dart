@@ -14,7 +14,7 @@ class PRCSignupPromptDialog extends TraceableStatefulWidget with DialogMixin<boo
   }) : super(key: key);
 
   @override
-  _PRCSignupPromptDialogState createState() => _PRCSignupPromptDialogState();
+  State<PRCSignupPromptDialog> createState() => _PRCSignupPromptDialogState();
 
   @override
   String get name => '/dialog/prcSignupPrompt';
@@ -51,6 +51,8 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog> with Widg
 
   Future<void> signup() async {
     final str = S.of(context);
+    final navigator = Navigator.of(context);
+    final sm = ScaffoldMessenger.of(context);
     if (formKey.currentState?.validate() ?? false) {
       l.d('signing up supplied email address');
       setState(() {
@@ -61,8 +63,8 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog> with Widg
       final result = await mailerService.signup(_controller.text.toLowerCase());
       if (result) {
         l.d('signup successful');
-        Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
+        navigator.pop(true);
+        sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
         MatomoTracker.trackEvent('prcSignup', 'free');
       } else {
         l.e('signup failed');

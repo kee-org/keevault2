@@ -49,7 +49,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
     String newName = requestedName;
 
     while (currentState.all.any((profile) => profile.name == newName)) {
-      newName = newName + ' (duplicate)';
+      newName = '$newName (duplicate)';
     }
     final newProfile = currentState.profileSettings.user
         .firstWhereOrNull((profile) => profile.name == oldName)
@@ -103,7 +103,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
     String newName = currentState.newProfile.name;
 
     while (currentState.all.any((profile) => profile.name == newName)) {
-      newName = newName + ' (duplicate)';
+      newName = '$newName (duplicate)';
     }
 
     final newSettings = currentState.profileSettings.copyWith(

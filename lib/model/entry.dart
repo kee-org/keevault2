@@ -364,9 +364,9 @@ class EditEntryViewModel extends EntryViewModel {
 
   EditEntryViewModel(
     KdbxCustomIcon? customIcon,
-    KdbxIcon _icon,
+    KdbxIcon icon,
     KdbxUuid? uuid,
-    List<FieldViewModel> _fields,
+    List<FieldViewModel> fields,
     this._isDirty,
     this.group,
     String label,
@@ -380,9 +380,9 @@ class EditEntryViewModel extends EntryViewModel {
     this.history,
   ) : super(
           customIcon,
-          _icon,
+          icon,
           uuid,
-          _fields,
+          fields,
           label,
           color,
           browserSettings,

@@ -55,6 +55,8 @@ class VaultDrawerWidget extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16.0),
               child: ElevatedButton(
                 onPressed: () async {
+                  final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                  final accountCubit = BlocProvider.of<AccountCubit>(context);
                   if (state is VaultLoaded && state.vault.files.current.isDirty) {
                     final proceed = await DialogUtils.showConfirmDialog(
                         context: context,
@@ -66,8 +68,8 @@ class VaultDrawerWidget extends StatelessWidget {
                       return;
                     }
                   }
-                  BlocProvider.of<VaultCubit>(context).lock();
-                  BlocProvider.of<AccountCubit>(context).signout();
+                  vaultCubit.lock();
+                  accountCubit.signout();
                 },
                 child: Text(str.lock.toUpperCase()),
               ),

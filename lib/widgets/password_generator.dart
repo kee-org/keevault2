@@ -22,7 +22,7 @@ class PasswordGeneratorWidget extends TraceableStatefulWidget {
   }) : super(key: key);
 
   @override
-  _PasswordGeneratorWidgetState createState() => _PasswordGeneratorWidgetState();
+  State<PasswordGeneratorWidget> createState() => _PasswordGeneratorWidgetState();
 }
 
 class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> {
@@ -120,12 +120,13 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> {
                 OutlinedButton(
                     child: widget.apply != null ? Text(str.apply.toUpperCase()) : Text(str.alertCopy.toUpperCase()),
                     onPressed: () async {
+                      final navigator = Navigator.of(context);
                       if (widget.apply != null) {
                         widget.apply!(_currentPassword);
                       } else {
                         await Clipboard.setData(ClipboardData(text: _currentPassword));
                       }
-                      Navigator.of(context).pop(true);
+                      navigator.pop(true);
                     }),
               ],
             ));

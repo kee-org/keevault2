@@ -19,7 +19,7 @@ class ResetAccountPromptDialog extends TraceableStatefulWidget with DialogMixin<
   final String emailAddress;
 
   @override
-  _ResetAccountPromptDialogState createState() => _ResetAccountPromptDialogState();
+  State<ResetAccountPromptDialog> createState() => _ResetAccountPromptDialogState();
 
   @override
   String get name => '/dialog/resetAccountPrompt';
@@ -43,6 +43,9 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> {
 
   Future<void> signup() async {
     final str = S.of(context);
+    final navigator = Navigator.of(context);
+    final sm = ScaffoldMessenger.of(context);
+    final appSettingsCubit = BlocProvider.of<AppSettingsCubit>(context);
     formKey.currentState?.validate();
     if (!EmailValidator.validate(_controller.text)) {
       setState(() {
@@ -63,9 +66,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> {
       final result = await mailerService.signup(_controller.text.toLowerCase());
       if (result) {
         l.d('signup successful');
-        final sm = ScaffoldMessenger.of(context);
-        final appSettingsCubit = BlocProvider.of<AppSettingsCubit>(context);
-        Navigator.of(context).pop(true);
+        navigator.pop(true);
         sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
         MatomoTracker.trackEvent('prcSignup', 'home');
         await appSettingsCubit.iamEmailSignupSuppressUntil(DateTime(2122));
@@ -101,8 +102,9 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> {
                 icon: Text(str.startAccountReset),
                 label: Icon(Icons.open_in_new),
                 onPressed: () async {
+                  final navigator = Navigator.of(context);
                   await DialogUtils.openUrl(EnvironmentConfig.webUrl + '/#dest=resetPassword');
-                  Navigator.of(context).pop(true);
+                  navigator.pop(true);
                 },
               ),
               Padding(
