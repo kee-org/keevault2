@@ -41,7 +41,7 @@ dependencies:
 
   package_info_plus: ^1.4.0
   shared_preferences: ^2.0.13
-  flutter_settings_screens: ^0.3.2-null-safety
+  flutter_settings_screens: 0.3.2-null-safety # Locked due to breaking changes up till 0.3.3
   argon2_ffi:
     git:
       url: https://github.com/authpass/argon2_ffi.git
@@ -53,7 +53,7 @@ dependencies:
   bloc: ^8.0.3
   flutter_bloc: ^8.0.1
   fluro: ^2.0.3
-  dio: 4.0.4 # locked on 20220329 due to large changes in patch release a few minutes before we finalised first potential app release version
+  dio: ^4.0.6
   crypto_keys: ^0.3.0
   pointycastle: ^3.5.1
   srp:
@@ -96,12 +96,12 @@ dependencies:
   flutter_rating_bar: ^4.0.0
   mime: ^1.0.1
   share_plus: ^4.0.3
-  path: ^1.8.0
-  permission_handler: ^9.2.0
+  path: ^1.8.1
+  permission_handler: ^9.0.0 # Locked until compileSdkVersion can be updated to 33
   flutter_file_dialog: ^2.3.0
   base32: ^2.1.1
   barcode_scan2: 4.2.1
-  flutter_speed_dial: ^5.0.0+1
+  flutter_speed_dial: ^6.0.0
   receive_intent:
     git:
       url: https://github.com/kee-org/receive_intent
@@ -114,15 +114,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.9.2"
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
   dependency_validator: ^3.2.0
 
 dependency_overrides:
-  #collection: 1.15.0 # xml dependency is incorrectly declared incompatible with stable version of flutter sdk
   # flutter_autofill_service:
   #   path: ../flutter_autofill_service/
-  # biometric_storage:
-  #   path: ../biometric_storage/
+  biometric_storage:
+    path: ../biometric_storage/
+  kdbx:
+    path: ../kdbx.dart/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
