@@ -122,11 +122,13 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             SettingsGroup(title: str.deviceSettings, children: [
               Visibility(
                 visible: autofillState is AutofillAvailable,
-                child: SettingsContainer(
-                  children: [
-                    AutofillStatusWidget(isEnabled: (autofillState as AutofillAvailable).enabled),
-                  ],
-                ),
+                child: autofillState is AutofillAvailable
+                    ? SettingsContainer(
+                        children: [
+                          AutofillStatusWidget(isEnabled: autofillState.enabled),
+                        ],
+                      )
+                    : Container(),
               ),
               BiometricSettingWidget(),
             ]),

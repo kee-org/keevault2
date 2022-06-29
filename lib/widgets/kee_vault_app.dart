@@ -15,7 +15,9 @@ import 'package:keevault/logging/logger.dart';
 import 'package:keevault/quick_unlocker.dart';
 import 'package:keevault/config/environment_config.dart';
 import 'package:matomo/matomo.dart';
+//import 'package:platform/platform.dart';
 import '../colors.dart';
+import '../config/platform.dart';
 import '../cubit/interaction_cubit.dart';
 import '../remote_vault_repository.dart';
 import '../user_repository.dart';
@@ -63,13 +65,13 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => Jiffy.locale('en_gb'));
     WidgetsBinding.instance.addObserver(this);
-    _initReceiveIntentSubscription();
+    if (KeeVaultPlatform.isAndroid) _initReceiveIntentSubscription();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _receiveIntentSubscription?.cancel();
+    if (KeeVaultPlatform.isAndroid) _receiveIntentSubscription?.cancel();
     super.dispose();
   }
 

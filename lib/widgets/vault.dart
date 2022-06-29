@@ -310,13 +310,16 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
   }
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
+    final MediaQueryData mq = MediaQuery.of(context);
     const double layerTitleHeight = 48.0;
-    final double bottomAppBarHeight = WidgetsBinding.instance.window.viewInsets.bottom <= 0.0 ? 48.0 : 0;
+    // bottom app bar height is increased by viewPadding and zero when keyboard is showing
+    //final double bottomAppBarHeight = mq.viewInsets.bottom <= 0.0 ? mq.padding.bottom : 0;
+    final double bottomAppBarHeight = mq.padding.bottom;
     final Size layerSize = constraints.biggest;
     final double layerTop = layerSize.height - layerTitleHeight - bottomAppBarHeight;
 
     Animation<RelativeRect> layerAnimation = RelativeRectTween(
-      begin: RelativeRect.fromLTRB(0.0, layerTop, 0.0, layerTop - layerSize.height),
+      begin: RelativeRect.fromLTRB(0.0, layerTop, 0.0, 0),
       end: RelativeRect.fromLTRB(0.0, 0.0, 0.0, 0.0),
     ).animate(_controller.view);
 
