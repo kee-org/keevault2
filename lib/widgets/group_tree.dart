@@ -68,55 +68,51 @@ class GroupTreeWidget extends StatelessWidget {
                 if (state is! FilterActive) return Container();
                 //TODO:f: Add a "search for group name" textfield which can then filter the list of nodes that we supply
                 final selectedGroup = state.groupUuid;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 96.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: GroupTreeListWidget(nodes: nodes, selectedGroupUuid: selectedGroup),
-                            ),
-                            if (binNodes != null)
-                              Container(
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.symmetric(horizontal: BorderSide(color: theme.canvasColor, width: 2))),
-                                child: ConstrainedBox(
-                                  constraints:
-                                      BoxConstraints(maxHeight: (MediaQuery.of(context).size.height - 300) * 0.6),
-                                  child: GroupTreeListWidget(nodes: binNodes, selectedGroupUuid: selectedGroup),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16, bottom: 8.0, left: 8, right: 16),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Icon(
-                                Icons.info,
-                                color: theme.textTheme.caption!.color,
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: GroupTreeListWidget(nodes: nodes, selectedGroupUuid: selectedGroup),
+                          ),
+                          if (binNodes != null)
+                            Container(
+                              decoration: BoxDecoration(
+                                  border: Border.symmetric(horizontal: BorderSide(color: theme.canvasColor, width: 2))),
+                              child: ConstrainedBox(
+                                constraints:
+                                    BoxConstraints(maxHeight: (MediaQuery.of(context).size.height - 300) * 0.6),
+                                child: GroupTreeListWidget(nodes: binNodes, selectedGroupUuid: selectedGroup),
                               ),
                             ),
-                            Expanded(
-                                child: Text(
-                              str.longPressGroupExplanation,
-                              style: theme.textTheme.caption,
-                            )),
-                          ],
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 8.0, left: 8, right: 16),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Icon(
+                              Icons.info,
+                              color: theme.textTheme.caption!.color,
+                            ),
+                          ),
+                          Expanded(
+                              child: Text(
+                            str.longPressGroupExplanation,
+                            style: theme.textTheme.caption,
+                          )),
+                        ],
+                      ),
+                    ),
+                  ],
                 );
               },
             );

@@ -12,72 +12,69 @@ class ColorFilterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final str = S.of(context);
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 96.0),
-      child: BlocBuilder<FilterCubit, FilterState>(
-        builder: (context, state) {
-          if (state is! FilterActive) return Container();
-          final filterState = state;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Wrap(
-                            spacing: 16.0,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            alignment: WrapAlignment.center,
-                            runSpacing: 16.0,
-                            children: EntryColor.values
-                                .map((c) => colorBlock(c, filterState.colors.contains(c), theme, context))
-                                .toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 8.0, left: 8, right: 16),
+    return BlocBuilder<FilterCubit, FilterState>(
+      builder: (context, state) {
+        if (state is! FilterActive) return Container();
+        final filterState = state;
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
                 child: Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(
-                        Icons.info,
-                        color: theme.textTheme.caption!.color,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Wrap(
+                          spacing: 16.0,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.center,
+                          runSpacing: 16.0,
+                          children: EntryColor.values
+                              .map((c) => colorBlock(c, filterState.colors.contains(c), theme, context))
+                              .toList(),
+                        ),
                       ),
                     ),
-                    Expanded(
-                        child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            str.colorsExplanation,
-                            style: theme.textTheme.caption,
-                          ),
-                        ),
-                        Text(
-                          str.colorFilteringHint,
-                          style: theme.textTheme.caption,
-                        ),
-                      ],
-                    )),
                   ],
                 ),
               ),
-            ],
-          );
-        },
-      ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16, bottom: 8.0, left: 8, right: 16),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(
+                      Icons.info,
+                      color: theme.textTheme.caption!.color,
+                    ),
+                  ),
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          str.colorsExplanation,
+                          style: theme.textTheme.caption,
+                        ),
+                      ),
+                      Text(
+                        str.colorFilteringHint,
+                        style: theme.textTheme.caption,
+                      ),
+                    ],
+                  )),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

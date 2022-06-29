@@ -20,6 +20,7 @@ class EntryFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final MediaQueryData mq = MediaQuery.of(context);
     return DefaultTabController(
       length: 4,
       child: Center(
@@ -56,15 +57,18 @@ class EntryFilters extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: TabBarView(
-                children: const [
-                  GroupTreeWidget(
-                    treeMode: GroupTreeMode.all,
-                  ),
-                  LabelFilterWidget(),
-                  ColorFilterWidget(),
-                  TextFilterWidget(),
-                ],
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 48.0 + mq.padding.bottom),
+                child: TabBarView(
+                  children: const [
+                    GroupTreeWidget(
+                      treeMode: GroupTreeMode.all,
+                    ),
+                    LabelFilterWidget(),
+                    ColorFilterWidget(),
+                    TextFilterWidget(),
+                  ],
+                ),
               ),
             )
           ],
