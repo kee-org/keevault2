@@ -308,7 +308,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "integrationSettings":
             MessageLookupByLibrary.simpleMessage("Integration settings"),
         "integrationSettingsExplainer": MessageLookupByLibrary.simpleMessage(
-            "These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android, or iOS)."),
+            "These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android)."),
         "introFilter": MessageLookupByLibrary.simpleMessage(
             "\nFilter by group, label, colour and text"),
         "introSortYourEntries":

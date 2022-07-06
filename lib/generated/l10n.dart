@@ -450,10 +450,10 @@ class S {
     );
   }
 
-  /// `These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android, or iOS).`
+  /// `These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android).`
   String get integrationSettingsExplainer {
     return Intl.message(
-      'These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android, or iOS).',
+      'These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android).',
       name: 'integrationSettingsExplainer',
       desc: '',
       args: [],

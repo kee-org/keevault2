@@ -39,7 +39,7 @@
   "manageAccountSettingsDetail": "Edit your subscription, payment details or email contact preferences from the Kee Vault Account website.",
   "deviceSettings": "Device Settings",
   "integrationSettings": "Integration settings",
-  "integrationSettingsExplainer": "These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android, or iOS).",
+  "integrationSettingsExplainer": "These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android).",
   "additionalUrlsToMatch": "Additional URLs to match",
   "androidAppIdsToMatch": "Android app technical names to match",
   "showEntryInBrowsersAndApps": "Show this entry in Kee browser extension (desktop), mobile apps and browsers",

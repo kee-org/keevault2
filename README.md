@@ -6,7 +6,7 @@ Kee Vault 2 is a password manager for multiple devices. Password databases (Vaul
 
 The optional paid subscription service to enable synchronisation (among other benefits and morally good feelings) is fully compatible with the first version of Kee Vault so version 1 and 2 can be used interchangeably depending upon your specific requirements.
 
-Initially we offer only an Android version of Kee Vault 2 but the underlying development platform (Flutter) should allow us to release versions in the future for iOS, desktop devices and/or fully replace the web app version (Kee Vault v1).
+We offer an Android and iOS version of Kee Vault 2 but the underlying development platform (Flutter) should allow us to release versions in the future for desktop devices and/or fully replace the web app version (Kee Vault v1).
 
 To subscribe to the Kee Vault service or view the code for version 1, see the https://github.com/kee-org/keevault repository.
 
