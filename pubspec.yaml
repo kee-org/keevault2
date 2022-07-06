@@ -118,7 +118,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: "^0.9.2"
+  flutter_launcher_icons: "^0.9.3"
   flutter_lints: ^2.0.1
   dependency_validator: ^3.2.0
 
@@ -167,9 +167,10 @@ flutter:
 flutter_intl:
   enabled: true
 
+# config for flutter_launcher_icons
 flutter_icons:
   android: true
   ios: true
   image_path: "assets/icon/v-light-key-512.png"
-  remove_alpha_ios: true
+  image_path_ios: "assets/icon/v-light-key-512-no-transparency-1eighthpadding.png"
   
