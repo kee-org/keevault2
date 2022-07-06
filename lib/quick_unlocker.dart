@@ -34,8 +34,14 @@ class QuickUnlocker {
     return val;
   }
 
-  Future<BiometricStorageFile> _storageFile() => _storageFileCached ??= BiometricStorage().getStorage(storageFileName,
-      forceInit: true, options: StorageFileInitOptions(authenticationValidityDurationSeconds: authGracePeriod));
+  final iosPromptInfo = IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword);
+
+  Future<BiometricStorageFile> _storageFile() => _storageFileCached ??= BiometricStorage().getStorage(
+        storageFileName,
+        forceInit: true,
+        options: StorageFileInitOptions(authenticationValidityDurationSeconds: authGracePeriod),
+        promptInfo: PromptInfo(iosPromptInfo: iosPromptInfo),
+      );
 
   Future<QUStatus> initialiseForUser(String user, bool force) async {
     if (!force && _currentCreds != null && _currentUser != null && _currentUser == user) {
@@ -110,7 +116,7 @@ class QuickUnlocker {
   Future<String?> _read(BiometricStorageFile storage) async {
     try {
       final contents = await storage.read(
-          perActionPromptInfo: PromptInfo(
+          promptInfo: PromptInfo(
               androidPromptInfo: AndroidPromptInfo(title: S.current.unlock, description: S.current.confirmItsYou)));
       return contents;
     } on AuthException catch (e, stackTrace) {
@@ -132,7 +138,7 @@ $stackTrace''');
   Future<void> _write(BiometricStorageFile storage, String contents) async {
     try {
       await storage.write(contents,
-          perActionPromptInfo: PromptInfo(
+          promptInfo: PromptInfo(
               androidPromptInfo: AndroidPromptInfo(
                   title: S.current.rememberVaultPassword, description: S.current.biometricsStoreDescription)));
     } on AuthException catch (e, stackTrace) {
