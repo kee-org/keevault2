@@ -50,7 +50,8 @@ class VaultImporting extends VaultOpening {
 class VaultLocalFileCredentialsRequired extends VaultState {
   final String reason;
   final bool causedByInteraction;
-  const VaultLocalFileCredentialsRequired(this.reason, this.causedByInteraction);
+  final QUStatus quStatus;
+  const VaultLocalFileCredentialsRequired(this.reason, this.causedByInteraction, {this.quStatus = QUStatus.unknown});
 }
 
 class VaultRemoteFileCredentialsRequired extends VaultState {

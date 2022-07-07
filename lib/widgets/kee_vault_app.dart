@@ -12,7 +12,7 @@ import 'package:keevault/cubit/generator_profiles_cubit.dart';
 import 'package:keevault/cubit/sort_cubit.dart';
 import 'package:keevault/local_vault_repository.dart';
 import 'package:keevault/logging/logger.dart';
-import 'package:keevault/quick_unlocker.dart';
+import 'package:keevault/credentials/quick_unlocker.dart';
 import 'package:keevault/config/environment_config.dart';
 import 'package:matomo/matomo.dart';
 //import 'package:platform/platform.dart';

@@ -4,8 +4,8 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
 import 'expiring_cached_credential_hash.dart';
 import 'expiring_cached_credential_hash_map.dart';
-import 'config/environment_config.dart';
-import 'logging/logger.dart';
+import '../config/environment_config.dart';
+import '../logging/logger.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class QuickUnlocker {
@@ -34,13 +34,13 @@ class QuickUnlocker {
     return val;
   }
 
-  final iosPromptInfo = IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword);
-
   Future<BiometricStorageFile> _storageFile() => _storageFileCached ??= BiometricStorage().getStorage(
         storageFileName,
         forceInit: true,
         options: StorageFileInitOptions(authenticationValidityDurationSeconds: authGracePeriod),
-        promptInfo: PromptInfo(iosPromptInfo: iosPromptInfo),
+        promptInfo: PromptInfo(
+          iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
+        ),
       );
 
   Future<QUStatus> initialiseForUser(String user, bool force) async {

@@ -3409,6 +3409,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Biometrics must be refreshed`
+  String get biometricsMaybeExpired {
+    return Intl.message(
+      'Biometrics must be refreshed',
+      name: 'biometricsMaybeExpired',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

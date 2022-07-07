@@ -1,5 +1,7 @@
 import 'package:keevault/logging/logger.dart';
 
+import '../credentials/quick_unlocker.dart';
+
 class KeeException implements Exception {
   final String? cause;
   final dynamic exception;
@@ -56,7 +58,12 @@ class KeeServiceTransportException extends KeeException {
 
 class KeeInvalidStateException extends KeeException {}
 
-class KeeLoginRequiredException extends KeeException {}
+class KeeLoginRequiredException extends KeeException {
+  final QUStatus? quStatus;
+
+  KeeLoginRequiredException({String? cause, this.quStatus, dynamic exception, StackTrace? stackTrace})
+      : super(cause, exception, stackTrace);
+}
 
 class KeeLoginFailedException extends KeeException {}
 

@@ -1,6 +1,7 @@
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:keevault/config/app.dart';
 import 'package:keevault/config/routes.dart';
+import 'package:keevault/credentials/quick_unlocker.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/vault_backend/user.dart';
@@ -103,7 +104,8 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
           reason: str.unlockRequired,
           onSubmit: _localAuthenticate,
           forceBiometric: _localAuthenticateWithStoredCreds,
-          showError: state.causedByInteraction,
+          showError: state.causedByInteraction || state.quStatus == QUStatus.mapAvailable,
+          quStatus: state.quStatus,
         );
       } else if (state is VaultRemoteFileCredentialsRequired) {
         return VaultPasswordCredentialsWidget(
