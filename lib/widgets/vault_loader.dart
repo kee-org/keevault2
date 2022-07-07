@@ -151,7 +151,7 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
           }
         }
         filterContext.start(
-            state.vault.files.current.body.rootGroup.uuid.uuid, Settings.getValue<bool>('expandGroups', true));
+            state.vault.files.current.body.rootGroup.uuid.uuid, Settings.getValue<bool>('expandGroups') ?? true);
         await interactionContext.databaseOpened();
         // context my have become detached from widget tree by this point
         // but router requires we have it so have to use this hack

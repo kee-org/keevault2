@@ -23,7 +23,7 @@ class SyncedAppSettings {
   static Future<void> import(GeneratorProfilesCubit cubit, KeeVaultEmbeddedConfig embeddedConfig) async {
     final embedded = embeddedConfig.vault?['prefs']?['generatorPresets'];
     final int? sourceUpdatedAt = embeddedConfig.vault?['updatedAt']?['generatorPresets'];
-    final int ourUpdatedAt = Settings.getValue<int>('embeddedConfigUpdatedAtGeneratorPresets', -1);
+    final int ourUpdatedAt = Settings.getValue<int>('embeddedConfigUpdatedAtGeneratorPresets') ?? -1;
     if (sourceUpdatedAt == null || (ourUpdatedAt > 0 && sourceUpdatedAt <= ourUpdatedAt)) {
       l.d('Supplied config for import is not newer than our current one so we are ignoring it.');
       return;

@@ -295,7 +295,7 @@ class PasswordGeneratorProfileSettings {
   }
 
   factory PasswordGeneratorProfileSettings.fromStorage() {
-    final loadedString = Settings.getValue<String>('generatorPresets', '');
+    final loadedString = Settings.getValue<String>('generatorPresets') ?? '';
     if (loadedString.isNotEmpty) {
       try {
         return PasswordGeneratorProfileSettings.fromJson(loadedString);

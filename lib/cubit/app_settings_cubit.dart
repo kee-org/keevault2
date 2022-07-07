@@ -9,8 +9,8 @@ part 'app_settings_state.dart';
 class AppSettingsCubit extends Cubit<AppSettingsState> {
   AppSettingsCubit()
       : super(AppSettingsBasic(
-          getThemeMode(Settings.getValue<String>('theme', 'sys')),
-          Settings.getValue('introShownVaultSummary', false),
+          getThemeMode(Settings.getValue<String>('theme') ?? 'sys'),
+          Settings.getValue<bool>('introShownVaultSummary') ?? false,
           InAppMessage.fromAppSetting('iamEmailSignup'),
           InAppMessage.fromAppSetting('iamMakeMoreChangesOrSave'),
           InAppMessage.fromAppSetting('iamSavingVault'),

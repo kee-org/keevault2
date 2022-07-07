@@ -29,7 +29,7 @@ class QuickUnlocker {
   // changes to authenticationValidityDurationSeconds only take effect when creating
   // a new storage file, not for every read or write to it.
   int get authGracePeriod {
-    final val = int.tryParse(Settings.getValue<String>('authGracePeriod', '60')) ?? 60;
+    final val = int.tryParse(Settings.getValue<String>('authGracePeriod') ?? '60') ?? 60;
     l.d('Will require reauthentication every $val seconds');
     return val;
   }
@@ -49,7 +49,7 @@ class QuickUnlocker {
     }
     _currentCreds = null;
     _currentUser = null;
-    if (!Settings.getValue<bool>('biometrics-enabled', true)) {
+    if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return QUStatus.unavailable;
     }
@@ -159,7 +159,7 @@ $stackTrace''');
   }
 
   Future<Credentials?> loadQuickUnlockFileCredentials() async {
-    if (!Settings.getValue<bool>('biometrics-enabled', true)) {
+    if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return null;
     }
@@ -171,7 +171,7 @@ $stackTrace''');
   }
 
   Future<String?> loadQuickUnlockUserPassKey() async {
-    if (!Settings.getValue<bool>('biometrics-enabled', true)) {
+    if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return null;
     }
@@ -183,7 +183,7 @@ $stackTrace''');
   }
 
   Future<void> saveQuickUnlockUserPassKey(String? userPassKey) async {
-    if (!Settings.getValue<bool>('biometrics-enabled', true)) {
+    if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
     }
@@ -210,7 +210,7 @@ $stackTrace''');
   }
 
   Future<void> saveQuickUnlockFileCredentials(Credentials? creds, int expiryTime) async {
-    if (!Settings.getValue<bool>('biometrics-enabled', true)) {
+    if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
     }
@@ -242,6 +242,25 @@ $stackTrace''');
     final storage = await _storageFile();
     _currentCreds = updatedCreds;
     _currentCredsMap!.update(_currentUser!, updatedCreds);
+    await _write(storage, json.encode(_currentCredsMap));
+  }
+
+  Future<void> saveBothSecrets(String userPassKey, Credentials creds, int expiryTime) async {
+    if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
+      l.d('Quick unlock disabled by user');
+      return;
+    }
+    if (_currentUser == null) {
+      l.d('Quick unlock unavailable');
+      return;
+    }
+
+    final encodedCreds = base64.encode(creds.getHash());
+    final newCreds = ExpiringCachedCredentials(encodedCreds, userPassKey, expiryTime);
+
+    final storage = await _storageFile();
+    _currentCreds = newCreds;
+    _currentCredsMap!.update(_currentUser!, newCreds);
     await _write(storage, json.encode(_currentCredsMap));
   }
 

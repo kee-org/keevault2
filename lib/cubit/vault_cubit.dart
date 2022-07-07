@@ -331,8 +331,8 @@ class VaultCubit extends Cubit<VaultState> {
     final key = protectedValue.hash;
     await user.attachKey(key);
     l.d('Updating QU with newly successful password');
-    //TODO:f: New method so that user doesn't have to do biometric authentication twice when changing both existing stored passwords. Probably can ignore this TODO if we have some number of seconds grace on the auth status now.
-    final requireFullPasswordPeriod = int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod', '60')) ?? 60;
+    final requireFullPasswordPeriod =
+        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     await _qu.saveQuickUnlockUserPassKey(user.passKey);
     await _qu.saveQuickUnlockFileCredentials(
@@ -440,7 +440,7 @@ class VaultCubit extends Cubit<VaultState> {
         return false;
       }
       final requireFullPasswordPeriod =
-          int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod', '60')) ?? 60;
+          int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
       l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
       if (user != null && suppliedPassword != null) {
         await user.attachKey(suppliedPassword.hash);
@@ -547,7 +547,7 @@ class VaultCubit extends Cubit<VaultState> {
           if (overridePassword != null) {
             l.d('Updating QU with newly successful password');
             final requireFullPasswordPeriod =
-                int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod', '60')) ?? 60;
+                int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
             l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
             await _qu.saveQuickUnlockUserPassKey(user.passKey);
             await _qu.saveQuickUnlockFileCredentials(
@@ -810,6 +810,24 @@ class VaultCubit extends Cubit<VaultState> {
     if (!await _qu.delete()) {
       l.e('Failed to remove quick unlock data. Recent settings changes will not take affect in a predictable way');
     }
+  }
+
+  Future<void> enableQuickUnlock(User? user, Credentials? credentials) async {
+    if (credentials == null) {
+      l.w("No credentials available so can't save to quick unlock");
+      return;
+    }
+    l.d('Enabling quick unlock data for current user. Other users will have to sign in with their master password next time.');
+    final requireFullPasswordPeriod =
+        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
+    l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
+    final quStatus = await _qu.initialiseForUser(user?.emailHashed ?? _qu.localUserMagicString, true);
+    if (quStatus != QUStatus.mapAvailable && quStatus != QUStatus.credsAvailable) {
+      l.w("Quick unlock credential provider is unavailable or unknown. Can't proceed to save credentials in this state.");
+      return;
+    }
+    await _qu.saveBothSecrets(user?.passKey ?? 'notARealPassword', credentials,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
   }
 
   Future<void> save(User? user, {bool skipRemote = false}) async {

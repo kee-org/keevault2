@@ -194,9 +194,15 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
       settingKey: 'biometrics-enabled',
       title: str.biometricSignIn,
       onChange: (value) {
-        //TODO:f: Can we prompt immediately to get the relevant credentials stored?
+        final vaultCubit = BlocProvider.of<VaultCubit>(context);
         if (!value) {
-          BlocProvider.of<VaultCubit>(context).disableQuickUnlock();
+          vaultCubit.disableQuickUnlock();
+        } else {
+          final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+          vaultCubit.enableQuickUnlock(
+            user,
+            vaultCubit.currentVaultFile?.files.current.credentials,
+          );
         }
       },
       enabled: _isEnabled,
@@ -216,7 +222,15 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
             }
             return str.enterNumberBetweenXAndY(1, 3600);
           },
-          onChange: (_) => BlocProvider.of<VaultCubit>(context).disableQuickUnlock(),
+          onChange: (_) {
+            final vaultCubit = BlocProvider.of<VaultCubit>(context);
+            vaultCubit.disableQuickUnlock();
+            final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+            vaultCubit.enableQuickUnlock(
+              user,
+              vaultCubit.currentVaultFile?.files.current.credentials,
+            );
+          },
           autoValidateMode: AutovalidateMode.always,
         ),
         TextInputSettingsTile(
@@ -233,7 +247,15 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
             }
             return str.enterNumberBetweenXAndY(1, 180);
           },
-          onChange: (_) => BlocProvider.of<VaultCubit>(context).disableQuickUnlock(),
+          onChange: (_) {
+            final vaultCubit = BlocProvider.of<VaultCubit>(context);
+            vaultCubit.disableQuickUnlock();
+            final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+            vaultCubit.enableQuickUnlock(
+              user,
+              vaultCubit.currentVaultFile?.files.current.credentials,
+            );
+          },
           autoValidateMode: AutovalidateMode.always,
         ),
       ],

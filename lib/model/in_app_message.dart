@@ -85,7 +85,7 @@ class InAppMessage {
     switch (settingKey) {
       case 'iamEmailSignup':
         {
-          final storedSetting = Settings.getValue('iamEmailSignup', '');
+          final storedSetting = Settings.getValue<String>('iamEmailSignup') ?? '';
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(
@@ -101,7 +101,7 @@ class InAppMessage {
         }
       case 'iamMakeMoreChangesOrSave':
         {
-          final storedSetting = Settings.getValue('iamMakeMoreChangesOrSave', '');
+          final storedSetting = Settings.getValue<String>('iamMakeMoreChangesOrSave') ?? '';
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(
@@ -117,7 +117,7 @@ class InAppMessage {
         }
       case 'iamSavingVault':
         {
-          final storedSetting = Settings.getValue('iamSavingVault', '');
+          final storedSetting = Settings.getValue<String>('iamSavingVault') ?? '';
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(
@@ -133,7 +133,7 @@ class InAppMessage {
         }
       case 'iamAutofillDisabled':
         {
-          final storedSetting = Settings.getValue('iamAutofillDisabled', '');
+          final storedSetting = Settings.getValue<String>('iamAutofillDisabled') ?? '';
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(

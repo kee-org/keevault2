@@ -42,7 +42,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
     final hide = widget.forceBiometric == null ||
         widget.quStatus == QUStatus.mapAvailable ||
         widget.quStatus == QUStatus.unavailable ||
-        !Settings.getValue<bool>('biometrics-enabled', true) ||
+        !(Settings.getValue<bool>('biometrics-enabled') ?? true) ||
         !(await QuickUnlocker().supportsBiometricKeyStore()) ||
         widget.quStatus == QUStatus.mapAvailable ||
         widget.quStatus == QUStatus.unavailable;
