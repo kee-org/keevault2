@@ -10,10 +10,11 @@ import 'package:keevault/cubit/generator_profiles_cubit.dart';
 import 'package:keevault/local_vault_repository.dart';
 import 'package:keevault/locked_vault_file.dart';
 import 'package:keevault/password_strength.dart';
-import 'package:keevault/quick_unlocker.dart';
+import 'package:keevault/credentials/quick_unlocker.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/vault_backend/user.dart';
 import '../async_helpers.dart';
+import '../credentials/credential_lookup_result.dart';
 import '../remote_vault_repository.dart';
 import '../user_repository.dart';
 import '../vault_file.dart';
@@ -101,7 +102,7 @@ class VaultCubit extends Cubit<VaultState> {
     l.d('starting vault cubit (free mode)');
     Credentials? creds;
 
-    Future<Credentials?> credentialProvider() async {
+    Future<CredentialLookupResult> credentialProvider() async {
       return await loadLocalUserQuickUnlockFileCredentialsIfNotSupplied(creds);
     }
 
@@ -145,7 +146,7 @@ class VaultCubit extends Cubit<VaultState> {
     l.d('starting vault cubit');
     Credentials? creds;
 
-    Future<Credentials?> credentialProvider() async {
+    Future<CredentialLookupResult> credentialProvider() async {
       return await loadQuickUnlockFileCredentialsIfNotSupplied(creds, user);
     }
 
@@ -308,7 +309,7 @@ class VaultCubit extends Cubit<VaultState> {
     try {
       l.d('loading the pending update locked with new master password');
       final pendingUpdateFile = await _localVaultRepo.loadStagedUpdate(user, () async {
-        return creds;
+        return CredentialLookupResult(credentials: creds, quStatus: QUStatus.unknown);
       }, vState.vaultLocal.persistedAt);
       if (pendingUpdateFile != null) {
         l.d('applying pending update from remote to local file');
@@ -402,7 +403,7 @@ class VaultCubit extends Cubit<VaultState> {
       emit(const VaultOpening());
       final suppliedCreds = suppliedPassword != null ? Credentials(suppliedPassword) : null;
 
-      Future<Credentials?> credentialProvider() async {
+      Future<CredentialLookupResult> credentialProvider() async {
         if (user == null) {
           return await loadLocalUserQuickUnlockFileCredentialsIfNotSupplied(suppliedCreds);
         }
@@ -453,8 +454,9 @@ class VaultCubit extends Cubit<VaultState> {
       l.d('local vault opened');
       await emitVaultLoaded(file, user, safe: false);
       return true;
-    } on KeeLoginRequiredException {
-      emit(VaultLocalFileCredentialsRequired('no message', suppliedPassword != null));
+    } on KeeLoginRequiredException catch (e) {
+      emit(VaultLocalFileCredentialsRequired('no message', suppliedPassword != null,
+          quStatus: e.quStatus ?? QUStatus.unknown));
     } on KdbxInvalidKeyException {
       emit(VaultLocalFileCredentialsRequired('KDBX key incorrect', suppliedPassword != null));
     } on Exception catch (e) {
@@ -463,21 +465,26 @@ class VaultCubit extends Cubit<VaultState> {
     return false;
   }
 
-  Future<Credentials?> loadQuickUnlockFileCredentialsIfNotSupplied(Credentials? suppliedCreds, User user) async {
+  Future<CredentialLookupResult> loadQuickUnlockFileCredentialsIfNotSupplied(
+      Credentials? suppliedCreds, User user) async {
     if (suppliedCreds != null) {
-      return suppliedCreds;
+      return CredentialLookupResult(credentials: suppliedCreds, quStatus: QUStatus.unknown);
     } else {
-      await _userRepo.setQuickUnlockUser(user);
-      return await _qu.loadQuickUnlockFileCredentials();
+      final quStatus = await _userRepo.setQuickUnlockUser(user);
+      final creds = await _qu
+          .loadQuickUnlockFileCredentials(); //TODO:f: gate on credsAvailable as per local user to reduce log noise?
+      return CredentialLookupResult(credentials: creds, quStatus: quStatus);
     }
   }
 
-  Future<Credentials?> loadLocalUserQuickUnlockFileCredentialsIfNotSupplied(Credentials? suppliedCreds) async {
+  Future<CredentialLookupResult> loadLocalUserQuickUnlockFileCredentialsIfNotSupplied(
+      Credentials? suppliedCreds) async {
     if (suppliedCreds != null) {
-      return suppliedCreds;
+      return CredentialLookupResult(credentials: suppliedCreds, quStatus: QUStatus.unknown);
     }
     final quStatus = await _qu.initialiseForUser(_qu.localUserMagicString, false);
-    return quStatus == QUStatus.credsAvailable ? await _qu.loadQuickUnlockFileCredentials() : null;
+    final creds = quStatus == QUStatus.credsAvailable ? await _qu.loadQuickUnlockFileCredentials() : null;
+    return CredentialLookupResult(credentials: creds, quStatus: quStatus);
   }
 
   Future<void> refresh(User user, {String? overridePassword}) async {

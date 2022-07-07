@@ -334,5 +334,6 @@
   "currentPassword": "Current Password",
   "currentPasswordNotCorrect": "Current password is not correct",
   "passwordChanged": "Password changed. Use it when you next unlock Kee Vault.",
-  "viewDocumentation": "View documentation"
+  "viewDocumentation": "View documentation",
+  "biometricsMaybeExpired": "Biometrics must be refreshed"
 }

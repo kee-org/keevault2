@@ -1,6 +1,6 @@
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/vault_backend/user.dart';
-import 'quick_unlocker.dart';
+import 'credentials/quick_unlocker.dart';
 import 'vault_backend/exceptions.dart';
 import 'vault_backend/user_service.dart';
 
@@ -9,8 +9,8 @@ class UserRepository {
   final UserService userService;
   UserRepository(this.userService, this.qu);
 
-  Future<void> setQuickUnlockUser(User user, {bool force = false}) async {
-    if (user.emailHashed == null) return;
+  Future<QUStatus> setQuickUnlockUser(User user, {bool force = false}) async {
+    if (user.emailHashed == null) return QUStatus.unknown;
     final quStatus = await qu.initialiseForUser(user.emailHashed!, force);
     if (quStatus == QUStatus.mapAvailable || quStatus == QUStatus.credsAvailable) {
       if (user.passKey?.isNotEmpty ?? false) {
@@ -22,6 +22,7 @@ class UserRepository {
         }
       }
     }
+    return quStatus;
   }
 
   Future<User> startSignin(User user) async {

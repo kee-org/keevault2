@@ -12,10 +12,11 @@ import 'package:keevault/locked_vault_file.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 
 import 'argon2_params.dart';
+import 'credentials/credential_lookup_result.dart';
 import 'kdbx_argon2_ffi.dart';
 import 'kdf_cache.dart';
 import 'logging/logger.dart';
-import 'quick_unlocker.dart';
+import 'credentials/quick_unlocker.dart';
 import 'vault_backend/user.dart';
 import 'vault_file.dart';
 
@@ -53,33 +54,33 @@ class LocalVaultRepository {
     );
   }
 
-  Future<LocalVaultFile?> _loadLocalFile(Future<Credentials?> Function() getCredentials, String fileName,
+  Future<LocalVaultFile?> _loadLocalFile(Future<CredentialLookupResult> Function() getCredentials, String fileName,
       [DateTime? ifNewerThan]) async {
     final file = await _loadFile(fileName, ifNewerThan);
     if (file == null) {
       return null;
     }
-    final creds = await getCredentials();
-    if (creds == null) {
-      throw KeeLoginRequiredException();
+    final credsLookupResult = await getCredentials();
+    if (credsLookupResult.credentials == null) {
+      throw KeeLoginRequiredException(quStatus: credsLookupResult.quStatus);
     }
-    return await LocalVaultFile.unlock(file.copyWith(credentials: creds));
+    return await LocalVaultFile.unlock(file.copyWith(credentials: credsLookupResult.credentials));
   }
 
-  Future<RemoteVaultFile?> _loadRemoteFile(Future<Credentials?> Function() getCredentials, String fileName,
+  Future<RemoteVaultFile?> _loadRemoteFile(Future<CredentialLookupResult> Function() getCredentials, String fileName,
       [DateTime? ifNewerThan]) async {
     final file = await _loadFile(fileName, ifNewerThan);
     if (file == null) {
       return null;
     }
-    final creds = await getCredentials();
-    if (creds == null) {
-      throw KeeLoginRequiredException();
+    final credsLookupResult = await getCredentials();
+    if (credsLookupResult.credentials == null) {
+      throw KeeLoginRequiredException(quStatus: credsLookupResult.quStatus);
     }
-    return await RemoteVaultFile.unlock(file.copyWith(credentials: creds));
+    return await RemoteVaultFile.unlock(file.copyWith(credentials: credsLookupResult.credentials));
   }
 
-  Future<LocalVaultFile?> loadFreeUser(Future<Credentials?> Function() getCredentials) async {
+  Future<LocalVaultFile?> loadFreeUser(Future<CredentialLookupResult> Function() getCredentials) async {
     final directory = await getApplicationSupportDirectory();
     final file = await _loadLocalFile(getCredentials, '${directory.path}/local_user/current.kdbx');
     return file;
@@ -91,7 +92,7 @@ class LocalVaultRepository {
     return file;
   }
 
-  Future<LocalVaultFile?> load(User user, Future<Credentials?> Function() getCredentials) async {
+  Future<LocalVaultFile?> load(User user, Future<CredentialLookupResult> Function() getCredentials) async {
     final directory = await getApplicationSupportDirectory();
     final file = await _loadLocalFile(getCredentials, '${directory.path}/${user.emailHashedB64url}/current.kdbx');
     return file;
@@ -214,7 +215,7 @@ class LocalVaultRepository {
   }
 
   Future<RemoteVaultFile?> loadStagedUpdate(
-      User user, Future<Credentials?> Function() getCredentials, DateTime ifNewerThan) async {
+      User user, Future<CredentialLookupResult> Function() getCredentials, DateTime ifNewerThan) async {
     final directory = await getApplicationSupportDirectory();
     return await _loadRemoteFile(
       getCredentials,

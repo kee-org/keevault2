@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
-import 'package:keevault/quick_unlocker.dart';
+import 'package:keevault/credentials/quick_unlocker.dart';
 import '../generated/l10n.dart';
 import '../logging/logger.dart';
 
@@ -14,12 +14,14 @@ class VaultPasswordCredentialsWidget extends StatefulWidget {
     required this.onSubmit,
     this.forceBiometric,
     required this.showError,
+    this.quStatus = QUStatus.unknown,
   }) : super(key: key);
 
   final String reason;
   final bool showError;
   final SubmitCallback onSubmit;
   final BiometricCallback? forceBiometric;
+  final QUStatus quStatus;
 
   @override
   State<VaultPasswordCredentialsWidget> createState() => _VaultPasswordCredentialsWidgetState();
@@ -38,8 +40,12 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
 
   _detectBiometrics() async {
     final hide = widget.forceBiometric == null ||
+        widget.quStatus == QUStatus.mapAvailable ||
+        widget.quStatus == QUStatus.unavailable ||
         !Settings.getValue<bool>('biometrics-enabled', true) ||
-        !(await QuickUnlocker().supportsBiometricKeyStore());
+        !(await QuickUnlocker().supportsBiometricKeyStore()) ||
+        widget.quStatus == QUStatus.mapAvailable ||
+        widget.quStatus == QUStatus.unavailable;
     setState(() {
       _showBiometricSigninButton = !hide;
     });
@@ -73,7 +79,9 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                     border: OutlineInputBorder(),
                     hintText: str.enter_your_account_password,
                     labelText: str.password,
-                    errorText: widget.showError ? str.tryAgain : null,
+                    errorText: widget.showError
+                        ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
+                        : null,
                   ),
                   validator: (value) {
                     if (value?.isEmpty ?? false) {

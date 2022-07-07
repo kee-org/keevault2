@@ -113,6 +113,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "The \"Big Tech\" companies prohibit us from directly linking to the account registration page on our website."),
         "biometricSignIn":
             MessageLookupByLibrary.simpleMessage("Biometric sign-in"),
+        "biometricsMaybeExpired": MessageLookupByLibrary.simpleMessage(
+            "Biometrics must be refreshed"),
         "biometricsStoreDescription": MessageLookupByLibrary.simpleMessage(
             "Access your passwords faster by protecting your password with biometrics"),
         "cancelExportOrImport": m1,
