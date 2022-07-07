@@ -8,12 +8,12 @@ part 'interaction_state.dart';
 class InteractionCubit extends Cubit<InteractionState> {
   InteractionCubit()
       : super(InteractionBasic(
-          Settings.getValue('interactionAnyEntrySavedCount', 0),
-          Settings.getValue('interactionAnyDatabaseSavedCount', 0),
-          Settings.getValue('interactionAnyDatabaseOpenedCount', 0),
+          Settings.getValue<int>('interactionAnyEntrySavedCount') ?? 0,
+          Settings.getValue<int>('interactionAnyDatabaseSavedCount') ?? 0,
+          Settings.getValue<int>('interactionAnyDatabaseOpenedCount') ?? 0,
           DateTime.fromMillisecondsSinceEpoch(
-              Settings.getValue('interactionInstalledBefore', DateTime.now().toUtc().millisecondsSinceEpoch)),
-          DateTime.fromMillisecondsSinceEpoch(Settings.getValue('interactionAnyDatabaseLastOpenedAt', 0)),
+              Settings.getValue<int>('interactionInstalledBefore') ?? DateTime.now().toUtc().millisecondsSinceEpoch),
+          DateTime.fromMillisecondsSinceEpoch(Settings.getValue<int>('interactionAnyDatabaseLastOpenedAt') ?? 0),
         ));
 
   Future<void> databaseOpened() async {

@@ -321,10 +321,12 @@ packages:
   flutter_settings_screens:
     dependency: "direct main"
     description:
-      name: flutter_settings_screens
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.2-null-safety"
+      path: "."
+      ref: master
+      resolved-ref: c0d952a7de4efa10ab78c507e7535249436c525c
+      url: "https://github.com/kee-org/flutter_settings_screens"
+    source: git
+    version: "0.3.3-null-safety+1"
   flutter_speed_dial:
     dependency: "direct main"
     description:

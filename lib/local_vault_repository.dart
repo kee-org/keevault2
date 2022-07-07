@@ -114,7 +114,8 @@ class LocalVaultRepository {
     await file.writeAsBytes(saved, flush: true);
     final persistedDate = await file.lastModified();
 
-    final requireFullPasswordPeriod = int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod', '60')) ?? 60;
+    final requireFullPasswordPeriod =
+        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     await qu.saveQuickUnlockFileCredentials(
         credentials, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
@@ -152,7 +153,8 @@ class LocalVaultRepository {
   }
 
   Future<void> create(User user, LockedVaultFile lockedKdbx) async {
-    final requireFullPasswordPeriod = int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod', '60')) ?? 60;
+    final requireFullPasswordPeriod =
+        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     final directory = await getApplicationSupportDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');

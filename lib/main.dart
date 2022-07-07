@@ -22,7 +22,7 @@ void main() async {
 
   await runZonedGuarded<Future<void>>(
     () async {
-      await Settings.init();
+      await Settings.init(cacheProvider: SharePreferenceCache());
       await MatomoTracker().initialize(
         siteId: 7,
         url: 'https://matomo.kee.pm/js/',

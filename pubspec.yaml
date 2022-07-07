@@ -41,7 +41,10 @@ dependencies:
 
   package_info_plus: ^1.4.0
   shared_preferences: ^2.0.13
-  flutter_settings_screens: 0.3.2-null-safety # Locked due to breaking changes up till 0.3.3
+  flutter_settings_screens: # 0.3.3-null-safety+1
+    git:
+      url: https://github.com/kee-org/flutter_settings_screens
+      ref: master
   argon2_ffi:
     git:
       url: https://github.com/authpass/argon2_ffi.git

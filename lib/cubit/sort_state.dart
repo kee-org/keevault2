@@ -17,7 +17,7 @@ class SortedState extends SortState {
 
   SortedState(SortMode? mode) {
     if (mode == null) {
-      final currentSortOrder = Settings.getValue<String>('currentSortOrder', 'modifiedDesc');
+      final currentSortOrder = Settings.getValue<String>('currentSortOrder') ?? 'modifiedDesc';
       mode = currentSortOrder.toSortMode() ?? SortMode.modifiedDesc;
     }
     // ignore: prefer_initializing_formals
