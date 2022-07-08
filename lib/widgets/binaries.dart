@@ -292,6 +292,10 @@ class BinaryCardWidget extends StatelessWidget {
                                 fileName: attachment.key.key,
                               );
                               final outputFilename = await FlutterFileDialog.saveFile(params: params);
+                              if (outputFilename == null) {
+                                l.d('File system integration reports that the export was cancelled.');
+                                return;
+                              }
                               l.i('Exported attachment to $outputFilename');
                               sm.showSnackBar(SnackBar(
                                 content: Row(

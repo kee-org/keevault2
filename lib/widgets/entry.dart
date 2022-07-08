@@ -93,12 +93,12 @@ class EntryWidget extends StatelessWidget {
         await FilePicker.platform.clearTemporaryFiles(); //TODO:f concurrently with below await operation
 
         final bytes = result?.files.firstOrNull?.bytes;
-        if (bytes != null) {
-          final fileName = result?.files.firstOrNull?.name ?? UuidUtil.createNonCryptoUuid();
-          await _attachFileContent(context, fileName, bytes);
-        } else {
+        if (bytes == null) {
           // User canceled the picker
+          return;
         }
+        final fileName = result?.files.firstOrNull?.name ?? UuidUtil.createNonCryptoUuid();
+        await _attachFileContent(context, fileName, bytes);
       } on Exception {
         DialogUtils.showErrorDialog(context, str.attachmentError, str.attachmentErrorDetails);
       }

@@ -155,24 +155,24 @@ class ImportExportWidget extends TraceableStatelessWidget {
         await FilePicker.platform.clearTemporaryFiles(); //TODO:f: concurrently with below
 
         final bytes = result?.files.firstOrNull?.bytes;
-        if (bytes != null) {
-          final extension = result?.files.firstOrNull?.extension;
-          if (extension != 'kdbx') {
-            DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
-            return;
-          }
-          final lockedSource = LockedVaultFile(
-            bytes,
-            DateTime.now(),
-            vaultState.vault.files.current.credentials,
-            null,
-            null,
-          );
-          await vaultCubit.importKdbx(
-              vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
-        } else {
+        if (bytes == null) {
           // User canceled the picker
+          return;
         }
+        final extension = result?.files.firstOrNull?.extension;
+        if (extension != 'kdbx') {
+          DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
+          return;
+        }
+        final lockedSource = LockedVaultFile(
+          bytes,
+          DateTime.now(),
+          vaultState.vault.files.current.credentials,
+          null,
+          null,
+        );
+        await vaultCubit.importKdbx(
+            vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
       } on KdbxUnsupportedException catch (e) {
         l.e('Import failed: $e');
         WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -221,6 +221,10 @@ class ImportExportWidget extends TraceableStatelessWidget {
           fileName: 'kee-vault-export-${DateTime.now().millisecondsSinceEpoch}.kdbx',
         );
         final outputFilename = await FlutterFileDialog.saveFile(params: params);
+        if (outputFilename == null) {
+          l.d('File system integration reports that the export was cancelled.');
+          return;
+        }
         l.i('Exported vault to $outputFilename');
         sm.showSnackBar(SnackBar(
           content: Row(
