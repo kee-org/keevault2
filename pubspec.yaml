@@ -126,10 +126,8 @@ dev_dependencies:
   dependency_validator: ^3.2.0
 
 dependency_overrides:
-  flutter_autofill_service:
-    path: ../flutter_autofill_service/
-  biometric_storage:
-    path: ../biometric_storage/
+  # biometric_storage:
+  #   path: ../biometric_storage/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

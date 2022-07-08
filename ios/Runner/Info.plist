@@ -11,7 +11,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-		<string>keevault</string>
+		<string>Kee Vault</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>
@@ -47,5 +47,10 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+        <key>UISupportsDocumentBrowser</key>
+		<true/>
+
+		<key>NSCameraUsageDescription</key>
+        <string>TOTP QR scanning</string>
 	</dict>
 </plist>
