@@ -69,9 +69,11 @@ packages:
   biometric_storage:
     dependency: "direct main"
     description:
-      path: "../biometric_storage"
-      relative: true
-    source: path
+      path: "."
+      ref: keevault
+      resolved-ref: a4ab555b46c92bcf57ceb028363e0e6246a0cd3d
+      url: "https://github.com/kee-org/biometric_storage.git"
+    source: git
     version: "4.1.4"
   bloc:
     dependency: "direct main"
@@ -242,10 +244,12 @@ packages:
   flutter_autofill_service:
     dependency: "direct main"
     description:
-      path: "../flutter_autofill_service"
-      relative: true
-    source: path
-    version: "0.13.2"
+      path: "."
+      ref: master
+      resolved-ref: "46792a65e3a18be80b22a6f8a2de9ee0ab17f738"
+      url: "https://github.com/kee-org/flutter_autofill_service.git"
+    source: git
+    version: "0.14.0"
   flutter_bloc:
     dependency: "direct main"
     description:
