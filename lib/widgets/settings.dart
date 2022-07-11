@@ -14,6 +14,7 @@ import 'package:matomo/matomo.dart';
 import '../generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../logging/logger.dart';
 import 'dialog_utils.dart';
 
 class SettingsWidget extends TraceableStatefulWidget {
@@ -196,14 +197,18 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
       title: str.biometricSignIn,
       onChange: (value) {
         final vaultCubit = BlocProvider.of<VaultCubit>(context);
-        if (!value) {
-          vaultCubit.disableQuickUnlock();
-        } else {
-          final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-          vaultCubit.enableQuickUnlock(
-            user,
-            vaultCubit.currentVaultFile?.files.current.credentials,
-          );
+        try {
+          if (!value) {
+            vaultCubit.disableQuickUnlock();
+          } else {
+            final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+            vaultCubit.enableQuickUnlock(
+              user,
+              vaultCubit.currentVaultFile?.files.current.credentials,
+            );
+          }
+        } on Exception catch (e) {
+          l.e('Exception when changing biometrics setting. Details follow: $e');
         }
       },
       enabled: _isEnabled,
