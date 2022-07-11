@@ -1,0 +1,6 @@
+* Changing biometric settings no longer requires signing in again
+* A message is displayed when an attempt to use biometrics fail (e.g. when it is time to re-enter your main password periodically)
+* Cancelling a file export no longer displays a spurious "Exported" message
+* Fixed an incidental background crash after AutoFill completes
+* Improved reliability by upgrading our code to use the latest version of Flutter
+* (since beta#33: Fixed biometrics and settings bugs)

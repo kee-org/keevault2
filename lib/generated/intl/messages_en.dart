@@ -113,8 +113,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "The \"Big Tech\" companies prohibit us from directly linking to the account registration page on our website."),
         "biometricSignIn":
             MessageLookupByLibrary.simpleMessage("Biometric sign-in"),
-        "biometricsMaybeExpired": MessageLookupByLibrary.simpleMessage(
-            "Biometrics must be refreshed"),
+        "biometricsErrorExplanation": MessageLookupByLibrary.simpleMessage(
+            "Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you\'re signed in again but to help protect you against data loss, you can\'t avoid entering your password forever."),
+        "biometricsMaybeExpired":
+            MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "biometricsStoreDescription": MessageLookupByLibrary.simpleMessage(
             "Access your passwords faster by protecting your password with biometrics"),
         "cancelExportOrImport": m1,

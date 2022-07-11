@@ -3410,11 +3410,21 @@ class S {
     );
   }
 
-  /// `Biometrics must be refreshed`
+  /// `Please enter your password`
   String get biometricsMaybeExpired {
     return Intl.message(
-      'Biometrics must be refreshed',
+      'Please enter your password',
       name: 'biometricsMaybeExpired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you're signed in again but to help protect you against data loss, you can't avoid entering your password forever.`
+  String get biometricsErrorExplanation {
+    return Intl.message(
+      'Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you\'re signed in again but to help protect you against data loss, you can\'t avoid entering your password forever.',
+      name: 'biometricsErrorExplanation',
       desc: '',
       args: [],
     );

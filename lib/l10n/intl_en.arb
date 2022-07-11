@@ -335,5 +335,6 @@
   "currentPasswordNotCorrect": "Current password is not correct",
   "passwordChanged": "Password changed. Use it when you next unlock Kee Vault.",
   "viewDocumentation": "View documentation",
-  "biometricsMaybeExpired": "Biometrics must be refreshed"
+  "biometricsMaybeExpired": "Please enter your password",
+  "biometricsErrorExplanation": "Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you're signed in again but to help protect you against data loss, you can't avoid entering your password forever."
 }

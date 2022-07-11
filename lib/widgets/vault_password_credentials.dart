@@ -115,6 +115,12 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
             ],
           ),
         ),
+        widget.showError && widget.quStatus == QUStatus.mapAvailable
+            ? Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(str.biometricsErrorExplanation),
+              )
+            : SizedBox.shrink(),
         _showBiometricSigninButton
             ? Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -122,15 +128,6 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                     onPressed: () async {
                       if (!await widget.forceBiometric!()) {
                         l.w('Failed to force biometric signin');
-                        //TODO:f: Would be good to remove the button from the UI if we detect
-                        // an irrecoverable error but the approach below fails because this widget
-                        // is often destroyed while the load operation is being attempted. Instead,
-                        // may have to modify the checks within the biometric_storage package so
-                        // they can report that the ability to use biometric storage is temporarily
-                        // disabled until next app restart.
-                        // setState(() {
-                        //   _showBiometricSigninButton = false;
-                        // });
                       }
                     },
                     label: Text(str.unlock_with_biometrics),
