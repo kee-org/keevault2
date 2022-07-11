@@ -190,7 +190,7 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
-  Future<void> forgetUser(Future<void> Function() signoutVault) async {
+  Future<void> forgetUser(void Function() signoutVault) async {
     l.d('removing stored user email address');
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user.current.email');

@@ -130,7 +130,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                         onPressed: () async {
                           final appSettings = BlocProvider.of<AppSettingsCubit>(context);
                           await _controller.reverse();
-                          appSettings.completeIntroShownVaultSummary();
+                          await appSettings.completeIntroShownVaultSummary();
                         },
                       )
                     ],

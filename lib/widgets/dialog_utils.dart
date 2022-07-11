@@ -37,7 +37,7 @@ class DialogUtils {
         });
   }
 
-  static Future<dynamic> showErrorDialog(
+  static dynamic showErrorDialog(
     BuildContext context,
     String? title,
     String content, {

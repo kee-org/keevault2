@@ -94,7 +94,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
       );
     }
 
-    autofillCubit.finishSaving();
+    await autofillCubit.finishSaving();
   }
 
   @override

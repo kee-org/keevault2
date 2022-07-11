@@ -46,7 +46,7 @@ class VaultDrawerWidget extends StatelessWidget {
                       await BlocProvider.of<InteractionCubit>(context).databaseSaved();
                       await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
                       User? user = accountCubit.currentUserIfKnown;
-                      vaultCubit.save(user);
+                      await vaultCubit.save(user);
                     }
                   : null,
               child: Text(str.save.toUpperCase()),
@@ -69,7 +69,7 @@ class VaultDrawerWidget extends StatelessWidget {
                     }
                   }
                   vaultCubit.lock();
-                  accountCubit.signout();
+                  await accountCubit.signout();
                 },
                 child: Text(str.lock.toUpperCase()),
               ),

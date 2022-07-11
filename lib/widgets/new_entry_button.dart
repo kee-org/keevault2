@@ -62,7 +62,7 @@ class NewEntryButton extends StatelessWidget {
               } else {
                 entryCubit.endCreating(null);
                 final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                vaultCubit.applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
+                await vaultCubit.applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
                 await iam.showIfAppropriate(InAppMessageTrigger.entryUnchanged);
               }
             },

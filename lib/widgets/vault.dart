@@ -142,7 +142,7 @@ class _VaultWidgetState extends State<VaultWidget> {
             listener: (context, state) async {
               if (state is! VaultLoaded && state is! VaultImporting) {
                 BlocProvider.of<FilterCubit>(context).reset();
-                AppConfig.router.navigateTo(context, Routes.root, clearStack: true);
+                await AppConfig.router.navigateTo(context, Routes.root, clearStack: true);
               }
               if (state is VaultBackgroundError) {
                 if (state.toast) {

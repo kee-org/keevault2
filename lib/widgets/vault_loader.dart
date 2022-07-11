@@ -155,7 +155,7 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
         await interactionContext.databaseOpened();
         // context my have become detached from widget tree by this point
         // but router requires we have it so have to use this hack
-        AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.vault, replace: true);
+        await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.vault, replace: true);
       }
     });
   }

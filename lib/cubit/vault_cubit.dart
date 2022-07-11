@@ -249,7 +249,7 @@ class VaultCubit extends Cubit<VaultState> {
     l.d('vault cubit started');
   }
 
-  Future emitVaultLoaded(LocalVaultFile vault, User? user,
+  Future<void> emitVaultLoaded(LocalVaultFile vault, User? user,
       {bool immediateRemoteRefresh = true, required bool safe}) async {
     if (user?.subscriptionStatus == AccountSubscriptionStatus.expired ||
         user?.subscriptionStatus == AccountSubscriptionStatus.freeTrialAvailable) {
@@ -661,7 +661,7 @@ class VaultCubit extends Cubit<VaultState> {
         !currentVaultFile!.files.current.isDirty) {
       final newCurrent = await currentVaultFile!.files.pending;
       if (newCurrent != null) {
-        emitVaultLoaded(
+        await emitVaultLoaded(
             LocalVaultFile(
               currentVaultFile!.files.copyWithAppliedPendingUpdate(newCurrent),
               currentVaultFile!.lastOpenedAt,
@@ -784,13 +784,13 @@ class VaultCubit extends Cubit<VaultState> {
     return null;
   }
 
-  Future<void> lock() async {
+  void lock() async {
     _qu.lock();
     _persistentQueueAfAssociations = null;
     emit(const VaultLocalFileCredentialsRequired('locked', false));
   }
 
-  Future<void> signout() async {
+  void signout() async {
     _qu.lock();
     _persistentQueueAfAssociations = null;
     emit(const VaultInitial());

@@ -328,7 +328,7 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
             final accCubit = BlocProvider.of<AccountCubit>(context);
             await BlocProvider.of<InteractionCubit>(context).databaseSaved();
             await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
-            vaultCubit.save(accCubit.currentUserIfKnown);
+            await vaultCubit.save(accCubit.currentUserIfKnown);
           },
           child: Text(widget.title)),
     );

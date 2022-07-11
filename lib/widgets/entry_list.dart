@@ -177,7 +177,10 @@ class EntryListItemWidget extends StatelessWidget {
                     leading: entryListItemVM.getIcon(32, Theme.of(context).brightness == Brightness.dark),
                     onTap: () async {
                       final navigator = Navigator.of(context);
-                      // This often doesn't have enough time to animate in to view but that's happy days.
+                      // We may display a loading spinner if the autofill process takes
+                      // long enough for the dialog to render but in many cases we'll
+                      // be fast enough that it's won't finish animating in to view.
+                      // ignore: unawaited_futures
                       showDialog(
                         context: context,
                         barrierDismissible: false,
@@ -282,7 +285,8 @@ class EntryListItemWidget extends StatelessWidget {
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?
                       } else {
                         entryCubit.endEditing(null);
-                        vaultCubit.applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
+                        await vaultCubit
+                            .applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
                         await iam.showIfAppropriate(InAppMessageTrigger.entryUnchanged);
                       }
                     },

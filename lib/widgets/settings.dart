@@ -46,7 +46,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                       icon: Text(str.openWebApp),
                       label: Icon(Icons.open_in_new),
                       onPressed: () async {
-                        DialogUtils.openUrl(EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=signin');
+                        await DialogUtils.openUrl(EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=signin');
                       },
                     ),
                   ]),
@@ -70,7 +70,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                         icon: Text(str.manageAccount),
                         label: Icon(Icons.open_in_new),
                         onPressed: () async {
-                          DialogUtils.openUrl(EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount');
+                          await DialogUtils.openUrl(
+                              EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount');
                         },
                       ),
                     ],
