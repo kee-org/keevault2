@@ -327,7 +327,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: c0d952a7de4efa10ab78c507e7535249436c525c
+      resolved-ref: "655c29c111763f5bbe084d4fd36f55366984ec37"
       url: "https://github.com/kee-org/flutter_settings_screens"
     source: git
     version: "0.3.3-null-safety+1"
