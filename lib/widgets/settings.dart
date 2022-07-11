@@ -195,14 +195,14 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
     return SwitchSettingsTile(
       settingKey: 'biometrics-enabled',
       title: str.biometricSignIn,
-      onChange: (value) {
+      onChange: (value) async {
         final vaultCubit = BlocProvider.of<VaultCubit>(context);
         try {
           if (!value) {
-            vaultCubit.disableQuickUnlock();
+            await vaultCubit.disableQuickUnlock();
           } else {
             final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-            vaultCubit.enableQuickUnlock(
+            await vaultCubit.enableQuickUnlock(
               user,
               vaultCubit.currentVaultFile?.files.current.credentials,
             );
@@ -228,11 +228,11 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
             }
             return str.enterNumberBetweenXAndY(1, 3600);
           },
-          onChange: (_) {
+          onChange: (_) async {
             final vaultCubit = BlocProvider.of<VaultCubit>(context);
-            vaultCubit.disableQuickUnlock();
+            await vaultCubit.disableQuickUnlock();
             final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-            vaultCubit.enableQuickUnlock(
+            await vaultCubit.enableQuickUnlock(
               user,
               vaultCubit.currentVaultFile?.files.current.credentials,
             );
@@ -253,11 +253,11 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
             }
             return str.enterNumberBetweenXAndY(1, 180);
           },
-          onChange: (_) {
+          onChange: (_) async {
             final vaultCubit = BlocProvider.of<VaultCubit>(context);
-            vaultCubit.disableQuickUnlock();
+            await vaultCubit.disableQuickUnlock();
             final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-            vaultCubit.enableQuickUnlock(
+            await vaultCubit.enableQuickUnlock(
               user,
               vaultCubit.currentVaultFile?.files.current.credentials,
             );
