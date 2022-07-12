@@ -269,7 +269,7 @@
   "signin": "Sign in",
   "signout": "Sign out",
   "createVault": "Create my Vault",
-  "registrationBlurb1": "Choose a very secure password to protect your Kee Vault. Only you will know this password - it never leaves your device. It can not be reset. You must remember it. You can change it in future.",
+  "registrationBlurb1": "Choose a secure password to protect your Kee Vault. There are no \"requirements\" so just make it as strong as you can. Only you will know this password - it never leaves your device. It can not be reset so you must not forget it, but you can change it when you're signed in to Kee Vault.",
   "newPassword": "New password",
   "newPasswordRepeat": "New password (please repeat)",
   "serverMITMWarning": "Sign in failed because the response we received from the server indicates that it may be compromised. The most likely explanation is that someone near you or at your internet service provider is attempting to interfere with the secure connection and connect you to a malicious server (A Miscreant In The Middle attack). Find a different internet connection immediately, shut down the Kee Vault app and try again. If it keeps happening, your local device may be compromised. The security of your Kee Vault remains intact so you need not panic. More information about the error is available at https://forum.kee.pm/",

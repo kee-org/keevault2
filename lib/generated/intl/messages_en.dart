@@ -456,7 +456,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "reenterYourPassword": MessageLookupByLibrary.simpleMessage(
             "Please re-enter your password"),
         "registrationBlurb1": MessageLookupByLibrary.simpleMessage(
-            "Choose a very secure password to protect your Kee Vault. Only you will know this password - it never leaves your device. It can not be reset. You must remember it. You can change it in future."),
+            "Choose a secure password to protect your Kee Vault. There are no \"requirements\" so just make it as strong as you can. Only you will know this password - it never leaves your device. It can not be reset so you must not forget it, but you can change it when you\'re signed in to Kee Vault."),
         "rememberExportsDoNotUpdate": MessageLookupByLibrary.simpleMessage(
             "Remember that Exports do not automatically update. The information stored within and the password required to unlock it does not change after you create the export."),
         "rememberFilterGroup": MessageLookupByLibrary.simpleMessage(
