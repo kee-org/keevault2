@@ -110,24 +110,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
           }
           return EntryWidget(
             key: ValueKey('autofillSaveDetails'),
-            appBar: AppBar(
-              //TODO:f: If we can work out how to invoke the onpopscope in the child
-              // widget, we could reintroduce the usual back button icon
-              // leading: IconButton(
-              //   iconSize: 24,
-              //   icon: Icon(Icons.arrow_back),
-              //   onPressed: () => onEndEditing(false, vaultCubit, vault.files.current.tags),
-              // ),
-              centerTitle: true,
-              title: OutlinedButton.icon(
-                icon: Icon(Icons.check_circle, color: Colors.white),
-                label: Text(
-                  str.done,
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () => onEndEditing(true, vaultCubit, vault.files.current.tags),
-              ),
-            ),
+            savingViaAutofill: true,
             endEditing: (bool keepChanges) => onEndEditing(keepChanges, vaultCubit, vault.files.current.tags),
             allCustomIcons: vault.files.current.body.meta.customIcons.map((key, value) => MapEntry(
                   value,

@@ -85,7 +85,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "autofillEnabled": MessageLookupByLibrary.simpleMessage(
             "Kee Vault is correctly set as your device\'s Autofill provider."),
         "autofillNewEntryMakeChangesThenDone": MessageLookupByLibrary.simpleMessage(
-            "Entry saved. Make changes below if you want and then click \"Done\" above."),
+            "Entry saved. Make changes below if you want and then click \"Done\" below."),
         "autofilling": MessageLookupByLibrary.simpleMessage("Autofilling"),
         "automaticallySignInFor": MessageLookupByLibrary.simpleMessage(
             "Automatically sign-in for (seconds)"),
@@ -354,7 +354,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "longPressGroupExplanation": MessageLookupByLibrary.simpleMessage(
             "Long-press on a group to rename, move or delete it, or to create a new subgroup."),
         "makeMoreChangesOrSave1": MessageLookupByLibrary.simpleMessage(
-            "Entry updated. Don\'t forget to \"Save\" your Vault when you have finished creating and changing entries."),
+            "Entry updated. Don\'t forget to Save your Vault when you have finished creating and changing entries."),
         "makeMoreChangesOrSave2": MessageLookupByLibrary.simpleMessage(
             "You don\'t need to save after every change you make but make sure you save before closing the app or locking your Vault."),
         "makeMoreChangesOrSave3": MessageLookupByLibrary.simpleMessage(
@@ -481,6 +481,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveChanges": MessageLookupByLibrary.simpleMessage("Confirm changes"),
         "saveExplainerAlertTitle":
             MessageLookupByLibrary.simpleMessage("Saving..."),
+        "saveVault": MessageLookupByLibrary.simpleMessage("Save Vault"),
         "search": MessageLookupByLibrary.simpleMessage("Search"),
         "searchCase": MessageLookupByLibrary.simpleMessage("Match case"),
         "searchHistory":

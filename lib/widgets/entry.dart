@@ -44,7 +44,7 @@ class EntryWidget extends StatelessWidget {
   final Map<KdbxCustomIcon, Image> allCustomIcons;
   final Function(int index) revertTo;
   final Function(int index) deleteAt;
-  final AppBar? appBar;
+  final bool savingViaAutofill;
   const EntryWidget(
       {Key? key,
       required this.endEditing,
@@ -52,7 +52,7 @@ class EntryWidget extends StatelessWidget {
       required this.allCustomIcons,
       required this.revertTo,
       required this.deleteAt,
-      this.appBar})
+      required this.savingViaAutofill})
       : super(key: key);
 
   void changeIcon(BuildContext context, EntryColor? color) async {
@@ -276,254 +276,274 @@ class EntryWidget extends StatelessWidget {
           if (loadedState is VaultLoaded) {
             return Scaffold(
               key: key,
-              appBar: appBar ??
-                  AppBar(
-                    title: Visibility(
-                        visible: entry.isDirty,
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.check_circle, color: Colors.white),
-                          label: Text(
-                            str.saveChanges,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () => endEditing(true),
-                        )),
-                    actions: [
-                      Visibility(
-                        visible: onDelete != null,
-                        child: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              onDelete!();
-                            }),
+              appBar: savingViaAutofill
+                  ? AppBar(
+                      title: Image(
+                        image: AssetImage('assets/vault.png'),
+                        excludeFromSemantics: true,
+                        height: 32,
+                        color: Colors.white,
                       ),
-                      OpenContainer<bool>(
-                        key: ValueKey('history view icon container'),
-                        tappable: false,
-                        closedShape: RoundedRectangleBorder(),
-                        closedElevation: 0,
-                        closedColor: Colors.transparent,
-                        transitionType: ContainerTransitionType.fade,
-                        transitionDuration: const Duration(milliseconds: 300),
-                        openBuilder: (context, close) {
-                          return EntryHistoryWidget(
-                            key: ValueKey('history view'),
-                            revertTo: revertTo,
-                            deleteAt: deleteAt,
-                          );
-                        },
-                        closedBuilder: (context, open) {
-                          return Visibility(
-                            visible: entry.history.isNotEmpty,
-                            child: IconButton(
-                                icon: Icon(Icons.history),
-                                onPressed: () {
-                                  open();
-                                }),
-                          );
-                        },
-                      )
-                    ],
-                  ),
+                      centerTitle: true,
+                      toolbarHeight: 48,
+                      leading: IconButton(
+                          iconSize: 24, icon: Icon(Icons.arrow_back), onPressed: () => SystemNavigator.pop()),
+                    )
+                  : AppBar(
+                      actions: [
+                        Visibility(
+                          visible: onDelete != null,
+                          child: IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                onDelete!();
+                              }),
+                        ),
+                        OpenContainer<bool>(
+                          key: ValueKey('history view icon container'),
+                          tappable: false,
+                          closedShape: RoundedRectangleBorder(),
+                          closedElevation: 0,
+                          closedColor: Colors.transparent,
+                          transitionType: ContainerTransitionType.fade,
+                          transitionDuration: const Duration(milliseconds: 300),
+                          openBuilder: (context, close) {
+                            return EntryHistoryWidget(
+                              key: ValueKey('history view'),
+                              revertTo: revertTo,
+                              deleteAt: deleteAt,
+                            );
+                          },
+                          closedBuilder: (context, open) {
+                            return Visibility(
+                              visible: entry.history.isNotEmpty,
+                              child: IconButton(
+                                  icon: Icon(Icons.history),
+                                  onPressed: () {
+                                    open();
+                                  }),
+                            );
+                          },
+                        )
+                      ],
+                    ),
               body: WillPopScope(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: SafeArea(
-                      top: false,
-                      left: false,
-                      child: Column(
-                        children: <Widget>[
-                          //TODO:f: mention that Android failed to supply accurate
-                          // password data if we can detect when it happens.
-                          //
-                          // Note: Starting with Android 10, you can use the
-                          //FillRequest.FLAG_COMPATIBILITY_MODE_REQUEST flag to
-                          //determine whether an autofill request was generated
-                          // via compatibility mode.
-                          //
-                          // That may be helpful in some cases but not sure if
-                          // the gaps in coverage of that approach will make it
-                          // essentially useless while we still support Android 9
-                          //TODO:f: change property name - unclear semantics here.
-                          appBar == null
-                              ? const SizedBox(height: 8)
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                        child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
-                                      child: Text(
-                                        str.autofillNewEntryMakeChangesThenDone,
-                                        style: theme.textTheme.bodyText1,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: SafeArea(
+                            top: false,
+                            left: false,
+                            child: Column(
+                              children: <Widget>[
+                                //TODO:f: mention that Android failed to supply accurate
+                                // password data if we can detect when it happens.
+                                //
+                                // Note: Starting with Android 10, you can use the
+                                //FillRequest.FLAG_COMPATIBILITY_MODE_REQUEST flag to
+                                //determine whether an autofill request was generated
+                                // via compatibility mode.
+                                //
+                                // That may be helpful in some cases but not sure if
+                                // the gaps in coverage of that approach will make it
+                                // essentially useless while we still support Android 9
+                                !savingViaAutofill
+                                    ? const SizedBox(height: 8)
+                                    : Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                              child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
+                                            child: Text(
+                                              str.autofillNewEntryMakeChangesThenDone,
+                                              style: theme.textTheme.bodyText1,
+                                            ),
+                                          ))
+                                        ],
                                       ),
-                                    ))
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    const SizedBox(width: 16),
+                                    GestureDetector(
+                                        onTap: () {
+                                          changeIcon(context, entry.color);
+                                        },
+                                        child: entry.getIcon(48, Theme.of(context).brightness == Brightness.dark)),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: entry.fields
+                                          .take(1)
+                                          .map(
+                                            (f) => EntryField(
+                                              fieldType: FieldType.string,
+                                              key: ValueKey(f.fieldKey ?? 'first field of a corrupt entry'),
+                                              entry: entry,
+                                              field: f,
+                                              onDelete: () => {},
+                                              onChangeIcon: () => changeIcon(context, entry.color),
+                                            ),
+                                          )
+                                          .first,
+                                    ),
                                   ],
                                 ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              const SizedBox(width: 16),
-                              GestureDetector(
-                                  onTap: () {
-                                    changeIcon(context, entry.color);
+                                const SizedBox(height: 12),
+                                ...entry.fields.skip(1).map(
+                                  (f) {
+                                    final key = f.fieldKey;
+                                    if (key == null) {
+                                      l.e('field key is unknown. Failed field configuration: ${f.browserModel?.toJson()}');
+                                      return Text(str.openError + str.errorCorruptField);
+                                    }
+                                    return EntryField(
+                                      fieldType: f.isTotp
+                                          ? FieldType.otp
+                                          : f.isCheckbox
+                                              ? FieldType.checkbox
+                                              : FieldType.string,
+                                      key: ValueKey(key),
+                                      entry: entry,
+                                      field: f,
+                                      onDelete: () {
+                                        final cubit = BlocProvider.of<EntryCubit>(context);
+                                        cubit.removeField(f);
+                                      },
+                                      onChangeIcon: () => {},
+                                    );
                                   },
-                                  child: entry.getIcon(48, Theme.of(context).brightness == Brightness.dark)),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: entry.fields
-                                    .take(1)
-                                    .map(
-                                      (f) => EntryField(
-                                        fieldType: FieldType.string,
-                                        key: ValueKey(f.fieldKey ?? 'first field of a corrupt entry'),
-                                        entry: entry,
-                                        field: f,
-                                        onDelete: () => {},
-                                        onChangeIcon: () => changeIcon(context, entry.color),
-                                      ),
-                                    )
-                                    .first,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          ...entry.fields.skip(1).map(
-                            (f) {
-                              final key = f.fieldKey;
-                              if (key == null) {
-                                l.e('field key is unknown. Failed field configuration: ${f.browserModel?.toJson()}');
-                                return Text(str.openError + str.errorCorruptField);
-                              }
-                              return EntryField(
-                                fieldType: f.isTotp
-                                    ? FieldType.otp
-                                    : f.isCheckbox
-                                        ? FieldType.checkbox
-                                        : FieldType.string,
-                                key: ValueKey(key),
-                                entry: entry,
-                                field: f,
-                                onDelete: () {
-                                  final cubit = BlocProvider.of<EntryCubit>(context);
-                                  cubit.removeField(f);
-                                },
-                                onChangeIcon: () => {},
-                              );
-                            },
-                          ).expand((el) => [el, const SizedBox(height: 8)]),
-                          ...entry.binaryMapEntries.isEmpty
-                              ? []
-                              : entry.binaryMapEntries.map((e) {
-                                  return BinaryCardWidget(
-                                    key: ValueKey('${e.key.key}-${e.value.valueHashCode}'),
-                                    entry: entry,
-                                    attachment: e,
-                                    readOnly: false,
-                                  );
-                                }),
-                          Divider(
-                            indent: 16,
-                            endIndent: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                child: Text(str.detGroup),
-                              ),
-                              Expanded(
-                                child: Tooltip(
-                                  message: entry.groupNames.join(' » '),
-                                  child: Text(entry.groupNames.last),
+                                ).expand((el) => [el, const SizedBox(height: 8)]),
+                                ...entry.binaryMapEntries.isEmpty
+                                    ? []
+                                    : entry.binaryMapEntries.map((e) {
+                                        return BinaryCardWidget(
+                                          key: ValueKey('${e.key.key}-${e.value.valueHashCode}'),
+                                          entry: entry,
+                                          attachment: e,
+                                          readOnly: false,
+                                        );
+                                      }),
+                                Divider(
+                                  indent: 16,
+                                  endIndent: 16,
                                 ),
-                              ),
-                              OpenContainer<bool>(
-                                key: ValueKey('move entry to new group screen'),
-                                tappable: false,
-                                closedShape: RoundedRectangleBorder(),
-                                closedElevation: 0,
-                                closedColor: Colors.transparent,
-                                transitionType: ContainerTransitionType.fade,
-                                transitionDuration: const Duration(milliseconds: 300),
-                                openBuilder: (context, close) {
-                                  return EntryMoveTreeWidget(title: str.chooseNewParentGroupForEntry);
-                                },
-                                closedBuilder: (context, open) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(left: 12.0, right: 16.0),
-                                    child: OutlinedButton.icon(
-                                      label: Text(str.move),
-                                      icon: const Icon(Icons.drive_file_move),
-                                      onPressed: () => open(),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                      child: Text(str.detGroup),
                                     ),
-                                  );
-                                },
-                              )
-                            ],
+                                    Expanded(
+                                      child: Tooltip(
+                                        message: entry.groupNames.join(' » '),
+                                        child: Text(entry.groupNames.last),
+                                      ),
+                                    ),
+                                    OpenContainer<bool>(
+                                      key: ValueKey('move entry to new group screen'),
+                                      tappable: false,
+                                      closedShape: RoundedRectangleBorder(),
+                                      closedElevation: 0,
+                                      closedColor: Colors.transparent,
+                                      transitionType: ContainerTransitionType.fade,
+                                      transitionDuration: const Duration(milliseconds: 300),
+                                      openBuilder: (context, close) {
+                                        return EntryMoveTreeWidget(title: str.chooseNewParentGroupForEntry);
+                                      },
+                                      closedBuilder: (context, open) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(left: 12.0, right: 16.0),
+                                          child: OutlinedButton.icon(
+                                            label: Text(str.move),
+                                            icon: const Icon(Icons.drive_file_move),
+                                            onPressed: () => open(),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  ],
+                                ),
+                                LabelsWidget(
+                                  tags: entry.tags,
+                                  otherKnownTags: loadedState.vault.files.current.tags
+                                      .map((t) => Tag(t, true))
+                                      .where((t) => !entry.tags.any((et) => et.lowercase == t.lowercase))
+                                      .toList(),
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                      child: Text(str.color),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0),
+                                      child: ColorChooser(
+                                          currentColor: entry.color,
+                                          onChangeColor: (EntryColor color) => changeColor(context, color)),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  indent: 16,
+                                  endIndent: 16,
+                                ),
+                                IntegrationSettingsWidget(),
+                                Divider(
+                                  indent: 16,
+                                  endIndent: 16,
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                      child: Text(str.detCreated),
+                                    ),
+                                    Tooltip(
+                                      message:
+                                          '${Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.createdTime.toLocal()).jms}',
+                                      child: Text(Jiffy(entry.createdTime).fromNow()),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                      child: Text(str.detUpdated),
+                                    ),
+                                    Tooltip(
+                                      message:
+                                          '${Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.modifiedTime.toLocal()).jms}',
+                                      child: Text(Jiffy(entry.modifiedTime).fromNow()),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                          LabelsWidget(
-                            tags: entry.tags,
-                            otherKnownTags: loadedState.vault.files.current.tags
-                                .map((t) => Tag(t, true))
-                                .where((t) => !entry.tags.any((et) => et.lowercase == t.lowercase))
-                                .toList(),
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                child: Text(str.color),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0),
-                                child: ColorChooser(
-                                    currentColor: entry.color,
-                                    onChangeColor: (EntryColor color) => changeColor(context, color)),
-                              ),
-                            ],
-                          ),
-                          Divider(
-                            indent: 16,
-                            endIndent: 16,
-                          ),
-                          IntegrationSettingsWidget(),
-                          Divider(
-                            indent: 16,
-                            endIndent: 16,
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                child: Text(str.detCreated),
-                              ),
-                              Tooltip(
-                                message:
-                                    '${Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.createdTime.toLocal()).jms}',
-                                child: Text(Jiffy(entry.createdTime).fromNow()),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                child: Text(str.detUpdated),
-                              ),
-                              Tooltip(
-                                message:
-                                    '${Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.modifiedTime.toLocal()).jms}',
-                                child: Text(Jiffy(entry.modifiedTime).fromNow()),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                    Visibility(
+                        visible: (savingViaAutofill || entry.isDirty) && MediaQuery.of(context).viewInsets.bottom > 0,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0, top: 4),
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.check_circle),
+                            label: Text(
+                              (savingViaAutofill ? str.done : str.saveChanges).toUpperCase(),
+                            ),
+                            onPressed: () => endEditing(true),
+                          ),
+                        )),
+                  ],
                 ),
                 onWillPop: () async {
                   if (!entry.isDirty) {
@@ -600,6 +620,15 @@ class EntryWidget extends StatelessWidget {
                         return BottomDrawerWidget();
                       });
                 },
+                centreButton: Visibility(
+                    visible: entry.isDirty || savingViaAutofill,
+                    child: ElevatedButton.icon(
+                      icon: Icon(Icons.check_circle),
+                      label: Text(
+                        (savingViaAutofill ? str.done : str.saveChanges).toUpperCase(),
+                      ),
+                      onPressed: () => endEditing(true),
+                    )),
               ),
             );
           }

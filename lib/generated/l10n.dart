@@ -190,6 +190,16 @@ class S {
     );
   }
 
+  /// `Save Vault`
+  String get saveVault {
+    return Intl.message(
+      'Save Vault',
+      name: 'saveVault',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Lock`
   String get lock {
     return Intl.message(
@@ -2940,10 +2950,10 @@ class S {
     );
   }
 
-  /// `Entry saved. Make changes below if you want and then click "Done" above.`
+  /// `Entry saved. Make changes below if you want and then click "Done" below.`
   String get autofillNewEntryMakeChangesThenDone {
     return Intl.message(
-      'Entry saved. Make changes below if you want and then click "Done" above.',
+      'Entry saved. Make changes below if you want and then click "Done" below.',
       name: 'autofillNewEntryMakeChangesThenDone',
       desc: '',
       args: [],
@@ -3180,10 +3190,10 @@ class S {
     );
   }
 
-  /// `Entry updated. Don't forget to "Save" your Vault when you have finished creating and changing entries.`
+  /// `Entry updated. Don't forget to Save your Vault when you have finished creating and changing entries.`
   String get makeMoreChangesOrSave1 {
     return Intl.message(
-      'Entry updated. Don\'t forget to "Save" your Vault when you have finished creating and changing entries.',
+      'Entry updated. Don\'t forget to Save your Vault when you have finished creating and changing entries.',
       name: 'makeMoreChangesOrSave1',
       desc: '',
       args: [],

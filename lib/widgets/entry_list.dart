@@ -233,6 +233,7 @@ class EntryListItemWidget extends StatelessWidget {
                     transitionDuration: const Duration(milliseconds: 300),
                     openBuilder: (context, close) {
                       return EntryWidget(
+                        savingViaAutofill: false,
                         key: ValueKey('details'),
                         endEditing: (bool keepChanges) {
                           close(returnValue: keepChanges);

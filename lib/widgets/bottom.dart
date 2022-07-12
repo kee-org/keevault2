@@ -167,8 +167,10 @@ class AccountDrawerWidget extends StatelessWidget {
 
 class BottomBarWidget extends StatelessWidget {
   final void Function() _toggleBottomDrawerVisibility;
+  final Widget? centreButton;
   const BottomBarWidget(
     this._toggleBottomDrawerVisibility, {
+    this.centreButton,
     Key? key,
   }) : super(key: key);
 
@@ -226,17 +228,15 @@ class BottomBarWidget extends StatelessWidget {
                 visible: loadedVaultState is VaultSaving,
                 child: sipi,
               ),
-              Spacer(),
-              SaveButtonWidget(
-                title: str.save.toUpperCase(),
-                visible: (!vaultCubit.isAutofilling() &&
-                    !entryEditing &&
-                    loadedVaultState.vault.files.current.isDirty &&
-                    loadedVaultState is! VaultSaving),
-              ),
-              Spacer(),
-              Spacer(),
-              //TODO:f Proper centre alignment of save button
+              centreButton != null
+                  ? centreButton!
+                  : SaveButtonWidget(
+                      title: str.saveVault.toUpperCase(),
+                      visible: (!vaultCubit.isAutofilling() &&
+                          !entryEditing &&
+                          loadedVaultState.vault.files.current.isDirty &&
+                          loadedVaultState is! VaultSaving),
+                    ),
             ],
           ),
         ),
@@ -320,7 +320,7 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
     return AnimatedOpacity(
       opacity: widget.visible ? 1.0 : 0.0,
       duration: Duration(milliseconds: 300),
-      child: OutlinedButton(
+      child: ElevatedButton(
           onPressed: () async {
             if (!widget.visible) return;
             final iam = InAppMessengerWidget.of(context);
