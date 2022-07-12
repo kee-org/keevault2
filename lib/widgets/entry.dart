@@ -691,7 +691,7 @@ class StringEntryFieldEditor extends StatelessWidget {
       ValueListenableBuilder<TextEditingValue>(
         valueListenable: controller,
         builder: (context, value, child) {
-          if (fieldKey == KdbxKeyCommon.PASSWORD) {
+          if (fieldKey == KdbxKeyCommon.PASSWORD || field.protect) {
             return OpenContainer<bool>(
               key: ValueKey('generate single password screen'),
               tappable: false,
