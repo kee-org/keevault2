@@ -690,6 +690,16 @@ class VaultCubit extends Cubit<VaultState> {
         return;
       }
       l.d('new local vault created');
+      final requireFullPasswordPeriod =
+          int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
+      l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
+
+      final quStatus = await _qu.initialiseForUser(_qu.localUserMagicString, false);
+      if (quStatus != QUStatus.unavailable) {
+        await _qu.saveQuickUnlockFileCredentials(credentialsWithStrength.credentials,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+        l.d('New free user password stored in Quick Unlock');
+      }
       await emitVaultLoaded(file, null, safe: false);
     } on Exception catch (e) {
       emitError(
