@@ -130,8 +130,7 @@ class FilterCubit extends Cubit<FilterState> {
 
   bool entryMatches(KdbxEntry entry) {
     final fa = state as FilterActive;
-    final quickCheck = fa.colors.isEmpty &&
-        (fa.tags.isEmpty || entry.tags.get()!.any((tag) => fa.tags.contains(tag.toLowerCase()))) &&
+    final quickCheck = (fa.tags.isEmpty || entry.tags.get()!.any((tag) => fa.tags.contains(tag.toLowerCase()))) &&
         (fa.colors.isEmpty || fa.colors.contains(entry.color));
 
     if (!quickCheck) {
