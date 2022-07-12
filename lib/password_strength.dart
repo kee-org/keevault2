@@ -1,6 +1,4 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:zxcvbn/zxcvbn.dart';
 
@@ -80,18 +78,6 @@ double exactStrength(String password, List<String> emailAddrParts) {
   } else {
     return 0.5;
   }
-}
-
-Widget renderPasswordStrength(strength, rootJQueryEl, selectorOverride) {
-  return RatingBarIndicator(
-    rating: strength,
-    itemBuilder: (context, index) => Icon(
-      Icons.star,
-      color: Colors.amber,
-    ),
-    itemCount: 5,
-    itemSize: 50.0,
-  );
 }
 
 class StrengthAssessedCredentials {

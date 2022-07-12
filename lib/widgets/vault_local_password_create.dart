@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import 'free_user_dialog.dart';
+import 'password_strength.dart';
 
 typedef SubmitCallback = Future<void> Function(String string);
 
@@ -75,6 +76,13 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
               },
             ),
           ),
+          ValueListenableBuilder(
+              valueListenable: _password,
+              builder: (context, TextEditingValue content, child) {
+                return PasswordStrengthWidget(
+                  testValue: content.text,
+                );
+              }),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: TextFormField(

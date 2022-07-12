@@ -3469,6 +3469,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Password strength`
+  String get passwordStrength {
+    return Intl.message(
+      'Password strength',
+      name: 'passwordStrength',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

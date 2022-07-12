@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
 import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
+import '../widgets/password_strength.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
   const ChangePasswordWidget({Key? key}) : super(key: key);
@@ -104,6 +105,13 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                       },
                     ),
                   ),
+                  ValueListenableBuilder(
+                      valueListenable: _password,
+                      builder: (context, TextEditingValue content, child) {
+                        return PasswordStrengthWidget(
+                          testValue: content.text,
+                        );
+                      }),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextFormField(

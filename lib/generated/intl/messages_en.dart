@@ -422,6 +422,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordChanged": MessageLookupByLibrary.simpleMessage(
             "Password changed. Use it when you next unlock Kee Vault."),
+        "passwordStrength":
+            MessageLookupByLibrary.simpleMessage("Password strength"),
         "permanentlyDeleteGroupConfirm": MessageLookupByLibrary.simpleMessage(
             "Permanently delete the group and all entries within it?"),
         "permissionDeniedError": m6,
