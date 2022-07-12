@@ -143,6 +143,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "copySecret": MessageLookupByLibrary.simpleMessage("Copy Secret"),
         "createNewEntry":
             MessageLookupByLibrary.simpleMessage("Create new entry"),
+        "createNewPasswordApplyExplanation": MessageLookupByLibrary.simpleMessage(
+            "Replace your old password with the new secure one shown above."),
+        "createNewPasswordConfigurationExplanation":
+            MessageLookupByLibrary.simpleMessage(
+                "Create a different password by choosing a preset and/or adjusting the settings below."),
+        "createNewPasswordCopyExplanation": MessageLookupByLibrary.simpleMessage(
+            "Copy the new secure password shown above to your device\'s copy/paste clipboard."),
         "createSecurePassword":
             MessageLookupByLibrary.simpleMessage("Create secure password"),
         "createVault": MessageLookupByLibrary.simpleMessage("Create my Vault"),

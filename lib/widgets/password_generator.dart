@@ -87,49 +87,73 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> {
       builder: (context, state) {
         final generatorState = state as GeneratorProfilesEnabled;
         return Scaffold(
-            key: widget.key,
-            appBar: AppBar(title: Text(str.createSecurePassword)),
-            body: SingleChildScrollView(
-              child: Padding(
+          key: widget.key,
+          appBar: AppBar(title: Text(str.createSecurePassword)),
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: SafeArea(
-                  top: false,
-                  left: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      _profileChooser(context, generatorState),
-                      lengthChooser(context, generatorState.current),
-                      presetCharChooser(context, generatorState.current),
-                      additionalCharIncludes(context, generatorState.current, _includeTextController),
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Text(_currentPassword),
+                child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 2.0),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                          child: Text(
+                        _currentPassword,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )),
+                    )),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SafeArea(
+                      top: false,
+                      left: false,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: Text(
+                                '${widget.apply != null ? str.createNewPasswordApplyExplanation : str.createNewPasswordCopyExplanation} ${str.createNewPasswordConfigurationExplanation}'),
+                          ),
+                          _profileChooser(context, generatorState),
+                          lengthChooser(context, generatorState.current),
+                          presetCharChooser(context, generatorState.current),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 64.0),
+                            child: additionalCharIncludes(context, generatorState.current, _includeTextController),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            extendBody: true,
-            bottomNavigationBar: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                OutlinedButton(
-                    child: Text(str.alertCancel.toUpperCase()), onPressed: () => Navigator.of(context).pop(true)),
-                OutlinedButton(
-                    child: widget.apply != null ? Text(str.apply.toUpperCase()) : Text(str.alertCopy.toUpperCase()),
-                    onPressed: () async {
-                      final navigator = Navigator.of(context);
-                      if (widget.apply != null) {
-                        widget.apply!(_currentPassword);
-                      } else {
-                        await Clipboard.setData(ClipboardData(text: _currentPassword));
-                      }
-                      navigator.pop(true);
-                    }),
-              ],
-            ));
+            ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            autofocus: true,
+            icon: widget.apply != null ? Icon(Icons.check) : Icon(Icons.copy),
+            label: widget.apply != null ? Text(str.apply.toUpperCase()) : Text(str.alertCopy.toUpperCase()),
+            onPressed: () async {
+              final navigator = Navigator.of(context);
+              if (widget.apply != null) {
+                widget.apply!(_currentPassword);
+              } else {
+                await Clipboard.setData(ClipboardData(text: _currentPassword));
+              }
+              navigator.pop(true);
+            },
+          ),
+        );
       },
       listener: (context, state) {
         if (state is! GeneratorProfilesEnabled) return;
@@ -140,42 +164,45 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> {
   }
 
   _profileChooser(BuildContext context, GeneratorProfilesEnabled generatorState) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 12.0),
-          child: Text(_str.preset),
-        ),
-        DropdownButton<String>(
-          value: generatorState.current.name,
-          items: <DropdownMenuItem<String>>[
-            ...generatorState.enabled.map((p) => DropdownMenuItem(
-                  value: p.name,
-                  child: Text(p.title),
-                ))
-          ],
-          onChanged: (value) {
-            if (value == null) return;
-            final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-            final newProfile = cubit.changeCurrentProfile(value);
-            if (newProfile != null) {
-              _includeTextController.value = TextEditingValue(
-                  text: newProfile.current.include,
-                  selection: TextSelection.collapsed(offset: newProfile.current.include.length));
-            }
-          },
-        ),
-        OutlinedButton(
-          onPressed: () => AppConfig.router.navigateTo(
-            context,
-            Routes.passwordPresetManager,
-            transition: TransitionType.inFromRight,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: Text(_str.preset),
           ),
-          child: Text(_str.managePresets),
-        )
-      ],
+          DropdownButton<String>(
+            value: generatorState.current.name,
+            items: <DropdownMenuItem<String>>[
+              ...generatorState.enabled.map((p) => DropdownMenuItem(
+                    value: p.name,
+                    child: Text(p.title),
+                  ))
+            ],
+            onChanged: (value) {
+              if (value == null) return;
+              final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+              final newProfile = cubit.changeCurrentProfile(value);
+              if (newProfile != null) {
+                _includeTextController.value = TextEditingValue(
+                    text: newProfile.current.include,
+                    selection: TextSelection.collapsed(offset: newProfile.current.include.length));
+              }
+            },
+          ),
+          OutlinedButton(
+            onPressed: () => AppConfig.router.navigateTo(
+              context,
+              Routes.passwordPresetManager,
+              transition: TransitionType.inFromRight,
+            ),
+            child: Text(_str.managePresets),
+          )
+        ],
+      ),
     );
   }
 

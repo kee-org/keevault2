@@ -3429,6 +3429,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Replace your old password with the new secure one shown above.`
+  String get createNewPasswordApplyExplanation {
+    return Intl.message(
+      'Replace your old password with the new secure one shown above.',
+      name: 'createNewPasswordApplyExplanation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy the new secure password shown above to your device's copy/paste clipboard.`
+  String get createNewPasswordCopyExplanation {
+    return Intl.message(
+      'Copy the new secure password shown above to your device\'s copy/paste clipboard.',
+      name: 'createNewPasswordCopyExplanation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a different password by choosing a preset and/or adjusting the settings below.`
+  String get createNewPasswordConfigurationExplanation {
+    return Intl.message(
+      'Create a different password by choosing a preset and/or adjusting the settings below.',
+      name: 'createNewPasswordConfigurationExplanation',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -336,5 +336,8 @@
   "passwordChanged": "Password changed. Use it when you next unlock Kee Vault.",
   "viewDocumentation": "View documentation",
   "biometricsMaybeExpired": "Please enter your password",
-  "biometricsErrorExplanation": "Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you're signed in again but to help protect you against data loss, you can't avoid entering your password forever."
+  "biometricsErrorExplanation": "Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you're signed in again but to help protect you against data loss, you can't avoid entering your password forever.",
+  "createNewPasswordApplyExplanation": "Replace your old password with the new secure one shown above.",
+  "createNewPasswordCopyExplanation": "Copy the new secure password shown above to your device's copy/paste clipboard.",
+  "createNewPasswordConfigurationExplanation": "Create a different password by choosing a preset and/or adjusting the settings below."
 }
