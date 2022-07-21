@@ -9,7 +9,6 @@ import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/widgets/loading_spinner.dart';
 import 'package:matomo/matomo.dart';
-import '../generated/l10n.dart';
 import 'entry.dart';
 
 class AutofillSaveWidget extends TraceableStatefulWidget {
@@ -99,7 +98,6 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final str = S.of(context);
     return BlocBuilder<EntryCubit, EntryState>(
       builder: (context, state) {
         if (state is EntryLoaded) {
