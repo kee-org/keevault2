@@ -1,0 +1,6 @@
+* Improved password generator screen
+* Improved visibility and position of Save entry and vault buttons
+* Fixed bug preventing filtering by colour
+* New users now offered biometrics save option at signup
+* Our estimation of main password strength now shown when creating and changing it
+* Enabled password generator feature on protected custom fields 
