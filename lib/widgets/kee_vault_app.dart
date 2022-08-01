@@ -139,7 +139,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
       bottomAppBarColor: isDark ? palette[800] : palette[100],
       textSelectionTheme: TextSelectionThemeData(
         selectionHandleColor: palette[500],
-        cursorColor: palette[500],
+        cursorColor: isDark ? palette[50] : palette[500],
         selectionColor: isDark ? palette[700] : palette[100],
       ),
       outlinedButtonTheme:
