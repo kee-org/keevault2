@@ -340,17 +340,7 @@ class EntryWidget extends StatelessWidget {
                             left: false,
                             child: Column(
                               children: <Widget>[
-                                //TODO:f: mention that Android failed to supply accurate
-                                // password data if we can detect when it happens.
-                                //
-                                // Note: Starting with Android 10, you can use the
-                                //FillRequest.FLAG_COMPATIBILITY_MODE_REQUEST flag to
-                                //determine whether an autofill request was generated
-                                // via compatibility mode.
-                                //
-                                // That may be helpful in some cases but not sure if
-                                // the gaps in coverage of that approach will make it
-                                // essentially useless while we still support Android 9
+                                //TODO:f: mention that Android failed to supply accurate password data if isCompatMode true
                                 !savingViaAutofill
                                     ? const SizedBox(height: 8)
                                     : Row(

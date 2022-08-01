@@ -246,10 +246,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "46792a65e3a18be80b22a6f8a2de9ee0ab17f738"
+      resolved-ref: a2e4055d8159e6e0ebd819550ed784e709dc8914
       url: "https://github.com/kee-org/flutter_autofill_service.git"
     source: git
-    version: "0.14.0"
+    version: "0.15.0"
   flutter_bloc:
     dependency: "direct main"
     description:

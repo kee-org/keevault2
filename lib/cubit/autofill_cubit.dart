@@ -15,7 +15,7 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   refresh() async {
     final available = await AutofillService().hasAutofillServicesSupport;
-    final enabled = available ? await AutofillService().hasEnabledAutofillServices : false;
+    final enabled = available ? await AutofillService().status == AutofillServiceStatus.enabled : false;
     if (!available) {
       emit(AutofillMissing());
       return;
@@ -23,7 +23,7 @@ class AutofillCubit extends Cubit<AutofillState> {
 
     bool autofillRequested = await AutofillService().fillRequestedAutomatic;
     bool autofillForceInteractive = await AutofillService().fillRequestedInteractive;
-    final androidMetadata = await AutofillService().getAutofillMetadata();
+    final androidMetadata = await AutofillService().autofillMetadata;
     l.d('androidMetadata $androidMetadata');
     bool saveRequested = androidMetadata?.saveInfo != null;
 
@@ -71,7 +71,7 @@ class AutofillCubit extends Cubit<AutofillState> {
     final response = await AutofillService().requestSetAutofillService();
     l.d('autofill enable request finished $response');
     final available = await AutofillService().hasAutofillServicesSupport;
-    final enabled = available ? await AutofillService().hasEnabledAutofillServices : false;
+    final enabled = available ? await AutofillService().status == AutofillServiceStatus.enabled : false;
     if (!available) {
       emit(AutofillMissing());
     }
@@ -79,7 +79,7 @@ class AutofillCubit extends Cubit<AutofillState> {
   }
 
   Future<void> setSavingPreference(value) async {
-    final prefs = await AutofillService().getPreferences();
+    final prefs = await AutofillService().preferences;
     await AutofillService().setPreferences(AutofillPreferences(
       enableDebug: prefs.enableDebug,
       enableSaving: value,

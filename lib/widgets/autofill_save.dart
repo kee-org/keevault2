@@ -33,6 +33,8 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
     }
     final username = autofillState.androidMetadata.saveInfo!.username;
     final password = autofillState.androidMetadata.saveInfo!.password;
+    //TODO:f: expose value of save compat mode to Entry widget:
+    //final isCompatMode = autofillState.androidMetadata.saveInfo!.isCompatMode;
     setState(() {
       newEntry = vaultCubit.createEntry(group: vault.files.current.body.rootGroup);
     });
