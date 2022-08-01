@@ -65,6 +65,48 @@
 			"group": "build",
 			"problemMatcher": [],
 			"label": "flutter: flutter build apk prod play"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ios",
+				"--config-only",
+				"--release",
+				"--no-codesign",
+					"--dart-define",
+					"KEEVAULT_STAGE=beta",
+					"--dart-define",
+					"KEEVAULT_NAME_SUFFIX=(b)",
+					"--dart-define",
+					"KEEVAULT_ID_SUFFIX=.beta"
+				
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter prep: flutter build ios beta"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ios",
+				"--config-only",
+				"--release",
+				"--no-codesign",
+					"--dart-define",
+					"KEEVAULT_STAGE=prod",
+					"--dart-define",
+					"KEEVAULT_NAME_SUFFIX=",
+					"--dart-define",
+					"KEEVAULT_ID_SUFFIX="
+				
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter prep: flutter build ios prod"
 		}
 	]
 }

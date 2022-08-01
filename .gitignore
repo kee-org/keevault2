@@ -47,3 +47,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 android/fastlane/report.xml
+
+# fastlane
+/vendor/bundle/
+ios/fastlane/.env.default
+ios/android/.env.default
+ios/Flutter/KeeVault-generated.xcconfig

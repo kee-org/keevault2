@@ -1,0 +1,8 @@
+itc_team_id("125282337") # App Store Connect Team ID
+team_id("X53276L247") # Developer Portal Team ID
+
+team_name("Kee Vault Ltd")
+itc_team_name("Kee Vault Ltd")
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
