@@ -35,4 +35,13 @@ platform :android do
   )
   end
 
+  desc "Push a new beta build to test service"
+  lane :beta_stage do
+    testfairy(api_key: ENV["TESTFAIRY_API_KEY"],
+      testers_groups: ['android'],
+      notify: 'on',
+      apk: '../build/app/outputs/flutter-apk/app-release.apk'
+    )
+  end
+
 end

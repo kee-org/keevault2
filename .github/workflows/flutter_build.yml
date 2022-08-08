@@ -8,7 +8,7 @@ on:
       - '*'
 
 jobs:
-  setupAndTest:
+  buildAndTestAndroid:
     name: Build beta sideload
 
     runs-on: ubuntu-latest
@@ -58,13 +58,57 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Download Android keystore
-        id: android_keystore
+      - name: Download Android keystore beta
+        id: android_keystore_beta
         uses: timheuer/base64-to-file@v1.1
-        with:          
+        with:
           fileDir: /home/runner/
-          fileName: keystore-kv-play.pfx
-          encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          fileName: keystore-kv-beta.pfx
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_BETA_BASE64 }}
 
       - name: Build Android App Bundle
+        env:
+          KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
         run: flutter build appbundle --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
+
+  BuildAndTestIos:
+    name: Build ios prod
+
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Load Flutter config
+        uses: kuhnroyal/flutter-fvm-config-action@v1
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@4f5d1c6d12e14c538d07e4016061fc111101e46f
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          cache-key: flutter # optional, change this to force refresh cache; channel and version are automatically appended
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
+
+      - name: Download pub dependencies
+        run: flutter pub get
+
+      - name: Run analyzer
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build iOS App
+        run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX=

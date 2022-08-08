@@ -105,10 +105,7 @@ dependencies:
   base32: ^2.1.1
   barcode_scan2: 4.2.1
   flutter_speed_dial: ^6.0.0
-  receive_intent:
-    git:
-      url: https://github.com/kee-org/receive_intent
-      ref: master
+  receive_intent: ^0.2.1
   flutter_native_splash: ^2.2.4
   platform: ^3.1.0
   email_validator: ^2.0.1

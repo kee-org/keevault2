@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  setupAndTest:
+  setupAndTestAndroid:
     name: Build and release Google play to beta channel
 
     runs-on: ubuntu-latest
@@ -55,26 +55,33 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Download Android keystore
-        id: android_keystore
+      - name: Download Android keystore play
+        id: android_keystore_play
         uses: timheuer/base64-to-file@v1.1
         with:
           fileDir: /home/runner/
           fileName: keystore-kv-play.pfx
           encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
 
+      - name: Download Android keystore beta
+        id: android_keystore_beta
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileDir: /home/runner/
+          fileName: keystore-kv-beta.pfx
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_BETA_BASE64 }}
+
       - name: Build Android App APK for beta cloud service
+        env:
+          KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
         run: flutter build apk --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
 
-      - uses: hkusu/s3-upload-action@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_APK_BETA }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_APK_BETA }}
-          aws-region: 'eu-west-2'
-          aws-bucket: ${{ secrets.AWS_BUCKET_APK_BETA }}
-          file-path: './build/app/outputs/flutter-apk/app-release.apk'
-          content-type: 'application/vnd.android.package-archive'
-          public: true
+      - name: Release beta stage app to beta delivery platform
+        env:
+          TESTFAIRY_API_KEY: '${{ secrets.TESTFAIRY_API_KEY }}'
+        run: |
+          cd android
+          bundle exec fastlane beta_stage
 
       - name: Build Android App Bundle
         env:
@@ -96,3 +103,125 @@ jobs:
           cd android
           bundle exec fastlane beta
 
+  DeployIosBetaAdhoc:
+    name: Build and release beta adhoc
+
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Load Flutter config
+        uses: kuhnroyal/flutter-fvm-config-action@v1
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@4f5d1c6d12e14c538d07e4016061fc111101e46f
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          cache-key: flutter # optional, change this to force refresh cache; channel and version are automatically appended
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
+
+      - name: Download pub dependencies
+        run: flutter pub get
+
+      - name: Run analyzer
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build iOS App
+        run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_NAME_SUFFIX='(b)' --dart-define KEEVAULT_ID_SUFFIX=.beta
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+        #  working-directory: ./ios
+          ruby-version: 2.7
+          bundler: 2.3.19
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Release beta stage app to beta delivery platform
+        env:
+          MATCH_GIT_BASIC_AUTHORIZATION: '${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          TESTFAIRY_API_KEY: '${{ secrets.TESTFAIRY_API_KEY }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+        run: |
+          cd ios
+          bundle exec fastlane beta_stage
+
+#   DeployIosProdTestflight:
+#     name: Build and release prod testflight
+
+#     runs-on: macos-latest
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+
+#       - name: Load Flutter config
+#         uses: kuhnroyal/flutter-fvm-config-action@v1
+
+#       - name: Setup Flutter
+#         uses: subosito/flutter-action@4f5d1c6d12e14c538d07e4016061fc111101e46f
+#         with:
+#           flutter-version: ${{ env.FLUTTER_VERSION }}
+#           channel: ${{ env.FLUTTER_CHANNEL }}
+#           cache: true
+#           cache-key: flutter # optional, change this to force refresh cache; channel and version are automatically appended
+
+#       - name: Flutter version
+#         run: flutter --version
+
+#       - name: Cache pub dependencies
+#         uses: actions/cache@v2
+#         with:
+#           path: ${{ env.PUB_CACHE }}
+#           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+#           restore-keys: ${{ runner.os }}-pub-
+
+#       - name: Download pub dependencies
+#         run: flutter pub get
+
+#       - name: Run analyzer
+#         run: flutter analyze
+
+#       - name: Run tests
+#         run: flutter test
+
+#       - name: Build iOS App
+#         run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX=
+
+#       - name: Setup Ruby
+#         uses: ruby/setup-ruby@v1
+#         with:
+#         #  working-directory: ./ios
+#           ruby-version: 2.7
+#           bundler: 2.3.19
+#           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+# #TODO: testflight deploy secrets, etc.
+#       # - name: Release prod stage app to appstore testflight
+#       #   env:
+#       #     MATCH_GIT_BASIC_AUTHORIZATION: '${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}'
+#       #     MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+#       #     TESTFAIRY_API_KEY: '${{ secrets.TESTFAIRY_API_KEY }}'
+#       #     TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+#       #     TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+#       #   run: |
+#       #     cd ios
+#       #     bundle exec fastlane prod_stage_testflight

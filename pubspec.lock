@@ -786,12 +786,10 @@ packages:
   receive_intent:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: ea86770be8dd9b10718523825b8a92983ed7ee9f
-      url: "https://github.com/kee-org/receive_intent"
-    source: git
-    version: "0.2.0"
+      name: receive_intent
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   sensors_plus:
     dependency: transitive
     description:

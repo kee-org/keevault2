@@ -23,29 +23,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Runs all the tests
 
-### android internal
-
-```sh
-[bundle exec] fastlane android internal
-```
-
-release to internal testers only
-
-### android alpha
-
-```sh
-[bundle exec] fastlane android alpha
-```
-
-Promote to limited set of testers
-
 ### android beta
 
 ```sh
 [bundle exec] fastlane android beta
 ```
 
-Promote to all beta testers
+release to all beta testers
+
+### android beta_stage
+
+```sh
+[bundle exec] fastlane android beta_stage
+```
+
+Push a new beta build to test service
 
 ----
 

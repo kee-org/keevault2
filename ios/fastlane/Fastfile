@@ -15,6 +15,30 @@
 
 default_platform(:ios)
 
+TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
+TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
+
+def delete_temp_keychain(name)
+  delete_keychain(
+    name: name
+  ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+
+end
+
+def create_temp_keychain(name, password)
+  create_keychain(
+    name: name,
+    password: password,
+    unlock: false,
+    timeout: 0
+  )
+end
+
+def ensure_temp_keychain(name, password)
+  delete_temp_keychain(name)
+  create_temp_keychain(name, password)
+end
+
 platform :ios do
 
   desc "Get certificates"
@@ -65,25 +89,74 @@ platform :ios do
   # the command most recently executed!
   desc "Push a new beta build to test service"
   lane :beta_stage do
-    match(
-      type: "adhoc",
-      app_identifier: 'com.keevault.keevault.beta'
-    )
-    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
-    testfairy(api_key: "TODO: env var",
-      testers_groups: ['ios'],
-      notify: 'on'
-    )
-    #upload_to_testflight
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+
+    begin
+      ensure_temp_keychain(keychain_name, keychain_password)
+
+      match(
+        type: "adhoc",
+        app_identifier: 'com.keevault.keevault.beta',
+        readonly: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password 
+      )
+      build_app(
+        workspace: "Runner.xcworkspace",
+        scheme: "Runner",
+        configuration: 'Release',
+        export_method: 'ad-hoc',
+        xcargs: {
+          :PROVISIONING_PROFILE_SPECIFIER => 'match AdHoc com.keevault.keevault.beta',
+        },
+        export_options: {
+          provisioningProfiles: { 
+            'com.keevault.keevault.beta' => 'match AdHoc com.keevault.keevault.beta'
+          }
+        }
+      )
+      testfairy(api_key: ENV["TESTFAIRY_API_KEY"],
+        testers_groups: ['ios'],
+        notify: 'on'
+      )
+    ensure
+      delete_temp_keychain(keychain_name)
+    end
   end
 
   desc "Push a new prod build to testflight"
   lane :prod_stage_testflight do
-    match(
-      type: "appstore",
-      app_identifier: 'com.keevault.keevault'
-    )
-    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
-    upload_to_testflight
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+
+    begin
+      ensure_temp_keychain(keychain_name, keychain_password)
+
+      match(
+        type: "appstore",
+        app_identifier: 'com.keevault.keevault',
+        readonly: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password 
+      )
+      build_app(
+        workspace: "Runner.xcworkspace",
+        scheme: "Runner",
+        configuration: 'Release',
+        export_method: 'app-store',
+        xcargs: {
+          :PROVISIONING_PROFILE_SPECIFIER => 'match AppStore com.keevault.keevault',
+        },
+        export_options: {
+          provisioningProfiles: { 
+            'com.keevault.keevault' => 'match AppStore com.keevault.keevault'
+          }
+        }
+      )
+      upload_to_testflight
+    ensure
+      delete_temp_keychain(keychain_name)
+    end
   end
 end

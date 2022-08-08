@@ -66,7 +66,7 @@ sideload: [
     nameSuffix: ' (SL)',
     idSuffix: '.sl',
     symbolLevel: null,
-    signingConfig: 'debug'
+    signingConfig: 'beta'
 ],
 play: [
     nameSuffix: '',
@@ -94,6 +94,13 @@ android {
             keyPassword System.getenv('KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD')
             storeFile file(System.getenv('HOME') + '/keystore-kv-play.pfx')
             storePassword System.getenv('KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD')
+            storeType 'pkcs12'
+        }
+        beta {
+            keyAlias 'kv-beta'
+            keyPassword System.getenv('KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD')
+            storeFile file(System.getenv('HOME') + '/keystore-kv-beta.pfx')
+            storePassword System.getenv('KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD')
             storeType 'pkcs12'
         }
     }
