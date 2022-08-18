@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Java
         uses: actions/setup-java@v2
@@ -29,12 +29,11 @@ jobs:
         uses: kuhnroyal/flutter-fvm-config-action@v1
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@4f5d1c6d12e14c538d07e4016061fc111101e46f
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: ${{ env.FLUTTER_CHANNEL }}
           cache: true
-          cache-key: flutter # optional, change this to force refresh cache; channel and version are automatically appended
 
       - name: Flutter version
         run: flutter --version
@@ -78,18 +77,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Load Flutter config
         uses: kuhnroyal/flutter-fvm-config-action@v1
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@4f5d1c6d12e14c538d07e4016061fc111101e46f
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: ${{ env.FLUTTER_CHANNEL }}
           cache: true
-          cache-key: flutter # optional, change this to force refresh cache; channel and version are automatically appended
 
       - name: Flutter version
         run: flutter --version
