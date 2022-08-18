@@ -1,0 +1,104 @@
+name: Flutter release Android
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  setupAndTestAndroid:
+    name: Build and release Google play to beta channel
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt' # 'temurin' is apparently the new version of this but only adopt is listed as installed on github runners so need to test changing later
+          java-version: '11'
+          cache: 'gradle'
+          check-latest: false
+
+      - name: Load Flutter config
+        uses: kuhnroyal/flutter-fvm-config-action@v1
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@4f5d1c6d12e14c538d07e4016061fc111101e46f
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          cache-key: flutter # optional, change this to force refresh cache; channel and version are automatically appended
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
+
+      - name: Download pub dependencies
+        run: flutter pub get
+
+      # - name: Run build_runner
+      #   run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run analyzer
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Download Android keystore play
+        id: android_keystore_play
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileDir: /home/runner/
+          fileName: keystore-kv-play.pfx
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Download Android keystore beta
+        id: android_keystore_beta
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileDir: /home/runner/
+          fileName: keystore-kv-beta.pfx
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_BETA_BASE64 }}
+
+      - name: Build Android App APK for beta cloud service
+        env:
+          KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
+        run: flutter build apk --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
+
+      - name: Release beta stage app to beta delivery platform
+        env:
+          TESTFAIRY_API_KEY: '${{ secrets.TESTFAIRY_API_KEY }}'
+        run: |
+          cd android
+          bundle exec fastlane beta_stage
+
+      - name: Build Android App Bundle
+        env:
+          KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
+        run: flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: ./android
+          ruby-version: 2.7
+          bundler: 2.2.26
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Release to Google Play (beta)
+        env:
+          KEEVAULT_ANDROID_PLAY_API_KEY_JSON: ${{ secrets.KEEVAULT_ANDROID_PLAY_API_KEY_JSON }}
+        run: |
+          cd android
+          bundle exec fastlane beta
