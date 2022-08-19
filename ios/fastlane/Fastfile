@@ -155,6 +155,10 @@ platform :ios do
           }
         }
       )
+      app_store_connect_api_key(
+        is_key_content_base64: true,
+        in_house: false,
+      )
       upload_to_testflight(
         skip_submission: true #TODO: remove once tested process works
         )
