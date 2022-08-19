@@ -8,70 +8,113 @@ on:
       - '*'
 
 jobs:
-  buildAndTestAndroid:
-    name: Build beta sideload
+  # buildAndTestAndroid:
+  #   name: Build beta sideload
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt' # 'temurin' is apparently the new version of this but only adopt is listed as installed on github runners so need to test changing later
-          java-version: '11'
-          cache: 'gradle'
-          check-latest: false
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v2
+  #       with:
+  #         distribution: 'adopt' # 'temurin' is apparently the new version of this but only adopt is listed as installed on github runners so need to test changing later
+  #         java-version: '11'
+  #         cache: 'gradle'
+  #         check-latest: false
 
-      - name: Load Flutter config
-        uses: kuhnroyal/flutter-fvm-config-action@v1
+  #     - name: Load Flutter config
+  #       uses: kuhnroyal/flutter-fvm-config-action@v1
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: ${{ env.FLUTTER_CHANNEL }}
-          cache: true
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: ${{ env.FLUTTER_VERSION }}
+  #         channel: ${{ env.FLUTTER_CHANNEL }}
+  #         cache: true
 
-      - name: Flutter version
-        run: flutter --version
+  #     - name: Flutter version
+  #       run: flutter --version
 
-      - name: Cache pub dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.PUB_CACHE }}
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: ${{ runner.os }}-pub-
+  #     - name: Cache pub dependencies
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ env.PUB_CACHE }}
+  #         key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+  #         restore-keys: ${{ runner.os }}-pub-
 
-      - name: Download pub dependencies
-        run: flutter pub get
+  #     - name: Download pub dependencies
+  #       run: flutter pub get
 
-      # - name: Run build_runner
-      #   run: flutter pub run build_runner build --delete-conflicting-outputs
+  #     # - name: Run build_runner
+  #     #   run: flutter pub run build_runner build --delete-conflicting-outputs
 
-      - name: Run analyzer
-        run: flutter analyze
+  #     - name: Run analyzer
+  #       run: flutter analyze
 
-      - name: Run tests
-        run: flutter test
+  #     - name: Run tests
+  #       run: flutter test
 
-      - name: Download Android keystore beta
-        id: android_keystore_beta
-        uses: timheuer/base64-to-file@v1.1
-        with:
-          fileDir: /home/runner/
-          fileName: keystore-kv-beta.pfx
-          encodedString: ${{ secrets.ANDROID_KEYSTORE_BETA_BASE64 }}
+  #     - name: Download Android keystore beta
+  #       id: android_keystore_beta
+  #       uses: timheuer/base64-to-file@v1.1
+  #       with:
+  #         fileDir: /home/runner/
+  #         fileName: keystore-kv-beta.pfx
+  #         encodedString: ${{ secrets.ANDROID_KEYSTORE_BETA_BASE64 }}
 
-      - name: Build Android App Bundle
-        env:
-          KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
-        run: flutter build appbundle --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
+  #     - name: Build Android App Bundle
+  #       env:
+  #         KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
+  #       run: flutter build appbundle --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
 
-  BuildAndTestIos:
-    name: Build ios prod
+  # BuildAndTestIos:
+  #   name: Build ios prod
+
+  #   runs-on: macos-latest
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Load Flutter config
+  #       uses: kuhnroyal/flutter-fvm-config-action@v1
+
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: ${{ env.FLUTTER_VERSION }}
+  #         channel: ${{ env.FLUTTER_CHANNEL }}
+  #         cache: true
+
+  #     - name: Flutter version
+  #       run: flutter --version
+
+  #     - name: Cache pub dependencies
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ env.PUB_CACHE }}
+  #         key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+  #         restore-keys: ${{ runner.os }}-pub-
+
+  #     - name: Download pub dependencies
+  #       run: flutter pub get
+
+  #     - name: Run analyzer
+  #       run: flutter analyze
+
+  #     - name: Run tests
+  #       run: flutter test
+
+  #     - name: Build iOS App
+  #       run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX=
+
+#TODO: temp whil eon branch:
+
+  DeployIosProdTestflight:
+    name: Build and release prod testflight
 
     runs-on: macos-latest
 
@@ -110,3 +153,24 @@ jobs:
 
       - name: Build iOS App
         run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX=
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+        #  working-directory: ./ios
+          ruby-version: 2.7
+          bundler: 2.3.19
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Release prod stage app to appstore testflight
+        env:
+          MATCH_GIT_BASIC_AUTHORIZATION: '${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: '${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}'
+          APP_STORE_CONNECT_API_KEY_KEY: '${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}'
+          APP_STORE_CONNECT_API_KEY_KEY_ID: '${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}'
+        run: |
+          cd ios
+          bundle exec fastlane prod_stage_testflight
