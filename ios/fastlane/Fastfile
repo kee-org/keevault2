@@ -81,6 +81,7 @@ platform :ios do
     sync_code_signing(
       type: "adhoc",
       app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev'],
+      force_for_new_devices: true,
       readonly: false
     )
   end
