@@ -39,6 +39,14 @@ Generate new certificates
 
 Push a new beta build to test service
 
+### ios prod_stage_testflight
+
+```sh
+[bundle exec] fastlane ios prod_stage_testflight
+```
+
+Push a new prod build to testflight
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

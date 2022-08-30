@@ -53,3 +53,4 @@ android/fastlane/report.xml
 ios/fastlane/.env.default
 ios/android/.env.default
 ios/Flutter/KeeVault-generated.xcconfig
+ios/fastlane/report.xml

@@ -45,20 +45,20 @@ platform :ios do
   lane :certificates do
     sync_code_signing(
       type: "development",
-      app_identifier: ['com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault.dev', 'com.keevault.keevault.dev.autofill'],
       force_for_new_devices: true,
       readonly: true
     )
 
     sync_code_signing(
       type: "appstore",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill'],
       readonly: true
     )
 
     sync_code_signing(
       type: "adhoc",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill', 'com.keevault.keevault.dev.autofill' ],
       readonly: true
     )
   end
@@ -67,20 +67,20 @@ platform :ios do
   lane :generate_new_certificates do
     sync_code_signing(
       type: "development",
-      app_identifier: ['com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault.dev', 'com.keevault.keevault.dev.autofill'],
       force_for_new_devices: true,
       readonly: false
     )
     
     sync_code_signing(
       type: "appstore",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill'],
       readonly: false
     )
 
     sync_code_signing(
       type: "adhoc",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill', 'com.keevault.keevault.dev.autofill' ],
       force_for_new_devices: true,
       readonly: false
     )
@@ -117,10 +117,10 @@ platform :ios do
           }
         }
       )
-      testfairy(api_key: ENV["TESTFAIRY_API_KEY"],
-        testers_groups: ['ios'],
-        notify: 'on'
-      )
+      # testfairy(api_key: ENV["TESTFAIRY_API_KEY"],
+      #   testers_groups: ['ios'],
+      #   notify: 'on'
+      # )
     ensure
       delete_temp_keychain(keychain_name)
     end
