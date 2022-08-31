@@ -45,20 +45,20 @@ platform :ios do
   lane :certificates do
     sync_code_signing(
       type: "development",
-      app_identifier: ['com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault.dev', 'com.keevault.keevault.dev.autofill'],
       force_for_new_devices: true,
       readonly: true
     )
 
     sync_code_signing(
       type: "appstore",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill'],
       readonly: true
     )
 
     sync_code_signing(
       type: "adhoc",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill', 'com.keevault.keevault.dev.autofill' ],
       readonly: true
     )
   end
@@ -67,20 +67,21 @@ platform :ios do
   lane :generate_new_certificates do
     sync_code_signing(
       type: "development",
-      app_identifier: ['com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault.dev', 'com.keevault.keevault.dev.autofill'],
       force_for_new_devices: true,
       readonly: false
     )
     
     sync_code_signing(
       type: "appstore",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill'],
       readonly: false
     )
 
     sync_code_signing(
       type: "adhoc",
-      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev'],
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.beta', 'com.keevault.keevault.dev', 'com.keevault.keevault.autofill', 'com.keevault.keevault.beta.autofill', 'com.keevault.keevault.dev.autofill' ],
+      force_for_new_devices: true,
       readonly: false
     )
   end
@@ -97,22 +98,32 @@ platform :ios do
 
       match(
         type: "adhoc",
-        app_identifier: 'com.keevault.keevault.beta',
+        app_identifier: ['com.keevault.keevault.beta', 'com.keevault.keevault.beta.autofill'],
         readonly: true,
         keychain_name: keychain_name,
         keychain_password: keychain_password 
+      )
+      update_project_provisioning(
+        xcodeproj: "Runner.xcodeproj",
+        profile: ENV['sigh_com.keevault.keevault.beta_adhoc_profile-path'],
+        target_filter: ".*Runner.*",
+        build_configuration: "Release"
+      )
+      update_project_provisioning(
+        xcodeproj: "Runner.xcodeproj",
+        profile: ENV['sigh_com.keevault.keevault.beta.autofill_adhoc_profile-path'],
+        target_filter: ".*KeeVaultAutofill.*",
+        build_configuration: "Release"
       )
       build_app(
         workspace: "Runner.xcworkspace",
         scheme: "Runner",
         configuration: 'Release',
         export_method: 'ad-hoc',
-        xcargs: {
-          :PROVISIONING_PROFILE_SPECIFIER => 'match AdHoc com.keevault.keevault.beta',
-        },
         export_options: {
           provisioningProfiles: { 
-            'com.keevault.keevault.beta' => 'match AdHoc com.keevault.keevault.beta'
+            'com.keevault.keevault.beta' => 'match AdHoc com.keevault.keevault.beta',
+            'com.keevault.keevault.beta.autofill' => 'match AdHoc com.keevault.keevault.beta.autofill'
           }
         }
       )
@@ -135,26 +146,42 @@ platform :ios do
 
       match(
         type: "appstore",
-        app_identifier: 'com.keevault.keevault',
+        app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.autofill'],
         readonly: true,
         keychain_name: keychain_name,
         keychain_password: keychain_password 
+      )
+      update_project_provisioning(
+        xcodeproj: "Runner.xcodeproj",
+        profile: ENV['sigh_com.keevault.keevault_appstore_profile-path'],
+        target_filter: ".*Runner.*",
+        build_configuration: "Release"
+      )
+      update_project_provisioning(
+        xcodeproj: "Runner.xcodeproj",
+        profile: ENV['sigh_com.keevault.keevault.autofill_appstore_profile-path'],
+        target_filter: ".*KeeVaultAutofill.*",
+        build_configuration: "Release"
       )
       build_app(
         workspace: "Runner.xcworkspace",
         scheme: "Runner",
         configuration: 'Release',
         export_method: 'app-store',
-        xcargs: {
-          :PROVISIONING_PROFILE_SPECIFIER => 'match AppStore com.keevault.keevault',
-        },
         export_options: {
           provisioningProfiles: { 
-            'com.keevault.keevault' => 'match AppStore com.keevault.keevault'
+            'com.keevault.keevault' => 'match AppStore com.keevault.keevault',
+            'com.keevault.keevault.autofill' => 'match AppStore com.keevault.keevault.autofill'
           }
         }
       )
-      upload_to_testflight
+      app_store_connect_api_key(
+        is_key_content_base64: true,
+        in_house: false,
+      )
+      upload_to_testflight(
+        skip_submission: true #TODO: remove once tested process works
+        )
     ensure
       delete_temp_keychain(keychain_name)
     end

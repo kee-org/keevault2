@@ -51,5 +51,9 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>TOTP QR scanning</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Adding attachments to entries and Import/Export functionality</string>
 </dict>
 </plist>
