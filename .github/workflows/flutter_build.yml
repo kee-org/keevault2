@@ -157,7 +157,6 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-        #  working-directory: ./ios
           ruby-version: 2.7
           bundler: 2.3.19
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
@@ -173,64 +172,63 @@ jobs:
           cd ios
           bundle exec fastlane beta_stage
 
-  # DeployIosProdTestflight:
-  #   name: Build and release prod testflight
+  DeployIosProdTestflight:
+    name: Build and release prod testflight
 
-  #   runs-on: macos-latest
+    runs-on: macos-latest
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Load Flutter config
-  #       uses: kuhnroyal/flutter-fvm-config-action@v1
+      - name: Load Flutter config
+        uses: kuhnroyal/flutter-fvm-config-action@v1
 
-  #     - name: Setup Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: ${{ env.FLUTTER_VERSION }}
-  #         channel: ${{ env.FLUTTER_CHANNEL }}
-  #         cache: true
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
 
-  #     - name: Flutter version
-  #       run: flutter --version
+      - name: Flutter version
+        run: flutter --version
 
-  #     - name: Cache pub dependencies
-  #       uses: actions/cache@v2
-  #       with:
-  #         path: ${{ env.PUB_CACHE }}
-  #         key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-  #         restore-keys: ${{ runner.os }}-pub-
+      - name: Cache pub dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
 
-  #     - name: Download pub dependencies
-  #       run: flutter pub get
+      - name: Download pub dependencies
+        run: flutter pub get
 
-  #     - name: Run analyzer
-  #       run: flutter analyze
+      - name: Run analyzer
+        run: flutter analyze
 
-  #     - name: Run tests
-  #       run: flutter test
+      - name: Run tests
+        run: flutter test
 
-  #     - name: Build iOS App
-  #       run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX=
+      - name: Build iOS App
+        run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX=
 
-  #     - name: Setup Ruby
-  #       uses: ruby/setup-ruby@v1
-  #       with:
-  #       #  working-directory: ./ios
-  #         ruby-version: 2.7
-  #         bundler: 2.3.19
-  #         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler: 2.3.19
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
-  #     - name: Release prod stage app to appstore testflight
-  #       env:
-  #         MATCH_GIT_BASIC_AUTHORIZATION: '${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}'
-  #         MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
-  #         TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
-  #         TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-  #         APP_STORE_CONNECT_API_KEY_ISSUER_ID: '${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}'
-  #         APP_STORE_CONNECT_API_KEY_KEY: '${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}'
-  #         APP_STORE_CONNECT_API_KEY_KEY_ID: '${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}'
-  #       run: |
-  #         cd ios
-  #         bundle exec fastlane prod_stage_testflight
+      - name: Release prod stage app to appstore testflight
+        env:
+          MATCH_GIT_BASIC_AUTHORIZATION: '${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: '${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}'
+          APP_STORE_CONNECT_API_KEY_KEY: '${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}'
+          APP_STORE_CONNECT_API_KEY_KEY_ID: '${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}'
+        run: |
+          cd ios
+          bundle exec fastlane prod_stage_testflight
