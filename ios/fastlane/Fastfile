@@ -127,10 +127,10 @@ platform :ios do
           }
         }
       )
-      # testfairy(api_key: ENV["TESTFAIRY_API_KEY"],
-      #   testers_groups: ['ios'],
-      #   notify: 'on'
-      # )
+      testfairy(api_key: ENV["TESTFAIRY_API_KEY"],
+        testers_groups: ['ios'],
+        notify: 'on'
+      )
     ensure
       delete_temp_keychain(keychain_name)
     end
@@ -163,7 +163,6 @@ platform :ios do
         target_filter: ".*KeeVaultAutofill.*",
         build_configuration: "Release"
       )
-      #TODO: duplicate above to beta if it works
       build_app(
         workspace: "Runner.xcworkspace",
         scheme: "Runner",
@@ -180,9 +179,9 @@ platform :ios do
         is_key_content_base64: true,
         in_house: false,
       )
-      # upload_to_testflight(
-      #   skip_submission: true #TODO: remove once tested process works
-      #   )
+      upload_to_testflight(
+        skip_submission: true #TODO: remove once tested process works
+        )
     ensure
       delete_temp_keychain(keychain_name)
     end
