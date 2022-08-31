@@ -1,2 +1,4 @@
 #include "Generated.xcconfig"
 #include "KeeVault-defaults.xcconfig"
+
+CODE_SIGN_ENTITLEMENTS=./KeeVaultAutofill/KeeVaultAutofill$(KEEVAULT_ID_SUFFIX).entitlements

@@ -2,3 +2,5 @@
 #include "Generated.xcconfig"
 #include "KeeVault-defaults.xcconfig"
 #include "KeeVault-generated.xcconfig"
+
+CODE_SIGN_ENTITLEMENTS=./Runner/Runner$(KEEVAULT_ID_SUFFIX).entitlements

@@ -6,9 +6,9 @@
         <true/>
         <key>keychain-access-groups</key>
         <array>
-            <string>$(AppIdentifierPrefix)com.keevault.keevault.autofill</string>
-            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default</string>
-            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.entries</string>
+            <string>$(AppIdentifierPrefix)com.keevault.keevault.dev.autofill</string>
+            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default.dev</string>
+            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.entries.dev</string>
         </array>
     </dict>
 </plist>
