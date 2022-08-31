@@ -144,14 +144,14 @@ platform :ios do
       )
       update_project_provisioning(
         xcodeproj: "Runner.xcodeproj",
-        profile: ENV['sigh_com.keevault.keevault.autofill_appstore_profile-path'],
-        target_filter: ".*KeeVaultAutoFill.*", # matches name or type of a target
+        profile: ENV['sigh_com.keevault.keevault_appstore_profile-path'],
+        target_filter: ".*Runner.*", # matches name or type of a target
         build_configuration: "Release"
       )
       update_project_provisioning(
         xcodeproj: "Runner.xcodeproj",
-        profile: ENV['sigh_com.keevault.keevault_appstore_profile-path'],
-        target_filter: ".*Runner.*", # matches name or type of a target
+        profile: ENV['sigh_com.keevault.keevault.autofill_appstore_profile-path'],
+        target_filter: ".*KeeVaultAutofill.*", # matches name or type of a target
         build_configuration: "Release"
       )
       #TODO: duplicate above to beta if it works
