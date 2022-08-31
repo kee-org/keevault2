@@ -73,6 +73,20 @@
 				"build",
 				"ios",
 				"--config-only",
+				"--debug",
+				"--no-codesign"				
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter prep: flutter build ios"
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"ios",
+				"--config-only",
 				"--release",
 				"--no-codesign",
 					"--dart-define",

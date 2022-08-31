@@ -22,6 +22,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>KeeVaultSharedEntriesAccessGroup</key>
+	<string>$(KEE_VAULT_SHARED_ENTRIES_ACCESS_GROUP)</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Unlock your Vault without having to enter your password</string>
 	<key>UILaunchStoryboardName</key>

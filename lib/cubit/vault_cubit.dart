@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_persistent_queue/flutter_persistent_queue.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
@@ -33,6 +34,7 @@ class VaultCubit extends Cubit<VaultState> {
   final GeneratorProfilesCubit _generatorProfilesCubit;
   PersistentQueue? _persistentQueueAfAssociations;
   final bool Function() isAutofilling;
+  static const _autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
   VaultCubit(
     this._userRepo,
     this._qu,
@@ -854,6 +856,15 @@ class VaultCubit extends Cubit<VaultState> {
       emit(VaultSaving(vault, true, s is VaultSaving ? s.remotely : false));
       final mergedOrCurrentVaultFile =
           await _localVaultRepo.save(user, vault, applyAndConsumePendingAutofillAssociations);
+      await _autoFillMethodChannel.invokeMethod('setAllEntries');
+      /*
+      try {
+    final int result = await platform.invokeMethod('getBatteryLevel');
+    batteryLevel = 'Battery level at $result % .';
+  } on PlatformException catch (e) {
+    batteryLevel = "Failed to get battery level: '${e.message}'.";
+  }
+  */
       if (user == null) {
         emit(VaultLoaded(mergedOrCurrentVaultFile));
         return;
