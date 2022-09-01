@@ -37,16 +37,25 @@ private func addEntries() throws {
     let password = "password123".data(using: String.Encoding.utf8)!
     let server = "www.github.com"
     let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+
+var error: NSError?
+let access = SecAccessControlCreateWithFlags(NULL,  // Use the default allocator.
+kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
+                                             kSecAccessControlUserPresence,
+                                             &error);
+
     let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                 kSecAttrAccessGroup as String: accessGroup,
+                                kSecAttrAccessControl as String: access,
                                 kSecAttrAccount as String: account,
                                 kSecAttrServer as String: server,
                                 kSecValueData as String: password]
-    
+
+    SecItemDelete(query as CFDictionary)
     let status = SecItemAdd(query as CFDictionary, nil)
     guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
     
-    //TODO: Above will fail if item with same attributes already exists
+    //TODO: Find all in keychain and compare timestamps for updates and delete any that are no longer in list of entries
 }
 
 
