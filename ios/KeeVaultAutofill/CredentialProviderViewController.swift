@@ -8,7 +8,19 @@
 import AuthenticationServices
 
 class CredentialProviderViewController: ASCredentialProviderViewController {
+    
+    var embeddedNavigationController: UINavigationController {
+            return children.first as! UINavigationController
+        }
 
+        var mainController: KeeVaultViewController {
+            return embeddedNavigationController.viewControllers.first as! KeeVaultViewController
+        }
+
+    override func viewDidLoad() {
+        mainController.selectionDelegate = self
+    }
+    
     /*
      Prepare your UI to list available credentials for the user to choose from. The items in
      'serviceIdentifiers' describe the service the user is logging in to, so your extension can
@@ -45,16 +57,14 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     override func prepareInterfaceToProvideCredential(for credentialIdentity: ASPasswordCredentialIdentity) {
     }
     */
-
-    @IBAction func cancel(_ sender: AnyObject?) {
-        self.extensionContext.cancelRequest(withError: NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue))
-    }
-
 }
 
 extension CredentialProviderViewController: EntrySelectionDelegate {
     func selected(credentials: ASPasswordCredential) {
         self.extensionContext.completeRequest(withSelectedCredential: credentials, completionHandler: nil)
+    }
+    func cancel() {
+        self.extensionContext.cancelRequest(withError: NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue))
     }
 }
 

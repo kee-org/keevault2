@@ -1,5 +1,5 @@
 //
-//  KeeVaultViewController.swift
+//  NewEntryViewController.swift
 //  KeeVaultAutofill
 //
 //  Created by Chris Tomlinson on 18/09/2022.
@@ -8,11 +8,12 @@
 import Foundation
 import AuthenticationServices
 
-class KeeVaultViewController: UIViewController {
+class NewEntryViewController: UIViewController {
 
     weak var selectionDelegate: EntrySelectionDelegate?
-    
-    @IBAction func passwordSelected(_ sender: AnyObject?) {
+   
+    /*
+    func passwordSelected(_ sender: AnyObject?) {
         do {
             let passwordCredential = try getExampleEntry()
             self.selectionDelegate?.selected(credentials: passwordCredential)
@@ -24,21 +25,15 @@ class KeeVaultViewController: UIViewController {
     @IBAction func cancel(_ sender: AnyObject?) {
         self.selectionDelegate?.cancel()
     }
+    */
     
-    func createEntry(_ sender: AnyObject?) {
+    @IBAction func createEntry(_ sender: AnyObject?) {
         do {
             //TODO: read user input and create entry
             let passwordCredential = try getExampleEntry()
             selectionDelegate?.selected(credentials: passwordCredential)
         } catch _ {
         
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "newEntrySegue" {
-            let destinationVC = segue.destination as! NewEntryViewController
-            destinationVC.selectionDelegate = selectionDelegate
         }
     }
     
@@ -67,10 +62,4 @@ class KeeVaultViewController: UIViewController {
         let credentials = ASPasswordCredential(user: account, password: password)
         return credentials;
     }
-}
-
-protocol EntrySelectionDelegate: AnyObject {
-    func selected(credentials: ASPasswordCredential)
-    func cancel()
-    //TODO: created(user: String, password: String, server: String)
 }
