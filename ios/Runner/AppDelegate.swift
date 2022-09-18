@@ -37,20 +37,17 @@ private func addEntries() throws {
     let password = "password123".data(using: String.Encoding.utf8)!
     let server = "www.github.com"
     let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+    
+    let accessControl: SecAccessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, [SecAccessControlCreateFlags.userPresence], nil)!
 
-var error: NSError?
-let access = SecAccessControlCreateWithFlags(NULL,  // Use the default allocator.
-kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
-                                             kSecAccessControlUserPresence,
-                                             &error);
-
+    
     let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                 kSecAttrAccessGroup as String: accessGroup,
-                                kSecAttrAccessControl as String: access,
+                                kSecAttrAccessControl as String: accessControl,
                                 kSecAttrAccount as String: account,
                                 kSecAttrServer as String: server,
                                 kSecValueData as String: password]
-
+    
     SecItemDelete(query as CFDictionary)
     let status = SecItemAdd(query as CFDictionary, nil)
     guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
