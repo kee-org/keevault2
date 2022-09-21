@@ -10,12 +10,12 @@ import AuthenticationServices
 class CredentialProviderViewController: ASCredentialProviderViewController {
     
     var embeddedNavigationController: UINavigationController {
-            return children.first as! UINavigationController
-        }
+        return children.first as! UINavigationController
+    }
 
-        var mainController: KeeVaultViewController {
-            return embeddedNavigationController.viewControllers.first as! KeeVaultViewController
-        }
+    var mainController: KeeVaultViewController {
+        return embeddedNavigationController.viewControllers.first as! KeeVaultViewController
+    }
 
     override func viewDidLoad() {
         mainController.selectionDelegate = self
@@ -27,6 +27,14 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      prioritize the most relevant credentials in the list.
     */
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
+        //TODO: unclear when this gets called. is the UI view already loaded or what?
+        mainController.searchDomains = serviceIdentifiers
+        mainController.entries = [
+            KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
+            KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
+            KeeVaultKeychainEntry(uuid: "uuid3", server: "github.com", writtenByAutofill: false, title: "Example title 3", username: "account 3", password: "password 3" ),
+        ]
+        
     }
 
     /*
