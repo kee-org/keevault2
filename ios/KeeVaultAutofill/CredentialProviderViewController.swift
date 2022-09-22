@@ -16,10 +16,11 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     var mainController: KeeVaultViewController {
         return embeddedNavigationController.viewControllers.first as! KeeVaultViewController
     }
-
+    
     override func viewDidLoad() {
         mainController.selectionDelegate = self
     }
+    
     
     /*
      Prepare your UI to list available credentials for the user to choose from. The items in
@@ -27,14 +28,52 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      prioritize the most relevant credentials in the list.
     */
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
-        //TODO: unclear when this gets called. is the UI view already loaded or what?
         mainController.searchDomains = serviceIdentifiers
+        do {
+            mainController.entries = try loadAllKeychainMetadata()
+        } catch {
+            // Will just initialise with no passwords displayed. Not sure what else useful
+            // we can do but will see what user feedback is if this ever happens
+        }
         mainController.entries = [
             KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
             KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
             KeeVaultKeychainEntry(uuid: "uuid3", server: "github.com", writtenByAutofill: false, title: "Example title 3", username: "account 3", password: "password 3" ),
         ]
+        self.mainController.initAutofillEntries()
+    }
+    
+    //TODO: custom context so user only gets asks once during this autofill procedure
+    private func loadAllKeychainMetadata() throws -> [KeeVaultKeychainEntry] {
+        var entries: [KeeVaultKeychainEntry] = []
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+        let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
+                                    kSecAttrAccessGroup as String: accessGroup,
+                                    kSecMatchLimit as String: kSecMatchLimitAll,
+                                    kSecReturnAttributes as String: true]
         
+        var items_ref: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &items_ref)
+        guard status != errSecItemNotFound else { throw KeychainError.noPassword }
+        guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
+        guard let items = items_ref as? Array<Dictionary<String, Any>>
+                
+        else {
+            throw KeychainError.unexpectedPasswordData
+        }
+        for item in items {
+            let existingItem = item
+            guard let server = existingItem[kSecAttrServer as String] as? String else {
+                continue
+            }
+            let account = existingItem[kSecAttrAccount as String] as? String ?? ""
+            
+            let uuid = existingItem[kSecAttrDescription as String] as? String
+            let title = existingItem[kSecAttrLabel as String] as? String
+            let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: nil)
+            entries.append(entry)
+        }
+        return entries;
     }
 
     /*

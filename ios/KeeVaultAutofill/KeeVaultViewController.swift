@@ -13,6 +13,20 @@ class KeeVaultViewController: UIViewController {
     weak var selectionDelegate: EntrySelectionDelegate?
     var entries: [KeeVaultKeychainEntry]?
     var searchDomains: [ASCredentialServiceIdentifier]?
+    weak var entryListVC: EntryListViewController? //TODO: OK to be weak?
+    var spinner = SpinnerViewController()
+    
+    override func loadView() {
+        super.loadView()
+        addSpinnerView()
+    }
+
+    private func addSpinnerView() {
+        addChild(spinner)
+        spinner.view.frame = view.frame
+        view.addSubview(spinner.view)
+        spinner.didMove(toParent: self)
+    }
     
     @IBAction func passwordSelected(_ sender: AnyObject?) {
         do {
@@ -46,24 +60,24 @@ class KeeVaultViewController: UIViewController {
         } else if segue.identifier == "embeddedEntryListSegue" {
             let destinationVC = segue.destination as! EntryListViewController
             destinationVC.selectionDelegate = selectionDelegate
-//            entries = [
-//                KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
-//                KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
-//                KeeVaultKeychainEntry(uuid: "uuid3", server: "github.com", writtenByAutofill: false, title: "Example title 3", username: "account 3", password: "password 3" ),
-//            ]
-//            destinationVC.data =  [
-//                KeeVaultAutofillEntry(entryIndex: 0, server: "google.com", title: "Example title 1", username: "account 1", priority: 2 ),
-//                KeeVaultAutofillEntry(entryIndex: 1, server: "app.google.com", title: "Example title 2", username: "account 2", priority: 1 ),
-//                KeeVaultAutofillEntry(entryIndex: 2, server: "github.com", title: "Example title 3", username: "account 3", priority: 0 ),
-//            ]
-            
-            //TODO: will crash here if have guessed wrong about order in which ios calls all these various interaction points
-            //TODO: yep. next: try fake data above and see if crash continues when not executing below operation
-            destinationVC.data = getGroupedOrderedItems (searchDomains: searchDomains!)
+            entryListVC = destinationVC
         }
     }
     
-    //TODO: get search domains from ios... in the above VC I guess
+    func initAutofillEntries () {
+//        let entries =  [
+//            PriorityCategory.close: [KeeVaultAutofillEntry(entryIndex: 0, server: "google.com", title: "Example title 1", username: "account 1", priority: 2 )],
+//            PriorityCategory.exact: [KeeVaultAutofillEntry(entryIndex: 1, server: "app.google.com", title: "Example title 2", username: "account 2", priority: 1 )],
+//            PriorityCategory.none: [KeeVaultAutofillEntry(entryIndex: 2, server: "github.com", title: "Example title 3", username: "account 3", priority: 0 )],
+//        ]
+        let entries = getGroupedOrderedItems (searchDomains: searchDomains!)
+        entryListVC?.initAutofillEntries(entries: entries)
+
+        spinner.willMove(toParent: nil)
+        spinner.view.removeFromSuperview()
+        spinner.removeFromParent()
+    }
+    
     private func getGroupedOrderedItems (searchDomains: [ASCredentialServiceIdentifier])
         -> [PriorityCategory: [KeeVaultAutofillEntry]] {
         var autofillEntries: [String: KeeVaultAutofillEntry] = [:]
@@ -148,4 +162,5 @@ protocol EntrySelectionDelegate: AnyObject {
     func selected(credentials: ASPasswordCredential)
     func cancel()
     //TODO: created(user: String, password: String, server: String)
+    //TODO: edited(user: String, password: String, uuid: String)
 }

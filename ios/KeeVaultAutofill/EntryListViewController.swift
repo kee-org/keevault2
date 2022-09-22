@@ -10,68 +10,133 @@ import UIKit
 class EntryListViewController: UITableViewController, UISearchBarDelegate {
 
     weak var selectionDelegate: EntrySelectionDelegate?
-    var data: [PriorityCategory:[KeeVaultAutofillEntry]]!
-    
-    //let data //= ["Apples", "Oranges", "Pears", "Bannas", "Plums"]
-    var filteredData: [KeeVaultAutofillEntry]!
-    
+    var data: [PriorityCategory:[KeeVaultAutofillEntry]]?
+    var filteredData: [PriorityCategory:[KeeVaultAutofillEntry]]?
     @IBOutlet weak var searchBar: UISearchBar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         searchBar.delegate = self
-        filteredData = data[PriorityCategory.none]
-        //TODO: all catergories
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return filteredData?.filter({ $0.value.count > 0 }).count ?? 1
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredData.count
+        guard filteredData != nil else {
+            return 0
+        }
+        let category = getCategoryForSection(section: section)
+        
+        guard category != nil else {
+            return 0
+        }
+        return filteredData![category!]?.count ?? 0
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = filteredData[indexPath.row].title
+        
+        guard filteredData != nil else {
+            cell.textLabel?.text = "Loading..."
+            return cell
+        }
+        let category = getCategoryForSection(section: indexPath.section)
+        
+        guard category != nil else {
+            cell.textLabel?.text = "No match!" // don't think this can happen if TableView behaves as expected
+            return cell
+        }
+        
+        cell.textLabel?.text = filteredData![category!]![indexPath.row].title
         return cell
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    func getCategoryForSection (section: Int) -> PriorityCategory? {
+        let hasExact = filteredData?.contains(where: { $0.key == PriorityCategory.exact && $0.value.count > 0 }) ?? false
+        let hasClose = filteredData?.contains(where: { $0.key == PriorityCategory.close && $0.value.count > 0 }) ?? false
+        let hasOther = filteredData?.contains(where: { $0.key == PriorityCategory.none && $0.value.count > 0 }) ?? false
+        
+        if (!hasExact && !hasClose && !hasOther) {
+            // No matches
+            return nil
+        }
+        
+        if (section == 0) {
+            if (hasExact) {
+                return PriorityCategory.exact
+            } else if (hasClose) {
+                return PriorityCategory.close
+            } else if (hasOther) {
+                return PriorityCategory.none
+            }
+        }
+        if (section == 1) {
+            if (hasExact && hasClose) {
+                return PriorityCategory.close
+            } else if (hasOther) {
+                return PriorityCategory.none
+            }
+        }
+        
+        return PriorityCategory.none
     }
-    */
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let category = getCategoryForSection(section: section);
+        
+        guard category != nil else {
+            return nil
+        }
+        
+        if (category == PriorityCategory.exact) {
+            return "Best matches"
+        } else if (category == PriorityCategory.close) {
+            return "Close matches"
+        } else {
+            return "Unmatched entries"
+        }
+    }
+    
+    func initAutofillEntries (entries: [PriorityCategory:[KeeVaultAutofillEntry]]!) {
+        data = entries
+        filteredData = data
+        self.tableView.reloadData()
+    }
 
     // MARK: Search Bar Config
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredData = []
+        filteredData = [:]
+        
+        guard data != nil else {
+            return
+        }
         
         if searchText == "" {
-            filteredData = data[PriorityCategory.none]
+            filteredData = data
         } else {
-            let xx = data[PriorityCategory.none] ?? []
             let searchTextLowered = searchText.lowercased()
-            for entry in xx {
-                let searchableTerm = entry.title?.lowercased() ?? ""
-                //TODO: more searching
-                if searchableTerm.contains(searchTextLowered) {
-                    filteredData.append(entry)
+            for categoryData in data! {
+                for entry in categoryData.value {
+                    // below is not very efficient. Unnecessary checks against empty strings and no short-circuiting when testing. Hopefully future swift will support a basic .any function with that efficiency improvement.
+                    let searchableTerms = [entry.title?.lowercased() ?? "",
+                                           entry.username.lowercased(),
+                                           entry.server.lowercased()
+                                           ]
+                    if searchableTerms.filter({$0.contains(searchTextLowered)}).count > 0 {
+                        if !filteredData!.contains(where : {$0.key == categoryData.key}) {
+                            filteredData![categoryData.key] = []
+                        }
+                        filteredData![categoryData.key]!.append(entry)
+                    }
                 }
             }
         }

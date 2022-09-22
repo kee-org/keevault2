@@ -19,6 +19,7 @@
 		8B594C4728D7AB8A004B10F0 /* NewEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B594C4628D7AB8A004B10F0 /* NewEntryViewController.swift */; };
 		8BB2225128DB2DFF00693094 /* EntryListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225028DB2DFF00693094 /* EntryListViewController.swift */; };
 		8BB2225328DB542900693094 /* KeeVaultKeychainEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225228DB542900693094 /* KeeVaultKeychainEntry.swift */; };
+		8BB2225528DC81F100693094 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225428DC81F100693094 /* SpinnerViewController.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -83,6 +84,7 @@
 		8B594C4628D7AB8A004B10F0 /* NewEntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEntryViewController.swift; sourceTree = "<group>"; };
 		8BB2225028DB2DFF00693094 /* EntryListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryListViewController.swift; sourceTree = "<group>"; };
 		8BB2225228DB542900693094 /* KeeVaultKeychainEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeeVaultKeychainEntry.swift; sourceTree = "<group>"; };
+		8BB2225428DC81F100693094 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +127,7 @@
 				8B253A1A28BE694600AA6762 /* Info.plist */,
 				8B253A1B28BE694600AA6762 /* KeeVaultAutofill.entitlements */,
 				8BB2225228DB542900693094 /* KeeVaultKeychainEntry.swift */,
+				8BB2225428DC81F100693094 /* SpinnerViewController.swift */,
 			);
 			path = KeeVaultAutofill;
 			sourceTree = "<group>";
@@ -382,6 +385,7 @@
 				8BB2225128DB2DFF00693094 /* EntryListViewController.swift in Sources */,
 				8B594C4728D7AB8A004B10F0 /* NewEntryViewController.swift in Sources */,
 				8BB2225328DB542900693094 /* KeeVaultKeychainEntry.swift in Sources */,
+				8BB2225528DC81F100693094 /* SpinnerViewController.swift in Sources */,
 				8B594C4528D76F38004B10F0 /* KeeVaultViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

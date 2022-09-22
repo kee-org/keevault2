@@ -25,8 +25,8 @@ struct KeeVaultAutofillEntry {
     let priority: Int // 0 = no match, 1> decreasing priority (limited only by number of search terms ios decides to supply)
 }
 
-enum PriorityCategory {
-    case exact
-    case close
-    case none
+public enum PriorityCategory: String {
+    case exact = "exact"
+    case close = "close"
+    case none = "none"
 }
