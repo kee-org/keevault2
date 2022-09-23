@@ -28,22 +28,35 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      prioritize the most relevant credentials in the list.
     */
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
-        mainController.searchDomains = serviceIdentifiers
+        var sis: [String] = []
+        for si in serviceIdentifiers {
+            if si.type == ASCredentialServiceIdentifier.IdentifierType.URL {
+                //TODO: run a PSL operation on the URL
+                let url = URL(string: si.identifier)
+                guard url?.host != nil else {
+                    continue
+                }
+                sis.append(url!.host!)
+            } else {
+                sis.append(si.identifier)
+            }
+        }
+        mainController.searchDomains = sis
         do {
             mainController.entries = try loadAllKeychainMetadata()
         } catch {
             // Will just initialise with no passwords displayed. Not sure what else useful
             // we can do but will see what user feedback is if this ever happens
         }
-        mainController.entries = [
-            KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
-            KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
-            KeeVaultKeychainEntry(uuid: "uuid3", server: "github.com", writtenByAutofill: false, title: "Example title 3", username: "account 3", password: "password 3" ),
-        ]
+//        mainController.entries = [
+//            KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
+//            KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
+//            KeeVaultKeychainEntry(uuid: "uuid3", server: "github.com", writtenByAutofill: false, title: "Example title 3", username: "account 3", password: "password 3" ),
+//        ]
         self.mainController.initAutofillEntries()
     }
     
-    //TODO: custom context so user only gets asks once during this autofill procedure
+    //TODO: custom context so user only gets asks once during this autofill procedure... or maybe those referneces it supplies could be used instead?
     private func loadAllKeychainMetadata() throws -> [KeeVaultKeychainEntry] {
         var entries: [KeeVaultKeychainEntry] = []
         let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
@@ -66,9 +79,9 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
             guard let server = existingItem[kSecAttrServer as String] as? String else {
                 continue
             }
-            let account = existingItem[kSecAttrAccount as String] as? String ?? ""
+            let uuid = existingItem[kSecAttrAccount as String] as? String
             
-            let uuid = existingItem[kSecAttrDescription as String] as? String
+            let account = existingItem[kSecAttrDescription as String] as? String ?? ""
             let title = existingItem[kSecAttrLabel as String] as? String
             let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: nil)
             entries.append(entry)

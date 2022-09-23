@@ -34,9 +34,9 @@ import Flutter
 
 private func addEntries() throws {
     try addEntry(account: "test username", passwordString: "password", server: "bbc.co.uk", uuid: "123450", title: "title bbc 1");
-    try addEntry(account: "test username 2", passwordString: "password", server: "bbc.com", uuid: "123451", title: "title bbc 2");
+    try addEntry(account: "test username 2", passwordString: "password", server: "account.bbc.com", uuid: "123451", title: "title bbc 2");
     try addEntry(account: "test username", passwordString: "password", server: "app.bbc.co.uk", uuid: "123452", title: "title bbc 3");
-    try addEntry(account: "test username 2", passwordString: "password", server: "bbc.co.uk", uuid: "123453", title: "title bbc 4");
+    try addEntry(account: "test username 2", passwordString: "password", server: "bbc.com", uuid: "123453", title: "title bbc 4");
     try addEntry(account: "test username", passwordString: "password", server: "www.github.com", uuid: "123454", title: "title github 1");
     try addEntry(account: "test username", passwordString: "password", server: "app.github.com", uuid: "123455", title: "title github 2");
     try addEntry(account: "test username", passwordString: "password", server: "github.com", uuid: "123456", title: "title github 3");
@@ -49,6 +49,8 @@ private func addEntries() throws {
     try addEntry(account: "test username 6", passwordString: "password", server: "google.co.uk", uuid: "1234513", title: "title google 6");
     try addEntry(account: "test username 7", passwordString: "password", server: "google.co.uk", uuid: "1234514", title: "title google 7");
     try addEntry(account: "test username 8", passwordString: "password", server: "google.co.uk", uuid: "1234515", title: "title google 8");
+    
+    //TODO: Find all in keychain and compare timestamps for updates and delete any that are no longer in list of entries
 }
 
 
@@ -59,24 +61,21 @@ private func addEntry(account: String, passwordString: String, server: String, u
     let accessControl: SecAccessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, [SecAccessControlCreateFlags.userPresence], nil)!
 
     
-    let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
+    let baseQuery: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                 kSecAttrAccessGroup as String: accessGroup,
                                 kSecAttrAccessControl as String: accessControl,
-                                kSecAttrAccount as String: account,
-                                kSecAttrServer as String: server,
-                                kSecAttrDescription as String: uuid, // hack since custom attributes are not supported by Apple
+                                kSecAttrAccount as String: uuid,
+                                kSecAttrServer as String: server]
+    
+    let addQuery: [String: Any] = baseQuery + [
+                                kSecAttrDescription as String: account, // hack since custom attributes are not supported by Apple and we have to use Account for the uuid due to limitations of keychain primary keys
                                 kSecAttrLabel as String: title,
                                 kSecValueData as String: password]
     
-    //TODO:                                 kSecAttrAccount as String: account,    kSecAttrServer as String: server,
-    // above are the only items considered as a test for uniqueness. however, when deleting the item below, we search by more attributes than just those primary keys so we don't find a match and thus don't delete the item.
-    // next: work out whether keychain can actually support our needs with this serious limitation. if so, do a seperate query for the delete operation.
-    
-    SecItemDelete(query as CFDictionary)
-    let status = SecItemAdd(query as CFDictionary, nil)
+    SecItemDelete(baseQuery as CFDictionary)
+    let status = SecItemAdd(addQuery as CFDictionary, nil)
     guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
     
-    //TODO: Find all in keychain and compare timestamps for updates and delete any that are no longer in list of entries
 }
 
 
@@ -85,3 +84,9 @@ enum KeychainError: Error {
     case unexpectedPasswordData
     case unhandledError(status: OSStatus)
 }
+
+func +<Key, Value> (lhs: [Key: Value], rhs: [Key: Value]) -> [Key: Value] {
+     var result = lhs
+     rhs.forEach{ result[$0] = $1 }
+     return result
+ }

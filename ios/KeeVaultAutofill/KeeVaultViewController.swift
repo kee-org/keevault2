@@ -12,7 +12,7 @@ class KeeVaultViewController: UIViewController {
 
     weak var selectionDelegate: EntrySelectionDelegate?
     var entries: [KeeVaultKeychainEntry]?
-    var searchDomains: [ASCredentialServiceIdentifier]?
+    var searchDomains: [String]?
     weak var entryListVC: EntryListViewController? //TODO: OK to be weak?
     var spinner = SpinnerViewController()
     
@@ -78,7 +78,7 @@ class KeeVaultViewController: UIViewController {
         spinner.removeFromParent()
     }
     
-    private func getGroupedOrderedItems (searchDomains: [ASCredentialServiceIdentifier])
+    private func getGroupedOrderedItems (searchDomains: [String])
         -> [PriorityCategory: [KeeVaultAutofillEntry]] {
         var autofillEntries: [String: KeeVaultAutofillEntry] = [:]
         for index in entries!.indices {
@@ -119,10 +119,10 @@ class KeeVaultViewController: UIViewController {
         return grouped
     }
     
-    private func calculatePriority (entry: KeeVaultKeychainEntry, searchDomains: [ASCredentialServiceIdentifier]) -> Int {
+    private func calculatePriority (entry: KeeVaultKeychainEntry, searchDomains: [String]) -> Int {
         for index in searchDomains.indices {
             let searchDomain = searchDomains[index]
-            if (searchDomain.identifier.lowercased() == entry.server.lowercased()) {
+            if (searchDomain.lowercased() == entry.server.lowercased()) {
                 return index + 1
             }
         }
