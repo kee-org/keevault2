@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,6 +20,8 @@
 		8BB2225128DB2DFF00693094 /* EntryListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225028DB2DFF00693094 /* EntryListViewController.swift */; };
 		8BB2225328DB542900693094 /* KeeVaultKeychainEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225228DB542900693094 /* KeeVaultKeychainEntry.swift */; };
 		8BB2225528DC81F100693094 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225428DC81F100693094 /* SpinnerViewController.swift */; };
+		8BB2225828F5B39C00693094 /* DomainParser in Frameworks */ = {isa = PBXBuildFile; productRef = 8BB2225728F5B39C00693094 /* DomainParser */; };
+		8BB2225B28F6F27A00693094 /* Punnycode in Frameworks */ = {isa = PBXBuildFile; productRef = 8BB2225A28F6F27A00693094 /* Punnycode */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -101,6 +103,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8B253A1328BE694600AA6762 /* AuthenticationServices.framework in Frameworks */,
+				8BB2225828F5B39C00693094 /* DomainParser in Frameworks */,
+				8BB2225B28F6F27A00693094 /* Punnycode in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +222,10 @@
 			dependencies = (
 			);
 			name = KeeVaultAutofill;
+			packageProductDependencies = (
+				8BB2225728F5B39C00693094 /* DomainParser */,
+				8BB2225A28F6F27A00693094 /* Punnycode */,
+			);
 			productName = KeeVaultAutofill;
 			productReference = 8B253A1228BE694600AA6762 /* KeeVaultAutofill.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -274,6 +282,10 @@
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			packageReferences = (
+				8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */,
+				8BB2225928F6F27A00693094 /* XCRemoteSwiftPackageReference "PunycodeSwift" */,
+			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -849,6 +861,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Dashlane/SwiftDomainParser.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.1.0;
+			};
+		};
+		8BB2225928F6F27A00693094 /* XCRemoteSwiftPackageReference "PunycodeSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gumob/PunycodeSwift";
+			requirement = {
+				kind = exactVersion;
+				version = 2.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8BB2225728F5B39C00693094 /* DomainParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */;
+			productName = DomainParser;
+		};
+		8BB2225A28F6F27A00693094 /* Punnycode */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BB2225928F6F27A00693094 /* XCRemoteSwiftPackageReference "PunycodeSwift" */;
+			productName = Punnycode;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }

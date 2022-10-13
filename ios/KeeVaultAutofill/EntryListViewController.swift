@@ -6,12 +6,15 @@
 //
 
 import UIKit
+//import LocalAuthentication
+//import AuthenticationServices
 
 class EntryListViewController: UITableViewController, UISearchBarDelegate {
 
-    weak var selectionDelegate: EntrySelectionDelegate?
+    weak var selectionDelegate: RowSelectionDelegate?
     var data: [PriorityCategory:[KeeVaultAutofillEntry]]?
     var filteredData: [PriorityCategory:[KeeVaultAutofillEntry]]?
+//    var authenticatedContext: LAContext?
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
@@ -105,6 +108,18 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let row = indexPath.row
+        guard let category = getCategoryForSection(section: indexPath.section) else {
+            return
+        }
+        guard let autofillEntry = filteredData![category]?[row] else {
+            return
+        }
+        self.selectionDelegate?.selected(entryIndex: autofillEntry.entryIndex)
+
+    }
+    
     func initAutofillEntries (entries: [PriorityCategory:[KeeVaultAutofillEntry]]!) {
         data = entries
         filteredData = data
@@ -143,4 +158,5 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
         
         self.tableView.reloadData()
     }
+    
 }

@@ -7,11 +7,13 @@
 
 import Foundation
 import AuthenticationServices
+import LocalAuthentication
 
 class KeeVaultViewController: UIViewController {
 
     weak var selectionDelegate: EntrySelectionDelegate?
     var entries: [KeeVaultKeychainEntry]?
+    var authenticatedContext: LAContext?
     var searchDomains: [String]?
     weak var entryListVC: EntryListViewController? //TODO: OK to be weak?
     var spinner = SpinnerViewController()
@@ -27,17 +29,7 @@ class KeeVaultViewController: UIViewController {
         view.addSubview(spinner.view)
         spinner.didMove(toParent: self)
     }
-    
-    @IBAction func passwordSelected(_ sender: AnyObject?) {
-        do {
-            let entry = try getExampleEntry()
-            let passwordCredential = ASPasswordCredential(user: entry.username, password: entry.password ?? "")
-            self.selectionDelegate?.selected(credentials: passwordCredential)
-        } catch _ {
         
-        }
-    }
-    
     @IBAction func cancel(_ sender: AnyObject?) {
         self.selectionDelegate?.cancel()
     }
@@ -59,7 +51,7 @@ class KeeVaultViewController: UIViewController {
             destinationVC.selectionDelegate = selectionDelegate
         } else if segue.identifier == "embeddedEntryListSegue" {
             let destinationVC = segue.destination as! EntryListViewController
-            destinationVC.selectionDelegate = selectionDelegate
+            destinationVC.selectionDelegate = self
             entryListVC = destinationVC
         }
     }
@@ -129,6 +121,35 @@ class KeeVaultViewController: UIViewController {
         return 0
     }
     
+    
+    private func getEntry(uuid: String, context: LAContext) throws -> KeeVaultKeychainEntry {
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+        let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
+                                    kSecAttrAccessGroup as String: accessGroup,
+                                    kSecAttrAccount as String: uuid,
+                                    kSecMatchLimit as String: kSecMatchLimitOne,
+                                    kSecReturnAttributes as String: true,
+                                    kSecReturnData as String: true,
+                                    kSecUseAuthenticationContext as String: context]
+        
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        guard status != errSecItemNotFound else { throw KeychainError.noPassword }
+        guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
+        
+        guard let existingItem = item as? [String : Any],
+              let passwordData = existingItem[kSecValueData as String] as? Data,
+              let password = String(data: passwordData, encoding: String.Encoding.utf8),
+              let uuid = existingItem[kSecAttrAccount as String] as? String,
+              let server = existingItem[kSecAttrServer as String] as? String,
+              let account = existingItem[kSecAttrDescription as String] as? String
+        else {
+            throw KeychainError.unexpectedPasswordData
+        }
+        let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: password )
+        return entry;
+    }
+    
     private func getExampleEntry() throws -> KeeVaultKeychainEntry {
         let server = "www.github.com"
         let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
@@ -156,6 +177,72 @@ class KeeVaultViewController: UIViewController {
         let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: password )
         return entry;
     }
+
+    //TODO:...
+    private func addUrlToEntry(account: String, passwordString: String, server: String, uuid: String, title: String) throws {
+        let password = passwordString.data(using: String.Encoding.utf8)!
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+        
+        let accessControl: SecAccessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, [SecAccessControlCreateFlags.userPresence], nil)!
+
+        
+        let baseQuery: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
+                                    kSecAttrAccessGroup as String: accessGroup,
+                                    kSecAttrAccessControl as String: accessControl,
+                                    kSecAttrAccount as String: uuid,
+                                    kSecAttrServer as String: server]
+        
+        let addQuery: [String: Any] = baseQuery + [
+                                    kSecAttrDescription as String: account, // hack since custom attributes are not supported by Apple and we have to use Account for the uuid due to limitations of keychain primary keys
+                                    kSecAttrLabel as String: title,
+                                    kSecValueData as String: password]
+        
+        SecItemDelete(baseQuery as CFDictionary)
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
+        guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
+        
+    }
+    
+//
+//    @IBAction func agreeToTerms() {
+//       // Create the action buttons for the alert.
+//       let defaultAction = UIAlertAction(title: "Agree",
+//                            style: .default) { (action) in
+//        // Respond to user selection of the action.
+//       }
+//       let cancelAction = UIAlertAction(title: "Disagree",
+//                            style: .cancel) { (action) in
+//        // Respond to user selection of the action.
+//       }
+//
+//       // Create and configure the alert controller.
+//       let alert = UIAlertController(title: "Terms and Conditions",
+//             message: "Click Agree to accept the terms and conditions.",
+//             preferredStyle: .alert)
+//       alert.addAction(defaultAction)
+//       alert.addAction(cancelAction)
+//
+//       self.present(alert, animated: true) {
+//          // The alert was presented
+//       }
+//    }
+    
+}
+
+extension KeeVaultViewController: RowSelectionDelegate {
+    func selected(entryIndex: Int, newUrl: String?) {
+        do {
+            let e = entries![entryIndex]
+            let entry = try getEntry(uuid: e.uuid!, context: authenticatedContext!)
+            let passwordCredential = ASPasswordCredential(user: entry.username, password: entry.password ?? "")
+            if (newUrl != nil) {
+                //addUrlToEntry...
+            }
+            self.selectionDelegate?.selected(credentials: passwordCredential)
+        } catch _ {
+
+        }
+    }
 }
 
 protocol EntrySelectionDelegate: AnyObject {
@@ -163,4 +250,8 @@ protocol EntrySelectionDelegate: AnyObject {
     func cancel()
     //TODO: created(user: String, password: String, server: String)
     //TODO: edited(user: String, password: String, uuid: String)
+}
+
+protocol RowSelectionDelegate: AnyObject {
+    func selected(entryIndex: Int, newUrl: String?)
 }

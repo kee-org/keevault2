@@ -6,6 +6,10 @@
 //
 
 import AuthenticationServices
+import DomainParser
+import Punycode
+import Foundation
+import LocalAuthentication
 
 class CredentialProviderViewController: ASCredentialProviderViewController {
     
@@ -28,22 +32,37 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      prioritize the most relevant credentials in the list.
     */
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
+        // iOS supplies a punycode URL for requests from Safari. Spec says there can be more than one but I've never seen that happen and can't imagine any real scenario in which that would happen. App URLs are probably hostnames and/or domains and there is no documentation or example to say if it will be punycode or not so we just assume it is until real world experience suggests otherwise.
+        let domainParser = try! DomainParser()
         var sis: [String] = []
         for si in serviceIdentifiers {
             if si.type == ASCredentialServiceIdentifier.IdentifierType.URL {
-                //TODO: run a PSL operation on the URL
+                // To keep everything fast for the user we don't match on full URLs, regexes, etc. like on the desktop. On Android we don't have the data needed to do this but it appears that at least in some iOS versions, we could offer this as a feature in future - for now we'll keep parity with Android.
                 let url = URL(string: si.identifier)
-                guard url?.host != nil else {
+                guard let host = url?.host else {
                     continue
                 }
-                sis.append(url!.host!)
+//                let host = url!.host!
+                sis.append(host)
+                guard let unicodeHost = host.idnaDecoded else {
+                    continue
+                }
+                guard let domain = domainParser.parse(host: unicodeHost)?.domain else {
+                    continue
+                }
+                guard let punycodeDomain = domain.idnaEncoded else {
+                    continue
+                }
+                sis.append(punycodeDomain)
             } else {
                 sis.append(si.identifier)
             }
         }
-        mainController.searchDomains = sis
+                                                mainController.searchDomains = sis
         do {
-            mainController.entries = try loadAllKeychainMetadata()
+            let context = LAContext()
+            mainController.entries = try loadAllKeychainMetadata(context: context)
+            mainController.authenticatedContext = context
         } catch {
             // Will just initialise with no passwords displayed. Not sure what else useful
             // we can do but will see what user feedback is if this ever happens
@@ -56,14 +75,14 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         self.mainController.initAutofillEntries()
     }
     
-    //TODO: custom context so user only gets asks once during this autofill procedure... or maybe those referneces it supplies could be used instead?
-    private func loadAllKeychainMetadata() throws -> [KeeVaultKeychainEntry] {
+    private func loadAllKeychainMetadata(context: LAContext) throws -> [KeeVaultKeychainEntry] {
         var entries: [KeeVaultKeychainEntry] = []
         let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
         let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                     kSecAttrAccessGroup as String: accessGroup,
                                     kSecMatchLimit as String: kSecMatchLimitAll,
-                                    kSecReturnAttributes as String: true]
+                                    kSecReturnAttributes as String: true,
+                                    kSecUseAuthenticationContext as String: context]
         
         var items_ref: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &items_ref)
