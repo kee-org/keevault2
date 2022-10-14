@@ -20,11 +20,14 @@ import Flutter
                     result(FlutterError.init(code: "bad args", message: nil, details: nil))
                     break
                   }
-                guard let entries = args["entries"] as? [KeeVaultKeychainEntry] else {
+                guard let kvEntries = args["entries"] as? [String] else {
                     result(FlutterError.init(code: "missing entries argument", message: nil, details: nil))
                     break
                 } //TODO: needs to be a JSON String instead?
                   
+                let entries = kvEntries.compactMap {
+                    try? JSONDecoder().decode(KeeVaultEntryIos.self, from: Data($0.utf8))
+                }
                 do {
                     try addEntries(entries: entries)
                 } catch _ {
@@ -41,7 +44,7 @@ import Flutter
     }
 }
 
-private func addEntries(entries: [KeeVaultKeychainEntry]) throws {
+private func addEntries(entries: [KeeVaultEntryIos]) throws {
     // hack deletes all keychain items
     let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
     let spec: NSDictionary = [kSecClass as String: kSecClassInternetPassword,
@@ -122,3 +125,14 @@ func +<Key, Value> (lhs: [Key: Value], rhs: [Key: Value]) -> [Key: Value] {
      let username: String
      let password: String? // keychain value (encrypted behind presense check in secure chip)
  }
+
+
+struct KeeVaultEntryIos: Decodable {
+    let uuid: String
+    let server: String
+    let created: Date
+    let modified: Date
+    let title: String?
+    let username: String?
+    let password: String?
+}

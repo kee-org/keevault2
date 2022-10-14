@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_persistent_queue/flutter_persistent_queue.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/config/platform.dart';
 import 'package:keevault/config/synced_app_settings.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/generator_profiles_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:keevault/password_strength.dart';
 import 'package:keevault/credentials/quick_unlocker.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/vault_backend/user.dart';
+import 'package:platform/platform.dart';
 import '../async_helpers.dart';
 import '../credentials/credential_lookup_result.dart';
 import '../remote_vault_repository.dart';
@@ -856,7 +858,10 @@ class VaultCubit extends Cubit<VaultState> {
       emit(VaultSaving(vault, true, s is VaultSaving ? s.remotely : false));
       final mergedOrCurrentVaultFile =
           await _localVaultRepo.save(user, vault, applyAndConsumePendingAutofillAssociations);
-      await _autoFillMethodChannel.invokeMethod('setAllEntries');
+      if (KeeVaultPlatform.isIOS) {
+        final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.;
+        await _autoFillMethodChannel.invokeMethod('setAllEntries', entries);
+      }
       /*
       try {
     final int result = await platform.invokeMethod('getBatteryLevel');
