@@ -116,7 +116,7 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
         guard let autofillEntry = filteredData![category]?[row] else {
             return
         }
-        self.selectionDelegate?.selected(entryIndex: autofillEntry.entryIndex)
+        self.selectionDelegate?.selected(entryIndex: autofillEntry.entryIndex, newUrl: "TODO")
 
     }
     

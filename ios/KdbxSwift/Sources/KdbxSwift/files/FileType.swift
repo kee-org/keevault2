@@ -9,22 +9,22 @@
 import UniformTypeIdentifiers
 
 public enum FileType {
-    public static let attachmentUTIs: [UTType] = [.data, .content]
-    
-    public static let databaseUTIs: [UTType] = [
-        .data, .content, 
-        .item, 
-        .init("com.keepassium.kdb")!, .init("com.keepassium.kdbx")!,
-        .init("com.maxep.mikee.kdb")!, .init("com.maxep.mikee.kdbx")!,
-        .init("com.jflan.MiniKeePass.kdb")!, .init("com.jflan.MiniKeePass.kdbx")!,
-        .init("com.kptouch.kdb")!, .init("com.kptouch.kdbx")!,
-        .init("com.markmcguill.strongbox.kdb")!,
-        .init("com.markmcguill.strongbox.kdbx")!,
-        .init("be.kyuran.kypass.kdb")!,
-        .init("org.keepassxc")!]
-    
-    public static let keyFileUTIs: [UTType] =
-        [.init("com.keepassium.keyfile")!, .data, .content, .item]
+//    public static let attachmentUTIs: [UTType] = [.data, .content]
+//
+//    public static let databaseUTIs: [UTType] = [
+//        .data, .content,
+//        .item,
+//        .init("com.keepassium.kdb")!, .init("com.keepassium.kdbx")!,
+//        .init("com.maxep.mikee.kdb")!, .init("com.maxep.mikee.kdbx")!,
+//        .init("com.jflan.MiniKeePass.kdb")!, .init("com.jflan.MiniKeePass.kdbx")!,
+//        .init("com.kptouch.kdb")!, .init("com.kptouch.kdbx")!,
+//        .init("com.markmcguill.strongbox.kdb")!,
+//        .init("com.markmcguill.strongbox.kdbx")!,
+//        .init("be.kyuran.kypass.kdb")!,
+//        .init("org.keepassxc")!]
+//
+//    public static let keyFileUTIs: [UTType] =
+//        [.init("com.keepassium.keyfile")!, .data, .content, .item]
 
     public enum DatabaseExtensions {
         public static let all = [kdb, kdbx]

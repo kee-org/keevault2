@@ -10,13 +10,14 @@ import DomainParser
 import Punycode
 import Foundation
 import LocalAuthentication
+import KdbxSwift
 
 class CredentialProviderViewController: ASCredentialProviderViewController {
     
     var embeddedNavigationController: UINavigationController {
         return children.first as! UINavigationController
     }
-
+    
     var mainController: KeeVaultViewController {
         return embeddedNavigationController.viewControllers.first as! KeeVaultViewController
     }
@@ -30,7 +31,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      Prepare your UI to list available credentials for the user to choose from. The items in
      'serviceIdentifiers' describe the service the user is logging in to, so your extension can
      prioritize the most relevant credentials in the list.
-    */
+     */
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
         // iOS supplies a punycode URL for requests from Safari. Spec says there can be more than one but I've never seen that happen and can't imagine any real scenario in which that would happen. App URLs are probably hostnames and/or domains and there is no documentation or example to say if it will be punycode or not so we just assume it is until real world experience suggests otherwise.
         let domainParser = try! DomainParser()
@@ -42,7 +43,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
                 guard let host = url?.host else {
                     continue
                 }
-//                let host = url!.host!
+                //                let host = url!.host!
                 sis.append(host)
                 guard let unicodeHost = host.idnaDecoded else {
                     continue
@@ -58,7 +59,69 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
                 sis.append(si.identifier)
             }
         }
-                                                mainController.searchDomains = sis
+        
+        //TODO: maybe move the kdbx load and PSL stuff so they can load in parrallel
+        //TODO: load kdbx key from keychain
+        //TODO: what's completionQueue and challengehandler? do i need one?
+        //TODO: abort trying to create new DB with this library - too hard. Instead, load from existing file and create a composite key from file's password argon result bytes (inspected in dart debugger)
+        //TODO: need to write the file to somewhere I can find it first... unless the recent app group stuff for keychain has magically made this happen already.
+let    completionQueue: DispatchQueue = .main
+
+        
+        
+        let db = Database2()
+//
+//        db.keyHelper.createCompositeKey(
+//            password: password,
+//            keyFile: keyFile,
+//            challengeHandler: challengeHandler,
+//            completion: { result in
+//                switch result {
+//                case .success(let compositeKey):
+//                    completionQueue.async {
+//                        completion(.success(databaseFile))
+//                    }
+//                case .failure(let errorMessage):
+//                    Diag.error("Error creating composite key for a new database [message: \(errorMessage)]")
+//                    completionQueue.async {
+//                        completion(.failure(errorMessage))
+//                    }
+//                }
+//            }
+//        )
+//
+//        do {
+//            let staticComponents = try self.combineComponents(
+//                passwordData: passwordData,
+//                keyFileData: keyFileData
+//            )
+//            let compositeKey = CompositeKey(
+//                staticComponents: staticComponents,
+//                challengeHandler: challengeHandler)
+//            Diag.debug("New composite key created successfully")
+//            completionQueue.async {
+//                completion(.success(compositeKey))
+//            }
+//        } catch let error as KeyFileError {
+//            Diag.error("Key file error [reason: \(error.localizedDescription)]")
+//            completionQueue.async {
+//                completion(.failure(error.localizedDescription))
+//            }
+//        } catch {
+//            let message = "Caught unrecognized exception"
+//            assertionFailure(message)
+//            Diag.error(message)
+//            completionQueue.async {
+//                completion(.failure(message))
+//            }
+//        }
+//
+//
+//
+//        db.load(dbFileName: <#String#>, dbFileData: <#ByteArray#>, compositeKey: <#CompositeKey#>, warnings: <#DatabaseLoadingWarnings#>)
+//        //let db = Database2.init()
+        let root =         db.root
+        mainController.searchDomains = sis
         do {
             let context = LAContext()
             mainController.entries = try loadAllKeychainMetadata(context: context)
@@ -67,11 +130,11 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
             // Will just initialise with no passwords displayed. Not sure what else useful
             // we can do but will see what user feedback is if this ever happens
         }
-//        mainController.entries = [
-//            KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
-//            KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
-//            KeeVaultKeychainEntry(uuid: "uuid3", server: "github.com", writtenByAutofill: false, title: "Example title 3", username: "account 3", password: "password 3" ),
-//        ]
+        //        mainController.entries = [
+        //            KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
+        //            KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
+        //            KeeVaultKeychainEntry(uuid: "uuid3", server: "github.com", writtenByAutofill: false, title: "Example title 3", username: "account 3", password: "password 3" ),
+        //        ]
         self.mainController.initAutofillEntries()
     }
     
@@ -107,7 +170,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         }
         return entries;
     }
-
+    
     /*
      Implement this method if your extension supports showing credentials in the QuickType bar.
      When the user selects a credential from your app, this method will be called with the
@@ -115,27 +178,27 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      Provide the password by completing the extension request with the associated ASPasswordCredential.
      If using the credential would require showing custom UI for authenticating the user, cancel
      the request with error code ASExtensionError.userInteractionRequired.
-
-    override func provideCredentialWithoutUserInteraction(for credentialIdentity: ASPasswordCredentialIdentity) {
-        let databaseIsUnlocked = true
-        if (databaseIsUnlocked) {
-            let passwordCredential = ASPasswordCredential(user: "j_appleseed", password: "apple1234")
-            self.extensionContext.completeRequest(withSelectedCredential: passwordCredential, completionHandler: nil)
-        } else {
-            self.extensionContext.cancelRequest(withError: NSError(domain: ASExtensionErrorDomain, code:ASExtensionError.userInteractionRequired.rawValue))
-        }
-    }
-    */
-
+     
+     override func provideCredentialWithoutUserInteraction(for credentialIdentity: ASPasswordCredentialIdentity) {
+     let databaseIsUnlocked = true
+     if (databaseIsUnlocked) {
+     let passwordCredential = ASPasswordCredential(user: "j_appleseed", password: "apple1234")
+     self.extensionContext.completeRequest(withSelectedCredential: passwordCredential, completionHandler: nil)
+     } else {
+     self.extensionContext.cancelRequest(withError: NSError(domain: ASExtensionErrorDomain, code:ASExtensionError.userInteractionRequired.rawValue))
+     }
+     }
+     */
+    
     /*
      Implement this method if provideCredentialWithoutUserInteraction(for:) can fail with
      ASExtensionError.userInteractionRequired. In this case, the system may present your extension's
      UI and call this method. Show appropriate UI for authenticating the user then provide the password
      by completing the extension request with the associated ASPasswordCredential.
-
-    override func prepareInterfaceToProvideCredential(for credentialIdentity: ASPasswordCredentialIdentity) {
-    }
-    */
+     
+     override func prepareInterfaceToProvideCredential(for credentialIdentity: ASPasswordCredentialIdentity) {
+     }
+     */
 }
 
 extension CredentialProviderViewController: EntrySelectionDelegate {

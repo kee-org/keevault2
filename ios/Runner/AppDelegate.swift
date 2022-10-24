@@ -52,7 +52,7 @@ private func addEntries(entries: [KeeVaultEntryIos]) throws {
         SecItemDelete(spec)
     
     for entry in entries {
-        try addEntry(entry: entry)
+   //     try addEntry(entry: entry)
         //TODO: Find all in keychain and compare timestamps for updates and delete any that are no longer in list of entries
     }
 //

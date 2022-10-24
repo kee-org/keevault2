@@ -859,7 +859,9 @@ class VaultCubit extends Cubit<VaultState> {
       final mergedOrCurrentVaultFile =
           await _localVaultRepo.save(user, vault, applyAndConsumePendingAutofillAssociations);
       if (KeeVaultPlatform.isIOS) {
-        final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.;
+        final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup
+            .getAllEntries(enterRecycleBin: false)
+            .values; //TODO: toJSON I guess.
         await _autoFillMethodChannel.invokeMethod('setAllEntries', entries);
       }
       /*

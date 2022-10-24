@@ -4,6 +4,10 @@
     <dict>
         <key>com.apple.developer.authentication-services.autofill-credential-provider</key>
         <true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.keevault.keevault.beta</string>
+	</array>
         <key>keychain-access-groups</key>
         <array>
             <string>$(AppIdentifierPrefix)com.keevault.keevault.beta.autofill</string>

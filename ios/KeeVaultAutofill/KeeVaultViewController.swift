@@ -255,3 +255,9 @@ protocol EntrySelectionDelegate: AnyObject {
 protocol RowSelectionDelegate: AnyObject {
     func selected(entryIndex: Int, newUrl: String?)
 }
+
+func +<Key, Value> (lhs: [Key: Value], rhs: [Key: Value]) -> [Key: Value] {
+     var result = lhs
+     rhs.forEach{ result[$0] = $1 }
+     return result
+ }

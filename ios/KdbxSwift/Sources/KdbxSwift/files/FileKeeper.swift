@@ -8,24 +8,18 @@
 
 import UIKit
 
-public enum FileKeeperError: LocalizedError {
+public enum FileKeeperError: Error {
     case openError(reason: String)
     case importError(reason: String)
     case removalError(reason: String)
     public var errorDescription: String? {
         switch self {
         case .openError(let reason):
-            return String.localizedStringWithFormat(
-                LString.Error.failedToOpenFileReasonTemplate,
-                reason)
+            return "open"
         case .importError(let reason):
-            return String.localizedStringWithFormat(
-                LString.Error.failedToImportFileReasonTemplate,
-                reason)
+            return "import"
         case .removalError(let reason):
-            return String.localizedStringWithFormat(
-                LString.Error.failedToDeleteFileReasonTemplate,
-                reason)
+            return "removal"
         }
     }
 }
