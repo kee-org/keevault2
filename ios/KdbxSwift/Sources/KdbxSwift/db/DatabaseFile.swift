@@ -7,7 +7,7 @@
 //  For commercial licensing, please contact the author.
 
 
-public class DatabaseFile: Eraseable {
+public class DatabaseFile {
     
     public enum ConflictResolutionStrategy {
         case cancelSaving
@@ -28,86 +28,21 @@ public class DatabaseFile: Eraseable {
     
     public private(set) var storedDataSHA512: ByteArray
     
-    public var fileURL: URL
-
-    public var fileReference: URLReference?
+    public var fileName: String
     
     public private(set) var status: Status
-
-    public var visibleFileName: String {
-        return fileURL.lastPathComponent
-    }
-
-    public var descriptor: URLReference.Descriptor? {
-        return fileReference?.getDescriptor()
-    }
-    
-    private var _fileProvider: FileProvider?
-    public var fileProvider: FileProvider? {
-        get {
-            return fileReference?.fileProvider ?? _fileProvider
-        }
-        set {
-            _fileProvider = newValue
-        }
-    }
     
     init(
         database: Database,
         data: ByteArray = ByteArray(),
-        fileURL: URL,
-        fileProvider: FileProvider?,
+        fileName: String,
         status: Status
     ) {
         self.database = database
         self.data = data
         self.storedDataSHA512 = data.sha512
-        self.fileURL = fileURL
-        self._fileProvider = fileProvider
-        self.fileReference = nil
+        self.fileName = fileName
         self.status = status
-    }
-
-    init(
-        database: Database,
-        data: ByteArray = ByteArray(),
-        fileURL: URL,
-        fileReference: URLReference,
-        status: Status
-    ) {
-        self.database = database
-        self.data = data
-        self.storedDataSHA512 = data.sha512
-        self.fileURL = fileURL
-        self.fileReference = fileReference
-        self._fileProvider = nil 
-        self.status = status
-    }
-    
-    public func erase() {
-        data.erase()
-        database.erase()
-        status.removeAll()
-    }
-    
-    public func resolveFileURL(
-        timeout: TimeInterval = URLReference.defaultTimeout,
-        completionQueue: OperationQueue = .main,
-        completion: @escaping (() -> Void)
-    ) {
-        guard let fileReference = fileReference else {
-            completion()
-            return
-        }
-        fileReference.resolveAsync(timeout: timeout, callbackQueue: completionQueue) { result in
-            switch result {
-            case .success(let resolvedURL):
-                self.fileURL = resolvedURL
-            case .failure(let fileAccessError):
-                Diag.error("Failed to resolve file reference [message: \(fileAccessError.localizedDescription)]")
-            }
-            completion()
-        }
     }
     
     public func setData(_ data: ByteArray, updateHash: Bool) {

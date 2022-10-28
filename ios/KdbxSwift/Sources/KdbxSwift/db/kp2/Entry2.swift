@@ -402,8 +402,7 @@ public class Entry2: Entry {
         xml: AEXMLElement,
         formatVersion: Database2.FormatVersion,
         streamCipher: StreamCipher,
-        timeParser: Database2XMLTimeParser,
-        warnings: DatabaseLoadingWarnings
+        timeParser: Database2XMLTimeParser
     ) throws {
         assert(xml.name == Xml2.entry)
         Diag.verbose("Loading XML: entry")
@@ -476,8 +475,7 @@ public class Entry2: Entry {
                     xml: tag,
                     formatVersion: formatVersion,
                     streamCipher: streamCipher,
-                    timeParser: timeParser,
-                    warnings: warnings
+                    timeParser: timeParser
                 ) 
                 Diag.verbose("Entry history loaded OK")
             default:
@@ -567,8 +565,7 @@ public class Entry2: Entry {
         xml: AEXMLElement,
         formatVersion: Database2.FormatVersion,
         streamCipher: StreamCipher,
-        timeParser: Database2XMLTimeParser,
-        warnings: DatabaseLoadingWarnings
+        timeParser: Database2XMLTimeParser
         ) throws
     {
         assert(xml.name == Xml2.history)
@@ -581,8 +578,7 @@ public class Entry2: Entry {
                     xml: tag,
                     formatVersion: formatVersion,
                     streamCipher: streamCipher,
-                    timeParser: timeParser,
-                    warnings: warnings
+                    timeParser: timeParser
                 ) 
                 history.append(histEntry)
                 Diag.verbose("Entry history item loaded OK")

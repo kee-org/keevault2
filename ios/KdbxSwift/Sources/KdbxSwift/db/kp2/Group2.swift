@@ -134,8 +134,7 @@ public class Group2: Group {
         xml: AEXMLElement,
         formatVersion: Database2.FormatVersion,
         streamCipher: StreamCipher,
-        timeParser: Database2XMLTimeParser,
-        warnings: DatabaseLoadingWarnings
+        timeParser: Database2XMLTimeParser
     ) throws {
         assert(xml.name == Xml2.group)
         Diag.verbose("Loading XML: group")
@@ -202,8 +201,7 @@ public class Group2: Group {
                     xml: tag,
                     formatVersion: formatVersion,
                     streamCipher: streamCipher,
-                    timeParser: timeParser,
-                    warnings: warnings
+                    timeParser: timeParser
                 ) 
                 self.add(group: subGroup)
                 Diag.verbose("Subgroup loaded OK")
@@ -213,8 +211,7 @@ public class Group2: Group {
                     xml: tag,
                     formatVersion: formatVersion,
                     streamCipher: streamCipher,
-                    timeParser: timeParser,
-                    warnings: warnings
+                    timeParser: timeParser
                 ) 
                 self.add(entry: entry)
                 Diag.verbose("Entry loaded OK")

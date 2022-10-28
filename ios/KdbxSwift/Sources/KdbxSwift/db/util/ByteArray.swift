@@ -361,396 +361,312 @@ extension ByteArray: Hashable {
         hasher.combine(bytes)
     }
 }
-
-
-public final class SecureBytes: Eraseable, Cloneable, Codable {
-    
-    fileprivate var bytes: [UInt8]
-    
-    private var key: SecKey?
-    
-    public var count: Int {
-        if bytes.isEmpty {
-            return 0
-        } else {
-            return withDecryptedBytes { $0.count }
-        }
-    }
-    
-    public var isEmpty: Bool {
-        return bytes.isEmpty
-    }
-    
-    public var isEncrypted: Bool {
-        return key != nil
-    }
-
-    public var sha256: SecureBytes {
-        let hashBytes = withDecryptedBytes { plainTextBytes in
-            return CryptoManager.sha256(of: plainTextBytes)
-        }
-        return SecureBytes.from(hashBytes)
-    }
-
-    public var sha512: SecureBytes {
-        let hashBytes = withDecryptedBytes { plainTextBytes in
-            return CryptoManager.sha512(of: plainTextBytes)
-        }
-        return SecureBytes.from(hashBytes)
-    }
-    
-    private init(_ bytes: [UInt8], key: SecKey?) {
-        self.key = key
-        self.bytes = bytes.withUnsafeBufferPointer { [UInt8]($0) } 
-        _ = self.bytes.withUnsafeBufferPointer { ptr in
-            mlock(ptr.baseAddress, ptr.count)
-        }
-    }
-    
-    deinit {
-        erase()
-        bytes.withUnsafeBufferPointer { (ptr) -> Void in
-            munlock(ptr.baseAddress, ptr.count)
-        }
-    }
-    
-    public func erase() {
-        key = nil
-        bytes.erase()
-    }
-
-    
-    private enum CodingKeys: String, CodingKey {
-        case format
-        case bytes
-    }
-    
-    public convenience init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let format = try container.decodeIfPresent(Int.self, forKey: .format) ?? 0
-        switch format {
-        case 0:
-            var plainTextBytes = try container.decode([UInt8].self, forKey: .bytes)
-            defer {
-                plainTextBytes.erase()
-            }
-            var key = Keychain.shared.getMemoryProtectionKey()
-            let bytes = SecureBytes.encrypt(plainTextBytes, with: &key)
-            self.init(bytes, key: key)
-        case 1:
-            guard let key = Keychain.shared.getMemoryProtectionKey() else {
-                SecureBytes.__encryption_key_is_missing()
-                fatalError()
-            }
-            let encryptedBytes = try container.decode([UInt8].self, forKey: .bytes)
-            self.init(encryptedBytes, key: key)
-        default:
-            SecureBytes.__unexpected_serialization_format(format)
-            fatalError()
-        }
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if key == nil {
-            try container.encode(bytes, forKey: .bytes)
-        } else {
-            let format: Int = 1
-            try container.encode(format, forKey: .format)
-            try container.encode(bytes, forKey: .bytes)
-        }
-    }
-        
-    
-    public static func empty() -> SecureBytes {
-        return SecureBytes([], key: nil)
-    }
-    
-    public static func from(_ bytes: [UInt8], encrypt: Bool = true) -> SecureBytes {
-        if bytes.isEmpty {
-            return SecureBytes.empty()
-        }
-        if encrypt {
-            var key = Keychain.shared.getMemoryProtectionKey()
-            let encrypted = SecureBytes.encrypt(bytes, with: &key)
-            return SecureBytes(encrypted, key: key)
-        } else {
-            return SecureBytes(bytes.clone(), key: nil)
-        }
-    }
-    
-    public static func from(_ bytes: ArraySlice<UInt8>, encrypt: Bool = true) -> SecureBytes {
-        return from(Array(bytes), encrypt: encrypt)
-    }
-
-    public static func from(_ byteArray: ByteArray, encrypt: Bool = true) -> SecureBytes {
-        return from(byteArray.bytes, encrypt: encrypt)
-    }
-    
-    public static func from(_ data: Data, encrypt: Bool = true) -> SecureBytes {
-        return from(Array(data), encrypt: encrypt)
-    }
-    
-    
-    public func decrypted() -> SecureBytes {
-        return withDecryptedBytes {
-            SecureBytes.from($0.clone(), encrypt: false)
-        }
-    }
-
-    @discardableResult
-    public func withDecryptedBytes<T>(_ handler: ([UInt8]) throws -> T) rethrows -> T {
-        if bytes.isEmpty {
-            return try handler([])
-        }
-        
-        assert(!bytes.allSatisfy { $0 == 0 }, "All bytes are zero. Possibly erased too early?")
-        
-        guard let key = key else {
-            var bytesCopy = bytes.clone()
-            defer {
-                bytesCopy.erase()
-            }
-            return try handler(bytesCopy)
-        }
-        
-        let decryptedBytes = SecureBytes.decrypt(bytes, with: key)
-        let result = try decryptedBytes.withUnsafeBytes { pointer -> T in
-            let mutablePointer = UnsafeMutableRawPointer(mutating: pointer.baseAddress!)
-            mlock(mutablePointer, pointer.count)
-            defer {
-                memset_s(mutablePointer, pointer.count, 0, pointer.count)
-                munlock(mutablePointer, pointer.count)
-            }
-            return try handler(decryptedBytes)
-        }
-        return result
-    }
-    
-    @discardableResult
-    public func withDecryptedMutableBytes<T>(_ handler: (inout [UInt8]) throws -> T) rethrows -> T {
-        return try withDecryptedBytes {
-            var copy = isEncrypted ? $0 : $0.clone()
-            defer {
-                copy.erase()
-            }
-            return try handler(&copy)
-        }
-    }
-    
-    @discardableResult
-    public func withDecryptedByteArray<T>(_ handler: (ByteArray) -> T) -> T {
-        return withDecryptedBytes {
-            let byteArray = ByteArray(bytes: $0)
-            return handler(byteArray)
-        }
-    }
-    
-    @discardableResult
-    public func withDecryptedData<T>(_ handler: (Data) throws -> T) rethrows -> T {
-        return try withDecryptedBytes { bytes -> T in
-            let count = bytes.count
-            return try bytes.withUnsafeBytes { bytesPtr -> T in
-                let mutablePtr = UnsafeMutableRawPointer(mutating: bytesPtr.baseAddress!)
-                let data = Data(
-                    bytesNoCopy: mutablePtr, // "no copy" is just a hint, not a guarantee
-                    count: count,
-                    deallocator: .none 
-                )
-                return try handler(data)
-            }
-        }
-    }
-    
-    public func clone() -> SecureBytes {
-        let bytesCopy = bytes.clone()
-        return SecureBytes(bytesCopy, key: key)
-    }
-    
-    public static func concat(_ parts: SecureBytes...) -> SecureBytes {
-        var plainTexts = [ByteArray]()
-        var concatenatedPlainTexts = [UInt8]()
-        defer {
-            plainTexts.erase()
-            concatenatedPlainTexts.erase()
-        }
-        
-        var hasEncryptedInput = false
-        var totalSize = 0
-        parts.forEach { part in
-            hasEncryptedInput = hasEncryptedInput || part.isEncrypted
-            part.withDecryptedByteArray { decryptedBytes in
-                plainTexts.append(decryptedBytes.clone())
-                totalSize += decryptedBytes.count
-            }
-        }
-        concatenatedPlainTexts.reserveCapacity(totalSize)
-        plainTexts.forEach {
-            concatenatedPlainTexts.append(contentsOf: $0.bytes)
-        }
-        return SecureBytes.from(concatenatedPlainTexts, encrypt: hasEncryptedInput)
-    }
-    
-    public func interpretedAsASCIIHexString() -> SecureBytes? {
-        guard let hexString = withDecryptedBytes({ String(bytes: $0, encoding: .ascii) }),
-              let byteArray = ByteArray(hexString: hexString)
-        else {
-            return nil
-        }
-        return SecureBytes.from(byteArray)
-    }
-    
-    
-    private static let algorithm = SecKeyAlgorithm.eciesEncryptionCofactorVariableIVX963SHA256AESGCM
-    
-    private static func encrypt(_ plainText: [UInt8], with key: inout SecKey?) -> [UInt8] {
-        guard plainText.count > 0 else {
-            return []
-        }
-        guard let privateKey = key else {
-            Diag.warning("Cannot encrypt, there is no key")
-            return Array(plainText)
-        }
-        guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
-            Diag.warning("Cannot encrypt, no public key")
-            key = nil
-            return Array(plainText)
-        }
-        guard SecKeyIsAlgorithmSupported(publicKey, .encrypt, SecureBytes.algorithm) else {
-            Diag.warning("Cannot encrypt, algorithm is not supported")
-            key = nil
-            return Array(plainText)
-        }
-        
-        var error: Unmanaged<CFError>?
-        
-        let plainTextData = Data(bytes: plainText, count: plainText.count) as CFData
-        let outData = SecKeyCreateEncryptedData(publicKey, algorithm, plainTextData, &error) as Data?
-        guard let outData = outData else {
-            let err = error!.takeRetainedValue() as Error
-            Diag.warning("Cannot encrypt [message: \(err.localizedDescription)]")
-            key = nil
-            return Array(plainText)
-        }
-        return outData.bytes
-    }
-    
-    private static func decrypt(_ encrypted: [UInt8], with key: SecKey?) -> [UInt8] {
-        guard encrypted.count > 0 else {
-            return []
-        }
-        guard let key = key else {
-            return Array(encrypted)
-        }
-        
-        guard SecKeyIsAlgorithmSupported(key, .decrypt, SecureBytes.algorithm) else {
-            __decryption_algorithm_is_not_supported()
-            fatalError()
-        }
-        
-        var error: Unmanaged<CFError>?
-        let plainTextData = SecKeyCreateDecryptedData(
-            key,
-            SecureBytes.algorithm,
-            Data(bytes: encrypted, count: encrypted.count) as CFData,
-            &error
-        ) as Data?
-        guard let plainTextData = plainTextData else {
-            let err = error!.takeRetainedValue() as Error
-            let nsError = err as NSError
-            let message = "\(err.localizedDescription): \(nsError.userInfo)"
-            if encrypted.allSatisfy({ $0 == 0 }) {
-                __decryption_failed_input_is_zeros(code: nsError.code, message: message)
-            } else {
-                __decryption_failed(code: nsError.code, message: message)
-            }
-            fatalError() 
-        }
-        return plainTextData.bytes
-    }
-}
-
-extension SecureBytes {
-    @inline(never)
-    private static func __unexpected_serialization_format(_ format: Int) {
-        fatalError("Unexpected serialization format: \(format)")
-    }
-    
-    @inline(never)
-    private static func __encryption_key_is_missing() {
-        fatalError("Got encrypted SecureBytes, but no key. Something is very wrong.")
-    }
-    
-    @inline(never)
-    private static func __decryption_algorithm_is_not_supported() {
-        fatalError("Decryption algorithm is not supported. Something is very wrong.")
-    }
-
-    /* There are decryption failures occasionally, so we need to know the error code.
-       To do so, we call either *_bit_0 and *_bit_1 for each bit of the error code,
-       so that the stack trace includes the error code in binary format.
-    */
-
-    @inline(never)
-    private static func __decryption_failed_input_is_zeros(code: Int, message: String) {
-        guard code >= 0 else {
-            __decryption_failed_error_code_negative(code: code)
-            return
-        }
-        if code % 2 == 0 {
-            __decryption_failed_error_code_bit_0(code >> 1)
-        } else {
-            __decryption_failed_error_code_bit_1(code >> 1)
-        }
-    }
-
-    @inline(never)
-    private static func __decryption_failed(code: Int, message: String) {
-        guard code >= 0 else {
-            __decryption_failed_error_code_negative(code: code)
-            return
-        }
-        if code % 2 == 0 {
-            __decryption_failed_error_code_bit_0(code >> 1)
-        } else {
-            __decryption_failed_error_code_bit_1(code >> 1)
-        }
-    }
-    
-    @inline(never)
-    private static func __decryption_failed_error_code_negative(code: Int) {
-        let code = abs(code) 
-        if code % 2 == 0 {
-            __decryption_failed_error_code_bit_0(code >> 1)
-        } else {
-            __decryption_failed_error_code_bit_1(code >> 1)
-        }
-    }
-
-    @inline(never)
-    private static func __decryption_failed_error_code_bit_0(_ remainder: Int) {
-        guard remainder != 0 else {
-            fatalError("Decryption failed, error code in stack trace")
-        }
-        if remainder % 2 == 0 {
-            __decryption_failed_error_code_bit_0(remainder >> 1)
-        } else {
-            __decryption_failed_error_code_bit_1(remainder >> 1)
-        }
-    }
-    
-    @inline(never)
-    private static func __decryption_failed_error_code_bit_1(_ remainder: Int) {
-        guard remainder != 0 else {
-            fatalError("Decryption failed, error code in stack trace")
-        }
-        if remainder % 2 == 0 {
-            __decryption_failed_error_code_bit_0(remainder >> 1)
-        } else {
-            __decryption_failed_error_code_bit_1(remainder >> 1)
-        }
-    }
-}
+//
+//
+//public final class SecureBytes: Eraseable, Cloneable, Codable {
+//
+//    fileprivate var bytes: [UInt8]
+//
+//    private var key: SecKey?
+//
+//    public var count: Int {
+//        if bytes.isEmpty {
+//            return 0
+//        } else {
+//            return withDecryptedBytes { $0.count }
+//        }
+//    }
+//
+//    public var isEmpty: Bool {
+//        return bytes.isEmpty
+//    }
+//
+//    public var isEncrypted: Bool {
+//        return key != nil
+//    }
+//
+//    public var sha256: SecureBytes {
+//        let hashBytes = withDecryptedBytes { plainTextBytes in
+//            return CryptoManager.sha256(of: plainTextBytes)
+//        }
+//        return SecureBytes.from(hashBytes)
+//    }
+//
+//    public var sha512: SecureBytes {
+//        let hashBytes = withDecryptedBytes { plainTextBytes in
+//            return CryptoManager.sha512(of: plainTextBytes)
+//        }
+//        return SecureBytes.from(hashBytes)
+//    }
+//
+//    private init(_ bytes: [UInt8], key: SecKey?) {
+//        self.key = key
+//        self.bytes = bytes.withUnsafeBufferPointer { [UInt8]($0) }
+//        _ = self.bytes.withUnsafeBufferPointer { ptr in
+//            mlock(ptr.baseAddress, ptr.count)
+//        }
+//    }
+//
+//    deinit {
+//        erase()
+//        bytes.withUnsafeBufferPointer { (ptr) -> Void in
+//            munlock(ptr.baseAddress, ptr.count)
+//        }
+//    }
+//
+//    public func erase() {
+//        key = nil
+//        bytes.erase()
+//    }
+//
+//
+//    private enum CodingKeys: String, CodingKey {
+//        case format
+//        case bytes
+//    }
+////
+////    public convenience init(from decoder: Decoder) throws {
+////        let container = try decoder.container(keyedBy: CodingKeys.self)
+////        let format = try container.decodeIfPresent(Int.self, forKey: .format) ?? 0
+////        switch format {
+////        case 0:
+////            var plainTextBytes = try container.decode([UInt8].self, forKey: .bytes)
+////            defer {
+////                plainTextBytes.erase()
+////            }
+////            var key = Keychain.shared.getMemoryProtectionKey()
+////            let bytes = SecureBytes.encrypt(plainTextBytes, with: &key)
+////            self.init(bytes, key: key)
+////        case 1:
+////            guard let key = Keychain.shared.getMemoryProtectionKey() else {
+////                SecureBytes.__encryption_key_is_missing()
+////                fatalError()
+////            }
+////            let encryptedBytes = try container.decode([UInt8].self, forKey: .bytes)
+////            self.init(encryptedBytes, key: key)
+////        default:
+////            SecureBytes.__unexpected_serialization_format(format)
+////            fatalError()
+////        }
+////    }
+//
+//    public func encode(to encoder: Encoder) throws {
+//        var container = encoder.container(keyedBy: CodingKeys.self)
+//        if key == nil {
+//            try container.encode(bytes, forKey: .bytes)
+//        } else {
+//            let format: Int = 1
+//            try container.encode(format, forKey: .format)
+//            try container.encode(bytes, forKey: .bytes)
+//        }
+//    }
+//
+//
+//    public static func empty() -> SecureBytes {
+//        return SecureBytes([], key: nil)
+//    }
+//
+//    public static func from(_ bytes: [UInt8]) -> SecureBytes {
+//        if bytes.isEmpty {
+//            return SecureBytes.empty()
+//        }
+//            return SecureBytes(bytes.clone(), key: nil)
+//    }
+//
+//    public static func from(_ bytes: ArraySlice<UInt8>) -> SecureBytes {
+//        return from(Array(bytes))
+//    }
+//
+//    public static func from(_ byteArray: ByteArray) -> SecureBytes {
+//        return from(byteArray.bytes)
+//    }
+//
+//    public static func from(_ data: Data) -> SecureBytes {
+//        return from(Array(data))
+//    }
+//
+//
+//    public func decrypted() -> SecureBytes {
+//        return withDecryptedBytes {
+//            SecureBytes.from($0.clone())
+//        }
+//    }
+//
+//    @discardableResult
+//    public func withDecryptedBytes<T>(_ handler: ([UInt8]) throws -> T) rethrows -> T {
+//        if bytes.isEmpty {
+//            return try handler([])
+//        }
+//
+//        assert(!bytes.allSatisfy { $0 == 0 }, "All bytes are zero. Possibly erased too early?")
+//
+//        var bytesCopy = bytes.clone()
+//        defer {
+//            bytesCopy.erase()
+//        }
+//        return try handler(bytesCopy)
+//
+//    }
+//
+//    @discardableResult
+//    public func withDecryptedMutableBytes<T>(_ handler: (inout [UInt8]) throws -> T) rethrows -> T {
+//        return try withDecryptedBytes {
+//            var copy = isEncrypted ? $0 : $0.clone()
+//            defer {
+//                copy.erase()
+//            }
+//            return try handler(&copy)
+//        }
+//    }
+//
+//    @discardableResult
+//    public func withDecryptedByteArray<T>(_ handler: (ByteArray) -> T) -> T {
+//        return withDecryptedBytes {
+//            let byteArray = ByteArray(bytes: $0)
+//            return handler(byteArray)
+//        }
+//    }
+//
+//    @discardableResult
+//    public func withDecryptedData<T>(_ handler: (Data) throws -> T) rethrows -> T {
+//        return try withDecryptedBytes { bytes -> T in
+//            let count = bytes.count
+//            return try bytes.withUnsafeBytes { bytesPtr -> T in
+//                let mutablePtr = UnsafeMutableRawPointer(mutating: bytesPtr.baseAddress!)
+//                let data = Data(
+//                    bytesNoCopy: mutablePtr, // "no copy" is just a hint, not a guarantee
+//                    count: count,
+//                    deallocator: .none
+//                )
+//                return try handler(data)
+//            }
+//        }
+//    }
+//
+//    public func clone() -> SecureBytes {
+//        let bytesCopy = bytes.clone()
+//        return SecureBytes(bytesCopy, key: key)
+//    }
+//
+//    public static func concat(_ parts: SecureBytes...) -> SecureBytes {
+//        var plainTexts = [ByteArray]()
+//        var concatenatedPlainTexts = [UInt8]()
+//        defer {
+//            plainTexts.erase()
+//            concatenatedPlainTexts.erase()
+//        }
+//
+//        var hasEncryptedInput = false
+//        var totalSize = 0
+//        parts.forEach { part in
+//            hasEncryptedInput = hasEncryptedInput || part.isEncrypted
+//            part.withDecryptedByteArray { decryptedBytes in
+//                plainTexts.append(decryptedBytes.clone())
+//                totalSize += decryptedBytes.count
+//            }
+//        }
+//        concatenatedPlainTexts.reserveCapacity(totalSize)
+//        plainTexts.forEach {
+//            concatenatedPlainTexts.append(contentsOf: $0.bytes)
+//        }
+//        return SecureBytes.from(concatenatedPlainTexts, encrypt: hasEncryptedInput)
+//    }
+//
+//    public func interpretedAsASCIIHexString() -> SecureBytes? {
+//        guard let hexString = withDecryptedBytes({ String(bytes: $0, encoding: .ascii) }),
+//              let byteArray = ByteArray(hexString: hexString)
+//        else {
+//            return nil
+//        }
+//        return SecureBytes.from(byteArray)
+//    }
+//
+//    
+//    private static let algorithm = SecKeyAlgorithm.eciesEncryptionCofactorVariableIVX963SHA256AESGCM
+//
+//}
+//
+//extension SecureBytes {
+//    @inline(never)
+//    private static func __unexpected_serialization_format(_ format: Int) {
+//        fatalError("Unexpected serialization format: \(format)")
+//    }
+//
+//    @inline(never)
+//    private static func __encryption_key_is_missing() {
+//        fatalError("Got encrypted SecureBytes, but no key. Something is very wrong.")
+//    }
+//
+//    @inline(never)
+//    private static func __decryption_algorithm_is_not_supported() {
+//        fatalError("Decryption algorithm is not supported. Something is very wrong.")
+//    }
+//
+//    /* There are decryption failures occasionally, so we need to know the error code.
+//       To do so, we call either *_bit_0 and *_bit_1 for each bit of the error code,
+//       so that the stack trace includes the error code in binary format.
+//    */
+//
+//    @inline(never)
+//    private static func __decryption_failed_input_is_zeros(code: Int, message: String) {
+//        guard code >= 0 else {
+//            __decryption_failed_error_code_negative(code: code)
+//            return
+//        }
+//        if code % 2 == 0 {
+//            __decryption_failed_error_code_bit_0(code >> 1)
+//        } else {
+//            __decryption_failed_error_code_bit_1(code >> 1)
+//        }
+//    }
+//
+//    @inline(never)
+//    private static func __decryption_failed(code: Int, message: String) {
+//        guard code >= 0 else {
+//            __decryption_failed_error_code_negative(code: code)
+//            return
+//        }
+//        if code % 2 == 0 {
+//            __decryption_failed_error_code_bit_0(code >> 1)
+//        } else {
+//            __decryption_failed_error_code_bit_1(code >> 1)
+//        }
+//    }
+//
+//    @inline(never)
+//    private static func __decryption_failed_error_code_negative(code: Int) {
+//        let code = abs(code)
+//        if code % 2 == 0 {
+//            __decryption_failed_error_code_bit_0(code >> 1)
+//        } else {
+//            __decryption_failed_error_code_bit_1(code >> 1)
+//        }
+//    }
+//
+//    @inline(never)
+//    private static func __decryption_failed_error_code_bit_0(_ remainder: Int) {
+//        guard remainder != 0 else {
+//            fatalError("Decryption failed, error code in stack trace")
+//        }
+//        if remainder % 2 == 0 {
+//            __decryption_failed_error_code_bit_0(remainder >> 1)
+//        } else {
+//            __decryption_failed_error_code_bit_1(remainder >> 1)
+//        }
+//    }
+//
+//    @inline(never)
+//    private static func __decryption_failed_error_code_bit_1(_ remainder: Int) {
+//        guard remainder != 0 else {
+//            fatalError("Decryption failed, error code in stack trace")
+//        }
+//        if remainder % 2 == 0 {
+//            __decryption_failed_error_code_bit_0(remainder >> 1)
+//        } else {
+//            __decryption_failed_error_code_bit_1(remainder >> 1)
+//        }
+//    }
+//}
 
 #if DEBUG
 extension SecureBytes: CustomStringConvertible {

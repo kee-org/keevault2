@@ -26,8 +26,7 @@ public class CompositeKey: Codable {
     internal private(set) var state: State
     
     internal private(set) var password: String = ""
-    internal private(set) var keyFileRef: URLReference?
-    public var challengeHandler: ChallengeHandler? 
+    internal private(set) var keyFileRef: FileWrapper?
     
     internal private(set) var passwordData: SecureBytes?
     internal private(set) var keyFileData: SecureBytes?
@@ -41,24 +40,21 @@ public class CompositeKey: Codable {
     public init() {
         self.password = ""
         self.keyFileRef = nil
-        self.challengeHandler = nil
         state = .empty
     }
     
-    public init(password: String, keyFileRef: URLReference?, challengeHandler: ChallengeHandler?) {
+    public init(password: String, keyFileRef: FileWrapper?) {
         self.password = password
         self.keyFileRef = keyFileRef
-        self.challengeHandler = challengeHandler
         state = .rawComponents
     }
     
-    init(staticComponents: SecureBytes, challengeHandler: ChallengeHandler?) {
+    init(staticComponents: SecureBytes) {
         self.password = ""
         self.keyFileRef = nil
         self.passwordData = nil
         self.keyFileData = nil
         self.combinedStaticComponents = staticComponents
-        self.challengeHandler = challengeHandler
         state = .combinedComponents
     }
     
@@ -68,7 +64,6 @@ public class CompositeKey: Codable {
     
     func erase() {
         keyFileRef = nil
-        challengeHandler = nil
         passwordData = nil
         keyFileData = nil
         combinedStaticComponents = nil
@@ -90,8 +85,7 @@ public class CompositeKey: Codable {
     public func clone() -> CompositeKey {
         let clone = CompositeKey(
             password: self.password,
-            keyFileRef: self.keyFileRef,
-            challengeHandler: self.challengeHandler)
+            keyFileRef: self.keyFileRef)
         clone.passwordData = self.passwordData?.clone()
         clone.keyFileData = self.keyFileData?.clone()
         clone.combinedStaticComponents = self.combinedStaticComponents?.clone()
@@ -149,40 +143,4 @@ public class CompositeKey: Codable {
         finalKey = nil
     }
     
-    func getResponse(challenge: SecureBytes) throws -> SecureBytes  {
-        guard let handler = self.challengeHandler else {
-            return SecureBytes.empty()
-        }
-        
-        
-        var response: SecureBytes?
-        var challengeError: ChallengeResponseError?
-        let responseReadySemaphore = DispatchSemaphore(value: 0)
-        DispatchQueue.global(qos: .default).async {
-            handler(challenge) {
-                (_response, _error) in
-                if let _error = _error {
-                    challengeError = _error
-                    responseReadySemaphore.signal()
-                    return
-                }
-                response = _response
-                responseReadySemaphore.signal()
-            }
-        }
-        responseReadySemaphore.wait()
-        
-        if let challengeError = challengeError {
-            switch challengeError {
-            case .cancelled:
-                throw ProgressInterruption.cancelled(reason: ProgressEx.CancellationReason.userRequest)
-            default:
-                throw challengeError 
-            }
-        }
-        if let response = response {
-            return response.sha256
-        }
-        preconditionFailure("You should not be here")
-    }
 }

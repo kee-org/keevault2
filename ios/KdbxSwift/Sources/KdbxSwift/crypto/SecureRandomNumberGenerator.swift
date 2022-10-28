@@ -6,6 +6,8 @@
 //  by the Free Software Foundation: https://www.gnu.org/licenses/).
 //  For commercial licensing, please contact the author.
 
+import Foundation
+
 public struct SecureRandomNumberGenerator: RandomNumberGenerator {
     public func next() -> UInt64 {
         var random: UInt64 = 0

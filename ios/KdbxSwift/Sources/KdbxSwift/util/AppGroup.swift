@@ -7,6 +7,7 @@
 //  For commercial licensing, please contact the author.
 
 import Foundation
+import UIKit
 
 public class AppGroup {
     public static let id = "group.com.keepassium"

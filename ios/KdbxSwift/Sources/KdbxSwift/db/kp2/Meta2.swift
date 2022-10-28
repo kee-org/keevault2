@@ -179,8 +179,7 @@ final class Meta2: Eraseable {
         xml: AEXMLElement,
         formatVersion: Database2.FormatVersion,
         streamCipher: StreamCipher,
-        timeParser: Database2XMLTimeParser,
-        warnings: DatabaseLoadingWarnings
+        timeParser: Database2XMLTimeParser
     ) throws {
         assert(xml.name == Xml2.meta)
         Diag.verbose("Loading XML: meta")
@@ -190,7 +189,6 @@ final class Meta2: Eraseable {
             switch tag.name {
             case Xml2.generator:
                 self.generator = tag.value ?? ""
-                warnings.databaseGenerator = tag.value 
                 Diag.info("Database was last edited by: \(generator)")
             case Xml2.settingsChanged: 
                 guard formatVersion >= .v4 else {
@@ -198,12 +196,9 @@ final class Meta2: Eraseable {
                     throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: nil)
                 }
                 self.settingsChangedTime = timeParser.xmlStringToDate(tag.value) ?? Date.now
-            case Xml2.headerHash: 
-                guard formatVersion == .v3 else {
+            case Xml2.headerHash:
                     Diag.warning("Found \(tag.name) tag in non-V3 database. Ignoring")
                     continue
-                }
-                self.headerHash = ByteArray(base64Encoded: tag.value) 
             case Xml2.databaseName:
                 self.databaseName = tag.value ?? ""
             case Xml2.databaseNameChanged:
@@ -298,8 +293,6 @@ final class Meta2: Eraseable {
         streamCipher: StreamCipher
     ) throws {
         assert(xml.name == Xml2.binaries)
-        Diag.verbose("Loading XML: meta binaries")
-        guard formatVersion == .v3 else {
             if let tag = xml.children.first {
                 Diag.error("Unexpected XML content in V4 Meta/Binaries: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: nil)
@@ -307,27 +300,6 @@ final class Meta2: Eraseable {
                 Diag.warning("Found empty Meta/Binaries in a V4 database, ignoring.")
             }
             return
-        }
-        
-        database.binaries.removeAll()
-        for tag in xml.children {
-            switch tag.name {
-            case Xml2.binary:
-                let binary = try Binary2.load(xml: tag, streamCipher: streamCipher)
-                
-                if let conflictingBinary = database.binaries[binary.id] {
-                    Diag.error("Multiple Meta/Binary items with the same ID: \(conflictingBinary.id)")
-                    throw Xml2.ParsingError.malformedValue(
-                        tag: tag.name,
-                        value: String(conflictingBinary.id))
-                }
-                database.binaries[binary.id] = binary
-                Diag.verbose("Binary loaded OK")
-            default:
-                Diag.error("Unexpected XML tag in Meta/Binaries: \(tag.name)")
-                throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Meta/Binaries/*")
-            }
-        }
     }
 
     func createRecycleBinGroup() -> Group2 {
@@ -365,16 +337,9 @@ final class Meta2: Eraseable {
         let xmlMeta = AEXMLElement(name: Xml2.meta)
         xmlMeta.addChild(name: Xml2.generator, value: Meta2.generatorName)
         
-        switch formatVersion {
-        case .v3:
-            if let headerHash = headerHash {
-                xmlMeta.addChild(name: Xml2.headerHash, value: headerHash.base64EncodedString())
-            }
-        case .v4, .v4_1:
             xmlMeta.addChild(
                 name: Xml2.settingsChanged,
                 value: settingsChangedTime.base64EncodedString())
-        }
         xmlMeta.addChild(
             name: Xml2.databaseName,
             value: databaseName)
@@ -449,13 +414,6 @@ final class Meta2: Eraseable {
             xmlMeta.addChild(xmlCustomIcons)
         }
         
-        if formatVersion == .v3 {
-            if let xmlBinaries = try binariesToXml(streamCipher: streamCipher)
-            {
-                xmlMeta.addChild(xmlBinaries)
-            }
-            Diag.verbose("Binaries XML generated OK")
-        }
         xmlMeta.addChild(customData.toXml(timeFormatter: timeFormatter))
         return xmlMeta
     }

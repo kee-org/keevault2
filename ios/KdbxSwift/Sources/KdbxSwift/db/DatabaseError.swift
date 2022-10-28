@@ -7,7 +7,7 @@
 //  For commercial licensing, please contact the author.
 
 public enum DatabaseError: Error {
-    case loadError(reason: LoadErrorReason)
+    case loadError(reason: String)
     case invalidKey
     case saveError(reason: String)
 //

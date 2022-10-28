@@ -45,7 +45,7 @@ public class Diag {
     
     private static let level = Level.debug 
     private static let instance = Diag()
-    private let queue = DispatchQueue(label: "com.KeePassium.diagnostics")
+    private let queue = DispatchQueue(label: "com.keevault.unused.diagnostics.stub")
     private var items = [Item]()
     private var startTime: TimeInterval = Date.timeIntervalSinceReferenceDate
     
@@ -149,21 +149,7 @@ public class Diag {
     }
     
     public static func isDeepDebugMode() -> Bool {
-        guard Settings.current.isTestEnvironment else {
-            return false
-        }
-        let debugDirURL = FileKeeper.shared.getDebugModeDirURL()
-        return FileManager.default.fileExists(atPath: debugDirURL.absoluteString)
+        return false
     }
     
-    public static func writeToPersistentLog(_ string: String) {
-        guard Settings.current.isTestEnvironment else { return }
-        
-        let fileURL = FileKeeper.shared
-            .getDebugModeDirURL()
-            .appendingPathComponent("debug-log.txt")
-        
-        let stringWithHeader = "This is a KeePassium debug log. Please send it to info@keepassium.com.\nThank you for your help!\n\n\(string)"
-        try? stringWithHeader.write(to: fileURL, atomically: false, encoding: .utf8)
-    }
 }

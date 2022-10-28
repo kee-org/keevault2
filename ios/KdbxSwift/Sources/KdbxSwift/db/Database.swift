@@ -71,8 +71,7 @@ open class Database: Eraseable {
     public func load(
         dbFileName: String,
         dbFileData: ByteArray,
-        compositeKey: CompositeKey,
-        warnings: DatabaseLoadingWarnings
+        compositeKey: CompositeKey
     ) throws {
         fatalError("Pure virtual method")
     }
@@ -126,29 +125,18 @@ open class Database: Eraseable {
         where T: Collection, T.Element: Entry
     {
         Diag.debug("Resolving references")
-        
-        let resolvingProgress = ProgressEx()
-        resolvingProgress.totalUnitCount = Int64(allEntries.count)
-        resolvingProgress.localizedDescription = LString.Progress.resolvingFieldReferences
-        progress.addChild(resolvingProgress, withPendingUnitCount: pendingProgressUnits)
-        
+                
         allEntries.forEach { entry in
             entry.fields.forEach { field in
                 field.unresolveReferences()
             }
         }
         
-        var entriesProcessed = 0
         allEntries.forEach { entry in
             entry.fields.forEach { field in
                 field.resolveReferences(entries: allEntries)
             }
-            entriesProcessed += 1
-            if entriesProcessed % 100 == 0 {
-                resolvingProgress.completedUnitCount = Int64(entriesProcessed)
-            }
         }
-        resolvingProgress.completedUnitCount = resolvingProgress.totalUnitCount 
         Diag.debug("References resolved OK")
     }
 }

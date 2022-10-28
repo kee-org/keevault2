@@ -300,12 +300,6 @@ final class Header2: Eraseable {
         headerSize += fileVersion.byteWidth
 
         let maskedFileVersion = fileVersion & Header2.majorVersionMask
-        if maskedFileVersion == (Header2.fileVersion3 & Header2.majorVersionMask) {
-            Diag.verbose("Database format: v3")
-            formatVersion = .v3
-            return
-        }
-        
         if maskedFileVersion == (Header2.fileVersion4 & Header2.majorVersionMask) {
             formatVersion = .v4
             if fileVersion == Header2.fileVersion4_1 {
@@ -337,16 +331,9 @@ final class Header2: Eraseable {
             headerSize += rawFieldID.byteWidth
             
             let fieldSize: Int
-            switch formatVersion {
-            case .v3:
-                guard let fSize = stream.readUInt16() else { throw HeaderError.readingError }
-                fieldSize = Int(fSize)
-                headerSize += MemoryLayout.size(ofValue: fSize) + fieldSize
-            case .v4, .v4_1:
                 guard let fSize = stream.readUInt32() else { throw HeaderError.readingError }
                 fieldSize = Int(fSize)
                 headerSize += MemoryLayout.size(ofValue: fSize) + fieldSize
-            }
             
             guard let fieldID: FieldID = FieldID(rawValue: rawFieldID) else {
                 Diag.warning("Unknown field ID, skipping [fieldID: \(rawFieldID)]")
@@ -401,77 +388,11 @@ final class Header2: Eraseable {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 Diag.verbose("\(fieldID.name) read OK")
-            case .transformSeed: 
-                guard formatVersion == .v3 else {
-                    Diag.error("Found \(fieldID.name) in non-V3 header. Database corrupted?")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                guard fieldSize == SHA256_SIZE else {
-                    Diag.error("Unexpected \(fieldID.name) field size [\(fieldSize) bytes]")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                let aesKDF = AESKDF()
-                if kdf.uuid != aesKDF.uuid {
-                    kdf = aesKDF
-                    kdfParams = aesKDF.defaultParams
-                    Diag.warning("Replaced KDF with AES-KDF [original KDF UUID: \(kdf.uuid)]")
-                }
-                kdfParams.setValue(key: AESKDF.transformSeedParam,
-                                   value: VarDict.TypedValue(value: fieldValueData))
-                Diag.verbose("\(fieldID.name) read OK")
-            case .transformRounds: 
-                guard formatVersion == .v3 else {
-                    Diag.error("Found \(fieldID.name) in non-V3 header. Database corrupted?")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                guard let nRounds: UInt64 = UInt64(data: fieldValueData) else {
-                    throw HeaderError.readingError
-                }
-                let aesKDF = AESKDF()
-                if kdf.uuid != aesKDF.uuid {
-                    kdf = aesKDF
-                    kdfParams = aesKDF.defaultParams
-                    Diag.warning("Replaced KDF with AES-KDF [original KDF UUID: \(kdf.uuid)]")
-                }
-                kdfParams.setValue(key: AESKDF.transformRoundsParam,
-                                   value: VarDict.TypedValue(value: nRounds))
-                Diag.verbose("\(fieldID.name) read OK")
+            
             case .encryptionIV:
                 Diag.verbose("\(fieldID.name) read OK")
                 break
-            case .protectedStreamKey: 
-                guard formatVersion == .v3 else {
-                    Diag.error("Found \(fieldID.name) in non-V3 header. Database corrupted?")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                guard fieldSize == SHA256_SIZE else {
-                    Diag.error("Unexpected \(fieldID.name) field size [\(fieldSize) bytes]")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                self.protectedStreamKey = SecureBytes.from(fieldValueData)
-                Diag.verbose("\(fieldID.name) read OK")
-            case .streamStartBytes: 
-                guard formatVersion == .v3 else {
-                    Diag.error("Found \(fieldID.name) in non-V3 header. Database corrupted?")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                Diag.verbose("\(fieldID.name) read OK")
-                break
-            case .innerRandomStreamID: 
-                guard formatVersion == .v3 else {
-                    Diag.error("Found \(fieldID.name) in non-V3 header. Database corrupted?")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                guard let rawID = UInt32(data: fieldValueData) else {
-                    Diag.error("innerRandomStreamID is not a UInt32")
-                    throw HeaderError.corruptedField(fieldName: fieldID.name)
-                }
-                guard let protectedStreamAlgorithm = ProtectedStreamAlgorithm(rawValue: rawID) else {
-                    Diag.error("Unrecognized innerRandomStreamID [rawID: \(rawID)]")
-                    throw HeaderError.unsupportedStreamCipher(id: rawID)
-                }
-                self.innerStreamAlgorithm = protectedStreamAlgorithm
-                Diag.verbose("\(fieldID.name) read OK [name: \(innerStreamAlgorithm.name)]")
+            
             case .kdfParameters: 
                 guard formatVersion >= .v4 else {
                     Diag.error("Found \(fieldID.name) in non-V4 header. Database corrupted?")
@@ -499,6 +420,8 @@ final class Header2: Eraseable {
                 }
                 self.publicCustomData = publicCustomData
                 Diag.verbose("\(fieldID.name) read OK")
+            default:
+                throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
             fields.updateValue(fieldValueData, forKey: fieldID)
         }
@@ -509,25 +432,13 @@ final class Header2: Eraseable {
         try verifyImportantFields()
         Diag.verbose("All important fields are in place")
         
-        if formatVersion == .v3 { 
-            initStreamCipher()
-            Diag.verbose("V3 stream cipher init OK")
-        }
     }
     
     private func verifyImportantFields() throws {
         Diag.verbose("Will check all important fields are present")
         var importantFields: [FieldID]
-        switch formatVersion {
-        case .v3:
-            importantFields = [
-                .cipherID, .compressionFlags, .masterSeed, .transformSeed,
-                .transformRounds, .encryptionIV, .streamStartBytes,
-                .protectedStreamKey, .innerRandomStreamID]
-        case .v4, .v4_1:
             importantFields =
                 [.cipherID, .compressionFlags, .masterSeed, .encryptionIV, .kdfParameters]
-        }
         for fieldID in importantFields {
             guard let fieldData = fields[fieldID] else {
                 Diag.error("\(fieldID.name) is missing")
@@ -640,10 +551,6 @@ final class Header2: Eraseable {
         headerStream.write(value: Header2.signature1)
         headerStream.write(value: Header2.signature2)
         switch formatVersion {
-        case .v3:
-            headerStream.write(value: Header2.fileVersion3)
-            writeV3(stream: headerStream)
-            Diag.verbose("kdbx3 header written OK")
         case .v4:
             headerStream.write(value: Header2.fileVersion4)
             writeV4(stream: headerStream)
@@ -767,14 +674,8 @@ final class Header2: Eraseable {
         Diag.verbose("Randomizing the seeds")
         fields[.masterSeed] = try CryptoManager.getRandomBytes(count: SHA256_SIZE)
         fields[.encryptionIV] = try CryptoManager.getRandomBytes(count: dataCipher.initialVectorSize)
-        try kdf.randomize(params: &kdfParams) 
-        switch formatVersion {
-        case .v3:
-            protectedStreamKey = try CryptoManager.getRandomSecureBytes(count: 32) 
-            fields[.streamStartBytes] = try CryptoManager.getRandomBytes(count: SHA256_SIZE)
-        case .v4, .v4_1:
+        try kdf.randomize(params: &kdfParams)
             protectedStreamKey = try CryptoManager.getRandomSecureBytes(count: 64) 
-        }
         initStreamCipher()
     }
 }
