@@ -50,22 +50,19 @@ public final class CryptoManager {
         return output
     }
     
-    public static func getRandomSecureBytes(count: Int) throws -> SecureBytes {
+    public static func getRandomByteArray(count: Int) throws -> ByteArray {
         let plainTextBytes = try getRandomBytes(count: count)
         defer {
             plainTextBytes.erase()
         }
-        let result = SecureBytes.from(plainTextBytes)
+        let result = plainTextBytes
         return result
     }
     
-    public static func getHMACKey64(key: SecureBytes, blockIndex: UInt64) -> ByteArray {
-        let result = key.withDecryptedByteArray { (keyBytes) -> ByteArray in
-            assert(keyBytes.count == 64)
-            let merged = ByteArray.concat(blockIndex.data, keyBytes)
+    public static func getHMACKey64(key: ByteArray, blockIndex: UInt64) -> ByteArray {
+            assert(key.count == 64)
+            let merged = ByteArray.concat(blockIndex.data, key)
             return merged.sha512
-        }
-        return result
     }
     
     public static func hmacSHA1(data: ByteArray, key: ByteArray) -> ByteArray {

@@ -71,7 +71,7 @@ open class Database: Eraseable {
     public func load(
         dbFileName: String,
         dbFileData: ByteArray,
-        compositeKey: CompositeKey
+        preTransformedKeyMaterial: ByteArray
     ) throws {
         fatalError("Pure virtual method")
     }
@@ -119,9 +119,7 @@ open class Database: Eraseable {
     }
     
     internal func resolveReferences<T>(
-        allEntries: T,
-        parentProgress: ProgressEx,
-        pendingProgressUnits: Int64)
+        allEntries: T)
         where T: Collection, T.Element: Entry
     {
         Diag.debug("Resolving references")

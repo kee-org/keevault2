@@ -117,8 +117,8 @@ public class Database2: Database {
     public var binaries: [Binary2.ID: Binary2] = [:]
     public var customIcons: [CustomIcon2] { return meta.customIcons }
     public var defaultUserName: String { return meta.defaultUserName }
-    private var cipherKey = SecureBytes.empty()
-    private var hmacKey = SecureBytes.empty()
+    private var cipherKey = ByteArray.empty()
+    private var hmacKey = ByteArray.empty()
     private var deletedObjects: ContiguousArray<DeletedObject2> = []
     
     override public var keyHelper: KeyHelper { return _keyHelper }
@@ -173,19 +173,13 @@ public class Database2: Database {
     override public func load(
         dbFileName: String,
         dbFileData: ByteArray,
-        compositeKey: CompositeKey
+        preTransformedKeyMaterial: ByteArray
     ) throws {
         Diag.info("Loading KDBX database")
         do {
             try header.read(data: dbFileData) 
             Diag.debug("Header read OK [format: \(header.formatVersion)]")
-            
-            try deriveMasterKey(
-                compositeKey: compositeKey,
-                cipher: header.dataCipher,
-                canUseFinalKey: true)
-            Diag.debug("Key derivation OK")
-            
+            importMasterKey(preTransformedKeyMaterial: preTransformedKeyMaterial, cipher: header.dataCipher)
             var decryptedData: ByteArray
             let dbWithoutHeader: ByteArray = dbFileData.suffix(from: header.size)
 
@@ -316,21 +310,17 @@ public class Database2: Database {
         Diag.verbose("Will decrypt \(allBlocksData.count) bytes")
 
         #if DEBUG
-        hmacKey.withDecryptedByteArray {
-            print("hmacKey plain: \($0.asHexString)")
-        }
+            print("hmacKey plain: \(hmacKey.asHexString)")
         print("hmacKey enc: \(hmacKey.description)")
 
-        cipherKey.withDecryptedByteArray {
-            print("cipherKey plain: \($0.asHexString)")
-        }
+            print("cipherKey plain: \(cipherKey.asHexString)")
         print("cipherKey enc: \(cipherKey.description)")
         #endif
         
         let decryptedData = try cipher.decrypt(
             cipherText: allBlocksData,
             key: cipherKey,
-            iv: SecureBytes.from(header.initialVector)
+            iv: header.initialVector
         ) 
         Diag.verbose("Decrypted \(decryptedData.count) bytes")
 
@@ -391,11 +381,11 @@ public class Database2: Database {
             Diag.debug("XML content loaded OK")
         } catch let error as Header2.HeaderError {
             Diag.error("Header error [reason: \(error.localizedDescription)]")
-            if Diag.isDeepDebugMode() {
-                header.protectedStreamKey?.withDecryptedByteArray {
-                    Diag.debug("Inner encryption key: `\($0.asHexString)`")
-                }
-            }
+//            if Diag.isDeepDebugMode() {
+//                header.protectedStreamKey?. {
+//                    Diag.debug("Inner encryption key: `\($0.asHexString)`")
+//                }
+//            }
             throw FormatError.parsingError(reason: error.localizedDescription)
         } catch let error as Xml2.ParsingError {
             Diag.error("XML parsing error [reason: \(error.localizedDescription)]")
@@ -447,46 +437,70 @@ public class Database2: Database {
         }
     }
     
-    func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher, canUseFinalKey: Bool) throws {
-        Diag.debug("Start key derivation")
-
-        if canUseFinalKey,
-           compositeKey.state == .final,
-           let _cipherKey = compositeKey.cipherKey, 
-           let _hmacKey = compositeKey.finalKey
-        {
-            self.cipherKey = _cipherKey
-            self.hmacKey = _hmacKey
-            return
-        }
-
-        var combinedComponents: SecureBytes
-        if compositeKey.state == .processedComponents {
-            combinedComponents = try keyHelper.combineComponents(
-                passwordData: compositeKey.passwordData!, 
-                keyFileData: compositeKey.keyFileData!    
-            ) 
-            compositeKey.setCombinedStaticComponents(combinedComponents)
-        } else if compositeKey.state >= .combinedComponents {
-            combinedComponents = compositeKey.combinedStaticComponents! 
-        } else {
-            preconditionFailure("Unexpected key state")
-        }
+    func importMasterKey(preTransformedKeyMaterial: ByteArray, cipher: DataCipher) {
         
-        let secureMasterSeed = SecureBytes.from(header.masterSeed)
-        let joinedKey: SecureBytes
-            
-            let keyToTransform = keyHelper.getKey(fromCombinedComponents: combinedComponents)
-            
-            let transformedKey = try header.kdf.transform(
-                key: keyToTransform,
-                params: header.kdfParams)
-            joinedKey = SecureBytes.concat(secureMasterSeed, transformedKey)
-        self.cipherKey = cipher.resizeKey(key: joinedKey)
-        let one = SecureBytes.from([1])
-        self.hmacKey = SecureBytes.concat(joinedKey, one).sha512
-        compositeKey.setFinalKeys(hmacKey, cipherKey)
+        // Have to do this or change CompositeKey class to support importing directly
+        compositeKey = CompositeKey(staticComponents: preTransformedKeyMaterial)
+        
+        let secureMasterSeed = header.masterSeed.clone()
+        let joinedKey = ByteArray.concat(secureMasterSeed, preTransformedKeyMaterial)
+    self.cipherKey = cipher.resizeKey(key: joinedKey)
+    let one = ByteArray(bytes: [1])
+    self.hmacKey = ByteArray.concat(joinedKey, one).sha512
+    compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
+    
+    func rederiveMasterKey(key: CompositeKey, cipher: DataCipher) {
+        let secureMasterSeed = header.masterSeed.clone()
+        let joinedKey = ByteArray.concat(secureMasterSeed, key.combinedStaticComponents!)
+    self.cipherKey = cipher.resizeKey(key: joinedKey)
+    let one = ByteArray(bytes: [1])
+    self.hmacKey = ByteArray.concat(joinedKey, one).sha512
+    compositeKey.setFinalKeys(hmacKey, cipherKey)
+    }
+    
+    
+//
+//    func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher, canUseFinalKey: Bool) throws {
+//        Diag.debug("Start key derivation")
+//
+//        if canUseFinalKey,
+//           compositeKey.state == .final,
+//           let _cipherKey = compositeKey.cipherKey,
+//           let _hmacKey = compositeKey.finalKey
+//        {
+//            self.cipherKey = _cipherKey
+//            self.hmacKey = _hmacKey
+//            return
+//        }
+//
+//        var combinedComponents: ByteArray
+//        if compositeKey.state == .processedComponents {
+//            combinedComponents = try keyHelper.combineComponents(
+//                passwordData: compositeKey.passwordData!,
+//                keyFileData: compositeKey.keyFileData!
+//            )
+//            compositeKey.setCombinedStaticComponents(combinedComponents)
+//        } else if compositeKey.state >= .combinedComponents {
+//            combinedComponents = compositeKey.combinedStaticComponents!
+//        } else {
+//            preconditionFailure("Unexpected key state")
+//        }
+//
+//        let secureMasterSeed = header.masterSeed.clone()
+//        let joinedKey: ByteArray
+//
+//            let keyToTransform = keyHelper.getKey(fromCombinedComponents: combinedComponents)
+//
+//            let transformedKey = try header.kdf.transform(
+//                key: keyToTransform,
+//                params: header.kdfParams)
+//            joinedKey = ByteArray.concat(secureMasterSeed, transformedKey)
+//        self.cipherKey = cipher.resizeKey(key: joinedKey)
+//        let one = ByteArray(bytes: [1])
+//        self.hmacKey = ByteArray.concat(joinedKey, one).sha512
+//        compositeKey.setFinalKeys(hmacKey, cipherKey)
+//    }
     
     override public func changeCompositeKey(to newKey: CompositeKey) {
         compositeKey = newKey.clone()
@@ -711,10 +725,9 @@ public class Database2: Database {
         do {
             try header.randomizeSeeds() 
             Diag.debug("Seeds randomized OK")
-            try deriveMasterKey(
-                compositeKey: compositeKey,
-                cipher: header.dataCipher,
-                canUseFinalKey: false)
+            rederiveMasterKey(
+                key: compositeKey,
+                cipher: header.dataCipher)
             Diag.debug("Key derivation OK")
         } catch let error as CryptoError {
             throw DatabaseError.saveError(reason: error.localizedDescription)
@@ -777,7 +790,7 @@ public class Database2: Database {
             let encData = try header.dataCipher.encrypt(
                 plainText: dataToEncrypt,
                 key: cipherKey,
-                iv: SecureBytes.from(header.initialVector)) 
+                iv: header.initialVector.clone())
             Diag.verbose("Encrypted \(encData.count) bytes")
             
             try writeAsBlocksV4(to: outStream, data: encData) 
@@ -1032,12 +1045,7 @@ extension Database2: Database2XMLTimeParser {
 
 extension Database2: Database2XMLTimeFormatter {
     func dateToXMLString(_ date: Date) -> String {
-        switch header.formatVersion {
-        case .v3:
-            return date.iso8601String()
-        case .v4, .v4_1:
             return date.base64EncodedString()
-        }
     }
 }
 

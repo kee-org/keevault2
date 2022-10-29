@@ -290,6 +290,10 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
         return ByteArray(bytes: buffer)
     }
     
+    public static func empty() -> ByteArray {
+        return ByteArray(bytes: [])
+    }
+    
     public func append(_ value: UInt8) {
         bytes.append(value)
         invalidateHashCache()
@@ -311,6 +315,23 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
     public func withBytes<TResult>(_ body: ([UInt8]) -> TResult) -> TResult {
         return body(bytes)
     }
+    
+    @discardableResult
+    public func withThrowableBytes<T>(_ handler: ([UInt8]) throws -> T) rethrows -> T {
+        if bytes.isEmpty {
+            return try handler([])
+        }
+
+        assert(!bytes.allSatisfy { $0 == 0 }, "All bytes are zero. Possibly erased too early?")
+
+        var bytesCopy = bytes.clone()
+        defer {
+            bytesCopy.erase()
+        }
+        return try handler(bytesCopy)
+
+    }
+    
     @discardableResult
     public func withMutableBytes<TResult>(_ body: (inout [UInt8]) -> TResult) -> TResult {
         return body(&bytes)
@@ -363,7 +384,7 @@ extension ByteArray: Hashable {
 }
 //
 //
-//public final class SecureBytes: Eraseable, Cloneable, Codable {
+//public final class ByteArray: Eraseable, Cloneable, Codable {
 //
 //    fileprivate var bytes: [UInt8]
 //
@@ -385,18 +406,18 @@ extension ByteArray: Hashable {
 //        return key != nil
 //    }
 //
-//    public var sha256: SecureBytes {
+//    public var sha256: ByteArray {
 //        let hashBytes = withDecryptedBytes { plainTextBytes in
 //            return CryptoManager.sha256(of: plainTextBytes)
 //        }
-//        return SecureBytes.from(hashBytes)
+//        return ByteArray.from(hashBytes)
 //    }
 //
-//    public var sha512: SecureBytes {
+//    public var sha512: ByteArray {
 //        let hashBytes = withDecryptedBytes { plainTextBytes in
 //            return CryptoManager.sha512(of: plainTextBytes)
 //        }
-//        return SecureBytes.from(hashBytes)
+//        return ByteArray.from(hashBytes)
 //    }
 //
 //    private init(_ bytes: [UInt8], key: SecKey?) {
@@ -435,17 +456,17 @@ extension ByteArray: Hashable {
 ////                plainTextBytes.erase()
 ////            }
 ////            var key = Keychain.shared.getMemoryProtectionKey()
-////            let bytes = SecureBytes.encrypt(plainTextBytes, with: &key)
+////            let bytes = ByteArray.encrypt(plainTextBytes, with: &key)
 ////            self.init(bytes, key: key)
 ////        case 1:
 ////            guard let key = Keychain.shared.getMemoryProtectionKey() else {
-////                SecureBytes.__encryption_key_is_missing()
+////                ByteArray.__encryption_key_is_missing()
 ////                fatalError()
 ////            }
 ////            let encryptedBytes = try container.decode([UInt8].self, forKey: .bytes)
 ////            self.init(encryptedBytes, key: key)
 ////        default:
-////            SecureBytes.__unexpected_serialization_format(format)
+////            ByteArray.__unexpected_serialization_format(format)
 ////            fatalError()
 ////        }
 ////    }
@@ -462,33 +483,33 @@ extension ByteArray: Hashable {
 //    }
 //
 //
-//    public static func empty() -> SecureBytes {
-//        return SecureBytes([], key: nil)
+//    public static func empty() -> ByteArray {
+//        return ByteArray([], key: nil)
 //    }
 //
-//    public static func from(_ bytes: [UInt8]) -> SecureBytes {
+//    public static func from(_ bytes: [UInt8]) -> ByteArray {
 //        if bytes.isEmpty {
-//            return SecureBytes.empty()
+//            return ByteArray.empty()
 //        }
-//            return SecureBytes(bytes.clone(), key: nil)
+//            return ByteArray(bytes.clone(), key: nil)
 //    }
 //
-//    public static func from(_ bytes: ArraySlice<UInt8>) -> SecureBytes {
+//    public static func from(_ bytes: ArraySlice<UInt8>) -> ByteArray {
 //        return from(Array(bytes))
 //    }
 //
-//    public static func from(_ byteArray: ByteArray) -> SecureBytes {
+//    public static func from(_ byteArray: ByteArray) -> ByteArray {
 //        return from(byteArray.bytes)
 //    }
 //
-//    public static func from(_ data: Data) -> SecureBytes {
+//    public static func from(_ data: Data) -> ByteArray {
 //        return from(Array(data))
 //    }
 //
 //
-//    public func decrypted() -> SecureBytes {
+//    public func decrypted() -> ByteArray {
 //        return withDecryptedBytes {
-//            SecureBytes.from($0.clone())
+//            ByteArray.from($0.clone())
 //        }
 //    }
 //
@@ -543,12 +564,12 @@ extension ByteArray: Hashable {
 //        }
 //    }
 //
-//    public func clone() -> SecureBytes {
+//    public func clone() -> ByteArray {
 //        let bytesCopy = bytes.clone()
-//        return SecureBytes(bytesCopy, key: key)
+//        return ByteArray(bytesCopy, key: key)
 //    }
 //
-//    public static func concat(_ parts: SecureBytes...) -> SecureBytes {
+//    public static func concat(_ parts: ByteArray...) -> ByteArray {
 //        var plainTexts = [ByteArray]()
 //        var concatenatedPlainTexts = [UInt8]()
 //        defer {
@@ -569,16 +590,16 @@ extension ByteArray: Hashable {
 //        plainTexts.forEach {
 //            concatenatedPlainTexts.append(contentsOf: $0.bytes)
 //        }
-//        return SecureBytes.from(concatenatedPlainTexts, encrypt: hasEncryptedInput)
+//        return ByteArray.from(concatenatedPlainTexts, encrypt: hasEncryptedInput)
 //    }
 //
-//    public func interpretedAsASCIIHexString() -> SecureBytes? {
+//    public func interpretedAsASCIIHexString() -> ByteArray? {
 //        guard let hexString = withDecryptedBytes({ String(bytes: $0, encoding: .ascii) }),
 //              let byteArray = ByteArray(hexString: hexString)
 //        else {
 //            return nil
 //        }
-//        return SecureBytes.from(byteArray)
+//        return ByteArray.from(byteArray)
 //    }
 //
 //    
@@ -586,7 +607,7 @@ extension ByteArray: Hashable {
 //
 //}
 //
-//extension SecureBytes {
+//extension ByteArray {
 //    @inline(never)
 //    private static func __unexpected_serialization_format(_ format: Int) {
 //        fatalError("Unexpected serialization format: \(format)")
@@ -594,7 +615,7 @@ extension ByteArray: Hashable {
 //
 //    @inline(never)
 //    private static func __encryption_key_is_missing() {
-//        fatalError("Got encrypted SecureBytes, but no key. Something is very wrong.")
+//        fatalError("Got encrypted ByteArray, but no key. Something is very wrong.")
 //    }
 //
 //    @inline(never)
@@ -669,7 +690,7 @@ extension ByteArray: Hashable {
 //}
 
 #if DEBUG
-extension SecureBytes: CustomStringConvertible {
+extension ByteArray: CustomStringConvertible {
     public var description: String {
         return ByteArray(bytes: bytes.clone()).asHexString
     }

@@ -62,65 +62,18 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         
         //TODO: maybe move the kdbx load and PSL stuff so they can load in parrallel
         //TODO: load kdbx key from keychain
-        //TODO: what's completionQueue and challengehandler? do i need one?
         //TODO: abort trying to create new DB with this library - too hard. Instead, load from existing file and create a composite key from file's password argon result bytes (inspected in dart debugger)
         //TODO: need to write the file to somewhere I can find it first... unless the recent app group stuff for keychain has magically made this happen already.
-let    completionQueue: DispatchQueue = .main
+//let    completionQueue: DispatchQueue = .main
 
-        
-        
-        let db = Database2()
-//
-//        db.keyHelper.createCompositeKey(
-//            password: password,
-//            keyFile: keyFile,
-//            challengeHandler: challengeHandler,
-//            completion: { result in
-//                switch result {
-//                case .success(let compositeKey):
-//                    completionQueue.async {
-//                        completion(.success(databaseFile))
-//                    }
-//                case .failure(let errorMessage):
-//                    Diag.error("Error creating composite key for a new database [message: \(errorMessage)]")
-//                    completionQueue.async {
-//                        completion(.failure(errorMessage))
-//                    }
-//                }
-//            }
-//        )
-//
-//        do {
-//            let staticComponents = try self.combineComponents(
-//                passwordData: passwordData,
-//                keyFileData: keyFileData
-//            )
-//            let compositeKey = CompositeKey(
-//                staticComponents: staticComponents,
-//                challengeHandler: challengeHandler)
-//            Diag.debug("New composite key created successfully")
-//            completionQueue.async {
-//                completion(.success(compositeKey))
-//            }
-//        } catch let error as KeyFileError {
-//            Diag.error("Key file error [reason: \(error.localizedDescription)]")
-//            completionQueue.async {
-//                completion(.failure(error.localizedDescription))
-//            }
-//        } catch {
-//            let message = "Caught unrecognized exception"
-//            assertionFailure(message)
-//            Diag.error(message)
-//            completionQueue.async {
-//                completion(.failure(message))
-//            }
-//        }
-//
-//
-//
-//        db.load(dbFileName: <#String#>, dbFileData: <#ByteArray#>, compositeKey: <#CompositeKey#>, warnings: <#DatabaseLoadingWarnings#>)
-//        //let db = Database2.init()
-        let root =         db.root
+        let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: "group.com.keevault.keevault.dev")
+                guard let kdbxURL = documentsDirectory?.appendingPathComponent("filename.kdbx") else { return }
+            
+        let preTransformedKeyMaterial = ByteArray(bytes: [])
+        let dbLoader = DatabaseLoader(dbRef: kdbxURL, status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: preTransformedKeyMaterial)
+        let dbFile = dbLoader.loadFromFile()
+        let db = dbFile.database
+        let root = db.root
         mainController.searchDomains = sis
         do {
             let context = LAContext()

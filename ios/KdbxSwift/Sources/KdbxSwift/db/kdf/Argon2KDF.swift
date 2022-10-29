@@ -38,9 +38,9 @@ class AbstractArgon2KDF {
     fileprivate var uuid: UUID {
         fatalError("Abstract method, override this")
     }
-    fileprivate var primitiveType: Argon2.PrimitiveType {
-        fatalError("Abstract method, override this")
-    }
+//    fileprivate var primitiveType: Argon2.PrimitiveType {
+//        fatalError("Abstract method, override this")
+//    }
     
     fileprivate var progress = ProgressEx()
     
@@ -121,17 +121,18 @@ class AbstractArgon2KDF {
         )
     }
     
-    func transform(key: SecureBytes, params: KDFParams) throws -> SecureBytes {
-        assert(key.count > 0)
-        
-        let hashingParams = try getParams(params) 
-        
-        let outHash = try Argon2.hash(
-            data: key,
-            params: hashingParams,
-            type: primitiveType,
-            progress: progress)
-        return outHash
+    func transform(key: ByteArray, params: KDFParams) -> ByteArray {
+        fatalError("argon2 not implemented")
+//        assert(key.count > 0)
+//
+//        let hashingParams = try getParams(params)
+//
+//        let outHash = try Argon2.hash(
+//            data: key,
+//            params: hashingParams,
+//            type: primitiveType,
+//            progress: progress)
+//        return outHash
     }
 }
 
@@ -142,7 +143,6 @@ final class Argon2dKDF: AbstractArgon2KDF, KeyDerivationFunction {
     override public var uuid: UUID { return Argon2dKDF._uuid }
     override public var name: String { return "Argon2d" }
 
-    override fileprivate var primitiveType: Argon2.PrimitiveType { return .argon2d }
 }
 
 final class Argon2idKDF: AbstractArgon2KDF, KeyDerivationFunction {
@@ -152,5 +152,30 @@ final class Argon2idKDF: AbstractArgon2KDF, KeyDerivationFunction {
     override public var uuid: UUID { return Argon2idKDF._uuid }
     override public var name: String { return "Argon2id" }
 
-    override fileprivate var primitiveType: Argon2.PrimitiveType { return .argon2id }
+}
+
+protocol KeyDerivationFunction {
+    var uuid: UUID { get }
+    var name: String { get }
+    var defaultParams: KDFParams { get }
+    
+    init()
+    
+    func transform(key: ByteArray, params: KDFParams) throws -> ByteArray
+    
+    func getChallenge(_ params: KDFParams) throws -> ByteArray
+    
+    func randomize(params: inout KDFParams) throws
+}
+
+public final class Argon2 {
+    public static let version: UInt32 = 0x13
+    
+    public struct Params {
+        let salt: ByteArray
+        let parallelism: UInt32
+        let memoryKiB: UInt32
+        let iterations: UInt32
+        let version: UInt32
+    }
 }

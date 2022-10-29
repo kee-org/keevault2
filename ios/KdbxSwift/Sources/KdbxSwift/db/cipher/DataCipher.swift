@@ -18,10 +18,10 @@ protocol DataCipher: AnyObject {
     
     func initProgress() -> ProgressEx
     
-    func encrypt(plainText: ByteArray, key: SecureBytes, iv: SecureBytes) throws -> ByteArray
-    func decrypt(cipherText: ByteArray, key: SecureBytes, iv: SecureBytes) throws -> ByteArray
+    func encrypt(plainText: ByteArray, key: ByteArray, iv: ByteArray) throws -> ByteArray
+    func decrypt(cipherText: ByteArray, key: ByteArray, iv: ByteArray) throws -> ByteArray
     
-    func resizeKey(key: SecureBytes) -> SecureBytes
+    func resizeKey(key: ByteArray) -> ByteArray
 }
 
 extension DataCipher {
@@ -31,15 +31,15 @@ extension DataCipher {
         return progress
     }
     
-    func resizeKey(key: SecureBytes) -> SecureBytes {
+    func resizeKey(key: ByteArray) -> ByteArray {
         assert(key.count > 0)
         assert(keySize >= 0)
         
         if keySize == 0 {
-            return SecureBytes.empty()
+            return ByteArray.empty()
         }
         
-        let hash: SecureBytes
+        let hash: ByteArray
         let hashSize: Int
         if keySize <= 32 {
             hash = key.sha256
@@ -54,9 +54,7 @@ extension DataCipher {
         }
             
         if keySize < hashSize {
-            return hash.withDecryptedBytes {
-                SecureBytes.from($0.prefix(keySize))
-            }
+            return hash.prefix(keySize)
         } else {
             fatalError("Not implemented")
         }

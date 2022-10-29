@@ -7,6 +7,7 @@
 //  For commercial licensing, please contact the author.
 
 import Foundation
+import CommonCrypto
 
 final class AESDataCipher: DataCipher {
     private let _uuid = UUID(uuid:
@@ -22,7 +23,7 @@ final class AESDataCipher: DataCipher {
     init() {
     }
     
-    func encrypt(plainText data: ByteArray, key: SecureBytes, iv: SecureBytes) throws -> ByteArray {
+    func encrypt(plainText data: ByteArray, key: ByteArray, iv: ByteArray) throws -> ByteArray {
         assert(key.count == kCCKeySizeAES256)
         assert(iv.count == kCCBlockSizeAES128)
         progress.localizedDescription = NSLocalizedString(
@@ -40,8 +41,8 @@ final class AESDataCipher: DataCipher {
         let out = ByteArray(count: data.count + kCCBlockSizeAES128)
         var numBytesEncrypted: size_t = 0
         let status = data.withBytes { dataBytes in
-            return key.withDecryptedBytes{ keyBytes in
-                return iv.withDecryptedBytes{ ivBytes in
+            return key.withThrowableBytes{ keyBytes in
+                return iv.withThrowableBytes{ ivBytes in
                     return out.withMutableBytes { (outBytes: inout [UInt8]) in
                         return CCCrypt(
                             operation, algoritm, options,
@@ -71,7 +72,7 @@ final class AESDataCipher: DataCipher {
         return out
     }
     
-    func decrypt(cipherText encData: ByteArray, key: SecureBytes, iv: SecureBytes) throws -> ByteArray {
+    func decrypt(cipherText encData: ByteArray, key: ByteArray, iv: ByteArray) throws -> ByteArray {
         assert(key.count == kCCKeySizeAES256)
         assert(iv.count == kCCBlockSizeAES128)
         assert(encData.count % kCCBlockSizeAES128 == 0)
@@ -91,8 +92,8 @@ final class AESDataCipher: DataCipher {
         var numBytesDecrypted: size_t = 0
         let out = ByteArray(count: encData.count)
         let status = encData.withBytes { encDataBytes in
-            return key.withDecryptedBytes{ keyBytes in
-                return iv.withDecryptedBytes{ ivBytes in
+            return key.withThrowableBytes{ keyBytes in
+                return iv.withThrowableBytes{ ivBytes in
                     return out.withMutableBytes { (outBytes: inout [UInt8]) in
                         return CCCrypt(
                             operation, algoritm, options,

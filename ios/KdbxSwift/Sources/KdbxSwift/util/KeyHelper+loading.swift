@@ -18,7 +18,7 @@
 //        guard let keyFileRef = keyFileRef else {
 //            buildCompositeKey(
 //                password: password,
-//                keyFileData: SecureBytes.empty(),
+//                keyFileData: ByteArray.empty(),
 //                challengeHandler: challengeHandler,
 //                completionQueue: completionQueue,
 //                completion: completion
@@ -32,7 +32,7 @@
 //            case .success(let keyFileData):
 //                self.buildCompositeKey(
 //                    password: password,
-//                    keyFileData: SecureBytes.from(keyFileData),
+//                    keyFileData: ByteArray.from(keyFileData),
 //                    challengeHandler: challengeHandler,
 //                    completionQueue: completionQueue,
 //                    completion: completion
@@ -48,7 +48,7 @@
 //    
 //    private func buildCompositeKey(
 //        password: String,
-//        keyFileData: SecureBytes,
+//        keyFileData: ByteArray,
 //        challengeHandler: ChallengeHandler?,
 //        completionQueue: DispatchQueue,
 //        completion: @escaping((Result<CompositeKey, String>) -> Void)

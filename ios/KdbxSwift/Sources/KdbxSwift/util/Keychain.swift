@@ -54,7 +54,7 @@
 //    private let premiumProductAccount = "premiumProductID"
 //    private let premiumFallbackDateAccount = "premiumFallbackDate"
 //
-//    private let memoryProtectionKeyTagData = "SecureBytes.general".data(using: .utf8)!
+//    private let memoryProtectionKeyTagData = "ByteArray.general".data(using: .utf8)!
 //
 //    private var hasWarnedAboutMissingMemoryProtectionKey = false
 //

@@ -26,15 +26,15 @@ public class CompositeKey: Codable {
     internal private(set) var state: State
     
     internal private(set) var password: String = ""
-    internal private(set) var keyFileRef: FileWrapper?
+    internal private(set) var keyFileRef: URL?
     
-    internal private(set) var passwordData: SecureBytes?
-    internal private(set) var keyFileData: SecureBytes?
+    internal private(set) var passwordData: ByteArray?
+    internal private(set) var keyFileData: ByteArray?
     
-    internal private(set) var combinedStaticComponents: SecureBytes?
+    internal private(set) var combinedStaticComponents: ByteArray?
     
-    internal private(set) var finalKey: SecureBytes?
-    internal private(set) var cipherKey: SecureBytes?
+    internal private(set) var finalKey: ByteArray?
+    internal private(set) var cipherKey: ByteArray?
     
     
     public init() {
@@ -43,13 +43,13 @@ public class CompositeKey: Codable {
         state = .empty
     }
     
-    public init(password: String, keyFileRef: FileWrapper?) {
+    public init(password: String, keyFileRef: URL?) {
         self.password = password
         self.keyFileRef = keyFileRef
         state = .rawComponents
     }
     
-    init(staticComponents: SecureBytes) {
+    init(staticComponents: ByteArray) {
         self.password = ""
         self.keyFileRef = nil
         self.passwordData = nil
@@ -95,7 +95,7 @@ public class CompositeKey: Codable {
         return clone
     }
     
-    func setProcessedComponents(passwordData: SecureBytes, keyFileData: SecureBytes) {
+    func setProcessedComponents(passwordData: ByteArray, keyFileData: ByteArray) {
         assert(state == .rawComponents)
         self.passwordData = passwordData.clone()
         self.keyFileData = keyFileData.clone()
@@ -109,7 +109,7 @@ public class CompositeKey: Codable {
         self.finalKey = nil
     }
     
-    func setCombinedStaticComponents(_ staticComponents: SecureBytes) {
+    func setCombinedStaticComponents(_ staticComponents: ByteArray) {
         assert(state <= .combinedComponents)
         self.combinedStaticComponents = staticComponents.clone()
         state = .combinedComponents
@@ -127,7 +127,7 @@ public class CompositeKey: Codable {
         self.finalKey = nil
     }
     
-    func setFinalKeys(_ finalKey: SecureBytes, _ cipherKey: SecureBytes?) {
+    func setFinalKeys(_ finalKey: ByteArray, _ cipherKey: ByteArray?) {
         assert(state >= .combinedComponents)
         self.cipherKey = cipherKey?.clone()
         self.finalKey = finalKey.clone()

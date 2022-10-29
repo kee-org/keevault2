@@ -13,33 +13,33 @@ public class KeyHelper {
     internal let keyFileKeyLength = 32
     
     public func combineComponents(
-        passwordData: SecureBytes,
-        keyFileData: SecureBytes
-    ) throws -> SecureBytes {
+        passwordData: ByteArray,
+        keyFileData: ByteArray
+    ) throws -> ByteArray {
         fatalError("Pure virtual method")
     }
     
-    public func getKey(fromCombinedComponents combinedComponents: SecureBytes) -> SecureBytes {
+    public func getKey(fromCombinedComponents combinedComponents: ByteArray) -> ByteArray {
         fatalError("Pure virtual method")
     }
     
-    public func getPasswordData(password: String) -> SecureBytes {
+    public func getPasswordData(password: String) -> ByteArray {
         fatalError("Pure virtual method")
     }
     
-    public func processKeyFile(keyFileData: SecureBytes) throws -> SecureBytes {
+    public func processKeyFile(keyFileData: ByteArray) throws -> ByteArray {
         assert(!keyFileData.isEmpty, "keyFileData cannot be empty here")
         
         let keyFileDataSize = keyFileData.count
         if keyFileDataSize == keyFileKeyLength {
             Diag.debug("Key file format is: binary")
             return keyFileData
-        } else if keyFileDataSize == 2 * keyFileKeyLength {
-            
-            if let key = keyFileData.interpretedAsASCIIHexString() {
-                Diag.debug("Key file format is: base64")
-                return key
-            }
+//        } else if keyFileDataSize == 2 * keyFileKeyLength {
+//
+//            if let key = keyFileData.interpretedAsASCIIHexString() {
+//                Diag.debug("Key file format is: base64")
+//                return key
+//            }
         }
         
         if let key = try processXmlKeyFile(keyFileData: keyFileData) {
@@ -51,7 +51,7 @@ public class KeyHelper {
         return keyFileData.sha256
     }
     
-    public func processXmlKeyFile(keyFileData: SecureBytes) throws -> SecureBytes? {
+    public func processXmlKeyFile(keyFileData: ByteArray) throws -> ByteArray? {
         return nil
     }
 }

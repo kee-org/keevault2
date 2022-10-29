@@ -12,13 +12,13 @@
 //    private let blockSize = 64
 //    private static let sigma: [UInt8] =
 //        [0x65,0x78,0x70,0x61,0x6e,0x64,0x20,0x33,0x32,0x2d,0x62,0x79,0x74,0x65,0x20,0x6b]
-//    private var key: SecureBytes
-//    private var iv: SecureBytes
+//    private var key: ByteArray
+//    private var iv: ByteArray
 //    private var counter: UInt64
 //    private var block: [UInt8]
 //    private var posInBlock: Int
 //
-//    init(key: SecureBytes, iv: SecureBytes) {
+//    init(key: ByteArray, iv: ByteArray) {
 //        assert(key.count == 32)
 //        assert(iv.count == 8)
 //        

@@ -12,11 +12,11 @@ final class DataCipherFactory {
     public static let instance = DataCipherFactory()
     private let aes: AESDataCipher
     private let chacha20: ChaCha20DataCipher
-    private let twofish: TwofishDataCipher
+    //private let twofish: TwofishDataCipher
     private init() {
         aes = AESDataCipher()
         chacha20 = ChaCha20DataCipher()
-        twofish = TwofishDataCipher(isPaddingLikelyMessedUp: true)
+        //twofish = TwofishDataCipher(isPaddingLikelyMessedUp: true)
     }
     
     public func createFor(uuid: UUID) -> DataCipher? {
@@ -27,9 +27,9 @@ final class DataCipherFactory {
         case chacha20.uuid:
             Diag.info("Creating ChaCha20 cipher")
             return ChaCha20DataCipher()
-        case twofish.uuid:
-            Diag.info("Creating Twofish cipher")
-            return TwofishDataCipher(isPaddingLikelyMessedUp: true)
+//        case twofish.uuid:
+//            Diag.info("Creating Twofish cipher")
+//            return TwofishDataCipher(isPaddingLikelyMessedUp: true)
         default:
             Diag.warning("Unrecognized cipher UUID")
             return nil
