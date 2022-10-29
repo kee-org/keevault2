@@ -34,6 +34,16 @@ import Flutter
                     
                 }
                 result(true)
+            case "getAppGroupDirectory":
+                guard let args = call.arguments as? Dictionary<String, Any> else {
+                    result(FlutterError.init(code: "bad args", message: nil, details: nil))
+                    break
+                  }
+                guard let groupId = args["groupId"] as? String else {
+                    result(FlutterError.init(code: "missing groupId argument", message: nil, details: nil))
+                    break
+                }
+                result(getAppGroupDirectoryWithId(groupId: groupId))
             default:
                 result(FlutterMethodNotImplemented)
             }
@@ -43,6 +53,11 @@ import Flutter
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 }
+
+private func getAppGroupDirectoryWithId(groupId:String!) -> String! {
+    let groupURL:URL! = FileManager().containerURL(forSecurityApplicationGroupIdentifier: groupId)
+    return groupURL.path
+  }
 
 private func addEntries(entries: [KeeVaultEntryIos]) throws {
     // hack deletes all keychain items

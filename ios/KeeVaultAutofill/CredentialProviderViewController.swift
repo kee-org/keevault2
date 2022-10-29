@@ -67,8 +67,9 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
 //let    completionQueue: DispatchQueue = .main
 
         let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: "group.com.keevault.keevault.dev")
-                guard let kdbxURL = documentsDirectory?.appendingPathComponent("filename.kdbx") else { return }
-            
+                guard let kdbxURL = documentsDirectory?.appendingPathComponent("local_user/current.kdbx") else { return }
+            //TODO: shared config to set fiel url path (user directory)
+        
         let preTransformedKeyMaterial = ByteArray(bytes: [])
         let dbLoader = DatabaseLoader(dbRef: kdbxURL, status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: preTransformedKeyMaterial)
         let dbFile = dbLoader.loadFromFile()

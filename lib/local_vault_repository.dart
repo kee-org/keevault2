@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:argon2_ffi_base/argon2_ffi_base.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/password_strength.dart';
@@ -12,6 +13,7 @@ import 'package:keevault/locked_vault_file.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 
 import 'argon2_params.dart';
+import 'config/platform.dart';
 import 'credentials/credential_lookup_result.dart';
 import 'kdbx_argon2_ffi.dart';
 import 'kdf_cache.dart';
@@ -22,6 +24,7 @@ import 'vault_file.dart';
 
 class LocalVaultRepository {
   final QuickUnlocker qu;
+  static const _autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
 
   LocalVaultRepository(this.qu);
 
@@ -29,6 +32,15 @@ class LocalVaultRepository {
   static KdbxFormat kdbxFormat() {
     Argon2.resolveLibraryForceDynamic = true;
     return KdbxFormat(KeeVaultKdfCache(), FlutterArgon2());
+  }
+
+  getStorageDirectory() async {
+    if (KeeVaultPlatform.isIOS) {
+      return await _autoFillMethodChannel.invokeMethod(
+          'getAppGroupDirectory', 'group.com.keevault.keevault.dev'); //TODO: variable group ID
+    }
+    final directory = await getApplicationSupportDirectory();
+    return directory;
   }
 
   Future<LockedVaultFile?> _loadFile(String fileName, [DateTime? ifNewerThan]) async {
@@ -81,25 +93,25 @@ class LocalVaultRepository {
   }
 
   Future<LocalVaultFile?> loadFreeUser(Future<CredentialLookupResult> Function() getCredentials) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = await _loadLocalFile(getCredentials, '${directory.path}/local_user/current.kdbx');
     return file;
   }
 
   Future<LockedVaultFile?> loadFreeUserLocked() async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = await _loadFile('${directory.path}/local_user/current.kdbx');
     return file;
   }
 
   Future<LocalVaultFile?> load(User user, Future<CredentialLookupResult> Function() getCredentials) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = await _loadLocalFile(getCredentials, '${directory.path}/${user.emailHashedB64url}/current.kdbx');
     return file;
   }
 
   Future<LocalVaultFile?> createNewKdbxOnStorage(StrengthAssessedCredentials credentialsWithStrength) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final credentials = credentialsWithStrength.credentials;
     final kdbx = kdbxFormat().create(
       credentials,
@@ -146,7 +158,7 @@ class LocalVaultRepository {
   }
 
   Future<bool> localFreeExists() async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/local_user/current.kdbx');
     final exists = await file.exists();
     return exists;
@@ -156,7 +168,7 @@ class LocalVaultRepository {
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
     await file.create(recursive: true);
     await file.writeAsBytes(lockedKdbx.kdbxBytes, flush: true);
@@ -165,7 +177,7 @@ class LocalVaultRepository {
   }
 
   Future<VaultFileVersions> merge(User user, LocalVaultFile local, RemoteVaultFile remote) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
     final firstKdbx = await local.files.remoteMergeTarget;
     if (firstKdbx == null) {
@@ -210,7 +222,7 @@ class LocalVaultRepository {
       throw Exception('Invalid object passed to stageUpdate');
     }
 
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/staged.kdbx');
     await file.writeAsBytes(bytes, flush: true);
     l.d('staging complete');
@@ -218,7 +230,7 @@ class LocalVaultRepository {
 
   Future<RemoteVaultFile?> loadStagedUpdate(
       User user, Future<CredentialLookupResult> Function() getCredentials, DateTime ifNewerThan) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     return await _loadRemoteFile(
       getCredentials,
       '${directory.path}/${user.emailHashedB64url}/staged.kdbx',
@@ -227,7 +239,7 @@ class LocalVaultRepository {
   }
 
   remove(User user) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
     final stagedFile = File('${directory.path}/${user.emailHashedB64url}/staged.kdbx');
     try {
@@ -243,7 +255,7 @@ class LocalVaultRepository {
   }
 
   Future<bool> removeFreeUser() async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/local_user/current.kdbx');
     try {
       await file.delete();
@@ -263,7 +275,7 @@ class LocalVaultRepository {
 
   Future<LocalVaultFile> save(User? user, LocalVaultFile vault,
       Future<KdbxFile> Function(KdbxFile vaultFile) applyAndConsumePendingAutofillAssociations) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final userFolder = user?.emailHashedB64url ?? 'local_user';
     final file = File('${directory.path}/$userFolder/current.kdbx');
     (await vault.files.pending)?.merge(vault.files.current);
