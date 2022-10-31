@@ -858,12 +858,14 @@ class VaultCubit extends Cubit<VaultState> {
       emit(VaultSaving(vault, true, s is VaultSaving ? s.remotely : false));
       final mergedOrCurrentVaultFile =
           await _localVaultRepo.save(user, vault, applyAndConsumePendingAutofillAssociations);
-      if (KeeVaultPlatform.isIOS) {
-        final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup
-            .getAllEntries(enterRecycleBin: false)
-            .values; //TODO: toJSON I guess.
-        await _autoFillMethodChannel.invokeMethod('setAllEntries', entries);
-      }
+      // if (KeeVaultPlatform.isIOS) {
+      //   final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup
+      //       .getAllEntries(enterRecycleBin: false)
+      //       .values; //TODO: toJSON I guess.
+      //   await _autoFillMethodChannel.invokeMethod('setAllEntries', <String, dynamic>{
+      //     'entries': entries.toString(),
+      //   });
+      // }
       /*
       try {
     final int result = await platform.invokeMethod('getBatteryLevel');

@@ -457,7 +457,7 @@ public class Entry2: Entry {
                 try autoType.load(xml: tag, streamCipher: streamCipher)
                 Diag.verbose("Entry autotype loaded OK")
             case Xml2.previousParentGroup:
-                assert(formatVersion >= .v4_1)
+                assert(formatVersion >= .v4)
                 previousParentGroupUUID = UUID(base64Encoded: tag.value) ?? UUID.ZERO
             case Xml2.qualityCheck:
                 assert(formatVersion >= .v4_1)

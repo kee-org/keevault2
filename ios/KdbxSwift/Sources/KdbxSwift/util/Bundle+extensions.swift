@@ -9,5 +9,5 @@
 import Foundation
 
 extension Bundle {
-    internal static let framework = Bundle(identifier: "com.keepassium.ios.KdbxSwift")!
+    internal static let framework = Bundle.main
 }

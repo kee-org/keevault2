@@ -6,7 +6,7 @@
         <true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.keevault.keevault.beta</string>
+		<string>group.com.keevault.keevault.beta</string>
 	</array>
         <key>keychain-access-groups</key>
         <array>

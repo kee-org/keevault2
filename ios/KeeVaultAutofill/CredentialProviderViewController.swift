@@ -70,7 +70,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
                 guard let kdbxURL = documentsDirectory?.appendingPathComponent("local_user/current.kdbx") else { return }
             //TODO: shared config to set fiel url path (user directory)
         
-        let preTransformedKeyMaterial = ByteArray(bytes: [])
+        let preTransformedKeyMaterial = ByteArray(bytes: "6907d5ab2ba3e8dc7d8d1542220260ad32c48c7ef731ac6fb24213e4f09be9ce".hexaBytes)
         let dbLoader = DatabaseLoader(dbRef: kdbxURL, status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: preTransformedKeyMaterial)
         let dbFile = dbLoader.loadFromFile()
         let db = dbFile.database
@@ -163,9 +163,22 @@ extension CredentialProviderViewController: EntrySelectionDelegate {
         self.extensionContext.cancelRequest(withError: NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue))
     }
 }
-
-enum KeychainError: Error {
-    case noPassword
-    case unexpectedPasswordData
-    case unhandledError(status: OSStatus)
-}
+                                                  
+                                                  enum KeychainError: Error {
+        case noPassword
+        case unexpectedPasswordData
+        case unhandledError(status: OSStatus)
+        }
+                                                  
+                                                  extension StringProtocol {
+            var hexaData: Data { .init(hexa) }
+            var hexaBytes: [UInt8] { .init(hexa) }
+            private var hexa: UnfoldSequence<UInt8, Index> {
+                sequence(state: startIndex) { startIndex in
+                    guard startIndex < self.endIndex else { return nil }
+                    let endIndex = self.index(startIndex, offsetBy: 2, limitedBy: self.endIndex) ?? self.endIndex
+                    defer { startIndex = endIndex }
+                    return UInt8(self[startIndex..<endIndex], radix: 16)
+                }
+            }
+        }
