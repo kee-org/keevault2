@@ -22,8 +22,15 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         return embeddedNavigationController.viewControllers.first as! KeeVaultViewController
     }
     
+    var sharedGroupName: String?
+    var userId: String?
+    var sharedDefaults: UserDefaults?
+    
     override func viewDidLoad() {
         mainController.selectionDelegate = self
+        sharedGroupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as? String
+        sharedDefaults = UserDefaults(suiteName: "group.com.keevault.keevault.dev")
+        userId = getUserIdFromSharedSettings() //"localUserMagicString@v1"
     }
     
     
@@ -61,29 +68,27 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         }
         
         //TODO: maybe move the kdbx load and PSL stuff so they can load in parrallel
-        //TODO: load kdbx key from keychain
-        //TODO: abort trying to create new DB with this library - too hard. Instead, load from existing file and create a composite key from file's password argon result bytes (inspected in dart debugger)
-        //TODO: need to write the file to somewhere I can find it first... unless the recent app group stuff for keychain has magically made this happen already.
-//let    completionQueue: DispatchQueue = .main
-
-        let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: "group.com.keevault.keevault.dev")
-                guard let kdbxURL = documentsDirectory?.appendingPathComponent("local_user/current.kdbx") else { return }
-            //TODO: shared config to set fiel url path (user directory)
         
-        let preTransformedKeyMaterial = ByteArray(bytes: "6907d5ab2ba3e8dc7d8d1542220260ad32c48c7ef731ac6fb24213e4f09be9ce".hexaBytes)
-        let dbLoader = DatabaseLoader(dbRef: kdbxURL, status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: preTransformedKeyMaterial)
+        let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: "group.com.keevault.keevault.dev")
+        guard let kdbxURL = documentsDirectory?.appendingPathComponent("local_user/current.kdbx") else { return }
+        //TODO: shared config to set fiel url path (user directory)
+        
+        guard let key = getKeyForUser(userId: userId) else { return }
+        //let preTransformedKeyMaterial = ByteArray(bytes: "6907d5ab2ba3e8dc7d8d1542220260ad32c48c7ef731ac6fb24213e4f09be9ce".hexaBytes)
+        let dbLoader = DatabaseLoader(dbRef: kdbxURL, status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key)
         let dbFile = dbLoader.loadFromFile()
         let db = dbFile.database
-        let root = db.root
+       // let root = db.root
         mainController.searchDomains = sis
-        do {
-            let context = LAContext()
-            mainController.entries = try loadAllKeychainMetadata(context: context)
-            mainController.authenticatedContext = context
-        } catch {
-            // Will just initialise with no passwords displayed. Not sure what else useful
-            // we can do but will see what user feedback is if this ever happens
-        }
+        mainController.entries = loadAllEntryRows(db: db)
+//        do {
+//            let context = LAContext()
+//            mainController.entries = try loadAllKeychainMetadata(context: context)
+//            mainController.authenticatedContext = context
+//        } catch {
+//            // Will just initialise with no passwords displayed. Not sure what else useful
+//            // we can do but will see what user feedback is if this ever happens
+//        }
         //        mainController.entries = [
         //            KeeVaultKeychainEntry(uuid: "uuid1", server: "google.com", writtenByAutofill: false, title: "Example title 1", username: "account 1", password: "password 1" ),
         //            KeeVaultKeychainEntry(uuid: "uuid2", server: "app.google.com", writtenByAutofill: false, title: "Example title 2", username: "account 2", password: "password 2" ),
@@ -92,36 +97,60 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         self.mainController.initAutofillEntries()
     }
     
-    private func loadAllKeychainMetadata(context: LAContext) throws -> [KeeVaultKeychainEntry] {
-        var entries: [KeeVaultKeychainEntry] = []
-        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
-        let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
+    private func getUserIdFromSharedSettings() -> String? {
+        return sharedDefaults?.string(forKey: "userId")
+    }
+    
+    private func getKeyForUser(userId: String?) -> ByteArray? {
+        guard userId != nil else { return nil }
+        let name = Bundle.main.infoDictionary!["KeeVaultSharedBiometricStorageName"] as! String
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
+        let iosKeychainServiceName = "flutter_biometric_storage"
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                    kSecAttrService as String: iosKeychainServiceName,
+                                    kSecAttrAccount as String: name,
                                     kSecAttrAccessGroup as String: accessGroup,
-                                    kSecMatchLimit as String: kSecMatchLimitAll,
+                                    kSecMatchLimit as String: kSecMatchLimitOne,
                                     kSecReturnAttributes as String: true,
-                                    kSecUseAuthenticationContext as String: context]
+                                    kSecReturnData as String: true]
         
-        var items_ref: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &items_ref)
-        guard status != errSecItemNotFound else { throw KeychainError.noPassword }
-        guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
-        guard let items = items_ref as? Array<Dictionary<String, Any>>
-                
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        guard status != errSecItemNotFound else { return nil }
+        guard status == errSecSuccess else { return nil}
+        
+        guard let existingItem = item as? [String : Any],
+              let keyData = existingItem[kSecValueData as String] as? Data
         else {
-            throw KeychainError.unexpectedPasswordData
+            return nil
         }
-        for item in items {
-            let existingItem = item
-            guard let server = existingItem[kSecAttrServer as String] as? String else {
-                continue
-            }
-            let uuid = existingItem[kSecAttrAccount as String] as? String
-            
-            let account = existingItem[kSecAttrDescription as String] as? String ?? ""
-            let title = existingItem[kSecAttrLabel as String] as? String
-            let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: nil)
-            entries.append(entry)
+        
+        guard let allCredentials =
+                try? JSONDecoder().decode(Dictionary<String,ExpiringCachedCredentials>.self, from: keyData) else {
+            return nil
         }
+        let credentials = allCredentials[userId!]
+        //TODO: check expiry date and tell user to load main app to unlock again
+        return ByteArray(base64Encoded: credentials?.kdbxKdfResultBase64)
+        
+    }
+    
+    private func loadAllEntryRows(db: Database) -> [KeeVaultKeychainEntry] {
+        var entries: [KeeVaultKeychainEntry] = []
+        let root = db.root
+//
+//        for item in items {
+//            let existingItem = item
+//            guard let server = existingItem[kSecAttrServer as String] as? String else {
+//                continue
+//            }
+//            let uuid = existingItem[kSecAttrAccount as String] as? String
+//
+//            let account = existingItem[kSecAttrDescription as String] as? String ?? ""
+//            let title = existingItem[kSecAttrLabel as String] as? String
+//            let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: nil)
+//            entries.append(entry)
+//        }
         return entries;
     }
     
@@ -163,22 +192,30 @@ extension CredentialProviderViewController: EntrySelectionDelegate {
         self.extensionContext.cancelRequest(withError: NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue))
     }
 }
-                                                  
-                                                  enum KeychainError: Error {
-        case noPassword
-        case unexpectedPasswordData
-        case unhandledError(status: OSStatus)
+
+enum KeychainError: Error {
+    case noPassword
+    case unexpectedPasswordData
+    case unhandledError(status: OSStatus)
+}
+
+extension StringProtocol {
+    var hexaData: Data { .init(hexa) }
+    var hexaBytes: [UInt8] { .init(hexa) }
+    private var hexa: UnfoldSequence<UInt8, Index> {
+        sequence(state: startIndex) { startIndex in
+            guard startIndex < self.endIndex else { return nil }
+            let endIndex = self.index(startIndex, offsetBy: 2, limitedBy: self.endIndex) ?? self.endIndex
+            defer { startIndex = endIndex }
+            return UInt8(self[startIndex..<endIndex], radix: 16)
         }
-                                                  
-                                                  extension StringProtocol {
-            var hexaData: Data { .init(hexa) }
-            var hexaBytes: [UInt8] { .init(hexa) }
-            private var hexa: UnfoldSequence<UInt8, Index> {
-                sequence(state: startIndex) { startIndex in
-                    guard startIndex < self.endIndex else { return nil }
-                    let endIndex = self.index(startIndex, offsetBy: 2, limitedBy: self.endIndex) ?? self.endIndex
-                    defer { startIndex = endIndex }
-                    return UInt8(self[startIndex..<endIndex], radix: 16)
-                }
-            }
-        }
+    }
+}
+
+struct ExpiringCachedCredentials: Decodable {
+    let kdbxBase64Hash: String;
+    let userPassKey: String;
+    let kdbxKdfResultBase64: String;
+    let kdbxKdfCacheKey: String;
+    let expiry: Int;
+}

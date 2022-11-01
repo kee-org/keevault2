@@ -5,6 +5,7 @@ import 'package:argon2_ffi_base/argon2_ffi_base.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/password_strength.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -131,8 +132,8 @@ class LocalVaultRepository {
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
-    await qu.saveQuickUnlockFileCredentials(
-        credentials, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+    await qu.saveQuickUnlockFileCredentials(credentials,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await kdbx.kdfCacheKey);
 
     final lockedKdbx = LockedVaultFile(
       saved,
@@ -167,15 +168,18 @@ class LocalVaultRepository {
   }
 
   Future<void> create(User user, LockedVaultFile lockedKdbx) async {
-    final requireFullPasswordPeriod =
-        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
-    l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
     await file.create(recursive: true);
     await file.writeAsBytes(lockedKdbx.kdbxBytes, flush: true);
-    await qu.saveQuickUnlockFileCredentials(
-        lockedKdbx.credentials, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+  }
+
+  Future<void> createQUCredentials(Credentials credentials, KdbxFile file) async {
+    final requireFullPasswordPeriod =
+        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
+    l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
+    await qu.saveQuickUnlockFileCredentials(credentials,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await file.kdfCacheKey);
   }
 
   Future<VaultFileVersions> merge(User user, LocalVaultFile local, RemoteVaultFile remote) async {

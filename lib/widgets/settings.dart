@@ -204,7 +204,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
             final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
             await vaultCubit.enableQuickUnlock(
               user,
-              vaultCubit.currentVaultFile?.files.current.credentials,
+              vaultCubit.currentVaultFile?.files.current,
             );
           }
         } on Exception catch (e) {
@@ -234,7 +234,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
             final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
             await vaultCubit.enableQuickUnlock(
               user,
-              vaultCubit.currentVaultFile?.files.current.credentials,
+              vaultCubit.currentVaultFile?.files.current,
             );
           },
           autoValidateMode: AutovalidateMode.always,
@@ -259,7 +259,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
             final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
             await vaultCubit.enableQuickUnlock(
               user,
-              vaultCubit.currentVaultFile?.files.current.credentials,
+              vaultCubit.currentVaultFile?.files.current,
             );
           },
           autoValidateMode: AutovalidateMode.always,

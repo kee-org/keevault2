@@ -123,7 +123,7 @@ class KeeVaultViewController: UIViewController {
     
     
     private func getEntry(uuid: String, context: LAContext) throws -> KeeVaultKeychainEntry {
-        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
         let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                     kSecAttrAccessGroup as String: accessGroup,
                                     kSecAttrAccount as String: uuid,
@@ -152,7 +152,7 @@ class KeeVaultViewController: UIViewController {
     
     private func getExampleEntry() throws -> KeeVaultKeychainEntry {
         let server = "www.github.com"
-        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
         let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                     kSecAttrAccessGroup as String: accessGroup,
                                     kSecAttrServer as String: server,
@@ -181,7 +181,7 @@ class KeeVaultViewController: UIViewController {
     //TODO:...
     private func addUrlToEntry(account: String, passwordString: String, server: String, uuid: String, title: String) throws {
         let password = passwordString.data(using: String.Encoding.utf8)!
-        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
         
         let accessControl: SecAccessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, [SecAccessControlCreateFlags.userPresence], nil)!
 

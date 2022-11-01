@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dio/dio.dart';
@@ -6,7 +7,9 @@ import 'package:flutter/widgets.dart';
 import 'package:kdbx/kdbx.dart';
 // ignore: implementation_imports
 import 'package:kdbx/src/kdbx_xml.dart';
+import 'package:keevault/kdf_cache.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
+import 'package:argon2_ffi_base/argon2_ffi_base.dart';
 
 import 'colors.dart';
 
@@ -37,6 +40,26 @@ extension EdgeInsetsExt on EdgeInsets {
 extension ObjectExt<T> on T {
   T? takeIf(bool Function(T that) predicate) => predicate(this) ? this : null;
   R let<R>(R Function(T that) op) => op(this);
+}
+
+Argon2Arguments createArgon2Args(Uint8List key, KdfType kdfType, VarDictionary kdfParameters) {
+  return Argon2Arguments(
+    key,
+    KdfField.salt.read(kdfParameters)!,
+    KdfField.memory.read(kdfParameters)! ~/ 1024,
+    KdfField.iterations.read(kdfParameters)!,
+    32,
+    KdfField.parallelism.read(kdfParameters)!,
+    kdfType == KdfType.Argon2id ? 2 : 0,
+    KdfField.version.read(kdfParameters)!,
+  );
+}
+
+extension KdbxFileKDF on KdbxFile {
+  Future<String> get kdfCacheKey async {
+    final argon2Args = createArgon2Args(credentials.getHash(), KdfType.Argon2d, header.readKdfParameters);
+    return await KeeVaultKdfCache().argon2ArgumentsKey(argon2Args);
+  }
 }
 
 extension KdbxEntryColor on KdbxEntry {

@@ -44,6 +44,23 @@ import Flutter
                     break
                 }
                 result(getAppGroupDirectoryWithId(groupId: groupId))
+            case "setUserId":
+                guard let args = call.arguments as? Dictionary<String, Any> else {
+                    result(FlutterError.init(code: "bad args", message: nil, details: nil))
+                    break
+                  }
+                guard let userId = args["userId"] as? String else {
+                    result(FlutterError.init(code: "missing userId argument", message: nil, details: nil))
+                    break
+                }
+                //TODO: custom name and extract method
+                guard let defaults = UserDefaults(suiteName: "group.com.keevault.keevault.dev") else {
+                    result(FlutterError.init(code: "missing shared user defaults group", message: nil, details: nil))
+                    break
+                }
+                defaults.set(userId, forKey: "userId")
+                // defaults.synchronize() //TODO: apparently not needed anymore - find out what ios release this changed in
+                result(true)
             default:
                 result(FlutterMethodNotImplemented)
             }
@@ -61,7 +78,7 @@ private func getAppGroupDirectoryWithId(groupId:String!) -> String! {
 
 private func addEntries(entries: [KeeVaultEntryIos]) throws {
     // hack deletes all keychain items
-    let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+    let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
     let spec: NSDictionary = [kSecClass as String: kSecClassInternetPassword,
                               kSecAttrAccessGroup as String: accessGroup]
         SecItemDelete(spec)
@@ -97,7 +114,7 @@ private func addEntry(entry: KeeVaultKeychainEntry) throws {
 
 private func addEntry(account: String, passwordString: String, server: String, uuid: String, title: String) throws {
     let password = passwordString.data(using: String.Encoding.utf8)!
-    let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+    let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
     
     let accessControl: SecAccessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, [SecAccessControlCreateFlags.userPresence], nil)!
 

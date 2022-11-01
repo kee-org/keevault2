@@ -4,4 +4,4 @@
 #include "KeeVault-generated.xcconfig"
 
 CODE_SIGN_ENTITLEMENTS=./Runner/Runner$(KEEVAULT_ID_SUFFIX).entitlements
-KEE_VAULT_SHARED_ENTRIES_ACCESS_GROUP=$(AppIdentifierPrefix)com.keevault.keevault.shared.entries$(KEEVAULT_ID_SUFFIX)
+KEE_VAULT_SHARED_DEFAULT_ACCESS_GROUP=$(AppIdentifierPrefix)com.keevault.keevault.shared.default$(KEEVAULT_ID_SUFFIX)

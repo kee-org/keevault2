@@ -39,7 +39,7 @@ class NewEntryViewController: UIViewController {
     
     private func getExampleEntry() throws -> ASPasswordCredential {
         let server = "www.github.com"
-        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedEntriesAccessGroup"] as! String
+        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
         let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
                                     kSecAttrAccessGroup as String: accessGroup,
                                     kSecAttrServer as String: server,

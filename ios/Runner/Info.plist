@@ -22,8 +22,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>KeeVaultSharedEntriesAccessGroup</key>
-	<string>$(KEE_VAULT_SHARED_ENTRIES_ACCESS_GROUP)</string>
+	<key>KeeVaultSharedDefaultAccessGroup</key>
+	<string>$(KEE_VAULT_SHARED_DEFAULT_ACCESS_GROUP)</string>
+	<key>KeeVaultSharedBiometricStorageName</key>
+	<string>KeeVaultQuickUnlock_v2_$(KEEVAULT_STAGE)</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Unlock your Vault without having to enter your password</string>
 	<key>UILaunchStoryboardName</key>

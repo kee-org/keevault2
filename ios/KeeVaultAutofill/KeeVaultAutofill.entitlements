@@ -12,7 +12,7 @@
         <array>
             <string>$(AppIdentifierPrefix)com.keevault.keevault.autofill</string>
             <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default</string>
-            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.entries</string>
+            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default</string>
         </array>
     </dict>
 </plist>

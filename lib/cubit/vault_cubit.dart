@@ -9,6 +9,7 @@ import 'package:keevault/config/platform.dart';
 import 'package:keevault/config/synced_app_settings.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/generator_profiles_cubit.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/local_vault_repository.dart';
 import 'package:keevault/locked_vault_file.dart';
 import 'package:keevault/password_strength.dart';
@@ -331,6 +332,11 @@ class VaultCubit extends Cubit<VaultState> {
       return;
     }
 
+    if (newFile == null) {
+      l.e('Unexpected error applying new password from remote. This app instance may now be broken but we'
+          'll try just sticking with the current version just in case that works.');
+      newFile = vState.vaultLocal;
+    }
     l.d('applying user-supplied new master password to account User');
     final key = protectedValue.hash;
     await user.attachKey(key);
@@ -340,11 +346,11 @@ class VaultCubit extends Cubit<VaultState> {
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     await _qu.saveQuickUnlockUserPassKey(user.passKey);
     await _qu.saveQuickUnlockFileCredentials(
-        creds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+        creds,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+        await newFile.files.current.kdfCacheKey);
 
-    if (newFile != null) {
-      await emitVaultLoaded(newFile, user, safe: false);
-    }
+    await emitVaultLoaded(newFile, user, safe: false);
   }
 
   Future<void> download(User user, Credentials kdbxCredentials) async {
@@ -364,6 +370,7 @@ class VaultCubit extends Cubit<VaultState> {
       l.d('opening (unlocking) the new local file');
       emit(const VaultOpening());
       final vaultFile = await LocalVaultFile.unlock(downloadedFile);
+      await _localVaultRepo.createQUCredentials(downloadedFile.credentials!, vaultFile.files.current);
 
       if (importRequired) {
         l.i('opened; import is required');
@@ -450,10 +457,14 @@ class VaultCubit extends Cubit<VaultState> {
         await user.attachKey(suppliedPassword.hash);
         await _qu.saveQuickUnlockUserPassKey(user.passKey);
         await _qu.saveQuickUnlockFileCredentials(
-            suppliedCreds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+            suppliedCreds,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await file.files.current.kdfCacheKey);
       } else if (suppliedPassword != null) {
         await _qu.saveQuickUnlockFileCredentials(
-            suppliedCreds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+            suppliedCreds,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await file.files.current.kdfCacheKey);
       }
       l.d('local vault opened');
       await emitVaultLoaded(file, user, safe: false);
@@ -555,7 +566,9 @@ class VaultCubit extends Cubit<VaultState> {
             l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
             await _qu.saveQuickUnlockUserPassKey(user.passKey);
             await _qu.saveQuickUnlockFileCredentials(
-                creds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+                creds,
+                DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+                await s.vault.files.current.kdfCacheKey);
           }
           safeEmitLoaded(s.vault);
           return;
@@ -700,8 +713,10 @@ class VaultCubit extends Cubit<VaultState> {
 
       final quStatus = await _qu.initialiseForUser(_qu.localUserMagicString, false);
       if (quStatus != QUStatus.unavailable) {
-        await _qu.saveQuickUnlockFileCredentials(credentialsWithStrength.credentials,
-            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+        await _qu.saveQuickUnlockFileCredentials(
+            credentialsWithStrength.credentials,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await file.files.current.kdfCacheKey);
         l.d('New free user password stored in Quick Unlock');
       }
       await emitVaultLoaded(file, null, safe: false);
@@ -826,7 +841,8 @@ class VaultCubit extends Cubit<VaultState> {
     }
   }
 
-  Future<void> enableQuickUnlock(User? user, Credentials? credentials) async {
+  Future<void> enableQuickUnlock(User? user, KdbxFile? file) async {
+    final credentials = file?.credentials;
     if (credentials == null) {
       l.w("No credentials available so can't save to quick unlock");
       return;
@@ -841,7 +857,7 @@ class VaultCubit extends Cubit<VaultState> {
       return;
     }
     await _qu.saveBothSecrets(user?.passKey ?? 'notARealPassword', credentials,
-        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await file!.kdfCacheKey);
   }
 
   Future<void> save(User? user, {bool skipRemote = false}) async {
