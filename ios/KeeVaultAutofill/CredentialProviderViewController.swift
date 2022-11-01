@@ -25,12 +25,15 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     var sharedGroupName: String?
     var userId: String?
     var sharedDefaults: UserDefaults?
+    var domainParser = try! DomainParser()
     
     override func viewDidLoad() {
         mainController.selectionDelegate = self
+        mainController.domainParser = self.domainParser
         sharedGroupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as? String
         sharedDefaults = UserDefaults(suiteName: sharedGroupName)
         userId = getUserIdFromSharedSettings()
+        //domainParser = try! DomainParser()
     }
     
     
@@ -41,7 +44,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      */
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
         // iOS supplies a punycode URL for requests from Safari. Spec says there can be more than one but I've never seen that happen and can't imagine any real scenario in which that would happen. App URLs are probably hostnames and/or domains and there is no documentation or example to say if it will be punycode or not so we just assume it is until real world experience suggests otherwise.
-        let domainParser = try! DomainParser()
+        
         var sis: [String] = []
         for si in serviceIdentifiers {
             if si.type == ASCredentialServiceIdentifier.IdentifierType.URL {
@@ -79,9 +82,10 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         let dbLoader = DatabaseLoader(dbRef: kdbxURL, status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key)
         let dbFile = dbLoader.loadFromFile()
         let db = dbFile.database
-       // let root = db.root
+        var entries: [Entry] = []
+        db.root?.collectAllEntries(to: &entries)
         mainController.searchDomains = sis
-        mainController.entries = loadAllEntryRows(db: db)
+        mainController.entries = entries
 //        do {
 //            let context = LAContext()
 //            mainController.entries = try loadAllKeychainMetadata(context: context)
@@ -135,26 +139,32 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         return ByteArray(base64Encoded: credentials?.kdbxKdfResultBase64)
         
     }
-    
-    private func loadAllEntryRows(db: Database) -> [KeeVaultKeychainEntry] {
-        var entries: [KeeVaultKeychainEntry] = []
-        let root = db.root
 //
-//        for item in items {
-//            let existingItem = item
-//            guard let server = existingItem[kSecAttrServer as String] as? String else {
-//                continue
-//            }
-//            let uuid = existingItem[kSecAttrAccount as String] as? String
-//
-//            let account = existingItem[kSecAttrDescription as String] as? String ?? ""
-//            let title = existingItem[kSecAttrLabel as String] as? String
-//            let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: nil)
-//            entries.append(entry)
+//    private func loadAllEntryRows(db: Database) -> [KeeVaultKeychainEntry] {
+//        var entryRows: [KeeVaultKeychainEntry] = []
+//        var entries: [Entry] = []
+//        //let root = db.root
+//        db.root?.collectAllEntries(to: &entries)
+//        for entry in entries {
+//            entry.
 //        }
-        return entries;
-    }
-    
+//
+////
+////        for item in items {
+////            let existingItem = item
+////            guard let server = existingItem[kSecAttrServer as String] as? String else {
+////                continue
+////            }
+////            let uuid = existingItem[kSecAttrAccount as String] as? String
+////
+////            let account = existingItem[kSecAttrDescription as String] as? String ?? ""
+////            let title = existingItem[kSecAttrLabel as String] as? String
+////            let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: nil)
+////            entries.append(entry)
+////        }
+//        return entries;
+//    }
+//
     /*
      Implement this method if your extension supports showing credentials in the QuickType bar.
      When the user selects a credential from your app, this method will be called with the

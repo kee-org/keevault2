@@ -404,7 +404,7 @@ final class Header2: Eraseable {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 self.kdfParams = kdfParams
-                self.kdf = Argon2dKDF() //TODO: check here and other places that we use only d not id type in our kdbx files
+                self.kdf = Argon2dKDF()
                 Diag.verbose("\(fieldID.name) read OK")
             case .publicCustomData:
                 guard formatVersion >= .v4 else {
