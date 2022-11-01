@@ -4,3 +4,4 @@
 
 CODE_SIGN_ENTITLEMENTS=./KeeVaultAutofill/KeeVaultAutofill$(KEEVAULT_ID_SUFFIX).entitlements
 KEE_VAULT_SHARED_DEFAULT_ACCESS_GROUP=$(AppIdentifierPrefix)com.keevault.keevault.shared.default$(KEEVAULT_ID_SUFFIX)
+KEE_VAULT_SHARED_DEFAULT_GROUP_NAME=group.com.keevault.keevault$(KEEVAULT_ID_SUFFIX)

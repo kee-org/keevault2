@@ -29,8 +29,8 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     override func viewDidLoad() {
         mainController.selectionDelegate = self
         sharedGroupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as? String
-        sharedDefaults = UserDefaults(suiteName: "group.com.keevault.keevault.dev")
-        userId = getUserIdFromSharedSettings() //"localUserMagicString@v1"
+        sharedDefaults = UserDefaults(suiteName: sharedGroupName)
+        userId = getUserIdFromSharedSettings()
     }
     
     
@@ -69,9 +69,10 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         
         //TODO: maybe move the kdbx load and PSL stuff so they can load in parrallel
         
-        let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: "group.com.keevault.keevault.dev")
-        guard let kdbxURL = documentsDirectory?.appendingPathComponent("local_user/current.kdbx") else { return }
-        //TODO: shared config to set fiel url path (user directory)
+        let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: sharedGroupName!)
+        let userFolderName = userId == "localUserMagicString@v1" ? "local_user" : userId!
+        guard let kdbxURL = documentsDirectory?.appendingPathComponent(userFolderName + "/current.kdbx") else { return }
+        //TODO: make a copy at autofill.kdbx for writing new URLs to (to start with)
         
         guard let key = getKeyForUser(userId: userId) else { return }
         //let preTransformedKeyMaterial = ByteArray(bytes: "6907d5ab2ba3e8dc7d8d1542220260ad32c48c7ef731ac6fb24213e4f09be9ce".hexaBytes)

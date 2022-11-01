@@ -24,6 +24,8 @@
 	<true/>
 	<key>KeeVaultSharedDefaultAccessGroup</key>
 	<string>$(KEE_VAULT_SHARED_DEFAULT_ACCESS_GROUP)</string>
+	<key>KeeVaultSharedDefaultGroupName</key>
+	<string>$(KEE_VAULT_SHARED_DEFAULT_GROUP_NAME)</string>	
 	<key>KeeVaultSharedBiometricStorageName</key>
 	<string>KeeVaultQuickUnlock_v2_$(KEEVAULT_STAGE)</string>
 	<key>NSFaceIDUsageDescription</key>
