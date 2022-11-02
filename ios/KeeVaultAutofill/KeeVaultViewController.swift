@@ -15,6 +15,8 @@ class KeeVaultViewController: UIViewController {
     
     weak var selectionDelegate: EntrySelectionDelegate?
     var domainParser: DomainParser!
+    var dbFileManager: DatabaseFileManager!
+    var sharedDefaults: UserDefaults?
     var entries: [Entry]?
     var authenticatedContext: LAContext?
     var searchDomains: [String]?
@@ -210,29 +212,15 @@ class KeeVaultViewController: UIViewController {
 //        return entry;
 //    }
 //
-    //TODO: ...
-    private func addUrlToEntry(account: String, passwordString: String, server: String, uuid: String, title: String) throws {
-        let password = passwordString.data(using: String.Encoding.utf8)!
-        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
-        
-        let accessControl: SecAccessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, [SecAccessControlCreateFlags.userPresence], nil)!
-        
-        
-        let baseQuery: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
-                                        kSecAttrAccessGroup as String: accessGroup,
-                                        kSecAttrAccessControl as String: accessControl,
-                                        kSecAttrAccount as String: uuid,
-                                        kSecAttrServer as String: server]
-        
-        let addQuery: [String: Any] = baseQuery + [
-            kSecAttrDescription as String: account, // hack since custom attributes are not supported by Apple and we have to use Account for the uuid due to limitations of keychain primary keys
-            kSecAttrLabel as String: title,
-            kSecValueData as String: password]
-        
-        SecItemDelete(baseQuery as CFDictionary)
-        let status = SecItemAdd(addQuery as CFDictionary, nil)
-        guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
-        
+
+    private func addUrlToEntry(entry: Entry, url: String) throws {
+        guard let db = entry.database else {
+            fatalError("Invalid entry found while saving new URL")
+        }
+        //TODO: multiple URLs, KPRPC JSON, etc.
+        entry.rawURL = url
+        dbFileManager.saveToFile(db: db)
+        sharedDefaults!["LastChangeAutofillTimestamp"] = Date()
     }
     
     //
@@ -264,11 +252,10 @@ class KeeVaultViewController: UIViewController {
 extension KeeVaultViewController: RowSelectionDelegate {
     func selected(entryIndex: Int, newUrl: String?) {
         do {
-            let e = entries![entryIndex]
-            let entry = e //try getEntry(uuid: e.uuid!, context: authenticatedContext!)
-            let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword ?? "")
+            let entry = entries![entryIndex]
+            let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword )
             if (newUrl != nil) {
-                //addUrlToEntry...
+                try addUrlToEntry(entry: entry, url: newUrl!)
             }
             self.selectionDelegate?.selected(credentials: passwordCredential)
         } catch _ {

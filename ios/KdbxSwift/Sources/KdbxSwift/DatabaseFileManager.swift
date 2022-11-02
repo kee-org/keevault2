@@ -86,7 +86,7 @@ public class DatabaseFileManager {
 //            let tempFileData = try ByteArray(contentsOf: tempBackup, options: [.uncached, .mappedIfSafe])
 //            try tempFileData.write(to: kdbxCurrentURL, options: .atomic)
 //            try tempFileData.write(to: kdbxAutofillURL, options: .atomic)
-            try fileData.write(to: kdbxCurrentURL, options: .atomic)
+//            try fileData.write(to: kdbxCurrentURL, options: .atomic)
             
 //            fileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
         } catch {

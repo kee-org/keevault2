@@ -32,6 +32,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         mainController.domainParser = self.domainParser
         sharedGroupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as? String
         sharedDefaults = UserDefaults(suiteName: sharedGroupName)
+        mainController.sharedDefaults = sharedDefaults
         userId = getUserIdFromSharedSettings()
         //domainParser = try! DomainParser()
     }
@@ -81,6 +82,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         db.root?.collectAllEntries(to: &entries)
         mainController.searchDomains = sis
         mainController.entries = entries
+        mainController.dbFileManager = dbFileManager
         dbFileManager.saveToFile(db: db)
         
 //        do {
