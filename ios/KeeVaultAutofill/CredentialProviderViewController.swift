@@ -72,20 +72,17 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         
         //TODO: maybe move the kdbx load and PSL stuff so they can load in parrallel
         
-        let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: sharedGroupName!)
-        let userFolderName = userId == "localUserMagicString@v1" ? "local_user" : userId!
-        guard let kdbxURL = documentsDirectory?.appendingPathComponent(userFolderName + "/current.kdbx") else { return }
-        //TODO: make a copy at autofill.kdbx for writing new URLs to (to start with)
-        
         guard let key = getKeyForUser(userId: userId) else { return }
         //let preTransformedKeyMaterial = ByteArray(bytes: "6907d5ab2ba3e8dc7d8d1542220260ad32c48c7ef731ac6fb24213e4f09be9ce".hexaBytes)
-        let dbLoader = DatabaseLoader(dbRef: kdbxURL, status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key)
-        let dbFile = dbLoader.loadFromFile()
+        let dbFileManager = DatabaseFileManager(status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key, userId: userId, sharedGroupName: sharedGroupName!, sharedDefaults: sharedDefaults!)
+        let dbFile = dbFileManager.loadFromFile()
         let db = dbFile.database
         var entries: [Entry] = []
         db.root?.collectAllEntries(to: &entries)
         mainController.searchDomains = sis
         mainController.entries = entries
+        dbFileManager.saveToFile(db: db)
+        
 //        do {
 //            let context = LAContext()
 //            mainController.entries = try loadAllKeychainMetadata(context: context)

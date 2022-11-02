@@ -633,7 +633,7 @@ final class Header2: Eraseable {
         fields[.masterSeed] = try CryptoManager.getRandomBytes(count: SHA256_SIZE)
         fields[.encryptionIV] = try CryptoManager.getRandomBytes(count: dataCipher.initialVectorSize)
         try kdf.randomize(params: &kdfParams)
-            protectedStreamKey = try CryptoManager.getRandomByteArray(count: 64)
+        protectedStreamKey = try CryptoManager.getRandomBytes(count: 64)
         initStreamCipher()
     }
 }

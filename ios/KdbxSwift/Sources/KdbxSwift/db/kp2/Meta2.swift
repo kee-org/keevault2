@@ -9,7 +9,7 @@
 import Foundation
 
 final class Meta2: Eraseable {
-    public static let generatorName = "KeePassium" 
+    public static let generatorName = "Kee Vault 2" 
     public static let defaultMaintenanceHistoryDays: UInt32 = 365
     public static let defaultHistoryMaxItems: Int32 = 10 
     public static let defaultHistoryMaxSize: Int64 = 6*1024*1024 

@@ -338,6 +338,7 @@ public class Database2: Database {
         do {
             Diag.debug("Parsing XML")
             let xmlDoc = try AEXMLDocument(xml: xmlData.asData, options: parsingOptions)
+let xmls =            xmlDoc.xml
             if let xmlError = xmlDoc.error {
                 Diag.error("Cannot parse XML: \(xmlError.localizedDescription)")
                 throw Xml2.ParsingError.xmlError(details: xmlError.localizedDescription)

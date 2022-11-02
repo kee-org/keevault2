@@ -1,10 +1,4 @@
-//  KeePassium Password Manager
-//  Copyright © 2018–2022 Andrei Popleteev <info@keepassium.com>
-//
-//  This program is free software: you can redistribute it and/or modify it
-//  under the terms of the GNU General Public License version 3 as published
-//  by the Free Software Foundation: https://www.gnu.org/licenses/).
-//  For commercial licensing, please contact the author.
+//  Contains a few lines from KeePassium Password Manager (GPL3)
 
 import Foundation
 
@@ -38,11 +32,11 @@ public class DatabaseFileManager {
     public enum DatabaseUnreachableReason {
         case cannotFindDatabaseFile
         case cannotOpenDatabaseFile
-        
     }
     
     private let kdbxAutofillURL: URL
     private let kdbxCurrentURL: URL
+    private let tempBackup: URL
     private let preTransformedKeyMaterial: ByteArray
     public let status: DatabaseFile.Status
     
@@ -66,6 +60,7 @@ public class DatabaseFileManager {
         let userFolderName = userId == "localUserMagicString@v1" ? "local_user" : userId!
         kdbxAutofillURL = documentsDirectory!.appendingPathComponent(userFolderName + "/autofill.kdbx")
         kdbxCurrentURL = documentsDirectory!.appendingPathComponent(userFolderName + "/current.kdbx")
+        tempBackup = documentsDirectory!.appendingPathComponent(userFolderName + "/backup.kdbx")
         //TODO: make a copy at autofill.kdbx for writing new URLs to (to start with)
         
     }
@@ -87,6 +82,10 @@ public class DatabaseFileManager {
         do {
             let autofillFileData = try ByteArray(contentsOf: kdbxAutofillURL, options: [.uncached, .mappedIfSafe])
             fileData = autofillFileData
+//
+//            let tempFileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
+//            try tempFileData.write(to: tempBackup, options: .atomic)
+//            try fileData.write(to: kdbxCurrentURL, options: .atomic)
         } catch {
             Diag.info("Autofill file not found. Expected unless recent changes have been made via autofill and main app not opened yet.")
             do {
@@ -100,8 +99,6 @@ public class DatabaseFileManager {
         
         guard let db = initDatabase(signature: fileData) else {
             let hexPrefix = fileData.prefix(8).asHexString
-            //Diag.error("Unrecognized database format [firstBytes: \(hexPrefix)]")
-            //stopAndNotify(.unrecognizedFormat(hexSignature: hexPrefix))
             fatalError("database init failed")
         }
         
@@ -110,8 +107,7 @@ public class DatabaseFileManager {
             data: fileData,
             fileName: "<ignored filename>",
             status: status
-        )
-        
+        )        
         
         do {
             let db = dbFile.database
@@ -126,4 +122,12 @@ public class DatabaseFileManager {
         return dbFile
     }
     
+    public func saveToFile(db: Database) {
+        do {
+            let fileData = try db.save()
+            try fileData.write(to: kdbxAutofillURL, options: .atomic)
+        } catch {
+                Diag.error("Failed to write autofill KDBX file [message: \(error.localizedDescription)]")
+        }
+    }
 }

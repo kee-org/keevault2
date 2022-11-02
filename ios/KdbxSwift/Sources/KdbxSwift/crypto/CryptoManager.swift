@@ -50,15 +50,6 @@ public final class CryptoManager {
         return output
     }
     
-    public static func getRandomByteArray(count: Int) throws -> ByteArray {
-        let plainTextBytes = try getRandomBytes(count: count)
-        defer {
-            plainTextBytes.erase()
-        }
-        let result = plainTextBytes
-        return result
-    }
-    
     public static func getHMACKey64(key: ByteArray, blockIndex: UInt64) -> ByteArray {
             assert(key.count == 64)
             let merged = ByteArray.concat(blockIndex.data, key)
