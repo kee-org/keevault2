@@ -632,7 +632,6 @@ final class Header2: Eraseable {
         Diag.verbose("Randomizing the seeds")
         fields[.masterSeed] = try CryptoManager.getRandomBytes(count: SHA256_SIZE)
         fields[.encryptionIV] = try CryptoManager.getRandomBytes(count: dataCipher.initialVectorSize)
-        try kdf.randomize(params: &kdfParams)
         protectedStreamKey = try CryptoManager.getRandomBytes(count: 64)
         initStreamCipher()
     }

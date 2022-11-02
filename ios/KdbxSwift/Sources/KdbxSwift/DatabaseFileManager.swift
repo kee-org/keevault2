@@ -82,10 +82,13 @@ public class DatabaseFileManager {
         do {
             let autofillFileData = try ByteArray(contentsOf: kdbxAutofillURL, options: [.uncached, .mappedIfSafe])
             fileData = autofillFileData
-//
-//            let tempFileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
-//            try tempFileData.write(to: tempBackup, options: .atomic)
-//            try fileData.write(to: kdbxCurrentURL, options: .atomic)
+
+//            let tempFileData = try ByteArray(contentsOf: tempBackup, options: [.uncached, .mappedIfSafe])
+//            try tempFileData.write(to: kdbxCurrentURL, options: .atomic)
+//            try tempFileData.write(to: kdbxAutofillURL, options: .atomic)
+            try fileData.write(to: kdbxCurrentURL, options: .atomic)
+            
+//            fileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
         } catch {
             Diag.info("Autofill file not found. Expected unless recent changes have been made via autofill and main app not opened yet.")
             do {
