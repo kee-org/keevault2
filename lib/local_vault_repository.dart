@@ -314,4 +314,64 @@ class LocalVaultRepository {
     ]);
     return KdbxHeader.createV4()..writeKdfParameters(kdfParameters);
   }
+
+  tryAutofillMerge(User? user, Credentials creds, LocalVaultFile vault) async {
+    final directory = await getStorageDirectory();
+    final userFolder = user?.emailHashedB64url ?? 'local_user';
+    final fileNameCurrent = File('${directory.path}/$userFolder/current.kdbx');
+    final fileNameAutofill = '${directory.path}/$userFolder/autofill.kdbx';
+    final fileAutofill = File(fileNameAutofill);
+
+    if (!(await fileAutofill.exists())) {
+      // normal happy path - nothing to merge from recent autofill activity
+      return;
+    }
+
+    try {
+      final autofillData = await fileAutofill.readAsBytes();
+      if (autofillData.isEmpty) return;
+      final autofillLocked = LockedVaultFile(
+        autofillData,
+        DateTime.now(),
+        creds,
+        null,
+        null,
+      );
+      final autofill = await LocalVaultFile.unlock(autofillLocked);
+
+      // pending may be valid and latest data if user has recently downloaded new
+      // data from remote while they had dirty changes locally. If we ignore it,
+      //user will lose that new remote data because we will have recorded that it
+      //was already applied and ready for them to save once they have finished
+      //their current edits. We can't preserve their current edits while
+      //simultaneously accepting edits from their autofill activity. That's
+      //something that a background service might be able to achieve if Apple
+      //and Google are able to offer a suitable API.
+      final kdbxToMergeInto = (await vault.files.pending) ?? vault.files.current;
+      kdbxToMergeInto.merge(autofill.files.current);
+      final kdbxData = await kdbxFormat().save(kdbxToMergeInto);
+
+      await fileNameCurrent.writeAsBytes(kdbxData, flush: true);
+      final persistedTime = DateTime.now();
+      final files = VaultFileVersions(
+          current: kdbxToMergeInto,
+          remoteMergeTargetLocked: LockedVaultFile(
+            kdbxData,
+            persistedTime,
+            kdbxToMergeInto.credentials,
+            null,
+            null,
+          ));
+      return LocalVaultFile(files, persistedTime, persistedTime, vault.uuid, null, null);
+    } on Exception catch (e, s) {
+      l.wtf(
+          'Failed to import data from Autofill system. Please report this fault on the community forum so we can fix it.',
+          e,
+          s);
+    } finally {
+      // delete the autofill data no matter what, otherwise we'll be stuck in
+      // a loop if a bug in autofill creates an invalid state.
+      fileAutofill.deleteSync();
+    }
+  }
 }

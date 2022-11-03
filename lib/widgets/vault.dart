@@ -13,6 +13,7 @@ import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/widgets/vault_password_credentials.dart';
 
+import '../config/platform.dart';
 import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
 import 'autofill_save.dart';
@@ -32,7 +33,7 @@ class VaultWidget extends StatefulWidget {
   State<VaultWidget> createState() => _VaultWidgetState();
 }
 
-class _VaultWidgetState extends State<VaultWidget> {
+class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
   late Timer _timer;
 
   Future<void> _refresh() async {
@@ -62,7 +63,19 @@ class _VaultWidgetState extends State<VaultWidget> {
     _timer = Timer.periodic(Duration(minutes: 1), (timer) async {
       await _refresh();
     });
+
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed && KeeVaultPlatform.isIOS) {
+      final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+      BlocProvider.of<VaultCubit>(context).autofillMerge(user);
+    }
   }
 
   @override
@@ -72,6 +85,7 @@ class _VaultWidgetState extends State<VaultWidget> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
     super.dispose();
   }

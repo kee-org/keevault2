@@ -220,7 +220,13 @@ class KeeVaultViewController: UIViewController {
         //TODO: multiple URLs, KPRPC JSON, etc.
         entry.rawURL = url
         dbFileManager.saveToFile(db: db)
-        sharedDefaults!["LastChangeAutofillTimestamp"] = Date()
+
+
+    // Eventually we may have a background service manage all the merging and potential 
+    // remote file access, in which case we need to use UserDefaults observers to track 
+    // when a merge from autofill is required (e.g.
+    // https://stackoverflow.com/questions/60104060/ios-notify-today-extension-for-core-data-changes-in-the-main-app)
+    //    sharedDefaults!["LastChangeAutofillTimestamp"] = Date()
     }
     
     //

@@ -37,7 +37,8 @@ class VaultCubit extends Cubit<VaultState> {
   final GeneratorProfilesCubit _generatorProfilesCubit;
   PersistentQueue? _persistentQueueAfAssociations;
   final bool Function() isAutofilling;
-  static const _autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
+  bool autoFillMergeAttemptDue = false;
+
   VaultCubit(
     this._userRepo,
     this._qu,
@@ -506,6 +507,7 @@ class VaultCubit extends Cubit<VaultState> {
     VaultState s = state;
     if (s is VaultLoaded) {
       if (s is VaultSaving && s.remotely) {
+        //TODO: Why only remote saving? do we protect against race conditions while merging after a remote fetch and saving locally?
         l.i('refresh called during an ongoing upload. Will not refresh now.');
         return;
       }
@@ -531,7 +533,8 @@ class VaultCubit extends Cubit<VaultState> {
       if (uploadPending) {
         l.i('Found pending upload marker. Previous upload attempt must have been aborted by network or platform (e.g. app was closed)');
         // We'll upload the latest local changes instead. Since that will merge in any recent remote
-        // changes, the end result will be consistent and thus there's no need to continue with this refresh function
+        // changes, the end result will be consistent and thus there's no need to continue with this refresh function.
+        // Pending merge from autofill will thus be deferred until the next vault load or device task switch restoration
         await upload(user, s.vault, overridePassword: overridePassword);
         return;
       }
@@ -571,6 +574,9 @@ class VaultCubit extends Cubit<VaultState> {
                 await s.vault.files.current.kdfCacheKey);
           }
           safeEmitLoaded(s.vault);
+          if (KeeVaultPlatform.isIOS) {
+            await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
+          }
           return;
         }
         lockedFile = tempLockedFile;
@@ -590,6 +596,9 @@ class VaultCubit extends Cubit<VaultState> {
       } on KeeServiceTransportException catch (e) {
         final message = e.handle('Background refresh error');
         emitError(message);
+        if (KeeVaultPlatform.isIOS) {
+          await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
+        }
         return;
       } on KeeMissingPrimaryDBException {
         emitKeeMissingPrimaryDBExceptionError();
@@ -599,6 +608,9 @@ class VaultCubit extends Cubit<VaultState> {
             'Background refresh error. Check your internet connection. There may be more information in this message: $e';
         l.e(message);
         emitError(message);
+        if (KeeVaultPlatform.isIOS) {
+          await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
+        }
         return;
       }
       try {
@@ -606,7 +618,7 @@ class VaultCubit extends Cubit<VaultState> {
         final file = await RemoteVaultFile.unlock(lockedFile);
         await prefs.setString('user.${user.email}.lastRemoteEtag', file.etag!);
         await prefs.setString('user.${user.email}.lastRemoteVersionId', file.versionId!);
-        emit(VaultUpdatingLocalFromRemote(s.vault));
+        emit(VaultUpdatingLocalFromRemoteOrAutofill(s.vault));
         final newFile = await update(user, s.vault, file);
         if (newFile != null) {
           await emitVaultLoaded(newFile, user, immediateRemoteRefresh: false, safe: true);
@@ -866,8 +878,8 @@ class VaultCubit extends Cubit<VaultState> {
       l.e('Save requested while vault is not loaded');
     } else if (s is VaultSaving && s.locally) {
       l.e("Can't save while already saving");
-    } else if (s is VaultReconcilingUpload || s is VaultUpdatingLocalFromRemote) {
-      l.e("Can't save while merging from remote source");
+    } else if (s is VaultReconcilingUpload || s is VaultUpdatingLocalFromRemoteOrAutofill) {
+      l.e("Can't save while merging from remote source or autofill");
     } else {
       l.d('saving vault');
       final vault = currentVaultFile!;
@@ -890,19 +902,28 @@ class VaultCubit extends Cubit<VaultState> {
     batteryLevel = "Failed to get battery level: '${e.message}'.";
   }
   */
-      if (user == null) {
-        emit(VaultLoaded(mergedOrCurrentVaultFile));
-        return;
+      await uploadIfNeeded(user, mergedOrCurrentVaultFile, skipRemote);
+
+      if (KeeVaultPlatform.isIOS) {
+        await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
       }
-      if (skipRemote) {
-        l.d('vault saved locally; skipping upload');
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('user.${user.email}.uploadPending', true);
-        emit(VaultLoaded(mergedOrCurrentVaultFile));
-        return;
-      }
-      await upload(user, mergedOrCurrentVaultFile);
     }
+  }
+
+  Future<void> uploadIfNeeded(User? user, LocalVaultFile mergedOrCurrentVaultFile, bool skipRemote) async {
+    if (user == null) {
+      emit(VaultLoaded(mergedOrCurrentVaultFile));
+      return;
+    }
+    if (skipRemote) {
+      l.d('vault saved locally; skipping upload');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('user.${user.email}.uploadPending', true);
+      emit(VaultLoaded(mergedOrCurrentVaultFile));
+      return;
+    }
+    await upload(user, mergedOrCurrentVaultFile);
+    return;
   }
 
   //TODO:f: check history after upload and warn user or attempt reconciliation in case that they uploaded a newer version from a different device in between our check for the latest version and the network upload completing.
@@ -1144,9 +1165,9 @@ class VaultCubit extends Cubit<VaultState> {
   }
 
   void reemitLoadedState() {
-    if (state is VaultUpdatingLocalFromRemote) {
-      final castState = state as VaultUpdatingLocalFromRemote;
-      emit(VaultUpdatingLocalFromRemote(castState.vault));
+    if (state is VaultUpdatingLocalFromRemoteOrAutofill) {
+      final castState = state as VaultUpdatingLocalFromRemoteOrAutofill;
+      emit(VaultUpdatingLocalFromRemoteOrAutofill(castState.vault));
     } else if (state is VaultRefreshCredentialsRequired) {
       final castState = state as VaultRefreshCredentialsRequired;
       emit(VaultRefreshCredentialsRequired(castState.vault, castState.reason, castState.causedByInteraction));
@@ -1178,7 +1199,7 @@ class VaultCubit extends Cubit<VaultState> {
 
   bool safeEmitLoaded(LocalVaultFile v) {
     if (state.runtimeType == VaultRefreshing ||
-        state.runtimeType == VaultUpdatingLocalFromRemote ||
+        state.runtimeType == VaultUpdatingLocalFromRemoteOrAutofill ||
         state.runtimeType == VaultBackgroundError ||
         state.runtimeType == VaultLoaded ||
         state is VaultSaving) {
@@ -1264,6 +1285,12 @@ class VaultCubit extends Cubit<VaultState> {
 
   Future<void> changeFreeUserPassword(String password) async {
     VaultState s = state;
+    if (isPasswordChangingSuspended()) {
+      const message =
+          'User tried to change password while cubit prevented it. This is extremely unlikely to happen and retrying should resolve the issue.';
+      l.w(message);
+      throw Exception(message);
+    }
     if (s is VaultSaving) {
       const message = 'Can\'t change password while vault is being saved. Try again later.';
       l.e(message);
@@ -1277,5 +1304,52 @@ class VaultCubit extends Cubit<VaultState> {
       await save(null);
       l.d('KDBX password changed');
     }
+  }
+
+  Future<void> autofillMerge(User? user, {bool onlyIfAttemptAlreadyDue = false}) async {
+    if (onlyIfAttemptAlreadyDue && !autoFillMergeAttemptDue) {
+      return;
+    }
+
+    VaultState s = state;
+    if (s is! VaultLoaded || s is VaultRefreshing || s is VaultSaving) {
+      autoFillMergeAttemptDue = true;
+      return;
+    }
+
+    Credentials creds = s.vault.files.current.credentials;
+
+    try {
+      l.d('merging current vault from autofill source');
+      autoFillMergeAttemptDue = false;
+      emit(VaultUpdatingLocalFromRemoteOrAutofill(s.vault));
+      final newFile = await _localVaultRepo.tryAutofillMerge(user, creds, s.vault);
+      if (newFile != null) {
+        await emitVaultLoaded(newFile, user, immediateRemoteRefresh: false, safe: true);
+      } else {
+        throw Exception('autofillMerge failed');
+      }
+    } on KdbxInvalidKeyException {
+      // We ignore this until we have a background service to keep all 3 sources in sync. Until then, it could happen if user changes their password while there are outstanding changes available in the autofill kdbx file. We prevent that locally but not if user makes password change on a different device.
+      const message =
+          "Merge from Autofill service failed. Changes recently made via your device's Autofill feature (i.e. from a different app) may have been lost so please inspect your vault and correct this manually. The most likely explanation for this problem is that you changed your password on another device before this one was able to integrate your changes from Autofill.";
+      l.e(message);
+      emitError(message, toast: true);
+      return;
+    } on Exception catch (e) {
+      final message =
+          "Merge from Autofill service failed. Changes recently made via your device's Autofill feature (i.e. from a different app) may have been lost so please inspect your vault and correct this manually. Check your device has enough storage space. Otherwise, this error may indicate a faulty operating system or hardware. There may be more information in this message: $e";
+      l.e(message);
+      emitError(message, toast: true);
+      return;
+    }
+  }
+
+  bool isPasswordChangingSuspended() {
+    // Maybe could inspect the filesystem to see if we really need to suspend
+    // changing but, especially for local-only users, the suspension period should
+    // be very brief. Perhaps even briefer than it would take to wait for the
+    // device to check the filesystem.
+    return autoFillMergeAttemptDue || state is VaultUpdatingLocalFromRemoteOrAutofill;
   }
 }
