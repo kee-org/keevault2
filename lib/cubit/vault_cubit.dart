@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_persistent_queue/flutter_persistent_queue.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
@@ -16,7 +15,6 @@ import 'package:keevault/password_strength.dart';
 import 'package:keevault/credentials/quick_unlocker.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/vault_backend/user.dart';
-import 'package:platform/platform.dart';
 import '../async_helpers.dart';
 import '../credentials/credential_lookup_result.dart';
 import '../remote_vault_repository.dart';
