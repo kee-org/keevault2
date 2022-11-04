@@ -326,6 +326,7 @@ class LocalVaultRepository {
       // normal happy path - nothing to merge from recent autofill activity
       return;
     }
+    l.d('merging current vault from autofill source');
 
     try {
       final autofillData = await fileAutofill.readAsBytes();
@@ -363,15 +364,10 @@ class LocalVaultRepository {
             null,
           ));
       return LocalVaultFile(files, persistedTime, persistedTime, vault.uuid, null, null);
-    } on Exception catch (e, s) {
-      l.wtf(
-          'Failed to import data from Autofill system. Please report this fault on the community forum so we can fix it.',
-          e,
-          s);
     } finally {
       // delete the autofill data no matter what, otherwise we'll be stuck in
       // a loop if a bug in autofill creates an invalid state.
-      fileAutofill.deleteSync();
+      //fileAutofill.deleteSync();
     }
   }
 }

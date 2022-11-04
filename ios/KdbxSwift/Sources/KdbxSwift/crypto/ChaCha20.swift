@@ -1,11 +1,3 @@
-//  KeePassium Password Manager
-//  Copyright © 2018–2022 Andrei Popleteev <info@keepassium.com>
-// 
-//  This program is free software: you can redistribute it and/or modify it
-//  under the terms of the GNU General Public License version 3 as published
-//  by the Free Software Foundation: https://www.gnu.org/licenses/).
-//  For commercial licensing, please contact the author.
-
 import Foundation
 
 public final class ChaCha20: StreamCipher {
@@ -282,14 +274,6 @@ extension UInt32 {
     self = val0 | val1 | val2 | val3
   }
 }
-
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(ucrt)
-import ucrt
-#endif
 
 extension FixedWidthInteger {
   @inlinable

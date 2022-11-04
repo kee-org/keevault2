@@ -46,6 +46,13 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     override func prepareCredentialList(for serviceIdentifiers: [ASCredentialServiceIdentifier]) {
         // iOS supplies a punycode URL for requests from Safari. Spec says there can be more than one but I've never seen that happen and can't imagine any real scenario in which that would happen. App URLs are probably hostnames and/or domains and there is no documentation or example to say if it will be punycode or not so we just assume it is until real world experience suggests otherwise.
         
+        guard let key = getKeyForUser(userId: userId) else {
+            var message = "Your access key needs to be refreshed before you can insert Kee Vault entries using AutoFill. Simply cancel this AutoFill request, sign in to the main Kee Vault app and then you can use AutoFill until your chosen key expiry time is next reached."
+            mainController.initWithAuthError(message: message)
+            //TODO: test that above doesn't fail due to lack of initialisation of usual data such as the below stuff.
+            return
+        }
+        
         var sis: [String] = []
         for si in serviceIdentifiers {
             if si.type == ASCredentialServiceIdentifier.IdentifierType.URL {
@@ -71,9 +78,6 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
             }
         }
         
-        //TODO: maybe move the kdbx load and PSL stuff so they can load in parrallel
-        
-        guard let key = getKeyForUser(userId: userId) else { return }
         //let preTransformedKeyMaterial = ByteArray(bytes: "6907d5ab2ba3e8dc7d8d1542220260ad32c48c7ef731ac6fb24213e4f09be9ce".hexaBytes)
         let dbFileManager = DatabaseFileManager(status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key, userId: userId, sharedGroupName: sharedGroupName!, sharedDefaults: sharedDefaults!)
         let dbFile = dbFileManager.loadFromFile()
@@ -83,7 +87,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         mainController.searchDomains = sis
         mainController.entries = entries
         mainController.dbFileManager = dbFileManager
-        dbFileManager.saveToFile(db: db)
+       // dbFileManager.saveToFile(db: db)
         
 //        do {
 //            let context = LAContext()
@@ -133,9 +137,14 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
                 try? JSONDecoder().decode(Dictionary<String,ExpiringCachedCredentials>.self, from: keyData) else {
             return nil
         }
-        let credentials = allCredentials[userId!]
-        //TODO: check expiry date and tell user to load main app to unlock again
-        return ByteArray(base64Encoded: credentials?.kdbxKdfResultBase64)
+        guard let credentials = allCredentials[userId!] else {
+            return nil
+        }
+        
+        if (credentials.expiry < Date.now.millisecondsSinceUnixEpoch) {
+            return nil
+        }
+        return ByteArray(base64Encoded: credentials.kdbxKdfResultBase64)
         
     }
 //
@@ -228,4 +237,10 @@ struct ExpiringCachedCredentials: Decodable {
     let kdbxKdfResultBase64: String;
     let kdbxKdfCacheKey: String;
     let expiry: Int;
+}
+
+extension Date {
+    var millisecondsSinceUnixEpoch:Int64 {
+        Int64((self.timeIntervalSince1970 * 1000.0).rounded())
+    }
 }

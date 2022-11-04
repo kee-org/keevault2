@@ -39,6 +39,7 @@ public class DatabaseFileManager {
     private let tempBackup: URL
     private let preTransformedKeyMaterial: ByteArray
     public let status: DatabaseFile.Status
+    private(set) var database: Database?
     
     private var isReadOnly: Bool {
         status.contains(.readOnly)
@@ -61,8 +62,6 @@ public class DatabaseFileManager {
         kdbxAutofillURL = documentsDirectory!.appendingPathComponent(userFolderName + "/autofill.kdbx")
         kdbxCurrentURL = documentsDirectory!.appendingPathComponent(userFolderName + "/current.kdbx")
         tempBackup = documentsDirectory!.appendingPathComponent(userFolderName + "/backup.kdbx")
-        //TODO: make a copy at autofill.kdbx for writing new URLs to (to start with)
-        
     }
     
     private func initDatabase(signature data: ByteArray) -> Database? {
@@ -87,7 +86,7 @@ public class DatabaseFileManager {
 //            try tempFileData.write(to: kdbxCurrentURL, options: .atomic)
 //            try tempFileData.write(to: kdbxAutofillURL, options: .atomic)
 //            try fileData.write(to: kdbxCurrentURL, options: .atomic)
-            
+
 //            fileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
         } catch {
             Diag.info("Autofill file not found. Expected unless recent changes have been made via autofill and main app not opened yet.")
@@ -101,7 +100,6 @@ public class DatabaseFileManager {
         }
         
         guard let db = initDatabase(signature: fileData) else {
-            let hexPrefix = fileData.prefix(8).asHexString
             fatalError("database init failed")
         }
         
@@ -118,6 +116,7 @@ public class DatabaseFileManager {
                 dbFileName: dbFile.fileName,
                 dbFileData: dbFile.data,
                 preTransformedKeyMaterial: preTransformedKeyMaterial)
+            database = db
             
         } catch {
             fatalError("Unprocessed exception while opening database. Probably hardware failure has corrupted the data on this device.")

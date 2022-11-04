@@ -18,7 +18,7 @@ public class EntryField: Eraseable {
     
     public static let totp = "TOTP"
     public static let otp = "otp"
-
+    
     public var name: String
     public var value: String {
         didSet {
@@ -55,7 +55,7 @@ public class EntryField: Eraseable {
             name: name,
             value: value,
             isProtected: isProtected,
-            resolvedValue: value,  
+            resolvedValue: value,
             resolveStatus: .noReferences
         )
     }
@@ -93,7 +93,7 @@ public class EntryField: Eraseable {
         name.erase()
         value.erase()
         isProtected = false
-
+        
         resolvedValueInternal?.erase()
         resolvedValueInternal = nil
         resolveStatus = .noReferences
@@ -105,7 +105,7 @@ public class EntryField: Eraseable {
         includeProtectedValues: Bool,
         options: String.CompareOptions
     ) -> Bool {
-        guard name != EntryField.password else { return false } 
+        guard name != EntryField.password else { return false }
         
         if includeFieldNames
             && !isStandardField
@@ -123,7 +123,7 @@ public class EntryField: Eraseable {
     
     @discardableResult
     public func resolveReferences<T>(entries: T, maxDepth: Int = 3) -> String
-        where T: Collection, T.Element: Entry
+    where T: Collection, T.Element: Entry
     {
         guard resolvedValueInternal == nil else {
             return resolvedValueInternal!
@@ -153,11 +153,11 @@ public class Entry: DatabaseItem, Eraseable {
     public weak var database: Database?
     public var uuid: UUID
     public var iconID: IconID
-
+    
     public var fields: [EntryField]
     public var isSupportsExtraFields: Bool { get { return false } }
     public var isSupportsMultipleAttachments: Bool { return false }
-
+    
     public var rawTitle: String {
         get{ return getField(EntryField.title)?.value ?? "" }
         set { setField(name: EntryField.title, value: newValue) }
@@ -165,7 +165,7 @@ public class Entry: DatabaseItem, Eraseable {
     public var resolvedTitle: String {
         get{ return getField(EntryField.title)?.resolvedValue ?? "" }
     }
-
+    
     public var rawUserName: String {
         get{ return getField(EntryField.userName)?.value ?? "" }
         set { setField(name: EntryField.userName, value: newValue) }
@@ -173,7 +173,7 @@ public class Entry: DatabaseItem, Eraseable {
     public var resolvedUserName: String {
         get{ return getField(EntryField.userName)?.resolvedValue ?? "" }
     }
-
+    
     public var rawPassword: String {
         get{ return getField(EntryField.password)?.value ?? "" }
         set { setField(name: EntryField.password, value: newValue) }
@@ -181,7 +181,7 @@ public class Entry: DatabaseItem, Eraseable {
     public var resolvedPassword: String {
         get{ return getField(EntryField.password)?.resolvedValue ?? "" }
     }
-
+    
     public var rawURL: String {
         get{ return getField(EntryField.url)?.value ?? "" }
         set { setField(name: EntryField.url, value: newValue) }
@@ -189,7 +189,7 @@ public class Entry: DatabaseItem, Eraseable {
     public var resolvedURL: String {
         get{ return getField(EntryField.url)?.resolvedValue ?? "" }
     }
-
+    
     public var rawNotes: String {
         get{ return getField(EntryField.notes)?.value ?? "" }
         set { setField(name: EntryField.notes, value: newValue) }
@@ -222,7 +222,7 @@ public class Entry: DatabaseItem, Eraseable {
         self.database = database
         attachments = []
         fields = []
-
+        
         uuid = UUID.ZERO
         iconID = Entry.defaultIconID
         isDeleted = false
@@ -252,9 +252,9 @@ public class Entry: DatabaseItem, Eraseable {
         iconID = Entry.defaultIconID
         isDeleted = false
         canExpire = false
-
+        
         parent = nil
-
+        
         let now = Date()
         creationTime = now
         lastModificationTime = now
@@ -267,7 +267,7 @@ public class Entry: DatabaseItem, Eraseable {
             name: name,
             value: value,
             isProtected: isProtected,
-            resolvedValue: value, 
+            resolvedValue: value,
             resolveStatus: .noReferences)
     }
     
@@ -289,10 +289,10 @@ public class Entry: DatabaseItem, Eraseable {
             }
             return
         }
-
+        
         fields.append(makeEntryField(name: name, value: value, isProtected: isProtected ?? false))
     }
-
+    
     public func getField<T: StringProtocol>(_ name: T) -> EntryField? {
         return fields.first(where: {
             $0.name.compare(name) == .orderedSame
@@ -304,7 +304,7 @@ public class Entry: DatabaseItem, Eraseable {
             fields.remove(at: index)
         }
     }
-
+    
     public func clone(makeNewUUID: Bool) -> Entry {
         fatalError("Pure virtual method")
     }
@@ -347,6 +347,10 @@ public class Entry: DatabaseItem, Eraseable {
         }
     }
     
+    public func setModified() {
+        lastModificationTime = Date.now
+    }
+    
     public func deleteWithoutBackup() {
         parent?.remove(entry: self)
     }
@@ -361,7 +365,7 @@ public class Entry: DatabaseItem, Eraseable {
         var groupNames = Array<String>()
         var parentGroup = self.parent
         while parentGroup != nil {
-            let parentGroupUnwrapped = parentGroup! 
+            let parentGroupUnwrapped = parentGroup!
             groupNames.append(parentGroupUnwrapped.name)
             parentGroup = parentGroupUnwrapped.parent
         }
@@ -384,7 +388,7 @@ public class Entry: DatabaseItem, Eraseable {
             if wordFound {
                 continue
             }
-
+            
             for att in attachments {
                 if att.name.localizedContains(word, options: query.compareOptions) {
                     wordFound = true
