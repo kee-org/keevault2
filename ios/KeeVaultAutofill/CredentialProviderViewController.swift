@@ -47,9 +47,8 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         // iOS supplies a punycode URL for requests from Safari. Spec says there can be more than one but I've never seen that happen and can't imagine any real scenario in which that would happen. App URLs are probably hostnames and/or domains and there is no documentation or example to say if it will be punycode or not so we just assume it is until real world experience suggests otherwise.
         
         guard let key = getKeyForUser(userId: userId) else {
-            var message = "Your access key needs to be refreshed before you can insert Kee Vault entries using AutoFill. Simply cancel this AutoFill request, sign in to the main Kee Vault app and then you can use AutoFill until your chosen key expiry time is next reached."
+            var message = "Your access key needs to be refreshed before you can AutoFill Kee Vault entries. Click OK and then sign in to the main Kee Vault app. You can then use AutoFill until your chosen key expiry time is next reached."
             mainController.initWithAuthError(message: message)
-            //TODO: test that above doesn't fail due to lack of initialisation of usual data such as the below stuff.
             return
         }
         

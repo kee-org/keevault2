@@ -120,13 +120,28 @@ class KeeVaultViewController: UIViewController {
         return grouped
     }
     
+    func urlFromString(_ value: String) -> URL? {
+        var normalisedValue = value
+        if (!value.contains("://")) {
+            normalisedValue = "https://" + value
+        }
+        
+        guard let url = URL(string: normalisedValue) else {
+            return nil
+        }
+        if (url.scheme != "https" && url.scheme != "http") {
+            return nil
+        }
+        return url
+    }
+    
     private func calculatePriority (entry: Entry, searchDomains: [String]) -> (Int, String) {
-        var URLs = [URL(string: entry.rawURL)].compactMap() { $0 }
+        var URLs = [urlFromString(entry.rawURL)].compactMap() { $0 }
         if let entryJson = entry.getField("KPRPC JSON") {
             let kprpcsubset = try? JSONDecoder().decode(KPRPCSubset.self, from: Data(entryJson.value.utf8))
             let altUrls = kprpcsubset?.altURLs
             altUrls?.forEach() {
-                if let url = URL(string: $0)?.setSchemeIfNotPresent("https") {
+                if let url = urlFromString($0) {
                     URLs.append(url)
                 }
             }
@@ -231,12 +246,12 @@ class KeeVaultViewController: UIViewController {
             entry.rawURL = url
         } else {
             let entryJson = entry.getField("KPRPC JSON")?.value ?? "{\"version\":1,\"priority\":0,\"hide\":false,\"hTTPRealm\":\"\",\"formFieldList\":[],\"alwaysAutoFill\":false,\"alwaysAutoSubmit\":false,\"neverAutoFill\":false,\"neverAutoSubmit\":false,\"blockDomainOnlyMatch\":false,\"blockHostnameOnlyMatch\":false,\"altURLs\":[],\"regExURLs\":[],\"blockedURLs\":[],\"regExBlockedURLs\":[]}"
-            let range = entryJson.range(of: #""altURLs"\:\[([^\]]*)\]"#)
+            let range = entryJson.range(of: #""altURLs"\:\[([^\]]*)\]"#, options: .regularExpression)
             var newJson = entryJson.replacingOccurrences(of: "[]", with: "[\"\(url)\"]", options: .init(), range: range)
             if (newJson.count == entryJson.count) {
                 newJson = entryJson.replacingOccurrences(of: "]", with: ",\"\(url)\"]", options: .init(), range: range)
-                entry.setField(name: "KPRPC JSON", value: newJson)
             }
+            entry.setField(name: "KPRPC JSON", value: newJson)
         }
         entry.setModified()
         dbFileManager.saveToFile(db: db)
@@ -247,31 +262,6 @@ class KeeVaultViewController: UIViewController {
         // https://stackoverflow.com/questions/60104060/ios-notify-today-extension-for-core-data-changes-in-the-main-app)
         //    sharedDefaults!["LastChangeAutofillTimestamp"] = Date()
     }
-    
-    //
-    //    @IBAction func agreeToTerms() {
-    //       // Create the action buttons for the alert.
-    //       let defaultAction = UIAlertAction(title: "Agree",
-    //                            style: .default) { (action) in
-    //        // Respond to user selection of the action.
-    //       }
-    //       let cancelAction = UIAlertAction(title: "Disagree",
-    //                            style: .cancel) { (action) in
-    //        // Respond to user selection of the action.
-    //       }
-    //
-    //       // Create and configure the alert controller.
-    //       let alert = UIAlertController(title: "Terms and Conditions",
-    //             message: "Click Agree to accept the terms and conditions.",
-    //             preferredStyle: .alert)
-    //       alert.addAction(defaultAction)
-    //       alert.addAction(cancelAction)
-    //
-    //       self.present(alert, animated: true) {
-    //          // The alert was presented
-    //       }
-    //    }
-    
 }
 
 extension KeeVaultViewController: RowSelectionDelegate {
@@ -280,7 +270,7 @@ extension KeeVaultViewController: RowSelectionDelegate {
             let entry = entries![entryIndex]
             let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword )
             if (newUrl) {
-                if let url = URL(string: (self.searchDomains?[0])!)?.setSchemeIfNotPresent("https") {
+                if let url = urlFromString((self.searchDomains?[0])!) {
                     try addUrlToEntry(entry: entry, url: url.absoluteString)
                 }
             }
@@ -312,14 +302,5 @@ struct KPRPCSubset: Codable {
     
     enum CodingKeys: String, CodingKey {
         case altURLs
-    }
-}
-
-extension URL {
-    //TODO: Needs much more work. ios is a bit shit at understanding partial URLs so our hostnames don't appear to be processed as such and therefore even adding a scheme is not enough for it to produce a valid URL. E.g. "https:blah.com" is the best we can do so far.
-    func setSchemeIfNotPresent(_ value: String) -> URL {
-        let components = NSURLComponents.init(url: self, resolvingAgainstBaseURL: true)
-        components?.scheme = value
-        return (components?.url!)!
     }
 }
