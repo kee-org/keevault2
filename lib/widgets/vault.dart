@@ -66,13 +66,20 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => autofillMergeIfRequired());
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.resumed && KeeVaultPlatform.isIOS) {
+    if (state == AppLifecycleState.resumed) {
+      autofillMergeIfRequired();
+    }
+  }
+
+  void autofillMergeIfRequired() {
+    if (KeeVaultPlatform.isIOS) {
       final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
       BlocProvider.of<VaultCubit>(context).autofillMerge(user);
     }
