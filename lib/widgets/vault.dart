@@ -16,6 +16,7 @@ import 'package:keevault/widgets/vault_password_credentials.dart';
 import '../config/platform.dart';
 import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
+import '../logging/logger.dart';
 import 'autofill_save.dart';
 import 'bottom.dart';
 import 'entry_filters.dart';
@@ -66,7 +67,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => autofillMergeIfRequired());
+    WidgetsBinding.instance.addPostFrameCallback((_) => autofillMergeIfRequired(onlyIfAttemptAlreadyDue: true));
   }
 
   @override
@@ -74,14 +75,15 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.resumed) {
-      autofillMergeIfRequired();
+      autofillMergeIfRequired(onlyIfAttemptAlreadyDue: false);
     }
   }
 
-  void autofillMergeIfRequired() {
+  void autofillMergeIfRequired({required bool onlyIfAttemptAlreadyDue}) {
     if (KeeVaultPlatform.isIOS) {
+      l.v('checking if autofill merge required. $onlyIfAttemptAlreadyDue');
       final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-      BlocProvider.of<VaultCubit>(context).autofillMerge(user);
+      BlocProvider.of<VaultCubit>(context).autofillMerge(user, onlyIfAttemptAlreadyDue: onlyIfAttemptAlreadyDue);
     }
   }
 

@@ -35,7 +35,7 @@ class VaultCubit extends Cubit<VaultState> {
   final GeneratorProfilesCubit _generatorProfilesCubit;
   PersistentQueue? _persistentQueueAfAssociations;
   final bool Function() isAutofilling;
-  bool autoFillMergeAttemptDue = false;
+  bool autoFillMergeAttemptDue = true;
 
   VaultCubit(
     this._userRepo,
@@ -826,12 +826,14 @@ class VaultCubit extends Cubit<VaultState> {
   void lock() async {
     _qu.lock();
     _persistentQueueAfAssociations = null;
+    autoFillMergeAttemptDue = true;
     emit(const VaultLocalFileCredentialsRequired('locked', false));
   }
 
   void signout() async {
     _qu.lock();
     _persistentQueueAfAssociations = null;
+    autoFillMergeAttemptDue = true;
     emit(const VaultInitial());
   }
 
@@ -840,6 +842,7 @@ class VaultCubit extends Cubit<VaultState> {
     await _localVaultRepo.remove(user);
     _qu.lock();
     _persistentQueueAfAssociations = null;
+    autoFillMergeAttemptDue = true;
     l.d('user vault removed');
     emit(const VaultInitial());
   }
