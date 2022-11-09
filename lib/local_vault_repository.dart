@@ -315,7 +315,7 @@ class LocalVaultRepository {
     return KdbxHeader.createV4()..writeKdfParameters(kdfParameters);
   }
 
-  tryAutofillMerge(User? user, Credentials creds, LocalVaultFile vault) async {
+  Future<LocalVaultFile?> tryAutofillMerge(User? user, Credentials creds, LocalVaultFile vault) async {
     final directory = await getStorageDirectory();
     final userFolder = user?.emailHashedB64url ?? 'local_user';
     final fileNameCurrent = File('${directory.path}/$userFolder/current.kdbx');
@@ -324,13 +324,13 @@ class LocalVaultRepository {
 
     if (!(await fileAutofill.exists())) {
       // normal happy path - nothing to merge from recent autofill activity
-      return;
+      return null;
     }
     l.d('merging current vault from autofill source');
 
     try {
       final autofillData = await fileAutofill.readAsBytes();
-      if (autofillData.isEmpty) return;
+      if (autofillData.isEmpty) return null;
       final autofillLocked = LockedVaultFile(
         autofillData,
         DateTime.now(),

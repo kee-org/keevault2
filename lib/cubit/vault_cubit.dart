@@ -1321,9 +1321,7 @@ class VaultCubit extends Cubit<VaultState> {
       autoFillMergeAttemptDue = false;
       emit(VaultUpdatingLocalFromRemoteOrAutofill(s.vault));
       final newFile = await _localVaultRepo.tryAutofillMerge(user, creds, s.vault);
-      if (newFile != null) {
-        await emitVaultLoaded(newFile, user, immediateRemoteRefresh: false, safe: true);
-      }
+      await emitVaultLoaded(newFile ?? s.vault, user, immediateRemoteRefresh: false, safe: true);
     } on KdbxInvalidKeyException {
       // We ignore this until we have a background service to keep all 3 sources in sync. Until then, it could happen if user changes their password while there are outstanding changes available in the autofill kdbx file. We prevent that locally but not if user makes password change on a different device.
       const message =
