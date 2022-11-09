@@ -367,7 +367,7 @@ class LocalVaultRepository {
     } finally {
       // delete the autofill data no matter what, otherwise we'll be stuck in
       // a loop if a bug in autofill creates an invalid state.
-      //fileAutofill.deleteSync();
+      fileAutofill.deleteSync();
     }
   }
 }
