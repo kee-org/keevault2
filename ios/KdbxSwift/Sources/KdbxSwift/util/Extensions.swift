@@ -1,8 +1,10 @@
-//
-//  File.swift
-//  
-//
-//  Created by Chris Tomlinson on 10/11/2022.
-//
-
 import Foundation
+
+extension StringProtocol {
+    func base64ToBase64url() -> String {
+        return self
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: ".")
+    }
+}

@@ -78,7 +78,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         }
         
         //let preTransformedKeyMaterial = ByteArray(bytes: "6907d5ab2ba3e8dc7d8d1542220260ad32c48c7ef731ac6fb24213e4f09be9ce".hexaBytes)
-        let dbFileManager = DatabaseFileManager(status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key, userId: userId, sharedGroupName: sharedGroupName!, sharedDefaults: sharedDefaults!)
+        let dbFileManager = DatabaseFileManager(status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key, userId: userId!, sharedGroupName: sharedGroupName!, sharedDefaults: sharedDefaults!)
         let dbFile = dbFileManager.loadFromFile()
         let db = dbFile.database
         var entries: [Entry] = []
@@ -202,32 +202,10 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
      */
 }
 
-extension CredentialProviderViewController: EntrySelectionDelegate {
-    func selected(credentials: ASPasswordCredential) {
-        self.extensionContext.completeRequest(withSelectedCredential: credentials, completionHandler: nil)
-    }
-    func cancel() {
-        self.extensionContext.cancelRequest(withError: NSError(domain: ASExtensionErrorDomain, code: ASExtensionError.userCanceled.rawValue))
-    }
-}
-
 enum KeychainError: Error {
     case noPassword
     case unexpectedPasswordData
     case unhandledError(status: OSStatus)
-}
-
-extension StringProtocol {
-    var hexaData: Data { .init(hexa) }
-    var hexaBytes: [UInt8] { .init(hexa) }
-    private var hexa: UnfoldSequence<UInt8, Index> {
-        sequence(state: startIndex) { startIndex in
-            guard startIndex < self.endIndex else { return nil }
-            let endIndex = self.index(startIndex, offsetBy: 2, limitedBy: self.endIndex) ?? self.endIndex
-            defer { startIndex = endIndex }
-            return UInt8(self[startIndex..<endIndex], radix: 16)
-        }
-    }
 }
 
 struct ExpiringCachedCredentials: Decodable {
@@ -236,10 +214,4 @@ struct ExpiringCachedCredentials: Decodable {
     let kdbxKdfResultBase64: String;
     let kdbxKdfCacheKey: String;
     let expiry: Int;
-}
-
-extension Date {
-    var millisecondsSinceUnixEpoch:Int64 {
-        Int64((self.timeIntervalSince1970 * 1000.0).rounded())
-    }
 }

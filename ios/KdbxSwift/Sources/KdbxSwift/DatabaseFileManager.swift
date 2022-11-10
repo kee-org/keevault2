@@ -50,7 +50,7 @@ public class DatabaseFileManager {
     public init(
         status: DatabaseFile.Status,
         preTransformedKeyMaterial: ByteArray,
-        userId: String?,
+        userId: String,
         sharedGroupName: String,
         sharedDefaults: UserDefaults
     ) {
@@ -58,7 +58,7 @@ public class DatabaseFileManager {
         self.status = status
         
         let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: sharedGroupName)
-        let userFolderName = userId == "localUserMagicString@v1" ? "local_user" : userId!
+        let userFolderName = userId == "localUserMagicString@v1" ? "local_user" : userId.base64ToBase64url()
         kdbxAutofillURL = documentsDirectory!.appendingPathComponent(userFolderName + "/autofill.kdbx")
         kdbxCurrentURL = documentsDirectory!.appendingPathComponent(userFolderName + "/current.kdbx")
         tempBackup = documentsDirectory!.appendingPathComponent(userFolderName + "/backup.kdbx")
