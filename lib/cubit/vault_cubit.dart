@@ -57,8 +57,10 @@ class VaultCubit extends Cubit<VaultState> {
   }
 
   void initAutofillPersistentQueue(String uuid) {
-    _persistentQueueAfAssociations = PersistentQueue('keevaultpendingautofillassociations-$uuid',
-        flushAt: 1000000, flushTimeout: const Duration(days: 10000));
+    if (KeeVaultPlatform.isAndroid) {
+      _persistentQueueAfAssociations = PersistentQueue('keevaultpendingautofillassociations-$uuid',
+          flushAt: 1000000, flushTimeout: const Duration(days: 10000));
+    }
   }
 
   Future<void> _applyAutofillPersistentQueueItems(List<dynamic> list, LinkedHashMap<String, KdbxEntry> entries) async {
@@ -887,22 +889,15 @@ class VaultCubit extends Cubit<VaultState> {
       emit(VaultSaving(vault, true, s is VaultSaving ? s.remotely : false));
       final mergedOrCurrentVaultFile =
           await _localVaultRepo.save(user, vault, applyAndConsumePendingAutofillAssociations);
+      //TODO: Sync with iOS shared credentials keychain (also in other places like merge from autofill and refresh)
       // if (KeeVaultPlatform.isIOS) {
       //   final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup
       //       .getAllEntries(enterRecycleBin: false)
-      //       .values; //TODO: toJSON I guess.
+      //       .values;
       //   await _autoFillMethodChannel.invokeMethod('setAllEntries', <String, dynamic>{
-      //     'entries': entries.toString(),
+      //     'entries': entries.toJSONStringTODO(),
       //   });
       // }
-      /*
-      try {
-    final int result = await platform.invokeMethod('getBatteryLevel');
-    batteryLevel = 'Battery level at $result % .';
-  } on PlatformException catch (e) {
-    batteryLevel = "Failed to get battery level: '${e.message}'.";
-  }
-  */
       await uploadIfNeeded(user, mergedOrCurrentVaultFile, skipRemote);
 
       if (KeeVaultPlatform.isIOS) {
@@ -1324,7 +1319,15 @@ class VaultCubit extends Cubit<VaultState> {
       autoFillMergeAttemptDue = false;
       emit(VaultUpdatingLocalFromRemoteOrAutofill(s.vault));
       final newFile = await _localVaultRepo.tryAutofillMerge(user, creds, s.vault);
-      await emitVaultLoaded(newFile ?? s.vault, user, immediateRemoteRefresh: user != null, safe: true);
+
+      if (newFile != null && user != null) {
+        await upload(
+          user,
+          newFile,
+        );
+      } else {
+        await emitVaultLoaded(newFile ?? s.vault, user, immediateRemoteRefresh: false, safe: true);
+      }
     } on KdbxInvalidKeyException {
       // We ignore this until we have a background service to keep all 3 sources in sync. Until then, it could happen if user changes their password while there are outstanding changes available in the autofill kdbx file. We prevent that locally but not if user makes password change on a different device.
       const message =
