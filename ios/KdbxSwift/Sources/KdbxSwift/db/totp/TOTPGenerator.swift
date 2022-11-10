@@ -1,13 +1,4 @@
-//  KeePassium Password Manager
-//  Copyright © 2018–2022 Andrei Popleteev <info@keepassium.com>
-// 
-//  This program is free software: you can redistribute it and/or modify it
-//  under the terms of the GNU General Public License version 3 as published
-//  by the Free Software Foundation: https://www.gnu.org/licenses/).
-//  For commercial licensing, please contact the author.
-
 import Foundation
-
 
 public enum TOTPHashAlgorithm {
     public static let allValues: [TOTPHashAlgorithm] = [.sha1, .sha256, .sha512]
@@ -97,7 +88,6 @@ public class TOTPGeneratorRFC6238: TOTPGenerator {
         self.length = length
         self.hashAlgorithm = hashAlgorithm
     }
-
     
     public func generate() -> String {
         let counter = UInt64(floor(Date.now.timeIntervalSince1970 / Double(timeStep))).bigEndian
@@ -111,7 +101,6 @@ public class TOTPGeneratorRFC6238: TOTPGenerator {
         return String(format: "%0.\(length)d", arguments: [trimmedCode])
     }
 }
-
 
 public class TOTPGeneratorSteam: TOTPGenerator {
     public static let typeSymbol = "S"

@@ -1,11 +1,3 @@
-//  KeePassium Password Manager
-//  Copyright © 2018–2022 Andrei Popleteev <info@keepassium.com>
-//
-//  This program is free software: you can redistribute it and/or modify it
-//  under the terms of the GNU General Public License version 3 as published
-//  by the Free Software Foundation: https://www.gnu.org/licenses/).
-//  For commercial licensing, please contact the author.
-
 import Foundation
 
 public class TOTPGeneratorFactory {
@@ -54,12 +46,10 @@ public class TOTPGeneratorFactory {
     }
 }
 
-
-
 public extension EntryField {
-    public static let otpConfig1 = EntryField.otp
-    public static let otpConfig2Seed = SplitFieldFormat.seedFieldName
-    public static let otpConfig2Settings = SplitFieldFormat.settingsFieldName
+    static let otpConfig1 = EntryField.otp
+    static let otpConfig2Seed = SplitFieldFormat.seedFieldName
+    static let otpConfig2Settings = SplitFieldFormat.settingsFieldName
 }
 
 fileprivate class SingleFieldFormat {

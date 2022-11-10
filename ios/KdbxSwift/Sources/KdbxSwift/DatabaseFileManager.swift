@@ -1,5 +1,3 @@
-//  Contains a few lines from KeePassium Password Manager (GPL3)
-
 import Foundation
 
 public class DatabaseFileManager {

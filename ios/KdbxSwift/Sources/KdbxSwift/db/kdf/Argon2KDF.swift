@@ -1,11 +1,3 @@
-//  KeePassium Password Manager
-//  Copyright © 2018–2022 Andrei Popleteev <info@keepassium.com>
-// 
-//  This program is free software: you can redistribute it and/or modify it
-//  under the terms of the GNU General Public License version 3 as published
-//  by the Free Software Foundation: https://www.gnu.org/licenses/).
-//  For commercial licensing, please contact the author.
-
 import Foundation
 
 class AbstractArgon2KDF {
@@ -38,9 +30,6 @@ class AbstractArgon2KDF {
     fileprivate var uuid: UUID {
         fatalError("Abstract method, override this")
     }
-//    fileprivate var primitiveType: Argon2.PrimitiveType {
-//        fatalError("Abstract method, override this")
-//    }
     
     fileprivate var progress = ProgressEx()
     
@@ -123,16 +112,6 @@ class AbstractArgon2KDF {
     
     func transform(key: ByteArray, params: KDFParams) -> ByteArray {
         fatalError("argon2 not implemented")
-//        assert(key.count > 0)
-//
-//        let hashingParams = try getParams(params)
-//
-//        let outHash = try Argon2.hash(
-//            data: key,
-//            params: hashingParams,
-//            type: primitiveType,
-//            progress: progress)
-//        return outHash
     }
 }
 

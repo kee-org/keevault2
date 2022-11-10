@@ -1,11 +1,3 @@
-//  KeePassium Password Manager
-//  Copyright © 2018–2022 Andrei Popleteev <info@keepassium.com>
-// 
-//  This program is free software: you can redistribute it and/or modify it
-//  under the terms of the GNU General Public License version 3 as published
-//  by the Free Software Foundation: https://www.gnu.org/licenses/).
-//  For commercial licensing, please contact the author.
-
 import Foundation
 
 protocol Database2XMLTimeFormatter {
@@ -95,22 +87,6 @@ public class Database2: Database {
             }
         }
     }
-//
-//    private enum ProgressSteps {
-//        static let all: Int64 = 100
-//        static let keyDerivation: Int64 = 60
-//        static let resolvingReferences: Int64 = 5
-//
-//        static let decryption: Int64 = 20
-//        static let readingBlocks: Int64 = 5
-//        static let gzipUnpack: Int64 = 5
-//        static let parsing: Int64 = 5
-//
-//        static let packing: Int64 = 5
-//        static let gzipPack: Int64 = 5
-//        static let encryption: Int64 = 20
-//        static let writingBlocks: Int64 = 5
-//    }
     
     private(set) var header: Header2!
     private(set) var meta: Meta2!
@@ -182,10 +158,10 @@ public class Database2: Database {
             importMasterKey(preTransformedKeyMaterial: preTransformedKeyMaterial, cipher: header.dataCipher)
             var decryptedData: ByteArray
             let dbWithoutHeader: ByteArray = dbFileData.suffix(from: header.size)
-
-                decryptedData = try decryptBlocksV4(
-                    data: dbWithoutHeader,
-                    cipher: header.dataCipher)
+            
+            decryptedData = try decryptBlocksV4(
+                data: dbWithoutHeader,
+                cipher: header.dataCipher)
             Diag.debug("Block decryption OK")
             
             if header.isCompressed {
@@ -212,7 +188,7 @@ public class Database2: Database {
             assert(root != nil)
             var allCurrentEntries = [Entry]()
             root?.collectAllEntries(to: &allCurrentEntries) 
-
+            
             var allEntriesPlusHistory = [Entry]()
             allEntriesPlusHistory.reserveCapacity(allCurrentEntries.count * 4) 
             allCurrentEntries.forEach { entry in
@@ -224,11 +200,7 @@ public class Database2: Database {
             resolveReferences(
                 allEntries: allEntriesPlusHistory
             )
-//
-//            checkAttachmentsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
-//
-//            checkCustomFieldsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
-
+            
             Diag.debug("Content loaded OK")
         } catch is Header2.HeaderError {
             throw DatabaseError.loadError(
@@ -280,9 +252,9 @@ public class Database2: Database {
             guard let storedBlockHMAC = inStream.read(count: SHA256_SIZE) else {
                 throw FormatError.prematureDataEnd
             }
-            #if DEBUG
+#if DEBUG
             print("Stored block HMAC: \(storedBlockHMAC.asHexString)")
-            #endif
+#endif
             guard let blockSize = inStream.readInt32() else {
                 throw FormatError.prematureDataEnd
             }
@@ -302,20 +274,20 @@ public class Database2: Database {
             }
             
             if blockSize == 0 { break }
-
+            
             allBlocksData.append(blockData)
             blockIndex += 1
         }
         
         Diag.verbose("Will decrypt \(allBlocksData.count) bytes")
-
-        #if DEBUG
-            print("hmacKey plain: \(hmacKey.asHexString)")
+        
+#if DEBUG
+        print("hmacKey plain: \(hmacKey.asHexString)")
         print("hmacKey enc: \(hmacKey.description)")
-
-            print("cipherKey plain: \(cipherKey.asHexString)")
+        
+        print("cipherKey plain: \(cipherKey.asHexString)")
         print("cipherKey enc: \(cipherKey.description)")
-        #endif
+#endif
         
         let decryptedData = try cipher.decrypt(
             cipherText: allBlocksData,
@@ -323,11 +295,11 @@ public class Database2: Database {
             iv: header.initialVector
         ) 
         Diag.verbose("Decrypted \(decryptedData.count) bytes")
-
+        
         return decryptedData
     }
     
-
+    
     func load(
         xmlData: ByteArray,
         timeParser: Database2XMLTimeParser
@@ -338,7 +310,6 @@ public class Database2: Database {
         do {
             Diag.debug("Parsing XML")
             let xmlDoc = try AEXMLDocument(xml: xmlData.asData, options: parsingOptions)
-let xmls =            xmlDoc.xml
             if let xmlError = xmlDoc.error {
                 Diag.error("Cannot parse XML: \(xmlError.localizedDescription)")
                 throw Xml2.ParsingError.xmlError(details: xmlError.localizedDescription)
@@ -377,16 +348,11 @@ let xmls =            xmlDoc.xml
                     throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "KeePassFile/*")
                 }
             }
-                        
+            
             self.root = rootGroup
             Diag.debug("XML content loaded OK")
         } catch let error as Header2.HeaderError {
             Diag.error("Header error [reason: \(error.localizedDescription)]")
-//            if Diag.isDeepDebugMode() {
-//                header.protectedStreamKey?. {
-//                    Diag.debug("Inner encryption key: `\($0.asHexString)`")
-//                }
-//            }
             throw FormatError.parsingError(reason: error.localizedDescription)
         } catch let error as Xml2.ParsingError {
             Diag.error("XML parsing error [reason: \(error.localizedDescription)]")
@@ -445,63 +411,20 @@ let xmls =            xmlDoc.xml
         
         let secureMasterSeed = header.masterSeed.clone()
         let joinedKey = ByteArray.concat(secureMasterSeed, preTransformedKeyMaterial)
-    self.cipherKey = cipher.resizeKey(key: joinedKey)
-    let one = ByteArray(bytes: [1])
-    self.hmacKey = ByteArray.concat(joinedKey, one).sha512
-    compositeKey.setFinalKeys(hmacKey, cipherKey)
+        self.cipherKey = cipher.resizeKey(key: joinedKey)
+        let one = ByteArray(bytes: [1])
+        self.hmacKey = ByteArray.concat(joinedKey, one).sha512
+        compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
     
     func rederiveMasterKey(key: CompositeKey, cipher: DataCipher) {
         let secureMasterSeed = header.masterSeed.clone()
         let joinedKey = ByteArray.concat(secureMasterSeed, key.combinedStaticComponents!)
-    self.cipherKey = cipher.resizeKey(key: joinedKey)
-    let one = ByteArray(bytes: [1])
-    self.hmacKey = ByteArray.concat(joinedKey, one).sha512
-    compositeKey.setFinalKeys(hmacKey, cipherKey)
+        self.cipherKey = cipher.resizeKey(key: joinedKey)
+        let one = ByteArray(bytes: [1])
+        self.hmacKey = ByteArray.concat(joinedKey, one).sha512
+        compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
-    
-    
-//
-//    func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher, canUseFinalKey: Bool) throws {
-//        Diag.debug("Start key derivation")
-//
-//        if canUseFinalKey,
-//           compositeKey.state == .final,
-//           let _cipherKey = compositeKey.cipherKey,
-//           let _hmacKey = compositeKey.finalKey
-//        {
-//            self.cipherKey = _cipherKey
-//            self.hmacKey = _hmacKey
-//            return
-//        }
-//
-//        var combinedComponents: ByteArray
-//        if compositeKey.state == .processedComponents {
-//            combinedComponents = try keyHelper.combineComponents(
-//                passwordData: compositeKey.passwordData!,
-//                keyFileData: compositeKey.keyFileData!
-//            )
-//            compositeKey.setCombinedStaticComponents(combinedComponents)
-//        } else if compositeKey.state >= .combinedComponents {
-//            combinedComponents = compositeKey.combinedStaticComponents!
-//        } else {
-//            preconditionFailure("Unexpected key state")
-//        }
-//
-//        let secureMasterSeed = header.masterSeed.clone()
-//        let joinedKey: ByteArray
-//
-//            let keyToTransform = keyHelper.getKey(fromCombinedComponents: combinedComponents)
-//
-//            let transformedKey = try header.kdf.transform(
-//                key: keyToTransform,
-//                params: header.kdfParams)
-//            joinedKey = ByteArray.concat(secureMasterSeed, transformedKey)
-//        self.cipherKey = cipher.resizeKey(key: joinedKey)
-//        let one = ByteArray(bytes: [1])
-//        self.hmacKey = ByteArray.concat(joinedKey, one).sha512
-//        compositeKey.setFinalKeys(hmacKey, cipherKey)
-//    }
     
     override public func changeCompositeKey(to newKey: CompositeKey) {
         compositeKey = newKey.clone()
@@ -515,7 +438,7 @@ let xmls =            xmlDoc.xml
             Diag.verbose("RecycleBin disabled in Meta")
             return nil
         }
-
+        
         guard let root = root else {
             Diag.warning("Tried to get RecycleBin group without the root one")
             assertionFailure()
@@ -541,120 +464,12 @@ let xmls =            xmlDoc.xml
         Diag.verbose("RecycleBin group not found nor created.")
         return nil
     }
-//
-//
-//    func checkAttachmentsIntegrity(allEntries: [Entry], warnings: DatabaseLoadingWarnings) {
-//        func mapAttachmentNamesByID(of entry: Entry2, nameByID: inout [Binary2.ID: String]) {
-//            (entry.attachments as! [Attachment2]).forEach { (attachment) in
-//                nameByID[attachment.id] = attachment.name
-//            }
-//            entry.history.forEach { (historyEntry) in
-//                mapAttachmentNamesByID(of: historyEntry, nameByID: &nameByID)
-//            }
-//        }
-//
-//        func insertAllAttachmentIDs(of entry: Entry2, into ids: inout Set<Binary2.ID>) {
-//            let attachments2 = entry.attachments as! [Attachment2]
-//            ids.formUnion(attachments2.map { $0.id })
-//            entry.history.forEach { (historyEntry) in
-//                insertAllAttachmentIDs(of: historyEntry, into: &ids)
-//            }
-//        }
-//
-//        maybeFixAttachmentNames(entries: allEntries, warnings: warnings)
-//
-//        var usedIDs = Set<Binary2.ID>()
-//        allEntries.forEach { (entry) in
-//            insertAllAttachmentIDs(of: entry as! Entry2, into: &usedIDs)
-//        }
-//        let knownIDs = Set(binaries.keys)
-//
-//        if knownIDs == usedIDs {
-//            Diag.debug("Attachments integrity OK")
-//            return
-//        }
-//
-//        let unusedBinaries = knownIDs.subtracting(usedIDs)
-//        let missingBinaries = usedIDs.subtracting(knownIDs)
-//
-//        if unusedBinaries.count > 0 {
-//            warnings.addIssue(.unusedAttachments)
-//
-//            let unusedIDs = unusedBinaries
-//                .map { String($0) }
-//                .joined(separator: ", ")
-//            Diag.warning("Some binaries are not referenced from any entry [IDs: \(unusedIDs)]")
-//        }
-//
-//        if missingBinaries.count > 0 {
-//
-//            var attachmentNameByID = [Binary2.ID: String]()
-//            allEntries.forEach { (entry) in
-//                mapAttachmentNamesByID(of: entry as! Entry2, nameByID: &attachmentNameByID)
-//            }
-//            let attachmentNames = missingBinaries.compactMap { attachmentNameByID[$0] }
-//            warnings.addIssue(.missingBinaries(attachmentNames: attachmentNames))
-//
-//            let missingIDs = missingBinaries
-//                .map { String($0) }
-//                .joined(separator: ", ")
-//            Diag.warning("Some entries refer to non-existent binaries [IDs: \(missingIDs)]")
-//        }
-//    }
-//
-//    private func maybeFixAttachmentNames(entries: [Entry], warnings: DatabaseLoadingWarnings) {
-//        func maybeFixAttachmentNames(entry: Entry2) -> Bool {
-//            var isSomethingFixed = false
-//            entry.attachments.forEach {
-//                if $0.name.isEmpty {
-//                    $0.name = "?"
-//                    isSomethingFixed = true
-//                }
-//            }
-//            return isSomethingFixed
-//        }
-//
-//        var affectedEntries = [Entry2]()
-//        for entry in entries {
-//            let entry2 = entry as! Entry2
-//            let isEntryAffected = maybeFixAttachmentNames(entry: entry2)
-//            let isHistoryAffected = entry2.history.reduce(false) { (result, historyEntry) in
-//                return maybeFixAttachmentNames(entry: historyEntry) || result
-//            }
-//            if isEntryAffected || isHistoryAffected {
-//                affectedEntries.append(entry2)
-//            }
-//        }
-//
-//        if affectedEntries.isEmpty {
-//            return
-//        }
-//
-//        let entryNames = affectedEntries.compactMap {$0.getGroupPath() + "/" + $0.resolvedTitle }
-//        let issue = DatabaseLoadingWarnings.IssueType.namelessAttachments(entryNames: entryNames)
-//        warnings.addIssue(issue)
-//        Diag.warning(warnings.getDescription(for: issue))
-//    }
-//
-//    private func checkCustomFieldsIntegrity(allEntries: [Entry], warnings: DatabaseLoadingWarnings) {
-//        let problematicEntries = allEntries.filter { entry in
-//            let isProblematicEntry = entry.fields.reduce(false) { result, field in
-//                return result || field.name.isEmpty
-//            }
-//            return isProblematicEntry
-//        }
-//        guard problematicEntries.count > 0 else { return }
-//
-//        let entryPaths = problematicEntries
-//            .map { "'\($0.resolvedTitle)' in '\($0.getGroupPath())'" }
-//        warnings.addIssue(.namelessCustomFields(entryPaths: entryPaths))
-//    }
-//
+    
     private func updateBinaries(root: Group2) {
         Diag.verbose("Updating all binaries")
         var allEntries = [Entry2]() as [Entry]
         root.collectAllEntries(to: &allEntries)
-
+        
         var oldBinaryPoolInverse = [ByteArray : Binary2]()
         binaries.values.forEach { oldBinaryPoolInverse[$0.data] = $0 }
         
@@ -668,7 +483,7 @@ let xmls =            xmlDoc.xml
         binaries.removeAll()
         newBinaryPoolInverse.values.forEach { binaries[$0.id] = $0 }
     }
-
+    
     private func updateBinaries(
         entry: Entry2,
         oldPoolInverse: [ByteArray: Binary2],
@@ -685,7 +500,7 @@ let xmls =            xmlDoc.xml
         for att in entry.attachments {
             let att2 = att as! Attachment2
             if let binaryInNewPool = newPoolInverse[att2.data],
-                binaryInNewPool.isCompressed == att2.isCompressed
+               binaryInNewPool.isCompressed == att2.isCompressed
             {
                 att2.id = binaryInNewPool.id
                 continue
@@ -694,7 +509,7 @@ let xmls =            xmlDoc.xml
             let newID = newPoolInverse.count
             let newBinary: Binary2
             if let binaryInOldPool = oldPoolInverse[att2.data],
-                binaryInOldPool.isCompressed == att2.isCompressed
+               binaryInOldPool.isCompressed == att2.isCompressed
             {
                 newBinary = Binary2(
                     id: newID,
@@ -735,7 +550,6 @@ let xmls =            xmlDoc.xml
         } catch is KeyFileError {
             throw DatabaseError.saveError(reason: "keyfile")
         }
-
         
         updateBinaries(root: root! as! Group2)
         Diag.verbose("Binaries updated OK")
@@ -745,12 +559,12 @@ let xmls =            xmlDoc.xml
         defer { outStream.close() }
         
         header.write(to: outStream) 
-
+        
         meta.headerHash = header.hash
         let xmlString = try self.toXml(timeFormatter: self).xml 
         let xmlData = ByteArray(utf8String: xmlString)
         Diag.debug("XML generation OK")
-
+        
         try encryptBlocksV4(to: outStream, xmlData: xmlData)
         Diag.debug("Content encryption OK")
         
@@ -767,18 +581,17 @@ let xmls =            xmlDoc.xml
         Diag.debug("Encrypting kdbx4 blocks")
         outStream.write(data: header.hash)
         outStream.write(data: header.getHMAC(key: hmacKey))
-
         
         let contentStream = ByteArray.makeOutputStream()
         contentStream.open()
         defer { contentStream.close() }
-
+        
         do {
             try header.writeInner(to: contentStream) 
             Diag.verbose("Header written OK")
             contentStream.write(data: xmlData)
             guard let contentData = contentStream.data else { fatalError() }
-
+            
             var dataToEncrypt = contentData
             if header.isCompressed {
                 dataToEncrypt = try contentData.gzipped()
@@ -827,12 +640,12 @@ let xmls =            xmlDoc.xml
         let defaultBlockSize  = 1024 * 1024 
         var blockStart: Int = 0
         var blockIndex: UInt64 = 0
-                
+        
         Diag.verbose("\(data.count) bytes to write")
         while blockStart != data.count {
             let blockSize = min(defaultBlockSize, data.count - blockStart)
             let blockData = data[blockStart..<blockStart+blockSize]
-
+            
             let blockKey = CryptoManager.getHMACKey64(key: hmacKey, blockIndex: blockIndex)
             let dataForHMAC = ByteArray.concat(blockIndex.data, Int32(blockSize).data, blockData)
             let blockHMAC = CryptoManager.hmacSHA256(data: dataForHMAC, key: blockKey)
@@ -848,10 +661,8 @@ let xmls =            xmlDoc.xml
             data: ByteArray.concat(blockIndex.data, endBlockSize.data),
             key: endBlockKey)
         blockStream.write(data: endBlockHMAC)
-        blockStream.write(value: endBlockSize) 
-        
+        blockStream.write(value: endBlockSize)
     }
-    
     
     func toXml(timeFormatter: Database2XMLTimeFormatter) throws -> AEXMLDocument {
         Diag.debug("Will generate XML")
@@ -907,7 +718,6 @@ let xmls =            xmlDoc.xml
         }
     }
     
-    
     override public func delete(group: Group) {
         guard let group = group as? Group2 else { fatalError() }
         guard let parentGroup = group.parent else {
@@ -955,7 +765,7 @@ let xmls =            xmlDoc.xml
         }
         
         if meta.isRecycleBinEnabled,
-            let backupGroup = getBackupGroup(createIfMissing: meta.isRecycleBinEnabled)
+           let backupGroup = getBackupGroup(createIfMissing: meta.isRecycleBinEnabled)
         {
             entry.move(to: backupGroup) 
             entry.touch(.accessed)
@@ -978,11 +788,10 @@ let xmls =            xmlDoc.xml
                 Diag.warning("Failed to compress attachment data [message: \(error.localizedDescription)]")
             }
         }
-
+        
         return Attachment2(name: name, isCompressed: false, data: data)
     }
-
-
+    
     @discardableResult
     public func addCustomIcon(pngData: ByteArray) -> CustomIcon2 {
         if let existingIcon = findCustomIcon(pngDataSha256: pngData.sha256) {
@@ -998,11 +807,11 @@ let xmls =            xmlDoc.xml
     public func findCustomIcon(pngDataSha256: ByteArray) -> CustomIcon2? {
         return customIcons.first(where: { $0.data.sha256 == pngDataSha256 })
     }
-
+    
     public func getCustomIcon(with uuid: UUID) -> CustomIcon2? {
         return customIcons.first(where: { $0.uuid == uuid })
     }
-
+    
     @discardableResult
     public func deleteCustomIcon(uuid: UUID) -> Bool {
         guard customIcons.contains(where: { $0.uuid == uuid }) else {
@@ -1033,20 +842,20 @@ extension Database2: Database2XMLTimeParser {
     func xmlStringToDate(_ string: String?) -> Date? {
         let trimmedString = string?.trimmingCharacters(in: .whitespacesAndNewlines)
         
-            if let formatAppropriateDate = Date(base64Encoded: trimmedString) {
-                return formatAppropriateDate
-            }
-            if let altFormatDate = Date(iso8601string: trimmedString) {
-                Diag.warning("Found ISO8601-formatted timestamp in \(header.formatVersion) DB.")
-                return altFormatDate
-            }
-            return nil
+        if let formatAppropriateDate = Date(base64Encoded: trimmedString) {
+            return formatAppropriateDate
+        }
+        if let altFormatDate = Date(iso8601string: trimmedString) {
+            Diag.warning("Found ISO8601-formatted timestamp in \(header.formatVersion) DB.")
+            return altFormatDate
+        }
+        return nil
     }
 }
 
 extension Database2: Database2XMLTimeFormatter {
     func dateToXMLString(_ date: Date) -> String {
-            return date.base64EncodedString()
+        return date.base64EncodedString()
     }
 }
 
