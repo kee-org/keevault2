@@ -1,10 +1,3 @@
-//
-//  Extensions.swift
-//  KeeVaultAutofill
-//
-//  Created by Chris Tomlinson on 10/11/2022.
-//
-
 import Foundation
 import AuthenticationServices
 
@@ -34,4 +27,10 @@ extension Date {
     var millisecondsSinceUnixEpoch:Int64 {
         Int64((self.timeIntervalSince1970 * 1000.0).rounded())
     }
+}
+
+func +<Key, Value> (lhs: [Key: Value], rhs: [Key: Value]) -> [Key: Value] {
+    var result = lhs
+    rhs.forEach{ result[$0] = $1 }
+    return result
 }

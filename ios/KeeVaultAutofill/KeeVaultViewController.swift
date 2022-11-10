@@ -1,10 +1,3 @@
-//
-//  KeeVaultViewController.swift
-//  KeeVaultAutofill
-//
-//  Created by Chris Tomlinson on 18/09/2022.
-//
-
 import Foundation
 import AuthenticationServices
 import LocalAuthentication
@@ -12,7 +5,6 @@ import KdbxSwift
 import DomainParser
 
 class KeeVaultViewController: UIViewController {
-    
     weak var selectionDelegate: EntrySelectionDelegate?
     var domainParser: DomainParser!
     var dbFileManager: DatabaseFileManager!
@@ -95,12 +87,11 @@ class KeeVaultViewController: UIViewController {
                 // invalid or hidden entry
                 continue
             }
-            autofillEntries[entry.uuid.uuidString] = KeeVaultAutofillEntry(entryIndex: index, server: server, title: entry.rawTitle, username: entry.rawUserName, priority: priority )
-            
-            // group by uuid and/or server, priority = max prioirty found from any of the grouped items, index = index of item with max priority
+            autofillEntries[entry.uuid.uuidString] = KeeVaultAutofillEntry(entryIndex: index, server: server, title: entry.rawTitle, lowercaseUsername: entry.rawUserName.lowercased(), lowercaseTitle: entry.rawTitle.lowercased(), username: entry.rawUserName,  priority: priority)
         }
         
-        // Assuming sort order is preserved when items are extracted to their groups but if not will have to run the sort many times instead, after grouping
+        // Assuming sort order is preserved when items are extracted to their groups
+        // but if not, will have to run the sort a few times instead, after grouping
         let sortedEntries = autofillEntries.map({$0.value}).sorted { e1, e2 in
             guard e1.priority == e2.priority else {
                 if (e1.priority == 0) { return false }
@@ -108,8 +99,7 @@ class KeeVaultViewController: UIViewController {
                 return e1.priority < e2.priority
             }
             
-            //maybe later: lowercase operation caching
-            return (e1.title ?? "").lowercased() < (e2.title ?? "").lowercased()
+            return e1.lowercaseTitle < e2.lowercaseTitle
         }
         let grouped = Dictionary<PriorityCategory,[KeeVaultAutofillEntry]>(grouping: sortedEntries,
                                                                            by: {
@@ -180,64 +170,6 @@ class KeeVaultViewController: UIViewController {
         return (0, firstHostname)
     }
     
-    //
-    //    private func getEntry(uuid: String, context: LAContext) throws -> KeeVaultKeychainEntry {
-    //        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
-    //        let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
-    //                                    kSecAttrAccessGroup as String: accessGroup,
-    //                                    kSecAttrAccount as String: uuid,
-    //                                    kSecMatchLimit as String: kSecMatchLimitOne,
-    //                                    kSecReturnAttributes as String: true,
-    //                                    kSecReturnData as String: true,
-    //                                    kSecUseAuthenticationContext as String: context]
-    //
-    //        var item: CFTypeRef?
-    //        let status = SecItemCopyMatching(query as CFDictionary, &item)
-    //        guard status != errSecItemNotFound else { throw KeychainError.noPassword }
-    //        guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
-    //
-    //        guard let existingItem = item as? [String : Any],
-    //              let passwordData = existingItem[kSecValueData as String] as? Data,
-    //              let password = String(data: passwordData, encoding: String.Encoding.utf8),
-    //              let uuid = existingItem[kSecAttrAccount as String] as? String,
-    //              let server = existingItem[kSecAttrServer as String] as? String,
-    //              let account = existingItem[kSecAttrDescription as String] as? String
-    //        else {
-    //            throw KeychainError.unexpectedPasswordData
-    //        }
-    //        let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: password )
-    //        return entry;
-    //    }
-    //
-    //    private func getExampleEntry() throws -> KeeVaultKeychainEntry {
-    //        let server = "www.github.com"
-    //        let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
-    //        let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
-    //                                    kSecAttrAccessGroup as String: accessGroup,
-    //                                    kSecAttrServer as String: server,
-    //                                    kSecMatchLimit as String: kSecMatchLimitOne,
-    //                                    kSecReturnAttributes as String: true,
-    //                                    kSecReturnData as String: true]
-    //
-    //        var item: CFTypeRef?
-    //        let status = SecItemCopyMatching(query as CFDictionary, &item)
-    //        guard status != errSecItemNotFound else { throw KeychainError.noPassword }
-    //        guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
-    //
-    //        guard let existingItem = item as? [String : Any],
-    //              let passwordData = existingItem[kSecValueData as String] as? Data,
-    //              let password = String(data: passwordData, encoding: String.Encoding.utf8),
-    //              let account = existingItem[kSecAttrAccount as String] as? String,
-    //              let uuid = existingItem["uuid"] as? String,
-    //              let title = existingItem["title"] as? String
-    //        else {
-    //            throw KeychainError.unexpectedPasswordData
-    //        }
-    //        let entry = KeeVaultKeychainEntry(uuid: uuid, server: server, writtenByAutofill: false, title: title, username: account, password: password )
-    //        return entry;
-    //    }
-    //
-    
     private func addUrlToEntry(entry: Entry, url: String) throws {
         guard let db = entry.database else {
             fatalError("Invalid entry found while saving new URL")
@@ -289,13 +221,6 @@ protocol EntrySelectionDelegate: AnyObject {
 protocol RowSelectionDelegate: AnyObject {
     func selected(entryIndex: Int, newUrl: Bool)
 }
-
-func +<Key, Value> (lhs: [Key: Value], rhs: [Key: Value]) -> [Key: Value] {
-    var result = lhs
-    rhs.forEach{ result[$0] = $1 }
-    return result
-}
-
 
 struct KPRPCSubset: Codable {
     let altURLs: [String]

@@ -1,10 +1,3 @@
-//
-//  SpinnerViewController.swift
-//  KeeVaultAutofill
-//
-//  Created by Chris Tomlinson on 22/09/2022.
-//
-
 import UIKit
 
 class SpinnerViewController: UIViewController {

@@ -1,20 +1,10 @@
-//
-//  EntryListViewController.swift
-//  KeeVaultAutofill
-//
-//  Created by Chris Tomlinson on 21/09/2022.
-//
-
 import UIKit
-//import LocalAuthentication
-//import AuthenticationServices
 
 class EntryListViewController: UITableViewController, UISearchBarDelegate {
 
     weak var selectionDelegate: RowSelectionDelegate?
     var data: [PriorityCategory:[KeeVaultAutofillEntry]]?
     var filteredData: [PriorityCategory:[KeeVaultAutofillEntry]]?
-//    var authenticatedContext: LAContext?
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
@@ -141,9 +131,11 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
             let searchTextLowered = searchText.lowercased()
             for categoryData in data! {
                 for entry in categoryData.value {
-                    // below is not very efficient. Unnecessary checks against empty strings and no short-circuiting when testing. Hopefully future swift will support a basic .any function with that efficiency improvement.
-                    let searchableTerms = [entry.title?.lowercased() ?? "",
-                                           entry.username.lowercased(),
+                    // below is not very efficient. Unnecessary checks against empty strings and
+                    // no short-circuiting when testing. Hopefully future swift will support a
+                    // basic .any function with that efficiency improvement.
+                    let searchableTerms = [entry.lowercaseTitle,
+                                           entry.lowercaseUsername,
                                            entry.server.lowercased()
                                            ]
                     if searchableTerms.filter({$0.contains(searchTextLowered)}).count > 0 {
@@ -155,8 +147,6 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
                 }
             }
         }
-        
         self.tableView.reloadData()
     }
-    
 }
