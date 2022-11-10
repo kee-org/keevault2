@@ -251,7 +251,7 @@ class KeeVaultViewController: UIViewController {
             if (newJson.count == entryJson.count) {
                 newJson = entryJson.replacingOccurrences(of: "]", with: ",\"\(url)\"]", options: .init(), range: range)
             }
-            entry.setField(name: "KPRPC JSON", value: newJson)
+            entry.setField(name: "KPRPC JSON", value: newJson, isProtected: true)
         }
         entry.setModified()
         dbFileManager.saveToFile(db: db)
