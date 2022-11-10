@@ -2,25 +2,6 @@
 
 import Foundation
 
-//public protocol DatabaseLoaderDelegate: AnyObject {
-//    func databaseLoader(_ databaseLoader: DatabaseLoader, willLoadDatabase dbRef: URL)
-//
-//    func databaseLoader(
-//        _ databaseLoader: DatabaseLoader,
-//        didChangeProgress progress: ProgressEx,
-//        for dbRef: URL)
-//
-//    func databaseLoader(
-//        _ databaseLoader: DatabaseLoader,
-//        didFailLoading dbRef: URL,
-//        with error: DatabaseLoader.Error)
-//
-//    func databaseLoader(
-//        _ databaseLoader: DatabaseLoader,
-//        didLoadDatabase dbRef: URL,
-//        databaseFile: DatabaseFile)
-//}
-
 public class DatabaseFileManager {
     public enum Error {
         case databaseUnreachable(_ reason: DatabaseUnreachableReason)
@@ -36,7 +17,6 @@ public class DatabaseFileManager {
     
     private let kdbxAutofillURL: URL
     private let kdbxCurrentURL: URL
-    private let tempBackup: URL
     private let preTransformedKeyMaterial: ByteArray
     public let status: DatabaseFile.Status
     private(set) var database: Database?
@@ -61,7 +41,6 @@ public class DatabaseFileManager {
         let userFolderName = userId == "localUserMagicString@v1" ? "local_user" : userId.base64ToBase64url()
         kdbxAutofillURL = documentsDirectory!.appendingPathComponent(userFolderName + "/autofill.kdbx")
         kdbxCurrentURL = documentsDirectory!.appendingPathComponent(userFolderName + "/current.kdbx")
-        tempBackup = documentsDirectory!.appendingPathComponent(userFolderName + "/backup.kdbx")
     }
     
     private func initDatabase(signature data: ByteArray) -> Database? {
@@ -81,13 +60,6 @@ public class DatabaseFileManager {
         do {
             let autofillFileData = try ByteArray(contentsOf: kdbxAutofillURL, options: [.uncached, .mappedIfSafe])
             fileData = autofillFileData
-
-//            let tempFileData = try ByteArray(contentsOf: tempBackup, options: [.uncached, .mappedIfSafe])
-//            try tempFileData.write(to: kdbxCurrentURL, options: .atomic)
-//            try tempFileData.write(to: kdbxAutofillURL, options: .atomic)
-//            try fileData.write(to: kdbxCurrentURL, options: .atomic)
-
-//            fileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
         } catch {
             Diag.info("Autofill file not found. Expected unless recent changes have been made via autofill and main app not opened yet.")
             do {

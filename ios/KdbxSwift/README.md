@@ -4,7 +4,7 @@ A cut-down KDBX file handling library. This can't be used for general purpose KD
 
 ## License
 
-Much of the code within is copyright KeePassium and used under GPL3 license (see below). As with all Kee Vault Ltd open source software, the library itself is released under our AGPL3 license.
+Much of the code within is copyright KeePassium and used under GPL3 license (see below). Otherwise, the code is copyright Kee Vault Ltd unless a file-specific comment indicates an alternative source with compatible license. As with all Kee Vault Ltd open source software, all code in this library is released under our AGPL3 license, as described in the LICENSE file.
 
 
 ### KeePassium license statement
