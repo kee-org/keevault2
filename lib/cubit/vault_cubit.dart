@@ -507,7 +507,6 @@ class VaultCubit extends Cubit<VaultState> {
     VaultState s = state;
     if (s is VaultLoaded) {
       if (s is VaultSaving && s.remotely) {
-        //TODO: Why only remote saving? do we protect against race conditions while merging after a remote fetch and saving locally?
         l.i('refresh called during an ongoing upload. Will not refresh now.');
         return;
       }
@@ -618,7 +617,7 @@ class VaultCubit extends Cubit<VaultState> {
         final file = await RemoteVaultFile.unlock(lockedFile);
         await prefs.setString('user.${user.email}.lastRemoteEtag', file.etag!);
         await prefs.setString('user.${user.email}.lastRemoteVersionId', file.versionId!);
-        emit(VaultUpdatingLocalFromRemoteOrAutofill(s.vault));
+        emit(VaultUpdatingLocalFromRemote(s.vault));
         final newFile = await update(user, s.vault, file);
         if (newFile != null) {
           await emitVaultLoaded(newFile, user, immediateRemoteRefresh: false, safe: true);
@@ -881,7 +880,9 @@ class VaultCubit extends Cubit<VaultState> {
       l.e('Save requested while vault is not loaded');
     } else if (s is VaultSaving && s.locally) {
       l.e("Can't save while already saving");
-    } else if (s is VaultReconcilingUpload || s is VaultUpdatingLocalFromRemoteOrAutofill) {
+    } else if (s is VaultReconcilingUpload ||
+        s is VaultUpdatingLocalFromRemote ||
+        s is VaultUpdatingLocalFromAutofill) {
       l.e("Can't save while merging from remote source or autofill");
     } else {
       l.d('saving vault');
@@ -1161,9 +1162,12 @@ class VaultCubit extends Cubit<VaultState> {
   }
 
   void reemitLoadedState() {
-    if (state is VaultUpdatingLocalFromRemoteOrAutofill) {
-      final castState = state as VaultUpdatingLocalFromRemoteOrAutofill;
-      emit(VaultUpdatingLocalFromRemoteOrAutofill(castState.vault));
+    if (state is VaultUpdatingLocalFromRemote) {
+      final castState = state as VaultUpdatingLocalFromRemote;
+      emit(VaultUpdatingLocalFromRemote(castState.vault));
+    } else if (state is VaultUpdatingLocalFromAutofill) {
+      final castState = state as VaultUpdatingLocalFromAutofill;
+      emit(VaultUpdatingLocalFromAutofill(castState.vault));
     } else if (state is VaultRefreshCredentialsRequired) {
       final castState = state as VaultRefreshCredentialsRequired;
       emit(VaultRefreshCredentialsRequired(castState.vault, castState.reason, castState.causedByInteraction));
@@ -1195,7 +1199,8 @@ class VaultCubit extends Cubit<VaultState> {
 
   bool safeEmitLoaded(LocalVaultFile v) {
     if (state.runtimeType == VaultRefreshing ||
-        state.runtimeType == VaultUpdatingLocalFromRemoteOrAutofill ||
+        state.runtimeType == VaultUpdatingLocalFromRemote ||
+        state.runtimeType == VaultUpdatingLocalFromAutofill ||
         state.runtimeType == VaultBackgroundError ||
         state.runtimeType == VaultLoaded ||
         state is VaultSaving) {
@@ -1317,7 +1322,7 @@ class VaultCubit extends Cubit<VaultState> {
 
     try {
       autoFillMergeAttemptDue = false;
-      emit(VaultUpdatingLocalFromRemoteOrAutofill(s.vault));
+      emit(VaultUpdatingLocalFromAutofill(s.vault));
       final newFile = await _localVaultRepo.tryAutofillMerge(user, creds, s.vault);
 
       if (newFile != null && user != null) {
@@ -1349,6 +1354,6 @@ class VaultCubit extends Cubit<VaultState> {
     // changing but, especially for local-only users, the suspension period should
     // be very brief. Perhaps even briefer than it would take to wait for the
     // device to check the filesystem.
-    return autoFillMergeAttemptDue || state is VaultUpdatingLocalFromRemoteOrAutofill;
+    return autoFillMergeAttemptDue || state is VaultUpdatingLocalFromAutofill;
   }
 }

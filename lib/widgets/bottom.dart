@@ -226,8 +226,8 @@ class BottomBarWidget extends StatelessWidget {
                 maintainAnimation: true,
                 maintainState: true,
                 // not sure if it makes sense to show this when saving locally
-                // after a refresh or autofill operation but probably better than nothing.
-                visible: loadedVaultState is VaultSaving || loadedVaultState is VaultUpdatingLocalFromRemoteOrAutofill,
+                // after an autofill merge operation but probably better than nothing.
+                visible: loadedVaultState is VaultSaving || loadedVaultState is VaultUpdatingLocalFromAutofill,
                 child: sipi,
               ),
               centreButton != null
@@ -238,7 +238,8 @@ class BottomBarWidget extends StatelessWidget {
                           !entryEditing &&
                           loadedVaultState.vault.files.current.isDirty &&
                           loadedVaultState is! VaultSaving &&
-                          loadedVaultState is! VaultUpdatingLocalFromRemoteOrAutofill),
+                          loadedVaultState is! VaultUpdatingLocalFromRemote &&
+                          loadedVaultState is! VaultUpdatingLocalFromAutofill),
                     ),
             ],
           ),

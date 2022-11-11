@@ -37,9 +37,7 @@ class LocalVaultRepository {
 
   getStorageDirectory() async {
     if (KeeVaultPlatform.isIOS) {
-      final path = await _autoFillMethodChannel.invokeMethod('getAppGroupDirectory', <String, dynamic>{
-        'groupId': 'group.com.keevault.keevault.dev',
-      }); //TODO: variable group ID
+      final path = await _autoFillMethodChannel.invokeMethod('getAppGroupDirectory');
       return Directory(path);
     }
     final directory = await getApplicationSupportDirectory();

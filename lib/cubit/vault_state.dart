@@ -19,14 +19,17 @@ class VaultDownloadCredentialsRequired extends VaultState {
   const VaultDownloadCredentialsRequired(this.reason, this.causedByInteraction);
 }
 
-// Refresh can only be started when state is Loaded; maybe later also VaultUpdatingLocalFromRemoteOrAutofill
-// if we want to download multiple remote updates before merging the first one has completed
+// Refresh can only be started when state is Loaded
 class VaultRefreshing extends VaultLoaded {
   const VaultRefreshing(LocalVaultFile vault) : super(vault);
 }
 
-class VaultUpdatingLocalFromRemoteOrAutofill extends VaultRefreshing {
-  const VaultUpdatingLocalFromRemoteOrAutofill(LocalVaultFile vault) : super(vault);
+class VaultUpdatingLocalFromRemote extends VaultRefreshing {
+  const VaultUpdatingLocalFromRemote(LocalVaultFile vault) : super(vault);
+}
+
+class VaultUpdatingLocalFromAutofill extends VaultRefreshing {
+  const VaultUpdatingLocalFromAutofill(LocalVaultFile vault) : super(vault);
 }
 
 class VaultRefreshCredentialsRequired extends VaultLoaded {
