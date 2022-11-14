@@ -1,12 +1,24 @@
 import UIKit
 
-class EntryCell: UITableViewCell {
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var usernameLabel: UILabel!
+protocol MyCellDelegate {
+    func didTapEdit(data: KeeVaultAutofillEntry)
 }
 
-class EntryListViewController: UITableViewController, UISearchBarDelegate {
+class EntryCell: UITableViewCell {
+    var delegate: MyCellDelegate?
+    var data: KeeVaultAutofillEntry!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var usernameLabel: UILabel!
+    @IBAction func editAction(_ sender: Any) {
+        guard let delegate = self.delegate else {
+            return;
+        }
+        delegate.didTapEdit(data: data)
+    }
+}
 
+class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCellDelegate {
+    
     weak var selectionDelegate: RowSelectionDelegate?
     var data: [PriorityCategory:[KeeVaultAutofillEntry]]?
     var filteredData: [PriorityCategory:[KeeVaultAutofillEntry]]?
@@ -16,13 +28,13 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
         super.viewDidLoad()
         
         searchBar.delegate = self
-
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return filteredData?.filter({ $0.value.count > 0 }).count ?? 1
     }
@@ -61,6 +73,8 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
         }
         cell.titleLabel?.text = title
         cell.usernameLabel?.text = entry.username
+        cell.data = entry
+        cell.delegate = self
         return cell
     }
     
@@ -119,15 +133,26 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
             return
         }
         self.selectionDelegate?.selected(entryIndex: autofillEntry.entryIndex, newUrl: category == .none)
-
+        
     }
+    
+    func didTapEdit(data: KeeVaultAutofillEntry) {
+        performSegue(withIdentifier: "editSegue", sender: data)
+        }
+
+        override func prepare(for segue: UIStoryboardSegue, sender: Any? ) {
+            if segue.identifier == "editSegue" {
+                let vc: EditEntryViewController = segue.destinationViewController as EditEntryViewController
+                vc.data = sender as? KeeVaultAutofillEntry
+            }
+        }
     
     func initAutofillEntries (entries: [PriorityCategory:[KeeVaultAutofillEntry]]!) {
         data = entries
         filteredData = data
         self.tableView.reloadData()
     }
-
+    
     // MARK: Search Bar Config
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -149,7 +174,7 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
                     let searchableTerms = [entry.lowercaseTitle,
                                            entry.lowercaseUsername,
                                            entry.server.lowercased()
-                                           ]
+                    ]
                     if searchableTerms.filter({$0.contains(searchTextLowered)}).count > 0 {
                         if !filteredData!.contains(where : {$0.key == categoryData.key}) {
                             filteredData![categoryData.key] = []

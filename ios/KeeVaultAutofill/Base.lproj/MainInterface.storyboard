@@ -151,6 +151,10 @@
                                             <rect key="frame" x="310" y="11" width="49" height="31"/>
                                             <state key="normal" title="Button"/>
                                             <buttonConfiguration key="configuration" style="plain" title="Edit"/>
+                                            <connections>
+                                                <action selector="editAction:" destination="yAR-Gd-7Cz" eventType="touchUpInside" id="JaB-Kh-cja"/>
+                                                <segue destination="FRe-jD-wLo" kind="show" id="nGB-xx-j8W"/>
+                                            </connections>
                                         </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4G-Bx-Nqq">
                                             <rect key="frame" x="16" y="40" width="37.5" height="21"/>
@@ -188,6 +192,34 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k4T-xd-cap" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2228" y="823.53823088455783"/>
+        </scene>
+        <!--Add Entry-->
+        <scene sceneID="XvZ-rH-Jzt">
+            <objects>
+                <viewController title="Add Entry" id="FRe-jD-wLo" customClass="NewEntryViewController" customModule="KeeVaultAutofill" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="BK0-Zb-Anw">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tyD-WX-4JJ">
+                                <rect key="frame" x="102" y="227" width="128" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="TODO: Add &amp; Fill"/>
+                                <connections>
+                                    <action selector="createEntry:" destination="FRe-jD-wLo" eventType="touchUpInside" id="kfw-5g-iQv"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="0z2-4S-nVr"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Add Entry" id="mdP-LX-zEg"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1Wj-89-dvo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3201" y="796"/>
         </scene>
     </scenes>
     <resources>
