@@ -134,13 +134,46 @@
                             <textInputTraits key="textInputTraits"/>
                         </searchBar>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="yAR-Gd-7Cz">
-                                <rect key="frame" x="0.0" y="88.5" width="375" height="43.5"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" rowHeight="64" id="yAR-Gd-7Cz" customClass="EntryCell" customModule="KeeVaultAutofill" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="88.5" width="375" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="yAR-Gd-7Cz" id="aqS-sh-YNP">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="yAR-Gd-7Cz" id="aqS-sh-YNP">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="27Q-hB-s2Q">
+                                            <rect key="frame" x="16" y="11" width="42" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Gm-Pe-S5V">
+                                            <rect key="frame" x="310" y="11" width="49" height="31"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="plain" title="Edit"/>
+                                        </button>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4G-Bx-Nqq">
+                                            <rect key="frame" x="16" y="40" width="37.5" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="leading" secondItem="aqS-sh-YNP" secondAttribute="leadingMargin" id="1fh-RI-TPM"/>
+                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="top" secondItem="27Q-hB-s2Q" secondAttribute="bottom" constant="8" symbolic="YES" id="CiK-QS-y7y"/>
+                                        <constraint firstItem="4Gm-Pe-S5V" firstAttribute="top" secondItem="aqS-sh-YNP" secondAttribute="topMargin" id="MRJ-KC-0yw"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="4Gm-Pe-S5V" secondAttribute="trailing" id="PjQ-ro-lbi"/>
+                                        <constraint firstItem="27Q-hB-s2Q" firstAttribute="top" secondItem="aqS-sh-YNP" secondAttribute="topMargin" id="cQr-Lk-mB9"/>
+                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="top" secondItem="27Q-hB-s2Q" secondAttribute="bottom" id="eTA-JH-bvI"/>
+                                        <constraint firstItem="27Q-hB-s2Q" firstAttribute="leading" secondItem="aqS-sh-YNP" secondAttribute="leadingMargin" id="qVz-Z6-khx"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="D4G-Bx-Nqq" secondAttribute="bottom" id="ra6-fw-4EY"/>
+                                    </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="titleLabel" destination="27Q-hB-s2Q" id="RCq-c9-fBM"/>
+                                    <outlet property="usernameLabel" destination="D4G-Bx-Nqq" id="6Tk-fQ-zpP"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -154,7 +187,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k4T-xd-cap" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2228" y="824"/>
+            <point key="canvasLocation" x="2228" y="823.53823088455783"/>
         </scene>
     </scenes>
     <resources>

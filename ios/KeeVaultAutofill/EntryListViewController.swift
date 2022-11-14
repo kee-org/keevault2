@@ -1,5 +1,10 @@
 import UIKit
 
+class EntryCell: UITableViewCell {
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var usernameLabel: UILabel!
+}
+
 class EntryListViewController: UITableViewController, UISearchBarDelegate {
 
     weak var selectionDelegate: RowSelectionDelegate?
@@ -35,20 +40,27 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! EntryCell
         
         guard filteredData != nil else {
-            cell.textLabel?.text = "Loading..."
+            cell.titleLabel?.text = "Loading..."
             return cell
         }
         let category = getCategoryForSection(section: indexPath.section)
         
         guard category != nil else {
-            cell.textLabel?.text = "No match!" // don't think this can happen if TableView behaves as expected
+            cell.titleLabel?.text = "No match!" // don't think this can happen if TableView behaves as expected
             return cell
         }
         
-        cell.textLabel?.text = filteredData![category!]![indexPath.row].title
+        let entry = filteredData![category!]![indexPath.row]
+        
+        var title = entry.title.isNotEmpty ? entry.title : entry.server
+        if (title.isEmpty) {
+            title = "Untitled entry"
+        }
+        cell.titleLabel?.text = title
+        cell.usernameLabel?.text = entry.username
         return cell
     }
     
