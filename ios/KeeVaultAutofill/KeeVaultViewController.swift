@@ -4,7 +4,7 @@ import LocalAuthentication
 import KdbxSwift
 import DomainParser
 
-class KeeVaultViewController: UIViewController {
+class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
     weak var selectionDelegate: EntrySelectionDelegate?
     var domainParser: DomainParser!
     var dbFileManager: DatabaseFileManager!
@@ -31,14 +31,17 @@ class KeeVaultViewController: UIViewController {
         self.selectionDelegate?.cancel()
     }
     
-    func createEntry(_ sender: AnyObject?) {
-        
+    func create(credentials: ASPasswordCredential) {
+        self.selectionDelegate?.cancel()
+    }
+    func update(credentials: ASPasswordCredential, entryIndex: Int) {
+        self.selectionDelegate?.cancel()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "newEntrySegue" {
             let destinationVC = segue.destination as! NewEntryViewController
-            destinationVC.selectionDelegate = selectionDelegate
+            destinationVC.addOrEditEntryDelegate = self
         } else if segue.identifier == "embeddedEntryListSegue" {
             let destinationVC = segue.destination as! EntryListViewController
             destinationVC.selectionDelegate = self
@@ -220,6 +223,11 @@ protocol EntrySelectionDelegate: AnyObject {
 
 protocol RowSelectionDelegate: AnyObject {
     func selected(entryIndex: Int, newUrl: Bool)
+}
+
+protocol AddOrEditEntryDelegate: AnyObject {
+    func create(credentials: ASPasswordCredential)
+    func update(credentials: ASPasswordCredential, entryIndex: Int)
 }
 
 struct KPRPCSubset: Codable {

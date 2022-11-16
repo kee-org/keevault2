@@ -141,37 +141,43 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="27Q-hB-s2Q">
-                                            <rect key="frame" x="16" y="11" width="42" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label example long text" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="27Q-hB-s2Q">
+                                            <rect key="frame" x="16" y="11" width="180" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="WPi-Uj-pJ0"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Gm-Pe-S5V">
-                                            <rect key="frame" x="310" y="11" width="49" height="31"/>
-                                            <state key="normal" title="Button"/>
-                                            <buttonConfiguration key="configuration" style="plain" title="Edit"/>
-                                            <connections>
-                                                <action selector="editAction:" destination="yAR-Gd-7Cz" eventType="touchUpInside" id="JaB-Kh-cja"/>
-                                                <segue destination="FRe-jD-wLo" kind="show" id="nGB-xx-j8W"/>
-                                            </connections>
-                                        </button>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4G-Bx-Nqq">
-                                            <rect key="frame" x="16" y="40" width="37.5" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4G-Bx-Nqq">
+                                            <rect key="frame" x="16" y="32" width="37.5" height="18"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Knd-Cz-8IN">
+                                            <rect key="frame" x="309" y="17" width="50" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="Jsc-D6-cki"/>
+                                            </constraints>
+                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                            <state key="normal" title="Edit"/>
+                                            <connections>
+                                                <action selector="editAction:" destination="yAR-Gd-7Cz" eventType="touchUpInside" id="gyJ-yE-x3w"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="leading" secondItem="aqS-sh-YNP" secondAttribute="leadingMargin" id="1fh-RI-TPM"/>
-                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="top" secondItem="27Q-hB-s2Q" secondAttribute="bottom" constant="8" symbolic="YES" id="CiK-QS-y7y"/>
-                                        <constraint firstItem="4Gm-Pe-S5V" firstAttribute="top" secondItem="aqS-sh-YNP" secondAttribute="topMargin" id="MRJ-KC-0yw"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="4Gm-Pe-S5V" secondAttribute="trailing" id="PjQ-ro-lbi"/>
-                                        <constraint firstItem="27Q-hB-s2Q" firstAttribute="top" secondItem="aqS-sh-YNP" secondAttribute="topMargin" id="cQr-Lk-mB9"/>
-                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="top" secondItem="27Q-hB-s2Q" secondAttribute="bottom" id="eTA-JH-bvI"/>
-                                        <constraint firstItem="27Q-hB-s2Q" firstAttribute="leading" secondItem="aqS-sh-YNP" secondAttribute="leadingMargin" id="qVz-Z6-khx"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="D4G-Bx-Nqq" secondAttribute="bottom" id="ra6-fw-4EY"/>
+                                        <constraint firstItem="Knd-Cz-8IN" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="D4G-Bx-Nqq" secondAttribute="trailing" id="2HY-Nj-pr9"/>
+                                        <constraint firstItem="27Q-hB-s2Q" firstAttribute="top" secondItem="aqS-sh-YNP" secondAttribute="topMargin" id="NQJ-B9-U1c"/>
+                                        <constraint firstItem="27Q-hB-s2Q" firstAttribute="leading" secondItem="aqS-sh-YNP" secondAttribute="leadingMargin" id="SU7-c7-oQd"/>
+                                        <constraint firstItem="Knd-Cz-8IN" firstAttribute="top" relation="greaterThanOrEqual" secondItem="aqS-sh-YNP" secondAttribute="topMargin" constant="0.5" id="VWZ-sP-SO0"/>
+                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="top" secondItem="aqS-sh-YNP" secondAttribute="topMargin" constant="21" id="a4Z-IK-gDd"/>
+                                        <constraint firstItem="Knd-Cz-8IN" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="27Q-hB-s2Q" secondAttribute="trailing" id="eAQ-tI-8nt"/>
+                                        <constraint firstItem="Knd-Cz-8IN" firstAttribute="centerY" secondItem="aqS-sh-YNP" secondAttribute="centerY" id="ntd-jB-3lZ"/>
+                                        <constraint firstItem="D4G-Bx-Nqq" firstAttribute="leading" secondItem="aqS-sh-YNP" secondAttribute="leadingMargin" id="sSJ-Se-E9P"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Knd-Cz-8IN" secondAttribute="trailing" id="wGs-HU-TAf"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
@@ -187,26 +193,27 @@
                     </tableView>
                     <connections>
                         <outlet property="searchBar" destination="Gq8-ki-cNH" id="vNd-iF-oCh"/>
+                        <segue destination="FRe-jD-wLo" kind="show" identifier="editSegue" id="qqT-Ws-PiJ"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k4T-xd-cap" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2228" y="823.53823088455783"/>
         </scene>
-        <!--Add Entry-->
+        <!--Edit Entry-->
         <scene sceneID="XvZ-rH-Jzt">
             <objects>
-                <viewController title="Add Entry" id="FRe-jD-wLo" customClass="NewEntryViewController" customModule="KeeVaultAutofill" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Edit Entry" id="FRe-jD-wLo" customClass="EditEntryViewController" customModule="KeeVaultAutofill" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BK0-Zb-Anw">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tyD-WX-4JJ">
-                                <rect key="frame" x="102" y="227" width="128" height="33"/>
+                                <rect key="frame" x="103" y="227" width="127" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="TODO: Add &amp; Fill"/>
+                                <state key="normal" title="TODO: Edit &amp; Fill"/>
                                 <connections>
                                     <action selector="createEntry:" destination="FRe-jD-wLo" eventType="touchUpInside" id="kfw-5g-iQv"/>
                                 </connections>
@@ -215,7 +222,7 @@
                         <viewLayoutGuide key="safeArea" id="0z2-4S-nVr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Add Entry" id="mdP-LX-zEg"/>
+                    <navigationItem key="navigationItem" title="Edit Entry" id="mdP-LX-zEg"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1Wj-89-dvo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

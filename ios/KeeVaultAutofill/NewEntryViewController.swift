@@ -3,13 +3,13 @@ import AuthenticationServices
 
 class NewEntryViewController: UIViewController {
 
-    weak var selectionDelegate: EntrySelectionDelegate?
+    weak var addOrEditEntryDelegate: AddOrEditEntryDelegate?
    
     @IBAction func createEntry(_ sender: AnyObject?) {
         do {
             //TODO: read user input and create entry
             let passwordCredential = try getExampleEntry()
-            selectionDelegate?.selected(credentials: passwordCredential)
+            addOrEditEntryDelegate?.create(credentials: passwordCredential)
         } catch _ {
         
         }

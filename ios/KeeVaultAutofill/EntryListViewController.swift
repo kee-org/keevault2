@@ -15,6 +15,15 @@ class EntryCell: UITableViewCell {
         }
         delegate.didTapEdit(data: data)
     }
+//
+//    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+//            super.init(style: style, reuseIdentifier: reuseIdentifier)
+//            accessoryView = UISwitch()
+//    }
+//
+//    required init?(coder: NSCoder) {
+//        super.init(coder: coder)
+//    }
 }
 
 class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCellDelegate {
@@ -65,6 +74,20 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
             return cell
         }
         
+//        let editButton  = UIButton(type: .system)
+//        editButton.frame = CGRect(x: 250, y: 0, width: 200, height: 40)
+//                editButton.backgroundColor = .green
+//        editButton.setTitle("Edit", for: .normal)
+////        editButton.setTitleColor(.white, for: .normal)
+////        editButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13.0)
+////        editButton.titleLabel?.textAlignment = .center//Text alighment center
+////        editButton.titleLabel?.numberOfLines = 0//To display multiple lines in UIButton
+////        editButton.titleLabel?.lineBreakMode = .byWordWrapping//By word wrapping
+////        editButton.tag = 1//To assign tag value
+////        editButton.btnProperties()//Call UIButton properties from extension function
+//        editButton.addTarget(cell, action:#selector(cell.editAction), for: .touchUpInside)
+
+        
         let entry = filteredData![category!]![indexPath.row]
         
         var title = entry.title.isNotEmpty ? entry.title : entry.server
@@ -75,6 +98,9 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
         cell.usernameLabel?.text = entry.username
         cell.data = entry
         cell.delegate = self
+//        cell.accessoryView = editButton
+//        cell.accessoryView?.bounds = CGRect(x: 0, y: 0, width: 200, height: 40)
+      
         return cell
     }
     
@@ -138,14 +164,14 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
     
     func didTapEdit(data: KeeVaultAutofillEntry) {
         performSegue(withIdentifier: "editSegue", sender: data)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any? ) {
+        if segue.identifier == "editSegue" {
+            let vc: EditEntryViewController = segue.destination as! EditEntryViewController
+            vc.data = sender as? KeeVaultAutofillEntry
         }
-
-        override func prepare(for segue: UIStoryboardSegue, sender: Any? ) {
-            if segue.identifier == "editSegue" {
-                let vc: EditEntryViewController = segue.destinationViewController as EditEntryViewController
-                vc.data = sender as? KeeVaultAutofillEntry
-            }
-        }
+    }
     
     func initAutofillEntries (entries: [PriorityCategory:[KeeVaultAutofillEntry]]!) {
         data = entries

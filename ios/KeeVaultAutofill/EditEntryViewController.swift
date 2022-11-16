@@ -3,14 +3,14 @@ import AuthenticationServices
 
 class EditEntryViewController: UIViewController {
 
-    weak var selectionDelegate: EntrySelectionDelegate?
+    weak var addOrEditEntryDelegate: AddOrEditEntryDelegate?
     var data: KeeVaultAutofillEntry!
    
     @IBAction func editEntry(_ sender: AnyObject?) {
         do {
             //TODO: read user input and edit entry
             let passwordCredential = try getExampleEntry()
-            selectionDelegate?.selected(credentials: passwordCredential, entryIndex: data.entryIndex)
+            addOrEditEntryDelegate?.update(credentials: passwordCredential, entryIndex: data.entryIndex)
         } catch _ {
         
         }
