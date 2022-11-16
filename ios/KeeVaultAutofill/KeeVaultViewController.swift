@@ -31,11 +31,29 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         self.selectionDelegate?.cancel()
     }
     
-    func create(credentials: ASPasswordCredential) {
-        self.selectionDelegate?.cancel()
+    func create(username: String, password: String) {
+        self.selectionDelegate?.cancel() //TODO: Test updates, then replicate subset of it for create/add
     }
-    func update(credentials: ASPasswordCredential, entryIndex: Int) {
-        self.selectionDelegate?.cancel()
+    func update(username: String, password: String, newUrl: Bool, entryIndex: Int) {
+        let entry = entries![entryIndex]
+        guard let db = entry.database else {
+            fatalError("Invalid entry found while saving new URL")
+        }
+        if (password.isNotEmpty) {
+            entry.setField(name: "Password", value: password, isProtected: true)
+        }
+        entry.setField(name: "UserName", value: username)
+        
+        if (newUrl) {
+            if let url = urlFromString((self.searchDomains?[0])!) {
+                addUrlToEntry(entry, url.absoluteString)
+            }
+        }
+        
+        entry.setModified()
+        dbFileManager.saveToFile(db: db)
+        let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword )
+        self.selectionDelegate?.selected(credentials: passwordCredential)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -173,10 +191,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         return (0, firstHostname)
     }
     
-    private func addUrlToEntry(entry: Entry, url: String) throws {
-        guard let db = entry.database else {
-            fatalError("Invalid entry found while saving new URL")
-        }
+    fileprivate func addUrlToEntry(_ entry: Entry, _ url: String) {
         if (entry.rawURL.isEmpty) {
             entry.rawURL = url
         } else {
@@ -188,6 +203,13 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
             }
             entry.setField(name: "KPRPC JSON", value: newJson, isProtected: true)
         }
+    }
+    
+    private func saveUrlToEntry(entry: Entry, url: String) {
+        guard let db = entry.database else {
+            fatalError("Invalid entry found while saving new URL")
+        }
+        addUrlToEntry(entry, url)
         entry.setModified()
         dbFileManager.saveToFile(db: db)
         
@@ -201,18 +223,14 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
 
 extension KeeVaultViewController: RowSelectionDelegate {
     func selected(entryIndex: Int, newUrl: Bool) {
-        do {
-            let entry = entries![entryIndex]
-            let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword )
-            if (newUrl) {
-                if let url = urlFromString((self.searchDomains?[0])!) {
-                    try addUrlToEntry(entry: entry, url: url.absoluteString)
-                }
+        let entry = entries![entryIndex]
+        let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword )
+        if (newUrl) {
+            if let url = urlFromString((self.searchDomains?[0])!) {
+                saveUrlToEntry(entry: entry, url: url.absoluteString)
             }
-            self.selectionDelegate?.selected(credentials: passwordCredential)
-        } catch _ {
-            
         }
+        self.selectionDelegate?.selected(credentials: passwordCredential)
     }
 }
 
@@ -226,8 +244,8 @@ protocol RowSelectionDelegate: AnyObject {
 }
 
 protocol AddOrEditEntryDelegate: AnyObject {
-    func create(credentials: ASPasswordCredential)
-    func update(credentials: ASPasswordCredential, entryIndex: Int)
+    func create(username: String, password: String)
+    func update(username: String, password: String, newUrl: Bool, entryIndex: Int)
 }
 
 struct KPRPCSubset: Codable {

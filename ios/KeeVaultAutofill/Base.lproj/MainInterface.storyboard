@@ -208,25 +208,74 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tyD-WX-4JJ">
-                                <rect key="frame" x="103" y="227" width="127" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Leave blank to remove any current username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WZH-GF-7bH">
+                                <rect key="frame" x="16" y="74" width="343" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" returnKeyType="next" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no" textContentType="username"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Username / email address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IEO-07-WIY">
+                                <rect key="frame" x="16" y="45" width="197" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OhD-st-8Sv">
+                                <rect key="frame" x="16" y="130" width="112" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Leave blank to keep current password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="W2U-l3-A1J">
+                                <rect key="frame" x="16" y="159" width="343" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tyD-WX-4JJ">
+                                <rect key="frame" x="281" y="201" width="78" height="33"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="TODO: Edit &amp; Fill"/>
+                                <state key="normal" title="Save &amp; Fill"/>
                                 <connections>
                                     <action selector="createEntry:" destination="FRe-jD-wLo" eventType="touchUpInside" id="kfw-5g-iQv"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtC-rK-dxx">
+                                <rect key="frame" x="16" y="246" width="343" height="61"/>
+                                <string key="text">To delete the password or make other changes to this entry, use the main Kee Vault app after you finish this AutoFill operation.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="0z2-4S-nVr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="0z2-4S-nVr" firstAttribute="trailing" secondItem="UtC-rK-dxx" secondAttribute="trailing" constant="16" id="2Pr-ld-5Mr"/>
+                            <constraint firstItem="OhD-st-8Sv" firstAttribute="top" secondItem="WZH-GF-7bH" secondAttribute="bottom" constant="22" id="GmK-M1-GgN"/>
+                            <constraint firstItem="W2U-l3-A1J" firstAttribute="leading" secondItem="0z2-4S-nVr" secondAttribute="leading" constant="16" id="Rtc-6B-bVm"/>
+                            <constraint firstItem="IEO-07-WIY" firstAttribute="top" secondItem="0z2-4S-nVr" secondAttribute="top" constant="45" id="Tnt-th-fup"/>
+                            <constraint firstItem="0z2-4S-nVr" firstAttribute="trailing" secondItem="WZH-GF-7bH" secondAttribute="trailing" constant="16" id="VM3-WJ-jPl"/>
+                            <constraint firstItem="0z2-4S-nVr" firstAttribute="trailing" secondItem="W2U-l3-A1J" secondAttribute="trailing" constant="16" id="XhL-sh-Yfj"/>
+                            <constraint firstItem="0z2-4S-nVr" firstAttribute="trailing" secondItem="tyD-WX-4JJ" secondAttribute="trailing" constant="16" id="ZC9-ne-Lv2"/>
+                            <constraint firstItem="OhD-st-8Sv" firstAttribute="leading" secondItem="0z2-4S-nVr" secondAttribute="leading" constant="16" id="bMQ-EJ-yrg"/>
+                            <constraint firstItem="WZH-GF-7bH" firstAttribute="top" secondItem="IEO-07-WIY" secondAttribute="bottom" constant="8" id="efp-pT-gzk"/>
+                            <constraint firstItem="IEO-07-WIY" firstAttribute="leading" secondItem="0z2-4S-nVr" secondAttribute="leading" constant="16" id="lyx-NX-jPn"/>
+                            <constraint firstItem="UtC-rK-dxx" firstAttribute="top" secondItem="tyD-WX-4JJ" secondAttribute="bottom" constant="12" id="mIw-m2-fnC"/>
+                            <constraint firstItem="WZH-GF-7bH" firstAttribute="leading" secondItem="0z2-4S-nVr" secondAttribute="leading" constant="16" id="nJ2-H4-30z"/>
+                            <constraint firstItem="W2U-l3-A1J" firstAttribute="top" secondItem="OhD-st-8Sv" secondAttribute="bottom" constant="8" id="nxS-au-r7o"/>
+                            <constraint firstItem="tyD-WX-4JJ" firstAttribute="top" secondItem="W2U-l3-A1J" secondAttribute="bottom" constant="8" id="tHy-Je-kij"/>
+                            <constraint firstItem="UtC-rK-dxx" firstAttribute="leading" secondItem="0z2-4S-nVr" secondAttribute="leading" constant="16" id="uda-6I-TO3"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Edit Entry" id="mdP-LX-zEg"/>
+                    <connections>
+                        <outlet property="passwordTextField" destination="W2U-l3-A1J" id="wbU-Pe-fV2"/>
+                        <outlet property="usernameTextField" destination="WZH-GF-7bH" id="Yeu-xs-ecg"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1Wj-89-dvo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3201" y="796"/>
+            <point key="canvasLocation" x="3200.8000000000002" y="795.6521739130435"/>
         </scene>
     </scenes>
     <resources>

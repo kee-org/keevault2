@@ -99,7 +99,7 @@ public class DatabaseFileManager {
             let fileData = try db.save()
             try fileData.write(to: kdbxAutofillURL, options: .atomic)
         } catch {
-                Diag.error("Failed to write autofill KDBX file [message: \(error.localizedDescription)]")
+            Diag.error("Failed to write autofill KDBX file [message: \(error.localizedDescription)]")
         }
     }
 }

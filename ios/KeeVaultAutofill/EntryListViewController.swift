@@ -1,19 +1,20 @@
 import UIKit
 
 protocol MyCellDelegate {
-    func didTapEdit(data: KeeVaultAutofillEntry)
+    func didTapEdit(data: KeeVaultAutofillEntry, category: PriorityCategory)
 }
 
 class EntryCell: UITableViewCell {
     var delegate: MyCellDelegate?
     var data: KeeVaultAutofillEntry!
+    var category: PriorityCategory!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBAction func editAction(_ sender: Any) {
         guard let delegate = self.delegate else {
             return;
         }
-        delegate.didTapEdit(data: data)
+        delegate.didTapEdit(data: data, category: category)
     }
 //
 //    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -74,20 +75,6 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
             return cell
         }
         
-//        let editButton  = UIButton(type: .system)
-//        editButton.frame = CGRect(x: 250, y: 0, width: 200, height: 40)
-//                editButton.backgroundColor = .green
-//        editButton.setTitle("Edit", for: .normal)
-////        editButton.setTitleColor(.white, for: .normal)
-////        editButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13.0)
-////        editButton.titleLabel?.textAlignment = .center//Text alighment center
-////        editButton.titleLabel?.numberOfLines = 0//To display multiple lines in UIButton
-////        editButton.titleLabel?.lineBreakMode = .byWordWrapping//By word wrapping
-////        editButton.tag = 1//To assign tag value
-////        editButton.btnProperties()//Call UIButton properties from extension function
-//        editButton.addTarget(cell, action:#selector(cell.editAction), for: .touchUpInside)
-
-        
         let entry = filteredData![category!]![indexPath.row]
         
         var title = entry.title.isNotEmpty ? entry.title : entry.server
@@ -98,8 +85,7 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
         cell.usernameLabel?.text = entry.username
         cell.data = entry
         cell.delegate = self
-//        cell.accessoryView = editButton
-//        cell.accessoryView?.bounds = CGRect(x: 0, y: 0, width: 200, height: 40)
+        cell.category = category
       
         return cell
     }
@@ -162,14 +148,17 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
         
     }
     
-    func didTapEdit(data: KeeVaultAutofillEntry) {
-        performSegue(withIdentifier: "editSegue", sender: data)
+    func didTapEdit(data: KeeVaultAutofillEntry, category: PriorityCategory) {
+        performSegue(withIdentifier: "editSegue", sender: (data, category))
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any? ) {
         if segue.identifier == "editSegue" {
             let vc: EditEntryViewController = segue.destination as! EditEntryViewController
-            vc.data = sender as? KeeVaultAutofillEntry
+            let data = sender as! [Any]
+            vc.data = data[0] as? KeeVaultAutofillEntry
+            vc.usernameTextField.text = vc.data.username
+            vc.category = data[1] as? PriorityCategory
         }
     }
     
