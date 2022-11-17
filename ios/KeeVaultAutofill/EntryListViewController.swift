@@ -30,6 +30,7 @@ class EntryCell: UITableViewCell {
 class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCellDelegate {
     
     weak var selectionDelegate: RowSelectionDelegate?
+    weak var addOrEditEntryDelegate: AddOrEditEntryDelegate?
     var data: [PriorityCategory:[KeeVaultAutofillEntry]]?
     var filteredData: [PriorityCategory:[KeeVaultAutofillEntry]]?
     @IBOutlet weak var searchBar: UISearchBar!
@@ -149,7 +150,7 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
     }
     
     func didTapEdit(data: KeeVaultAutofillEntry, category: PriorityCategory) {
-        performSegue(withIdentifier: "editSegue", sender: (data, category))
+        performSegue(withIdentifier: "editSegue", sender: [data, category])
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any? ) {
@@ -157,8 +158,8 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
             let vc: EditEntryViewController = segue.destination as! EditEntryViewController
             let data = sender as! [Any]
             vc.data = data[0] as? KeeVaultAutofillEntry
-            vc.usernameTextField.text = vc.data.username
             vc.category = data[1] as? PriorityCategory
+            vc.addOrEditEntryDelegate = addOrEditEntryDelegate
         }
     }
     

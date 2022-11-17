@@ -31,10 +31,28 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         self.selectionDelegate?.cancel()
     }
     
-    func create(username: String, password: String) {
-        self.selectionDelegate?.cancel() //TODO: Test updates, then replicate subset of it for create/add
+    func create(title: String, username: String, password: String) {
+        let db = dbFileManager.database!
+        guard let root = db.root else {
+            fatalError("User database has no root group")
+        }
+        let entry = root.createEntry()
+        entry.setField(name: "Password", value: password, isProtected: true)
+        entry.setField(name: "UserName", value: username)
+        entry.setField(name: "Title", value: title)
+        
+        //TODO: test this url stuff all works with apps too
+        if let url = urlFromString((self.searchDomains?[0])!) {
+            addUrlToEntry(entry, url.absoluteString)
+        }
+        
+        entry.setModified()
+        dbFileManager.saveToFile(db: db)
+        let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword )
+        self.selectionDelegate?.selected(credentials: passwordCredential)
     }
-    func update(username: String, password: String, newUrl: Bool, entryIndex: Int) {
+    
+    func update(title: String, username: String, password: String, newUrl: Bool, entryIndex: Int) {
         let entry = entries![entryIndex]
         guard let db = entry.database else {
             fatalError("Invalid entry found while saving new URL")
@@ -43,6 +61,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
             entry.setField(name: "Password", value: password, isProtected: true)
         }
         entry.setField(name: "UserName", value: username)
+        entry.setField(name: "Title", value: title)
         
         if (newUrl) {
             if let url = urlFromString((self.searchDomains?[0])!) {
@@ -60,9 +79,11 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         if segue.identifier == "newEntrySegue" {
             let destinationVC = segue.destination as! NewEntryViewController
             destinationVC.addOrEditEntryDelegate = self
+            destinationVC.defaultTitle = self.searchDomains?[0] ?? ""
         } else if segue.identifier == "embeddedEntryListSegue" {
             let destinationVC = segue.destination as! EntryListViewController
             destinationVC.selectionDelegate = self
+            destinationVC.addOrEditEntryDelegate = self
             entryListVC = destinationVC
         }
     }
@@ -244,8 +265,8 @@ protocol RowSelectionDelegate: AnyObject {
 }
 
 protocol AddOrEditEntryDelegate: AnyObject {
-    func create(username: String, password: String)
-    func update(username: String, password: String, newUrl: Bool, entryIndex: Int)
+    func create(title: String, username: String, password: String)
+    func update(title: String, username: String, password: String, newUrl: Bool, entryIndex: Int)
 }
 
 struct KPRPCSubset: Codable {

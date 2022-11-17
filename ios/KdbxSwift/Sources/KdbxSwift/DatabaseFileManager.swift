@@ -17,7 +17,7 @@ public class DatabaseFileManager {
     private let kdbxCurrentURL: URL
     private let preTransformedKeyMaterial: ByteArray
     public let status: DatabaseFile.Status
-    private(set) var database: Database?
+    public private(set) var database: Database?
     
     private var isReadOnly: Bool {
         status.contains(.readOnly)
@@ -94,9 +94,12 @@ public class DatabaseFileManager {
         return dbFile
     }
     
-    public func saveToFile(db: Database) {
+    public func saveToFile(db: Database?) {
         do {
-            let fileData = try db.save()
+            guard let targetDatabase = db ?? database else {
+                fatalError("No database to save")
+            }
+            let fileData = try targetDatabase.save()
             try fileData.write(to: kdbxAutofillURL, options: .atomic)
         } catch {
             Diag.error("Failed to write autofill KDBX file [message: \(error.localizedDescription)]")
