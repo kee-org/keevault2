@@ -40,6 +40,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         // would happen. App URLs are probably hostnames and/or domains and there is no
         // documentation or example to say if it will be punycode or not so we just assume it
         // is until real world experience suggests otherwise.
+        // Not all apps have a serviceIdentifier!
         
         guard let key = getKeyForUser(userId: userId) else {
             let message = "Your access key needs to be refreshed before you can AutoFill Kee Vault entries. Click OK and then sign in to the main Kee Vault app. You can then use AutoFill until your chosen expiry time is next reached."

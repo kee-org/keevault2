@@ -27,6 +27,12 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         spinner.didMove(toParent: self)
     }
     
+    private func warnOfBadApp() {
+        if (searchDomains?.first == nil) {
+            self.view.subviews[0].subviews[1].isHidden = false
+        }
+    }
+    
     @IBAction func cancel(_ sender: AnyObject?) {
         self.selectionDelegate?.cancel()
     }
@@ -41,9 +47,10 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         entry.setField(name: "UserName", value: username)
         entry.setField(name: "Title", value: title)
         
-        //TODO: test this url stuff all works with apps too
-        if let url = urlFromString((self.searchDomains?[0])!) {
-            addUrlToEntry(entry, url.absoluteString)
+        if let urlString = self.searchDomains?.first {
+            if let url = urlFromString(urlString) {
+                addUrlToEntry(entry, url.absoluteString)
+            }
         }
         
         entry.setModified()
@@ -64,8 +71,10 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         entry.setField(name: "Title", value: title)
         
         if (newUrl) {
-            if let url = urlFromString((self.searchDomains?[0])!) {
-                addUrlToEntry(entry, url.absoluteString)
+            if let urlString = self.searchDomains?.first {
+                if let url = urlFromString(urlString) {
+                    addUrlToEntry(entry, url.absoluteString)
+                }
             }
         }
         
@@ -79,7 +88,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         if segue.identifier == "newEntrySegue" {
             let destinationVC = segue.destination as! NewEntryViewController
             destinationVC.addOrEditEntryDelegate = self
-            destinationVC.defaultTitle = self.searchDomains?[0] ?? ""
+            destinationVC.defaultTitle = self.searchDomains?.first ?? ""
         } else if segue.identifier == "embeddedEntryListSegue" {
             let destinationVC = segue.destination as! EntryListViewController
             destinationVC.selectionDelegate = self
@@ -91,6 +100,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
     func initAutofillEntries () {
         let entries = getGroupedOrderedItems (searchDomains: searchDomains!)
         entryListVC?.initAutofillEntries(entries: entries)
+        warnOfBadApp()
         spinner.willMove(toParent: nil)
         spinner.view.removeFromSuperview()
         spinner.removeFromParent()
@@ -247,8 +257,10 @@ extension KeeVaultViewController: RowSelectionDelegate {
         let entry = entries![entryIndex]
         let passwordCredential = ASPasswordCredential(user: entry.rawUserName, password: entry.rawPassword )
         if (newUrl) {
-            if let url = urlFromString((self.searchDomains?[0])!) {
-                saveUrlToEntry(entry: entry, url: url.absoluteString)
+            if let urlString = self.searchDomains?.first {
+                if let url = urlFromString(urlString) {
+                    saveUrlToEntry(entry: entry, url: url.absoluteString)
+                }
             }
         }
         self.selectionDelegate?.selected(credentials: passwordCredential)

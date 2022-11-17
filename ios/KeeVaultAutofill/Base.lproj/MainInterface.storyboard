@@ -38,20 +38,55 @@
         <scene sceneID="VHf-V2-hFD">
             <objects>
                 <viewController title="Autofill from Kee Vault" id="k0C-nD-QMs" customClass="KeeVaultViewController" customModule="KeeVaultAutofill" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="HCK-tW-cvk" customClass="keeva">
+                    <view key="view" contentMode="scaleToFill" id="HCK-tW-cvk">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aXl-dc-zz8">
-                                <rect key="frame" x="0.0" y="96" width="375" height="571"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <connections>
-                                    <segue destination="E5e-Oy-Yaa" kind="embed" identifier="embeddedEntryListSegue" id="CSh-PU-6dk"/>
-                                </connections>
-                            </containerView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5gb-IL-ik0">
+                                <rect key="frame" x="0.0" y="96" width="375" height="563"/>
+                                <subviews>
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aXl-dc-zz8">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="563"/>
+                                        <connections>
+                                            <segue destination="E5e-Oy-Yaa" kind="embed" identifier="embeddedEntryListSegue" id="CSh-PU-6dk"/>
+                                        </connections>
+                                    </containerView>
+                                    <view hidden="YES" autoresizesSubviews="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MCN-cW-TXy">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="136"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uKL-nQ-NaY">
+                                                <rect key="frame" x="8" y="8" width="359" height="120"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="120" id="AVp-VZ-iiy"/>
+                                                </constraints>
+                                                <string key="text">This app does not support AutoFill so unfortunately you must find and select the desired credentials every time. Once the app is fixed by its developer, Kee Vault will then be able to remember your selection.</string>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="trailingMargin" secondItem="uKL-nQ-NaY" secondAttribute="trailing" id="3xg-qz-VYp"/>
+                                            <constraint firstItem="uKL-nQ-NaY" firstAttribute="top" secondItem="MCN-cW-TXy" secondAttribute="topMargin" id="MHS-qc-AfN"/>
+                                            <constraint firstAttribute="bottomMargin" secondItem="uKL-nQ-NaY" secondAttribute="bottom" id="MPh-B5-3C0"/>
+                                            <constraint firstItem="uKL-nQ-NaY" firstAttribute="leading" secondItem="MCN-cW-TXy" secondAttribute="leadingMargin" id="hV5-nS-95I"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="aXl-dc-zz8" firstAttribute="top" secondItem="5gb-IL-ik0" secondAttribute="top" id="bDD-CG-bga"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="aYJ-Yo-Lvo"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="aYJ-Yo-Lvo" firstAttribute="bottom" secondItem="5gb-IL-ik0" secondAttribute="bottom" constant="8" id="6Ox-lj-JhC"/>
+                            <constraint firstItem="5gb-IL-ik0" firstAttribute="leading" secondItem="aYJ-Yo-Lvo" secondAttribute="leading" id="Agu-I7-psu"/>
+                            <constraint firstItem="5gb-IL-ik0" firstAttribute="top" secondItem="aYJ-Yo-Lvo" secondAttribute="top" id="JRL-qD-MID"/>
+                            <constraint firstAttribute="trailing" secondItem="5gb-IL-ik0" secondAttribute="trailing" id="scj-fI-KsQ"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Autofill from Kee Vault" id="hD1-0M-wXb">
                         <barButtonItem key="backBarButtonItem" title="Kee Vault Entries" id="YsF-Tn-Ot7"/>
@@ -194,7 +229,7 @@
             <objects>
                 <tableViewController id="E5e-Oy-Yaa" customClass="EntryListViewController" customModule="KeeVaultAutofill" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="8eJ-eg-hfX">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="571"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="563"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <searchBar key="tableHeaderView" contentMode="redraw" searchBarStyle="minimal" placeholder="Filter entries" id="Gq8-ki-cNH">
@@ -274,7 +309,7 @@
             <objects>
                 <viewController title="Edit Entry" id="FRe-jD-wLo" customClass="EditEntryViewController" customModule="KeeVaultAutofill" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BK0-Zb-Anw">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="543"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Leave blank to remove any current username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WZH-GF-7bH">
