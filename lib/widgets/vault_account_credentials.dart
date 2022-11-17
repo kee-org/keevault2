@@ -77,6 +77,10 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                     }
                   },
                   autofocus: false,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  textCapitalization: TextCapitalization.none,
+                  keyboardType: TextInputType.emailAddress,
                 ),
               ),
               Padding(
