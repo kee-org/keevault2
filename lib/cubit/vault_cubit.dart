@@ -1354,6 +1354,6 @@ class VaultCubit extends Cubit<VaultState> {
     // changing but, especially for local-only users, the suspension period should
     // be very brief. Perhaps even briefer than it would take to wait for the
     // device to check the filesystem.
-    return autoFillMergeAttemptDue || state is VaultUpdatingLocalFromAutofill;
+    return KeeVaultPlatform.isIOS && (autoFillMergeAttemptDue || state is VaultUpdatingLocalFromAutofill);
   }
 }

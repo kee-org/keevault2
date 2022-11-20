@@ -445,8 +445,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/stabilise-argon2params"
-      resolved-ref: "6af890411a79874ede99d4e8a5d391048ad4cc42"
+      ref: master
+      resolved-ref: "37e9039fa50742bbda45044007572dd151cbd02d"
       url: "https://github.com/kee-org/kdbx.dart.git"
     source: git
     version: "0.5.17+0"

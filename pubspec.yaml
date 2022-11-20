@@ -32,7 +32,7 @@ dependencies:
   kdbx:
     git:
       url: https://github.com/kee-org/kdbx.dart.git
-      ref: feature/stabilise-argon2params
+      ref: master
   path_provider: ^2.0.9
   biometric_storage:
     git:
