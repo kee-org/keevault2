@@ -197,7 +197,7 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
             },
           ),
           OutlinedButton(
-            onPressed: () => AppConfig.router.navigateTo(
+            onPressed: () async => await AppConfig.router.navigateTo(
               context,
               Routes.passwordPresetManager,
               transition: TransitionType.inFromRight,

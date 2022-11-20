@@ -122,8 +122,8 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
                     text: str.localOnlyAgree2,
                     style: theme.textTheme.bodyText2!.copyWith(color: theme.primaryColor),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        FreeUserTermsDialog().show(context);
+                      ..onTap = () async {
+                        await FreeUserTermsDialog().show(context);
                       },
                   ),
                   TextSpan(

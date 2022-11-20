@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
@@ -100,7 +99,7 @@ class EntryWidget extends StatelessWidget {
         final fileName = result?.files.firstOrNull?.name ?? UuidUtil.createNonCryptoUuid();
         await _attachFileContent(context, fileName, bytes);
       } on Exception {
-        DialogUtils.showErrorDialog(context, str.attachmentError, str.attachmentErrorDetails);
+        await DialogUtils.showErrorDialog(context, str.attachmentError, str.attachmentErrorDetails);
       }
     }
   }
@@ -158,7 +157,7 @@ class EntryWidget extends StatelessWidget {
 
   Future<OtpAuth?> _askForTotpSecret(BuildContext context) async {
     final str = S.of(context);
-    Future<OtpAuth?> _cleanOtpCodeCode(String totpCode) async {
+    Future<OtpAuth?> cleanOtpCodeCode(String totpCode) async {
       try {
         if (totpCode.startsWith(OtpAuth.URI_PREFIX)) {
           return OtpAuth.fromUri(Uri.parse(totpCode));
@@ -192,7 +191,7 @@ class EntryWidget extends StatelessWidget {
 
           final barcodeResult = await barcode.BarcodeScanner.scan();
           if (barcodeResult.type == barcode.ResultType.Barcode) {
-            final result = await _cleanOtpCodeCode(barcodeResult.rawContent);
+            final result = await cleanOtpCodeCode(barcodeResult.rawContent);
             if (result == null) {
               final tryAgain = await DialogUtils.showConfirmDialog(
                   context: context,
@@ -249,7 +248,7 @@ class EntryWidget extends StatelessWidget {
       if (totpCode == null) {
         return null;
       }
-      final result = await _cleanOtpCodeCode(totpCode);
+      final result = await cleanOtpCodeCode(totpCode);
       if (result == null) {
         await DialogUtils.showSimpleAlertDialog(
           context,
@@ -287,7 +286,9 @@ class EntryWidget extends StatelessWidget {
                       centerTitle: true,
                       toolbarHeight: 48,
                       leading: IconButton(
-                          iconSize: 24, icon: Icon(Icons.arrow_back), onPressed: () => SystemNavigator.pop()),
+                          iconSize: 24,
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () async => await SystemNavigator.pop()),
                     )
                   : AppBar(
                       actions: [
@@ -561,7 +562,7 @@ class EntryWidget extends StatelessWidget {
                   SpeedDialChild(
                     label: str.addField,
                     child: Icon(Icons.label),
-                    onTap: () => _selectCustomKey(context),
+                    onTap: () async => await _selectCustomKey(context),
                   ),
                   if (!entry.fields.any((f) => f.isTotp))
                     SpeedDialChild(
@@ -599,7 +600,7 @@ class EntryWidget extends StatelessWidget {
               floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
               bottomNavigationBar: BottomBarWidget(
                 () {
-                  showModalBottomSheet<void>(
+                  unawaited(showModalBottomSheet<void>(
                       context: context,
                       isScrollControlled: true,
                       shape: RoundedRectangleBorder(
@@ -608,7 +609,7 @@ class EntryWidget extends StatelessWidget {
                       ),
                       builder: (BuildContext context) {
                         return BottomDrawerWidget();
-                      });
+                      }));
                 },
                 centreButton: Visibility(
                     visible: entry.isDirty || savingViaAutofill,

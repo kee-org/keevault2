@@ -164,7 +164,7 @@ class ImportExportWidget extends StatelessWidget {
         }
         final extension = result?.files.firstOrNull?.extension;
         if (extension != 'kdbx') {
-          DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
+          await DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
           return;
         }
         final lockedSource = LockedVaultFile(
@@ -179,12 +179,12 @@ class ImportExportWidget extends StatelessWidget {
       } on KdbxUnsupportedException catch (e) {
         l.e('Import failed: $e');
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          DialogUtils.showErrorDialog(context, str.importError, str.importErrorKdbx + e.hint);
+          await DialogUtils.showErrorDialog(context, str.importError, str.importErrorKdbx + e.hint);
         });
       } on Exception catch (e, st) {
         l.e('Import failed: $e ; $st');
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          DialogUtils.showErrorDialog(context, str.importError, str.importErrorDetails);
+          await DialogUtils.showErrorDialog(context, str.importError, str.importErrorDetails);
         });
       }
     }
@@ -240,7 +240,7 @@ class ImportExportWidget extends StatelessWidget {
         ));
       } on Exception catch (e, st) {
         l.e('Export failed: $e', st);
-        DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+        await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
       }
     }
   }

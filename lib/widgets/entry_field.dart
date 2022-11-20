@@ -90,7 +90,7 @@ class _SwitchEntryFieldState extends _EntryFieldState {
             child: PopupMenuButton<EntryAction>(
               icon: const Icon(Icons.more_vert),
               offset: const Offset(0, 32),
-              onSelected: (EntryAction entryAction) => _handleMenuEntrySelected(context, entryAction),
+              onSelected: (EntryAction entryAction) async => await _handleMenuEntrySelected(context, entryAction),
               itemBuilder: _buildMenuEntries,
             ),
           ),
@@ -234,7 +234,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
               child: PopupMenuButton<EntryAction>(
                 icon: const Icon(Icons.more_vert),
                 offset: const Offset(0, 32),
-                onSelected: (EntryAction entryAction) => _handleMenuEntrySelected(context, entryAction),
+                onSelected: (EntryAction entryAction) async => await _handleMenuEntrySelected(context, entryAction),
                 itemBuilder: _buildMenuEntries,
               ),
             ),

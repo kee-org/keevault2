@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/config/app.dart';
@@ -50,35 +52,35 @@ class BottomDrawerWidget extends StatelessWidget {
                     ListTile(
                       leading: Icon(Icons.flash_on),
                       title: Text(str.generateSinglePassword),
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        AppConfig.router.navigateTo(context, Routes.passwordGenerator);
+                        await AppConfig.router.navigateTo(context, Routes.passwordGenerator);
                       },
                     ),
                   if (state is VaultLoaded && !autofillSimpleUIMode(autoFillState))
                     ListTile(
                       leading: Icon(Icons.swap_horiz),
                       title: Text(str.importExport),
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        AppConfig.router.navigateTo(context, Routes.importExport);
+                        await AppConfig.router.navigateTo(context, Routes.importExport);
                       },
                     ),
                   if (state is VaultLoaded && !autofillSimpleUIMode(autoFillState))
                     ListTile(
                       leading: Icon(Icons.settings),
                       title: Text(str.settings),
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        AppConfig.router.navigateTo(context, Routes.settings);
+                        await AppConfig.router.navigateTo(context, Routes.settings);
                       },
                     ),
                   ListTile(
                     leading: Icon(Icons.help),
                     title: Text(str.help),
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pop(context);
-                      AppConfig.router.navigateTo(context, Routes.help);
+                      await AppConfig.router.navigateTo(context, Routes.help);
                     },
                   ),
                 ],
@@ -129,24 +131,23 @@ class AccountDrawerWidget extends StatelessWidget {
                         children: [
                           if (user?.email != null)
                             OutlinedButton(
-                              onPressed: () {
-                                DialogUtils.openUrl(
+                              onPressed: () async {
+                                await DialogUtils.openUrl(
                                     EnvironmentConfig.webUrl + '/#pfEmail=$emailAddress,dest=manageAccount');
                               },
                               child: Text(str.manageAccount.toUpperCase()),
                             ),
                           if (user?.email != null)
                             OutlinedButton(
-                              onPressed: () {
-                                _forgetUser(context);
+                              onPressed: () async {
+                                await _forgetUser(context);
                               },
                               child: Text(str.signout.toUpperCase()),
                             ),
                           if (user?.email == null)
                             OutlinedButton(
-                              onPressed: () {
-                                //Navigator.pop(context);
-                                _forgetUser(context);
+                              onPressed: () async {
+                                await _forgetUser(context);
                               },
                               child: Text(str.signin.toUpperCase()),
                             ),
@@ -262,8 +263,8 @@ class VaultStatusIconWidget extends StatelessWidget {
       return icon != null
           ? IconButton(
               icon: icon,
-              onPressed: () {
-                DialogUtils.showSimpleAlertDialog(context, null, _buildDescription(state, str),
+              onPressed: () async {
+                await DialogUtils.showSimpleAlertDialog(context, null, _buildDescription(state, str),
                     routeAppend: 'vaultStatusExplanation');
               },
             )
@@ -382,7 +383,7 @@ class _SaveInProgressIndicatorWidgetState extends State<SaveInProgressIndicatorW
 
 void toggleBottomDrawerVisibility(BuildContext context) {
   _removeKeyboardFocus(context);
-  showModalBottomSheet<void>(
+  unawaited(showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
@@ -390,7 +391,7 @@ void toggleBottomDrawerVisibility(BuildContext context) {
       ),
       builder: (BuildContext context) {
         return BottomDrawerWidget();
-      });
+      }));
 }
 
 _removeKeyboardFocus(BuildContext context) {

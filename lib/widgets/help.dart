@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:keevault/widgets/bottom.dart';
 import 'package:logger_flutter/logger_flutter.dart';
@@ -32,14 +34,16 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
   @override
   void initState() {
     super.initState();
-    _initPackageInfo();
+    unawaited(_initPackageInfo());
   }
 
   Future<void> _initPackageInfo() async {
     final info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
+    if (mounted) {
+      setState(() {
+        _packageInfo = info;
+      });
+    }
   }
 
   @override
@@ -70,7 +74,8 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: OutlinedButton(
-                      onPressed: () => {DialogUtils.openUrl('https://forum.kee.pm/tags/c/kee-vault/9/documentation')},
+                      onPressed: () async =>
+                          await DialogUtils.openUrl('https://forum.kee.pm/tags/c/kee-vault/9/documentation'),
                       child: Text(str.viewDocumentation)),
                 ),
                 Divider(),
@@ -86,7 +91,8 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: OutlinedButton(
-                      onPressed: () => {DialogUtils.openUrl('https://forum.kee.pm')}, child: Text(str.visitTheForum)),
+                      onPressed: () async => await DialogUtils.openUrl('https://forum.kee.pm'),
+                      child: Text(str.visitTheForum)),
                 ),
                 Divider(),
                 Padding(
@@ -106,7 +112,8 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                 Text('Package ID: ${_packageInfo.packageName}'),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: OutlinedButton(onPressed: () => {LogConsole.open(context)}, child: Text('Show log console')),
+                  child: OutlinedButton(
+                      onPressed: () async => await LogConsole.open(context), child: Text('Show log console')),
                 ),
               ],
             ),

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:argon2_ffi_base/argon2_ffi_base.dart';
 import 'package:flutter/foundation.dart';
 import 'package:keevault/logging/logger.dart';

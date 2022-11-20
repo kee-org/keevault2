@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:keevault/config/app.dart';
 import 'package:keevault/cubit/generator_profiles_cubit.dart';
 import 'package:keevault/model/password_generator_profile.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
@@ -89,10 +90,10 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                     leading: Switch(
                                       value: !generatorState.profileSettings.disabled
                                           .contains(generatorState.all[index].name),
-                                      onChanged: (bool? value) {
+                                      onChanged: (bool? value) async {
                                         if (value != null) {
                                           final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                          cubit.setEnabledProfile(generatorState.all[index].name, value);
+                                          await cubit.setEnabledProfile(generatorState.all[index].name, value);
                                         }
                                       },
                                     ),
@@ -108,9 +109,9 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                           .contains(generatorState.all[index].name),
                                       child: OutlinedButton(
                                         child: Text(str.setDefault),
-                                        onPressed: () {
+                                        onPressed: () async {
                                           final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                          cubit.changeDefaultProfile(generatorState.all[index].name);
+                                          await cubit.changeDefaultProfile(generatorState.all[index].name);
                                         },
                                       ),
                                     ),
@@ -133,15 +134,15 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                         initialValue: generatorState.all[index].name,
                                       ).show(context);
                                       if (newName != null) {
-                                        cubit.renameProfile(generatorState.all[index].name, newName);
+                                        await cubit.renameProfile(generatorState.all[index].name, newName);
                                       }
                                     },
                                     child: Text(str.tagRename.toUpperCase()),
                                   ),
                                   TextButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                      cubit.removeProfile(generatorState.all[index].name);
+                                      await cubit.removeProfile(generatorState.all[index].name);
                                     },
                                     child: Text(str.genPsDelete.toUpperCase()),
                                   )
@@ -205,21 +206,16 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                         OutlinedButton(
                             child: Text(str.alertCancel.toUpperCase()),
                             onPressed: () {
-                              // Potential loss of context here but I think because the generator profiles cubit emit
-                              // is the last thing to happen in the discardNewProfile task Flutter won't have had a
-                              // chance to draw a new frame and detach this defunct widget from the context. If WTFs
-                              // happen around here though, this is a strong candidate for the cause of the problem.
                               final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
                               cubit.discardNewProfile();
-                              Navigator.of(context).pop(true);
+                              Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
                             }),
                         OutlinedButton(
                             child: Text(str.add.toUpperCase()),
                             onPressed: () async {
-                              // Potential loss of context here as per above comment
                               final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                              cubit.addNewProfile();
-                              Navigator.of(context).pop(true);
+                              await cubit.addNewProfile();
+                              Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
                             }),
                       ],
                     ),

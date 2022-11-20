@@ -39,12 +39,12 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
     }
   }
 
-  void persistLatestSettings(PasswordGeneratorProfileSettings settings) {
-    Settings.setValue('generatorPresets', settings.toJson());
-    Settings.setValue('embeddedConfigUpdatedAtGeneratorPresets', DateTime.now().toUtc().millisecondsSinceEpoch);
+  Future<void> persistLatestSettings(PasswordGeneratorProfileSettings settings) async {
+    await Settings.setValue('generatorPresets', settings.toJson());
+    await Settings.setValue('embeddedConfigUpdatedAtGeneratorPresets', DateTime.now().toUtc().millisecondsSinceEpoch);
   }
 
-  void renameProfile(String oldName, String requestedName) {
+  Future<void> renameProfile(String oldName, String requestedName) async {
     final currentState = state as GeneratorProfilesEnabled;
     String newName = requestedName;
 
@@ -78,7 +78,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
       newSettings,
       currentState.current,
     ));
-    persistLatestSettings(newSettings);
+    await persistLatestSettings(newSettings);
   }
 
   void startDefiningNewProfile() {
@@ -97,7 +97,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
     ));
   }
 
-  void addNewProfile() {
+  Future<void> addNewProfile() async {
     if (state is! GeneratorProfilesCreating) return;
     final currentState = state as GeneratorProfilesCreating;
     String newName = currentState.newProfile.name;
@@ -114,10 +114,10 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
       newSettings,
       currentState.current,
     ));
-    persistLatestSettings(newSettings);
+    await persistLatestSettings(newSettings);
   }
 
-  void removeProfile(String name) {
+  Future<void> removeProfile(String name) async {
     final currentState = state as GeneratorProfilesEnabled;
     var newUserProfiles = currentState.profileSettings.user.where((profile) => profile.name != name).toList();
 
@@ -146,10 +146,10 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
           ? currentState.enabled.firstWhere((profile) => profile.name == newDefaultName).copyWith()
           : currentState.current,
     ));
-    persistLatestSettings(newSettings);
+    await persistLatestSettings(newSettings);
   }
 
-  void setEnabledProfile(String name, bool enabled) {
+  Future<void> setEnabledProfile(String name, bool enabled) async {
     final currentState = state as GeneratorProfilesEnabled;
 
     if (!enabled) {
@@ -181,7 +181,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
           ? currentState.all.firstWhere((profile) => profile.name == newDefaultName)
           : currentState.current,
     ));
-    persistLatestSettings(newSettings);
+    await persistLatestSettings(newSettings);
   }
 
   String determineNewDefaultProfileName(
@@ -214,7 +214,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
     return newDefaultName;
   }
 
-  void changeDefaultProfile(String name) {
+  Future<void> changeDefaultProfile(String name) async {
     final currentState = state as GeneratorProfilesEnabled;
     if (currentState.profileSettings.disabled.contains(name)) {
       l.w('Attempted to change default to a disabled preset');
@@ -225,7 +225,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
       newSettings,
       currentState.current,
     ));
-    persistLatestSettings(newSettings);
+    await persistLatestSettings(newSettings);
   }
 
   void changeLength(double length) {

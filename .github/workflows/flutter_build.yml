@@ -3,9 +3,9 @@ name: Flutter build
 on:
   push:
     branches:
-      - '*'
+      - '**'
     tags-ignore:
-      - '*'
+      - '**'
 
 jobs:
   buildAndTestAndroid:

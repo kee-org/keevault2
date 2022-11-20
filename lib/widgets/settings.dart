@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +95,7 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
           SimpleSettingsTile(
             title: str.changePassword,
             subtitle: str.changePasswordDetail,
-            onTap: () => AppConfig.router.navigateTo(
+            onTap: () async => await AppConfig.router.navigateTo(
               context,
               Routes.changePassword,
               transition: TransitionType.inFromRight,
@@ -143,7 +145,7 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                 SimpleSettingsTile(
                   title: str.genPsTitle,
                   subtitle: str.managePasswordPresets,
-                  onTap: () => AppConfig.router.navigateTo(
+                  onTap: () async => await AppConfig.router.navigateTo(
                     context,
                     Routes.passwordPresetManager,
                     transition: TransitionType.inFromRight,
@@ -182,14 +184,16 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
   @override
   void initState() {
     super.initState();
-    _initBiometricStorageStatus();
+    unawaited(_initBiometricStorageStatus());
   }
 
   Future<void> _initBiometricStorageStatus() async {
     final enabled = (await BiometricStorage().canAuthenticate()) == CanAuthenticateResponse.success;
-    setState(() {
-      _isEnabled = enabled;
-    });
+    if (mounted) {
+      setState(() {
+        _isEnabled = enabled;
+      });
+    }
   }
 
   @override
@@ -292,14 +296,16 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
   @override
   void initState() {
     super.initState();
-    _initPackageInfo();
+    unawaited(_initPackageInfo());
   }
 
   Future<void> _initPackageInfo() async {
     final info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
+    if (mounted) {
+      setState(() {
+        _packageInfo = info;
+      });
+    }
   }
 
   @override

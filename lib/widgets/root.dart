@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/widgets/account_wrapper.dart';
 import 'package:keevault/widgets/bottom.dart';
@@ -17,7 +19,7 @@ class RootWidgetState extends State<RootWidget> {
   @override
   void initState() {
     super.initState();
-    _updateStatus();
+    unawaited(_updateStatus());
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.

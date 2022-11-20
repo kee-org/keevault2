@@ -341,5 +341,6 @@
   "createNewPasswordApplyExplanation": "Replace your old password with the new secure one shown above.",
   "createNewPasswordCopyExplanation": "Copy the new secure password shown above to your device's copy/paste clipboard.",
   "createNewPasswordConfigurationExplanation": "Create a different password by choosing a preset and/or adjusting the settings below.",
-  "passwordStrength": "Password strength"
+  "passwordStrength": "Password strength",
+  "urlOpenFailed": "Your device stopped us opening that resource"
 }

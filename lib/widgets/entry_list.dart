@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
@@ -14,11 +16,11 @@ import '../cubit/account_cubit.dart';
 import '../cubit/interaction_cubit.dart';
 import '../cubit/vault_cubit.dart';
 import 'package:animations/animations.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:collection/collection.dart';
 import 'loading_spinner.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/generated/l10n.dart';
+import 'dialog_utils.dart';
 
 class EntryListWidget extends StatelessWidget {
   const EntryListWidget({
@@ -56,7 +58,7 @@ class EntryListWidget extends StatelessWidget {
                     ),
                     OutlinedButton(
                       child: Text(str.import),
-                      onPressed: () => {AppConfig.router.navigateTo(context, Routes.importExport)},
+                      onPressed: () async => await AppConfig.router.navigateTo(context, Routes.importExport),
                     )
                   ],
                 );
@@ -180,8 +182,7 @@ class EntryListItemWidget extends StatelessWidget {
                       // We may display a loading spinner if the autofill process takes
                       // long enough for the dialog to render but in many cases we'll
                       // be fast enough that it's won't finish animating in to view.
-                      // ignore: unawaited_futures
-                      showDialog(
+                      unawaited(showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (context) => WillPopScope(
@@ -189,7 +190,7 @@ class EntryListItemWidget extends StatelessWidget {
                           child: Center(
                               child: SizedBox(width: 48, height: 48, child: LoadingSpinner(tooltip: str.autofilling))),
                         ),
-                      );
+                      ));
 
                       // Save app id or domain for future matching purposes
                       final appId = autoFillState.androidMetadata.packageNames.isNotEmpty
@@ -303,7 +304,7 @@ class EntryListItemWidget extends StatelessWidget {
                             ? IconButton(
                                 icon: Icon(Icons.open_in_new),
                                 onPressed: () async {
-                                  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                                  await DialogUtils.openUrl(url);
                                 })
                             : null,
                         onTap: () {

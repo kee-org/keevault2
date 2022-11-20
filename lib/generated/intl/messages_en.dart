@@ -562,6 +562,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Use biometrics"),
         "unprotectField":
             MessageLookupByLibrary.simpleMessage("Unprotect field"),
+        "urlOpenFailed": MessageLookupByLibrary.simpleMessage(
+            "Your device stopped us opening that resource"),
         "useWebAppForOtherSettings": MessageLookupByLibrary.simpleMessage(
             "You can change your account password and some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault."),
         "user": MessageLookupByLibrary.simpleMessage("user"),

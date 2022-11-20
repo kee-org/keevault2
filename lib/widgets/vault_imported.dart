@@ -69,8 +69,8 @@ class VaultImportedWidget extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
                 recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    DialogUtils.openUrl('https://forum.kee.pm/t/kee-vault-2-imported-entries/3852');
+                  ..onTap = () async {
+                    await DialogUtils.openUrl('https://forum.kee.pm/t/kee-vault-2-imported-entries/3852');
                   },
               ),
             ],
@@ -99,8 +99,8 @@ class VaultImportedWidget extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
                 recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    DialogUtils.openUrl('https://forum.kee.pm/t/kee-vault-2-imported-entries/3852');
+                  ..onTap = () async {
+                    await DialogUtils.openUrl('https://forum.kee.pm/t/kee-vault-2-imported-entries/3852');
                   },
               ),
             ],

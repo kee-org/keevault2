@@ -16,10 +16,10 @@ import Flutter
             // This method is invoked on the UI thread.
             switch call.method{
             case "setAllEntries":
-                guard let args = call.arguments as? Dictionary<String, Any> else {
-                    result(FlutterError.init(code: "bad args", message: nil, details: nil))
-                    break
-                  }
+//                guard let args = call.arguments as? Dictionary<String, Any> else {
+//                    result(FlutterError.init(code: "bad args", message: nil, details: nil))
+//                    break
+//                  }
 //                guard let kvEntries = args["entries"] as? [String] else {
 //                    result(FlutterError.init(code: "missing entries argument", message: nil, details: nil))
 //                    break
