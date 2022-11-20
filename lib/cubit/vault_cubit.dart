@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_persistent_queue/flutter_persistent_queue.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/config/platform.dart';
 import 'package:keevault/config/synced_app_settings.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/generator_profiles_cubit.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/local_vault_repository.dart';
 import 'package:keevault/locked_vault_file.dart';
 import 'package:keevault/password_strength.dart';
@@ -33,6 +35,8 @@ class VaultCubit extends Cubit<VaultState> {
   final GeneratorProfilesCubit _generatorProfilesCubit;
   PersistentQueue? _persistentQueueAfAssociations;
   final bool Function() isAutofilling;
+  bool autoFillMergeAttemptDue = true;
+
   VaultCubit(
     this._userRepo,
     this._qu,
@@ -53,8 +57,10 @@ class VaultCubit extends Cubit<VaultState> {
   }
 
   void initAutofillPersistentQueue(String uuid) {
-    _persistentQueueAfAssociations = PersistentQueue('keevaultpendingautofillassociations-$uuid',
-        flushAt: 1000000, flushTimeout: const Duration(days: 10000));
+    if (KeeVaultPlatform.isAndroid) {
+      _persistentQueueAfAssociations = PersistentQueue('keevaultpendingautofillassociations-$uuid',
+          flushAt: 1000000, flushTimeout: const Duration(days: 10000));
+    }
   }
 
   Future<void> _applyAutofillPersistentQueueItems(List<dynamic> list, LinkedHashMap<String, KdbxEntry> entries) async {
@@ -327,6 +333,11 @@ class VaultCubit extends Cubit<VaultState> {
       return;
     }
 
+    if (newFile == null) {
+      l.e('Unexpected error applying new password from remote. This app instance may now be broken but we'
+          'll try just sticking with the current version just in case that works.');
+      newFile = vState.vaultLocal;
+    }
     l.d('applying user-supplied new master password to account User');
     final key = protectedValue.hash;
     await user.attachKey(key);
@@ -336,11 +347,11 @@ class VaultCubit extends Cubit<VaultState> {
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     await _qu.saveQuickUnlockUserPassKey(user.passKey);
     await _qu.saveQuickUnlockFileCredentials(
-        creds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+        creds,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+        await newFile.files.current.kdfCacheKey);
 
-    if (newFile != null) {
-      await emitVaultLoaded(newFile, user, safe: false);
-    }
+    await emitVaultLoaded(newFile, user, safe: false);
   }
 
   Future<void> download(User user, Credentials kdbxCredentials) async {
@@ -360,6 +371,7 @@ class VaultCubit extends Cubit<VaultState> {
       l.d('opening (unlocking) the new local file');
       emit(const VaultOpening());
       final vaultFile = await LocalVaultFile.unlock(downloadedFile);
+      await _localVaultRepo.createQUCredentials(downloadedFile.credentials!, vaultFile.files.current);
 
       if (importRequired) {
         l.i('opened; import is required');
@@ -446,10 +458,14 @@ class VaultCubit extends Cubit<VaultState> {
         await user.attachKey(suppliedPassword.hash);
         await _qu.saveQuickUnlockUserPassKey(user.passKey);
         await _qu.saveQuickUnlockFileCredentials(
-            suppliedCreds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+            suppliedCreds,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await file.files.current.kdfCacheKey);
       } else if (suppliedPassword != null) {
         await _qu.saveQuickUnlockFileCredentials(
-            suppliedCreds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+            suppliedCreds,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await file.files.current.kdfCacheKey);
       }
       l.d('local vault opened');
       await emitVaultLoaded(file, user, safe: false);
@@ -516,7 +532,8 @@ class VaultCubit extends Cubit<VaultState> {
       if (uploadPending) {
         l.i('Found pending upload marker. Previous upload attempt must have been aborted by network or platform (e.g. app was closed)');
         // We'll upload the latest local changes instead. Since that will merge in any recent remote
-        // changes, the end result will be consistent and thus there's no need to continue with this refresh function
+        // changes, the end result will be consistent and thus there's no need to continue with this refresh function.
+        // Pending merge from autofill will thus be deferred until the next vault load or device task switch restoration
         await upload(user, s.vault, overridePassword: overridePassword);
         return;
       }
@@ -551,9 +568,14 @@ class VaultCubit extends Cubit<VaultState> {
             l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
             await _qu.saveQuickUnlockUserPassKey(user.passKey);
             await _qu.saveQuickUnlockFileCredentials(
-                creds, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+                creds,
+                DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+                await s.vault.files.current.kdfCacheKey);
           }
           safeEmitLoaded(s.vault);
+          if (KeeVaultPlatform.isIOS) {
+            await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
+          }
           return;
         }
         lockedFile = tempLockedFile;
@@ -573,6 +595,9 @@ class VaultCubit extends Cubit<VaultState> {
       } on KeeServiceTransportException catch (e) {
         final message = e.handle('Background refresh error');
         emitError(message);
+        if (KeeVaultPlatform.isIOS) {
+          await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
+        }
         return;
       } on KeeMissingPrimaryDBException {
         emitKeeMissingPrimaryDBExceptionError();
@@ -582,6 +607,9 @@ class VaultCubit extends Cubit<VaultState> {
             'Background refresh error. Check your internet connection. There may be more information in this message: $e';
         l.e(message);
         emitError(message);
+        if (KeeVaultPlatform.isIOS) {
+          await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
+        }
         return;
       }
       try {
@@ -696,8 +724,10 @@ class VaultCubit extends Cubit<VaultState> {
 
       final quStatus = await _qu.initialiseForUser(_qu.localUserMagicString, false);
       if (quStatus != QUStatus.unavailable) {
-        await _qu.saveQuickUnlockFileCredentials(credentialsWithStrength.credentials,
-            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+        await _qu.saveQuickUnlockFileCredentials(
+            credentialsWithStrength.credentials,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await file.files.current.kdfCacheKey);
         l.d('New free user password stored in Quick Unlock');
       }
       await emitVaultLoaded(file, null, safe: false);
@@ -797,12 +827,14 @@ class VaultCubit extends Cubit<VaultState> {
   void lock() async {
     _qu.lock();
     _persistentQueueAfAssociations = null;
+    autoFillMergeAttemptDue = true;
     emit(const VaultLocalFileCredentialsRequired('locked', false));
   }
 
   void signout() async {
     _qu.lock();
     _persistentQueueAfAssociations = null;
+    autoFillMergeAttemptDue = true;
     emit(const VaultInitial());
   }
 
@@ -811,6 +843,7 @@ class VaultCubit extends Cubit<VaultState> {
     await _localVaultRepo.remove(user);
     _qu.lock();
     _persistentQueueAfAssociations = null;
+    autoFillMergeAttemptDue = true;
     l.d('user vault removed');
     emit(const VaultInitial());
   }
@@ -822,7 +855,8 @@ class VaultCubit extends Cubit<VaultState> {
     }
   }
 
-  Future<void> enableQuickUnlock(User? user, Credentials? credentials) async {
+  Future<void> enableQuickUnlock(User? user, KdbxFile? file) async {
+    final credentials = file?.credentials;
     if (credentials == null) {
       l.w("No credentials available so can't save to quick unlock");
       return;
@@ -837,7 +871,7 @@ class VaultCubit extends Cubit<VaultState> {
       return;
     }
     await _qu.saveBothSecrets(user?.passKey ?? 'notARealPassword', credentials,
-        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await file!.kdfCacheKey);
   }
 
   Future<void> save(User? user, {bool skipRemote = false}) async {
@@ -846,27 +880,47 @@ class VaultCubit extends Cubit<VaultState> {
       l.e('Save requested while vault is not loaded');
     } else if (s is VaultSaving && s.locally) {
       l.e("Can't save while already saving");
-    } else if (s is VaultReconcilingUpload || s is VaultUpdatingLocalFromRemote) {
-      l.e("Can't save while merging from remote source");
+    } else if (s is VaultReconcilingUpload ||
+        s is VaultUpdatingLocalFromRemote ||
+        s is VaultUpdatingLocalFromAutofill) {
+      l.e("Can't save while merging from remote source or autofill");
     } else {
       l.d('saving vault');
       final vault = currentVaultFile!;
       emit(VaultSaving(vault, true, s is VaultSaving ? s.remotely : false));
       final mergedOrCurrentVaultFile =
           await _localVaultRepo.save(user, vault, applyAndConsumePendingAutofillAssociations);
-      if (user == null) {
-        emit(VaultLoaded(mergedOrCurrentVaultFile));
-        return;
+      //TODO:f: Sync with iOS shared credentials keychain (also in other places like merge from autofill and refresh)
+      // if (KeeVaultPlatform.isIOS) {
+      //   final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup
+      //       .getAllEntries(enterRecycleBin: false)
+      //       .values;
+      //   await _autoFillMethodChannel.invokeMethod('setAllEntries', <String, dynamic>{
+      //     'entries': entries.toJSONStringTODO(),
+      //   });
+      // }
+      await uploadIfNeeded(user, mergedOrCurrentVaultFile, skipRemote);
+
+      if (KeeVaultPlatform.isIOS) {
+        await autofillMerge(user, onlyIfAttemptAlreadyDue: true);
       }
-      if (skipRemote) {
-        l.d('vault saved locally; skipping upload');
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('user.${user.email}.uploadPending', true);
-        emit(VaultLoaded(mergedOrCurrentVaultFile));
-        return;
-      }
-      await upload(user, mergedOrCurrentVaultFile);
     }
+  }
+
+  Future<void> uploadIfNeeded(User? user, LocalVaultFile mergedOrCurrentVaultFile, bool skipRemote) async {
+    if (user == null) {
+      emit(VaultLoaded(mergedOrCurrentVaultFile));
+      return;
+    }
+    if (skipRemote) {
+      l.d('vault saved locally; skipping upload');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('user.${user.email}.uploadPending', true);
+      emit(VaultLoaded(mergedOrCurrentVaultFile));
+      return;
+    }
+    await upload(user, mergedOrCurrentVaultFile);
+    return;
   }
 
   //TODO:f: check history after upload and warn user or attempt reconciliation in case that they uploaded a newer version from a different device in between our check for the latest version and the network upload completing.
@@ -1111,6 +1165,9 @@ class VaultCubit extends Cubit<VaultState> {
     if (state is VaultUpdatingLocalFromRemote) {
       final castState = state as VaultUpdatingLocalFromRemote;
       emit(VaultUpdatingLocalFromRemote(castState.vault));
+    } else if (state is VaultUpdatingLocalFromAutofill) {
+      final castState = state as VaultUpdatingLocalFromAutofill;
+      emit(VaultUpdatingLocalFromAutofill(castState.vault));
     } else if (state is VaultRefreshCredentialsRequired) {
       final castState = state as VaultRefreshCredentialsRequired;
       emit(VaultRefreshCredentialsRequired(castState.vault, castState.reason, castState.causedByInteraction));
@@ -1143,6 +1200,7 @@ class VaultCubit extends Cubit<VaultState> {
   bool safeEmitLoaded(LocalVaultFile v) {
     if (state.runtimeType == VaultRefreshing ||
         state.runtimeType == VaultUpdatingLocalFromRemote ||
+        state.runtimeType == VaultUpdatingLocalFromAutofill ||
         state.runtimeType == VaultBackgroundError ||
         state.runtimeType == VaultLoaded ||
         state is VaultSaving) {
@@ -1228,6 +1286,12 @@ class VaultCubit extends Cubit<VaultState> {
 
   Future<void> changeFreeUserPassword(String password) async {
     VaultState s = state;
+    if (isPasswordChangingSuspended()) {
+      const message =
+          'User tried to change password while cubit prevented it. This is extremely unlikely to happen and retrying should resolve the issue.';
+      l.w(message);
+      throw Exception(message);
+    }
     if (s is VaultSaving) {
       const message = 'Can\'t change password while vault is being saved. Try again later.';
       l.e(message);
@@ -1241,5 +1305,55 @@ class VaultCubit extends Cubit<VaultState> {
       await save(null);
       l.d('KDBX password changed');
     }
+  }
+
+  Future<void> autofillMerge(User? user, {bool onlyIfAttemptAlreadyDue = false}) async {
+    if (onlyIfAttemptAlreadyDue && !autoFillMergeAttemptDue) {
+      return;
+    }
+
+    VaultState s = state;
+    if (s is! VaultLoaded || s is VaultRefreshing || s is VaultSaving) {
+      autoFillMergeAttemptDue = true;
+      return;
+    }
+
+    Credentials creds = s.vault.files.current.credentials;
+
+    try {
+      autoFillMergeAttemptDue = false;
+      emit(VaultUpdatingLocalFromAutofill(s.vault));
+      final newFile = await _localVaultRepo.tryAutofillMerge(user, creds, s.vault);
+
+      if (newFile != null && user != null) {
+        await upload(
+          user,
+          newFile,
+        );
+      } else {
+        await emitVaultLoaded(newFile ?? s.vault, user, immediateRemoteRefresh: false, safe: true);
+      }
+    } on KdbxInvalidKeyException {
+      // We ignore this until we have a background service to keep all 3 sources in sync. Until then, it could happen if user changes their password while there are outstanding changes available in the autofill kdbx file. We prevent that locally but not if user makes password change on a different device.
+      const message =
+          "Merge from Autofill service failed. Changes recently made via your device's Autofill feature (i.e. from a different app) may have been lost so please inspect your vault and correct this manually. The most likely explanation for this problem is that you changed your password on another device before this one was able to integrate your changes from Autofill.";
+      l.e(message);
+      emitError(message, toast: true);
+      return;
+    } on Exception catch (e) {
+      final message =
+          "Merge from Autofill service failed. Changes recently made via your device's Autofill feature (i.e. from a different app) may have been lost so please inspect your vault and correct this manually. Check your device has enough storage space. Otherwise, this error may indicate a faulty operating system or hardware. There may be more information in this message: $e";
+      l.e(message);
+      emitError(message, toast: true);
+      return;
+    }
+  }
+
+  bool isPasswordChangingSuspended() {
+    // Maybe could inspect the filesystem to see if we really need to suspend
+    // changing but, especially for local-only users, the suspension period should
+    // be very brief. Perhaps even briefer than it would take to wait for the
+    // device to check the filesystem.
+    return KeeVaultPlatform.isIOS && (autoFillMergeAttemptDue || state is VaultUpdatingLocalFromAutofill);
   }
 }

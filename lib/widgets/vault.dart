@@ -13,8 +13,10 @@ import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/widgets/vault_password_credentials.dart';
 
+import '../config/platform.dart';
 import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
+import '../logging/logger.dart';
 import 'autofill_save.dart';
 import 'bottom.dart';
 import 'entry_filters.dart';
@@ -32,7 +34,7 @@ class VaultWidget extends StatefulWidget {
   State<VaultWidget> createState() => _VaultWidgetState();
 }
 
-class _VaultWidgetState extends State<VaultWidget> {
+class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
   late Timer _timer;
 
   Future<void> _refresh() async {
@@ -62,7 +64,27 @@ class _VaultWidgetState extends State<VaultWidget> {
     _timer = Timer.periodic(Duration(minutes: 1), (timer) async {
       await _refresh();
     });
+
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => autofillMergeIfRequired(onlyIfAttemptAlreadyDue: true));
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      autofillMergeIfRequired(onlyIfAttemptAlreadyDue: false);
+    }
+  }
+
+  void autofillMergeIfRequired({required bool onlyIfAttemptAlreadyDue}) {
+    if (KeeVaultPlatform.isIOS) {
+      l.v('checking if autofill merge required. $onlyIfAttemptAlreadyDue');
+      final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+      BlocProvider.of<VaultCubit>(context).autofillMerge(user, onlyIfAttemptAlreadyDue: onlyIfAttemptAlreadyDue);
+    }
   }
 
   @override
@@ -72,6 +94,7 @@ class _VaultWidgetState extends State<VaultWidget> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
     super.dispose();
   }

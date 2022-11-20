@@ -4,5 +4,15 @@
     <dict>
         <key>com.apple.developer.authentication-services.autofill-credential-provider</key>
         <true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.keevault.keevault</string>
+	</array>
+        <key>keychain-access-groups</key>
+        <array>
+            <string>$(AppIdentifierPrefix)com.keevault.keevault.autofill</string>
+            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default</string>
+            <string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default</string>
+        </array>
     </dict>
 </plist>

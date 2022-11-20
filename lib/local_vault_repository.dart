@@ -2,8 +2,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:argon2_ffi_base/argon2_ffi_base.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/password_strength.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -12,6 +14,7 @@ import 'package:keevault/locked_vault_file.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 
 import 'argon2_params.dart';
+import 'config/platform.dart';
 import 'credentials/credential_lookup_result.dart';
 import 'kdbx_argon2_ffi.dart';
 import 'kdf_cache.dart';
@@ -22,6 +25,7 @@ import 'vault_file.dart';
 
 class LocalVaultRepository {
   final QuickUnlocker qu;
+  static const _autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
 
   LocalVaultRepository(this.qu);
 
@@ -29,6 +33,15 @@ class LocalVaultRepository {
   static KdbxFormat kdbxFormat() {
     Argon2.resolveLibraryForceDynamic = true;
     return KdbxFormat(KeeVaultKdfCache(), FlutterArgon2());
+  }
+
+  getStorageDirectory() async {
+    if (KeeVaultPlatform.isIOS) {
+      final path = await _autoFillMethodChannel.invokeMethod('getAppGroupDirectory');
+      return Directory(path);
+    }
+    final directory = await getApplicationSupportDirectory();
+    return directory;
   }
 
   Future<LockedVaultFile?> _loadFile(String fileName, [DateTime? ifNewerThan]) async {
@@ -81,25 +94,25 @@ class LocalVaultRepository {
   }
 
   Future<LocalVaultFile?> loadFreeUser(Future<CredentialLookupResult> Function() getCredentials) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = await _loadLocalFile(getCredentials, '${directory.path}/local_user/current.kdbx');
     return file;
   }
 
   Future<LockedVaultFile?> loadFreeUserLocked() async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = await _loadFile('${directory.path}/local_user/current.kdbx');
     return file;
   }
 
   Future<LocalVaultFile?> load(User user, Future<CredentialLookupResult> Function() getCredentials) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = await _loadLocalFile(getCredentials, '${directory.path}/${user.emailHashedB64url}/current.kdbx');
     return file;
   }
 
   Future<LocalVaultFile?> createNewKdbxOnStorage(StrengthAssessedCredentials credentialsWithStrength) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final credentials = credentialsWithStrength.credentials;
     final kdbx = kdbxFormat().create(
       credentials,
@@ -117,8 +130,8 @@ class LocalVaultRepository {
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
-    await qu.saveQuickUnlockFileCredentials(
-        credentials, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+    await qu.saveQuickUnlockFileCredentials(credentials,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await kdbx.kdfCacheKey);
 
     final lockedKdbx = LockedVaultFile(
       saved,
@@ -146,26 +159,29 @@ class LocalVaultRepository {
   }
 
   Future<bool> localFreeExists() async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/local_user/current.kdbx');
     final exists = await file.exists();
     return exists;
   }
 
   Future<void> create(User user, LockedVaultFile lockedKdbx) async {
-    final requireFullPasswordPeriod =
-        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
-    l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
     await file.create(recursive: true);
     await file.writeAsBytes(lockedKdbx.kdbxBytes, flush: true);
-    await qu.saveQuickUnlockFileCredentials(
-        lockedKdbx.credentials, DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch);
+  }
+
+  Future<void> createQUCredentials(Credentials credentials, KdbxFile file) async {
+    final requireFullPasswordPeriod =
+        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
+    l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
+    await qu.saveQuickUnlockFileCredentials(credentials,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await file.kdfCacheKey);
   }
 
   Future<VaultFileVersions> merge(User user, LocalVaultFile local, RemoteVaultFile remote) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
     final firstKdbx = await local.files.remoteMergeTarget;
     if (firstKdbx == null) {
@@ -210,7 +226,7 @@ class LocalVaultRepository {
       throw Exception('Invalid object passed to stageUpdate');
     }
 
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/staged.kdbx');
     await file.writeAsBytes(bytes, flush: true);
     l.d('staging complete');
@@ -218,7 +234,7 @@ class LocalVaultRepository {
 
   Future<RemoteVaultFile?> loadStagedUpdate(
       User user, Future<CredentialLookupResult> Function() getCredentials, DateTime ifNewerThan) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     return await _loadRemoteFile(
       getCredentials,
       '${directory.path}/${user.emailHashedB64url}/staged.kdbx',
@@ -227,7 +243,7 @@ class LocalVaultRepository {
   }
 
   remove(User user) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
     final stagedFile = File('${directory.path}/${user.emailHashedB64url}/staged.kdbx');
     try {
@@ -243,7 +259,7 @@ class LocalVaultRepository {
   }
 
   Future<bool> removeFreeUser() async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final file = File('${directory.path}/local_user/current.kdbx');
     try {
       await file.delete();
@@ -263,7 +279,7 @@ class LocalVaultRepository {
 
   Future<LocalVaultFile> save(User? user, LocalVaultFile vault,
       Future<KdbxFile> Function(KdbxFile vaultFile) applyAndConsumePendingAutofillAssociations) async {
-    final directory = await getApplicationSupportDirectory();
+    final directory = await getStorageDirectory();
     final userFolder = user?.emailHashedB64url ?? 'local_user';
     final file = File('${directory.path}/$userFolder/current.kdbx');
     (await vault.files.pending)?.merge(vault.files.current);
@@ -295,5 +311,61 @@ class LocalVaultRepository {
       KdfField.version.item(argon2Params.version),
     ]);
     return KdbxHeader.createV4()..writeKdfParameters(kdfParameters);
+  }
+
+  Future<LocalVaultFile?> tryAutofillMerge(User? user, Credentials creds, LocalVaultFile vault) async {
+    final directory = await getStorageDirectory();
+    final userFolder = user?.emailHashedB64url ?? 'local_user';
+    final fileNameCurrent = File('${directory.path}/$userFolder/current.kdbx');
+    final fileNameAutofill = '${directory.path}/$userFolder/autofill.kdbx';
+    final fileAutofill = File(fileNameAutofill);
+
+    if (!(await fileAutofill.exists())) {
+      // normal happy path - nothing to merge from recent autofill activity
+      return null;
+    }
+    l.d('merging current vault from autofill source');
+
+    try {
+      final autofillData = await fileAutofill.readAsBytes();
+      if (autofillData.isEmpty) return null;
+      final autofillLocked = LockedVaultFile(
+        autofillData,
+        DateTime.now(),
+        creds,
+        null,
+        null,
+      );
+      final autofill = await LocalVaultFile.unlock(autofillLocked);
+
+      // pending may be valid and latest data if user has recently downloaded new
+      // data from remote while they had dirty changes locally. If we ignore it,
+      //user will lose that new remote data because we will have recorded that it
+      //was already applied and ready for them to save once they have finished
+      //their current edits. We can't preserve their current edits while
+      //simultaneously accepting edits from their autofill activity. That's
+      //something that a background service might be able to achieve if Apple
+      //and Google are able to offer a suitable API.
+      final kdbxToMergeInto = (await vault.files.pending) ?? vault.files.current;
+      kdbxToMergeInto.merge(autofill.files.current);
+      final kdbxData = await kdbxFormat().save(kdbxToMergeInto);
+
+      await fileNameCurrent.writeAsBytes(kdbxData, flush: true);
+      final persistedTime = DateTime.now();
+      final files = VaultFileVersions(
+          current: kdbxToMergeInto,
+          remoteMergeTargetLocked: LockedVaultFile(
+            kdbxData,
+            persistedTime,
+            kdbxToMergeInto.credentials,
+            null,
+            null,
+          ));
+      return LocalVaultFile(files, persistedTime, persistedTime, vault.uuid, null, null);
+    } finally {
+      // delete the autofill data no matter what, otherwise we'll be stuck in
+      // a loop if a bug in autofill creates an invalid state.
+      fileAutofill.deleteSync();
+    }
   }
 }

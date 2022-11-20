@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:biometric_storage/biometric_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';
+import '../config/platform.dart';
+import '../kdf_cache.dart';
 import 'expiring_cached_credential_hash.dart';
 import 'expiring_cached_credential_hash_map.dart';
 import '../config/environment_config.dart';
@@ -15,6 +18,9 @@ class QuickUnlocker {
   final String localUserMagicString = 'localUserMagicString@v1';
   ExpiringCachedCredentials? _currentCreds;
   String? newUserPassKey;
+  final kdfCache = KeeVaultKdfCache();
+
+  static const _autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
 
   // We cache all credentials that the current platform user has entered. In some
   // cases this will result in prolonged internal memory persistence for credentials
@@ -24,7 +30,14 @@ class QuickUnlocker {
   // for every single interactive and non-interactive operation we undertake.
   ExpiringCachedCredentialHashMap? _currentCredsMap;
 
-  final storageFileName = 'KeeVaultQuickUnlock_v1_${EnvironmentConfig.stage}_${EnvironmentConfig.channel}';
+  final storageFileName =
+      'KeeVaultQuickUnlock_v2_${EnvironmentConfig.stage}${KeeVaultPlatform.isAndroid ? '_${EnvironmentConfig.channel}' : ''}';
+
+  // iOS limits possible app version configurations, essentially forcing development builds to share a keychain
+  // regardless of which remote server platform channel is in use. In practice, therefore, we will map dev
+  // builds to the dev environment, beta to beta and release to release. And hope no bugs ever need a more complex
+  // environment to investigate.
+  final iosAccessGroupPlistKey = 'KeeVaultSharedDefaultAccessGroup';
 
   // changes to authenticationValidityDurationSeconds only take effect when creating
   // a new storage file, not for every read or write to it.
@@ -37,7 +50,8 @@ class QuickUnlocker {
   Future<BiometricStorageFile> _storageFile() => _storageFileCached ??= BiometricStorage().getStorage(
         storageFileName,
         forceInit: true,
-        options: StorageFileInitOptions(authenticationValidityDurationSeconds: authGracePeriod),
+        options: StorageFileInitOptions(
+            authenticationValidityDurationSeconds: authGracePeriod, iosAccessGroupPlistKey: iosAccessGroupPlistKey),
         promptInfo: PromptInfo(
           iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
         ),
@@ -141,6 +155,11 @@ $stackTrace''');
           promptInfo: PromptInfo(
               androidPromptInfo: AndroidPromptInfo(
                   title: S.current.rememberVaultPassword, description: S.current.biometricsStoreDescription)));
+      if (KeeVaultPlatform.isIOS) {
+        await _autoFillMethodChannel.invokeMethod('setUserId', <String, dynamic>{
+          'userId': _currentUser,
+        });
+      }
     } on AuthException catch (e, stackTrace) {
       if (e.code == AuthExceptionCode.timeout) {
         l.w('Authentication timeout. Try again. More quickly this time please.');
@@ -167,6 +186,10 @@ $stackTrace''');
       l.d('Quick unlock unavailable');
       return null;
     }
+    kdfCache.putItemByKey(_currentCreds!.kdbxKdfCacheKey, base64.decode(_currentCreds!.kdbxKdfResultBase64));
+
+    // It's actually unlikely we will need the credentials anymore since we have the KDF result instead but we
+    // at least need a sensible target for any future password change operations the user undertakes.
     return HashCredentials(base64.decode(_currentCreds!.kdbxBase64Hash));
   }
 
@@ -202,14 +225,15 @@ $stackTrace''');
       l.d('UserPassKey has not changed');
     } else {
       final storage = await _storageFile();
-      updatedCreds = ExpiringCachedCredentials(updatedCreds.kdbxBase64Hash, userPassKey!, updatedCreds.expiry);
+      updatedCreds = ExpiringCachedCredentials(updatedCreds.kdbxBase64Hash, updatedCreds.kdbxKdfCacheKey,
+          updatedCreds.kdbxKdfResultBase64, userPassKey!, updatedCreds.expiry);
       _currentCreds = updatedCreds;
       _currentCredsMap!.update(_currentUser!, updatedCreds);
       await _write(storage, json.encode(_currentCredsMap));
     }
   }
 
-  Future<void> saveQuickUnlockFileCredentials(Credentials? creds, int expiryTime) async {
+  Future<void> saveQuickUnlockFileCredentials(Credentials? creds, int expiryTime, String kdfCacheKey) async {
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
@@ -229,7 +253,8 @@ $stackTrace''');
         newUserPassKey = 'notARealPassword';
       }
       final encodedCreds = base64.encode(creds!.getHash());
-      updatedCreds = ExpiringCachedCredentials(encodedCreds, newUserPassKey!, expiryTime);
+      final kdfResult = base64.encode(kdfCache.getItemByKey(kdfCacheKey)!);
+      updatedCreds = ExpiringCachedCredentials(encodedCreds, kdfCacheKey, kdfResult, newUserPassKey!, expiryTime);
     } else {
       final encodedCreds = base64.encode(creds!.getHash());
       if (encodedCreds == _currentCreds!.kdbxBase64Hash) {
@@ -245,7 +270,7 @@ $stackTrace''');
     await _write(storage, json.encode(_currentCredsMap));
   }
 
-  Future<void> saveBothSecrets(String userPassKey, Credentials creds, int expiryTime) async {
+  Future<void> saveBothSecrets(String userPassKey, Credentials creds, int expiryTime, String kdfCacheKey) async {
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
@@ -256,7 +281,8 @@ $stackTrace''');
     }
 
     final encodedCreds = base64.encode(creds.getHash());
-    final newCreds = ExpiringCachedCredentials(encodedCreds, userPassKey, expiryTime);
+    final kdfResult = base64.encode(kdfCache.getItemByKey(kdfCacheKey)!);
+    final newCreds = ExpiringCachedCredentials(encodedCreds, kdfCacheKey, kdfResult, userPassKey, expiryTime);
 
     final storage = await _storageFile();
     _currentCreds = newCreds;

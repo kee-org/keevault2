@@ -1,3 +1,7 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
 #include "KeeVault-defaults.xcconfig"
+
+CODE_SIGN_ENTITLEMENTS=./Runner/Runner$(KEEVAULT_ID_SUFFIX).entitlements
+KEE_VAULT_SHARED_DEFAULT_ACCESS_GROUP=$(AppIdentifierPrefix)com.keevault.keevault.shared.default$(KEEVAULT_ID_SUFFIX)
+KEE_VAULT_SHARED_DEFAULT_GROUP_NAME=group.com.keevault.keevault$(KEEVAULT_ID_SUFFIX)

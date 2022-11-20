@@ -14,6 +14,14 @@ class KeeVaultKdfCache extends KdfCache {
 
   final _cache = <String, Uint8List>{};
 
+  void putItemByKey(String key, Uint8List result) {
+    _cache[key] = result;
+  }
+
+  Uint8List? getItemByKey(String key) {
+    return _cache[key];
+  }
+
   @override
   Future<void> putItem(Argon2Arguments a, Uint8List result) async {
     final key = await argon2ArgumentsKey(a);
