@@ -27,7 +27,6 @@ final l = getLogger();
 void recordLibraryLogs() {
   logging.Logger.root.level = logging.Level.FINEST;
   logging.Logger.root.onRecord.listen((record) {
-    if (record.loggerName == 'Matomo' && record.level < logging.Level.WARNING) return;
     final message = '${record.loggerName}: ${record.time}: ${record.message}';
     if (record.level == logging.Level.SHOUT) {
       l.wtf(message);

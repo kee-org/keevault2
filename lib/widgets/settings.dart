@@ -10,14 +10,14 @@ import 'package:keevault/cubit/account_cubit.dart';
 import 'package:keevault/cubit/app_settings_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import '../generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../logging/logger.dart';
 import 'dialog_utils.dart';
 
-class SettingsWidget extends TraceableStatefulWidget {
+class SettingsWidget extends StatefulWidget {
   const SettingsWidget({
     Key? key,
   }) : super(key: key);
@@ -26,7 +26,10 @@ class SettingsWidget extends TraceableStatefulWidget {
   State<SettingsWidget> createState() => _SettingsWidgetState();
 }
 
-class _SettingsWidgetState extends State<SettingsWidget> {
+class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMixin {
+  @override
+  String get traceTitle => widget.toStringShort();
+
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
@@ -237,7 +240,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
               vaultCubit.currentVaultFile?.files.current,
             );
           },
-          autoValidateMode: AutovalidateMode.always,
+          autovalidateMode: AutovalidateMode.always,
         ),
         TextInputSettingsTile(
           title: str.requireFullPasswordEvery,
@@ -262,7 +265,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
               vaultCubit.currentVaultFile?.files.current,
             );
           },
-          autoValidateMode: AutovalidateMode.always,
+          autovalidateMode: AutovalidateMode.always,
         ),
       ],
     );

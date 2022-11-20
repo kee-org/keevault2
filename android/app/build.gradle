@@ -81,7 +81,7 @@ def symbolLevel = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].symbolLeve
 def chosenSigningConfig = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].signingConfig
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -131,6 +131,7 @@ android {
     lint {
         disable 'InvalidPackage'
     }
+    namespace 'com.keevault.keevault'
 }
 
 flutter {

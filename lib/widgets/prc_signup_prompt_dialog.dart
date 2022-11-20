@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keevault/widgets/prc_privacy_dialog.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import '../config/environment_config.dart';
 import '../vault_backend/mailer_service.dart';
 import 'dialog_utils.dart';
@@ -8,7 +8,7 @@ import 'package:keevault/generated/l10n.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:keevault/logging/logger.dart';
 
-class PRCSignupPromptDialog extends TraceableStatefulWidget with DialogMixin<bool> {
+class PRCSignupPromptDialog extends StatefulWidget with DialogMixin<bool> {
   const PRCSignupPromptDialog({
     Key? key,
   }) : super(key: key);
@@ -20,7 +20,11 @@ class PRCSignupPromptDialog extends TraceableStatefulWidget with DialogMixin<boo
   String get name => '/dialog/prcSignupPrompt';
 }
 
-class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog> with WidgetsBindingObserver {
+class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
+    with WidgetsBindingObserver, TraceableClientMixin {
+  @override
+  String get traceTitle => widget.toStringShort();
+
   late TextEditingController _controller;
   AppLifecycleState? _previousState;
   late bool loading;
@@ -65,7 +69,7 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog> with Widg
         l.d('signup successful');
         navigator.pop(true);
         sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
-        MatomoTracker.trackEvent('prcSignup', 'free');
+        MatomoTracker.instance.trackEvent(eventCategory: 'main', eventName: 'prcSignup', action: 'free');
       } else {
         l.e('signup failed');
         setState(() {

@@ -8,10 +8,10 @@ import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/widgets/loading_spinner.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import 'entry.dart';
 
-class AutofillSaveWidget extends TraceableStatefulWidget {
+class AutofillSaveWidget extends StatefulWidget {
   const AutofillSaveWidget({
     super.key,
   });
@@ -20,7 +20,10 @@ class AutofillSaveWidget extends TraceableStatefulWidget {
   State<AutofillSaveWidget> createState() => _AutofillSaveWidgetState();
 }
 
-class _AutofillSaveWidgetState extends State<AutofillSaveWidget> {
+class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableClientMixin {
+  @override
+  String get traceTitle => widget.toStringShort();
+
   KdbxEntry? newEntry;
   @override
   void initState() {

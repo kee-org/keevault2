@@ -8,12 +8,12 @@ import 'package:keevault/extension_methods.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:keevault/model/field.dart';
 import 'package:keevault/widgets/binaries.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
 import 'entry.dart';
 
-class EntryHistoryWidget extends TraceableStatelessWidget {
+class EntryHistoryWidget extends StatelessWidget {
   final Function(int index) revertTo;
   final Function(int index) deleteAt;
 
@@ -26,70 +26,73 @@ class EntryHistoryWidget extends TraceableStatelessWidget {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    return BlocBuilder<EntryCubit, EntryState>(builder: (context, state) {
-      if (state is! EntryLoaded) return Container();
-      final EditEntryViewModel entry = state.entry;
-      return Scaffold(
-        key: key,
-        appBar: AppBar(title: Text(str.entryHistory)),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: SafeArea(
-              top: false,
-              left: false,
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-                    child: Text(str.entryHistoryExplainer),
-                  ),
-                  ...entry.history
-                      .asMap()
-                      .entries
-                      .map((mapEntry) {
-                        final historyIndex = mapEntry.key;
-                        final historyEntry = mapEntry.value;
-                        return EntryHistoryItem(
-                          revert: () async {
-                            final navigator = Navigator.of(context);
-                            if (entry.isDirty) {
+    return TraceableWidget(
+      traceTitle: 'EntryHistory',
+      child: BlocBuilder<EntryCubit, EntryState>(builder: (context, state) {
+        if (state is! EntryLoaded) return Container();
+        final EditEntryViewModel entry = state.entry;
+        return Scaffold(
+          key: key,
+          appBar: AppBar(title: Text(str.entryHistory)),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: SafeArea(
+                top: false,
+                left: false,
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+                      child: Text(str.entryHistoryExplainer),
+                    ),
+                    ...entry.history
+                        .asMap()
+                        .entries
+                        .map((mapEntry) {
+                          final historyIndex = mapEntry.key;
+                          final historyEntry = mapEntry.value;
+                          return EntryHistoryItem(
+                            revert: () async {
+                              final navigator = Navigator.of(context);
+                              if (entry.isDirty) {
+                                final proceed = await DialogUtils.showConfirmDialog(
+                                    context: context,
+                                    params: ConfirmDialogParams(
+                                        content: str.revertUnsavedWarning,
+                                        negativeButtonText: str.alertNo,
+                                        positiveButtonText: str.discardChanges));
+                                if (!proceed) {
+                                  return;
+                                }
+                              }
                               final proceed = await DialogUtils.showConfirmDialog(
                                   context: context,
                                   params: ConfirmDialogParams(
-                                      content: str.revertUnsavedWarning,
+                                      content: str.detHistoryRevertAlert,
                                       negativeButtonText: str.alertNo,
-                                      positiveButtonText: str.discardChanges));
+                                      positiveButtonText: str.detHistoryRevert));
                               if (!proceed) {
                                 return;
                               }
-                            }
-                            final proceed = await DialogUtils.showConfirmDialog(
-                                context: context,
-                                params: ConfirmDialogParams(
-                                    content: str.detHistoryRevertAlert,
-                                    negativeButtonText: str.alertNo,
-                                    positiveButtonText: str.detHistoryRevert));
-                            if (!proceed) {
-                              return;
-                            }
-                            navigator.pop(true);
-                            revertTo(historyIndex);
-                          },
-                          delete: () => {},
-                          entry: historyEntry,
-                        );
-                      })
-                      .toList()
-                      .reversed
-                ],
+                              navigator.pop(true);
+                              revertTo(historyIndex);
+                            },
+                            delete: () => {},
+                            entry: historyEntry,
+                          );
+                        })
+                        .toList()
+                        .reversed
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        extendBody: true,
-      );
-    });
+          extendBody: true,
+        );
+      }),
+    );
   }
 }
 

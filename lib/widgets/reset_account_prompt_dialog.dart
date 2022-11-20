@@ -8,9 +8,9 @@ import 'dialog_utils.dart';
 import 'package:keevault/generated/l10n.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:keevault/logging/logger.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 
-class ResetAccountPromptDialog extends TraceableStatefulWidget with DialogMixin<bool> {
+class ResetAccountPromptDialog extends StatefulWidget with DialogMixin<bool> {
   const ResetAccountPromptDialog({
     Key? key,
     required this.emailAddress,
@@ -25,12 +25,15 @@ class ResetAccountPromptDialog extends TraceableStatefulWidget with DialogMixin<
   String get name => '/dialog/resetAccountPrompt';
 }
 
-class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> {
+class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> with TraceableClientMixin {
   late TextEditingController _controller;
   late bool loading;
   late bool validationError;
   late bool error;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  String get traceTitle => widget.toStringShort();
 
   @override
   void initState() {
@@ -68,7 +71,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> {
         l.d('signup successful');
         navigator.pop(true);
         sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
-        MatomoTracker.trackEvent('prcSignup', 'home');
+        MatomoTracker.instance.trackEvent(eventCategory: 'main', eventName: 'prcSignup', action: 'home');
         await appSettingsCubit.iamEmailSignupSuppressUntil(DateTime(2122));
       } else {
         l.e('signup failed');

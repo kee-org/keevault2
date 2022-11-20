@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:keevault/widgets/bottom.dart';
 import 'package:logger_flutter/logger_flutter.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../generated/l10n.dart';
 
 import 'dialog_utils.dart';
 
-class HelpWidget extends TraceableStatefulWidget {
+class HelpWidget extends StatefulWidget {
   const HelpWidget({
     Key? key,
   }) : super(key: key);
@@ -17,7 +17,10 @@ class HelpWidget extends TraceableStatefulWidget {
   State<HelpWidget> createState() => _HelpWidgetState();
 }
 
-class _HelpWidgetState extends State<HelpWidget> {
+class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
+  @override
+  String get traceTitle => widget.toStringShort();
+
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',

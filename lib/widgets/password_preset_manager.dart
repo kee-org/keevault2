@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/cubit/generator_profiles_cubit.dart';
 import 'package:keevault/model/password_generator_profile.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
 import 'password_generator.dart';
 
 S _str = S();
 
-class PasswordPresetManagerWidget extends TraceableStatefulWidget {
+class PasswordPresetManagerWidget extends StatefulWidget {
   final Function? apply;
   const PasswordPresetManagerWidget({
     Key? key,
@@ -21,7 +21,10 @@ class PasswordPresetManagerWidget extends TraceableStatefulWidget {
   State<PasswordPresetManagerWidget> createState() => _PasswordPresetManagerWidgetState();
 }
 
-class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidget> {
+class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidget> with TraceableClientMixin {
+  @override
+  String get traceTitle => widget.toStringShort();
+
   final TextEditingController _includeTextController = TextEditingController();
 
   String describeProfile(BuildContext context, PasswordGeneratorProfile profile) {

@@ -8,13 +8,13 @@ import 'package:keevault/config/app.dart';
 import 'package:keevault/config/routes.dart';
 import 'package:keevault/cubit/generator_profiles_cubit.dart';
 import 'package:keevault/model/password_generator_profile.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import '../generated/l10n.dart';
 import '../phonetic.dart';
 
 S _str = S();
 
-class PasswordGeneratorWidget extends TraceableStatefulWidget {
+class PasswordGeneratorWidget extends StatefulWidget {
   final Function? apply;
   const PasswordGeneratorWidget({
     Key? key,
@@ -25,7 +25,10 @@ class PasswordGeneratorWidget extends TraceableStatefulWidget {
   State<PasswordGeneratorWidget> createState() => _PasswordGeneratorWidgetState();
 }
 
-class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> {
+class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with TraceableClientMixin {
+  @override
+  String get traceTitle => widget.toStringShort();
+
   String _currentPassword = '';
   final TextEditingController _includeTextController = TextEditingController();
 

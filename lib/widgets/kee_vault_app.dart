@@ -14,7 +14,7 @@ import 'package:keevault/local_vault_repository.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/credentials/quick_unlocker.dart';
 import 'package:keevault/config/environment_config.dart';
-import 'package:matomo/matomo.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 //import 'package:platform/platform.dart';
 import '../colors.dart';
 import '../config/platform.dart';
@@ -33,7 +33,7 @@ import 'package:receive_intent/receive_intent.dart' as ri;
 
 import 'in_app_messenger.dart';
 
-class KeeVaultApp extends TraceableStatefulWidget {
+class KeeVaultApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
   const KeeVaultApp({Key? key, required this.navigatorKey}) : super(key: key);
@@ -46,7 +46,10 @@ class KeeVaultApp extends TraceableStatefulWidget {
   }
 }
 
-class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver {
+class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, TraceableClientMixin {
+  @override
+  String get traceTitle => widget.toStringShort();
+
   KeeVaultAppState(GlobalKey<NavigatorState> navigatorKey) {
     final router = FluroRouter();
     Routes.configureRoutes(router);
