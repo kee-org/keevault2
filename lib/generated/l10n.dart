@@ -3479,6 +3479,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Your device stopped us opening that resource`
+  String get urlOpenFailed {
+    return Intl.message(
+      'Your device stopped us opening that resource',
+      name: 'urlOpenFailed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -66,7 +66,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => Jiffy.locale('en_gb'));
+    WidgetsBinding.instance.addPostFrameCallback((_) async => await Jiffy.locale('en_gb'));
     WidgetsBinding.instance.addObserver(this);
     if (KeeVaultPlatform.isAndroid) _initReceiveIntentSubscription();
   }
@@ -74,7 +74,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if (KeeVaultPlatform.isAndroid) _receiveIntentSubscription?.cancel();
+    if (KeeVaultPlatform.isAndroid) unawaited(_receiveIntentSubscription?.cancel());
     super.dispose();
   }
 
@@ -86,7 +86,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
 
   StreamSubscription? _receiveIntentSubscription;
 
-  Future<void> _initReceiveIntentSubscription() async {
+  void _initReceiveIntentSubscription() async {
     _receiveIntentSubscription = ri.ReceiveIntent.receivedIntentStream.listen((ri.Intent? intent) {
       l.w('Received intent: $intent');
       final navigator = widget.navigatorKey.currentState;
@@ -145,9 +145,9 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
         cursorColor: isDark ? palette[50] : palette[500],
         selectionColor: isDark ? palette[700] : palette[100],
       ),
-      outlinedButtonTheme:
-          OutlinedButtonThemeData(style: OutlinedButton.styleFrom(primary: isDark ? palette[100] : palette[600])),
-      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(primary: theme.colorScheme.secondary)),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(foregroundColor: isDark ? palette[100] : palette[600])),
+      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: theme.colorScheme.secondary)),
     );
   }
 

@@ -30,8 +30,8 @@ class VaultDrawerWidget extends StatelessWidget {
                 child: OutlinedButton.icon(
                   icon: _buildIcon(state, str),
                   label: _buildTitle(state, str),
-                  onPressed: () {
-                    DialogUtils.showSimpleAlertDialog(context, null, _buildDescription(state, str),
+                  onPressed: () async {
+                    await DialogUtils.showSimpleAlertDialog(context, null, _buildDescription(state, str),
                         routeAppend: 'vaultStatusExplanation');
                   },
                 ),

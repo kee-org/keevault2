@@ -67,7 +67,8 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => autofillMergeIfRequired(onlyIfAttemptAlreadyDue: true));
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) async => await autofillMergeIfRequired(onlyIfAttemptAlreadyDue: true));
   }
 
   @override
@@ -75,15 +76,15 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.resumed) {
-      autofillMergeIfRequired(onlyIfAttemptAlreadyDue: false);
+      unawaited(autofillMergeIfRequired(onlyIfAttemptAlreadyDue: false));
     }
   }
 
-  void autofillMergeIfRequired({required bool onlyIfAttemptAlreadyDue}) {
+  Future<void> autofillMergeIfRequired({required bool onlyIfAttemptAlreadyDue}) async {
     if (KeeVaultPlatform.isIOS) {
       l.v('checking if autofill merge required. $onlyIfAttemptAlreadyDue');
       final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-      BlocProvider.of<VaultCubit>(context).autofillMerge(user, onlyIfAttemptAlreadyDue: onlyIfAttemptAlreadyDue);
+      await BlocProvider.of<VaultCubit>(context).autofillMerge(user, onlyIfAttemptAlreadyDue: onlyIfAttemptAlreadyDue);
     }
   }
 

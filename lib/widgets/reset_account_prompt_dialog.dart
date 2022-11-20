@@ -147,7 +147,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> wit
                 ),
               ),
               TextButton(
-                onPressed: () => PrcPrivacyDialog().show(context),
+                onPressed: () async => await PrcPrivacyDialog().show(context),
                 child: Text(
                   str.privacyStatement,
                   style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.tertiary),

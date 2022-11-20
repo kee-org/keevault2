@@ -93,7 +93,10 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
-  matomo_tracker: ^1.7.0
+  matomo_tracker: 
+    git:
+      url: https://github.com/kee-org/matomo-tracker
+      ref: main
   file_picker: ^5.2.2
   zxcvbn: ^1.0.0
   flutter_rating_bar: ^4.0.1

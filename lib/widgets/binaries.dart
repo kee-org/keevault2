@@ -234,8 +234,8 @@ class BinaryCardWidget extends StatelessWidget {
                       await file.create(recursive: true);
                       await file.writeAsBytes(bytes, flush: true);
                       try {
-                        await Share.shareFiles([file.path],
-                            mimeTypes: mimeType != null ? [mimeType] : null, subject: 'Kee Vault attachment');
+                        final xfile = XFile(file.path, mimeType: mimeType);
+                        await Share.shareXFiles([xfile], subject: 'Kee Vault attachment');
                       } finally {
                         await file.delete();
                       }
@@ -308,7 +308,7 @@ class BinaryCardWidget extends StatelessWidget {
                               ));
                             } on Exception catch (e, st) {
                               l.e('Export failed: $e', st);
-                              DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+                              await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
                             }
                           }
                         });

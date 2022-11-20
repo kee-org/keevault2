@@ -117,7 +117,7 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
                 ),
               ),
               TextButton(
-                onPressed: () => PrcPrivacyDialog().show(context),
+                onPressed: () async => await PrcPrivacyDialog().show(context),
                 child: Text(
                   str.privacyStatement,
                   style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.tertiary),

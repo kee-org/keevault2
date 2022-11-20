@@ -527,10 +527,12 @@ packages:
   matomo_tracker:
     dependency: "direct main"
     description:
-      name: matomo_tracker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.7.0"
+      path: "."
+      ref: main
+      resolved-ref: b6f09c0f7904b283c34b95a9b88a3b683cff8db7
+      url: "https://github.com/kee-org/matomo-tracker"
+    source: git
+    version: "1.7.1+1"
   meta:
     dependency: "direct main"
     description:

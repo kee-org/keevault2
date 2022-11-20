@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:logger_flutter/logger_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../config/app.dart';
 import '../extension_methods.dart';
 import 'package:keevault/generated/l10n.dart';
 
@@ -37,12 +39,12 @@ class DialogUtils {
         });
   }
 
-  static dynamic showErrorDialog(
+  static Future<dynamic> showErrorDialog(
     BuildContext context,
     String? title,
     String content, {
     String? routeAppend,
-  }) {
+  }) async {
     final materialLoc = MaterialLocalizations.of(context);
     return showDialog<dynamic>(
         context: context,
@@ -69,8 +71,8 @@ class DialogUtils {
             actions: <Widget>[
               TextButton(
                 child: Text(S.of(context).openLogConsole),
-                onPressed: () {
-                  LogConsole.open(context);
+                onPressed: () async {
+                  await LogConsole.open(context);
                 },
               ),
               TextButton(
@@ -85,7 +87,22 @@ class DialogUtils {
   }
 
   static Future<bool> openUrl(String url) async {
-    return await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    var result = false;
+    try {
+      result = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } on PlatformException {
+      result = false;
+    }
+    if (!result) {
+      final context = AppConfig.navigatorKey.currentContext;
+      if (context != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(S.of(context).urlOpenFailed),
+          duration: Duration(seconds: 4),
+        ));
+      }
+    }
+    return result;
   }
 
   static Future<bool> showConfirmDialog({

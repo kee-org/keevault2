@@ -23,7 +23,7 @@ linter:
   # producing the lint.
   rules:
     unawaited_futures: true
-    discarded_futures: true # TODO:f: remove this comment when discarded futures lint is supported by latest flutter
+    discarded_futures: true
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
     # prefer_double_quotes: true
