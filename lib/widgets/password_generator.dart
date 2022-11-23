@@ -172,37 +172,71 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: Text(_str.preset),
           ),
-          DropdownButton<String>(
-            value: generatorState.current.name,
-            items: <DropdownMenuItem<String>>[
-              ...generatorState.enabled.map((p) => DropdownMenuItem(
-                    value: p.name,
-                    child: Text(p.title),
-                  ))
-            ],
-            onChanged: (value) {
-              if (value == null) return;
-              final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-              final newProfile = cubit.changeCurrentProfile(value);
-              if (newProfile != null) {
-                _includeTextController.value = TextEditingValue(
-                    text: newProfile.current.include,
-                    selection: TextSelection.collapsed(offset: newProfile.current.include.length));
-              }
-            },
-          ),
-          OutlinedButton(
-            onPressed: () async => await AppConfig.router.navigateTo(
-              context,
-              Routes.passwordPresetManager,
-              transition: TransitionType.inFromRight,
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownButton<String>(
+                    isExpanded: true,
+                    itemHeight: null,
+                    value: generatorState.current.name,
+                    items: <DropdownMenuItem<String>>[
+                      ...generatorState.enabled.map((p) => DropdownMenuItem(
+                            value: p.name,
+                            child: Text(
+                              p.title,
+                            ),
+                          ))
+                    ],
+                    selectedItemBuilder: (BuildContext context) {
+                      return generatorState.enabled
+                          .map(
+                            (p) => Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                p.title,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          )
+                          .toList();
+                    },
+                    onChanged: (value) {
+                      if (value == null) return;
+                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                      final newProfile = cubit.changeCurrentProfile(value);
+                      if (newProfile != null) {
+                        _includeTextController.value = TextEditingValue(
+                            text: newProfile.current.include,
+                            selection: TextSelection.collapsed(offset: newProfile.current.include.length));
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-            child: Text(_str.managePresets),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 150),
+              child: OutlinedButton(
+                onPressed: () async => await AppConfig.router.navigateTo(
+                  context,
+                  Routes.passwordPresetManager,
+                  transition: TransitionType.inFromRight,
+                ),
+                child: Text(_str.managePresets),
+              ),
+            ),
           )
         ],
       ),
