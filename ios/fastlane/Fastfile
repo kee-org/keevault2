@@ -43,6 +43,7 @@ platform :ios do
 
   desc "Get certificates"
   lane :certificates do
+    xcodes
     sync_code_signing(
       type: "development",
       app_identifier: ['com.keevault.keevault.dev', 'com.keevault.keevault.dev.autofill'],
@@ -65,6 +66,7 @@ platform :ios do
 
   desc "Generate new certificates"
   lane :generate_new_certificates do
+    xcodes
     sync_code_signing(
       type: "development",
       app_identifier: ['com.keevault.keevault.dev', 'com.keevault.keevault.dev.autofill'],
@@ -94,6 +96,7 @@ platform :ios do
     keychain_password = TEMP_KEYCHAIN_PASSWORD
 
     begin
+      xcodes
       ensure_temp_keychain(keychain_name, keychain_password)
 
       match(
@@ -142,6 +145,7 @@ platform :ios do
     keychain_password = TEMP_KEYCHAIN_PASSWORD
 
     begin
+      xcodes
       ensure_temp_keychain(keychain_name, keychain_password)
 
       match(
