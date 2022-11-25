@@ -75,6 +75,14 @@ jobs:
           KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
         run: flutter build apk --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: ./android
+          ruby-version: 2.7
+          bundler: 2.3.19
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
       - name: Release beta stage app to beta delivery platform
         env:
           TESTFAIRY_API_KEY: '${{ secrets.TESTFAIRY_API_KEY }}'
@@ -86,14 +94,6 @@ jobs:
         env:
           KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
         run: flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play
-
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: ./android
-          ruby-version: 2.7
-          bundler: 2.2.26
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Release to Google Play (beta)
         env:
