@@ -109,7 +109,7 @@ android {
         applicationId "com.keevault.keevault"
         applicationIdSuffix idSuffix
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         resValue "string", "app_name", "Kee Vault" + nameSuffix
