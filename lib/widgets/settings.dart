@@ -13,6 +13,7 @@ import 'package:keevault/cubit/app_settings_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import '../config/platform.dart';
 import '../generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -324,7 +325,7 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
             ),
           ),
           Visibility(
-            visible: !widget.isEnabled,
+            visible: !widget.isEnabled && KeeVaultPlatform.isAndroid,
             child: ElevatedButton(
               child: Text(str.enableAutofill),
               onPressed: () async {
@@ -333,7 +334,19 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
             ),
           ),
           Visibility(
-            visible: widget.isEnabled,
+            visible: !widget.isEnabled && KeeVaultPlatform.isIOS,
+            child: ElevatedButton(
+              child: Text(str.enableAutofill),
+              onPressed: () async {
+                await DialogUtils.showSimpleAlertDialog(
+                    context, str.enableAutofill, str.enableAutofillIosInstructions(_packageInfo.appName),
+                    routeAppend: 'autofill-ios-instructions');
+                await BlocProvider.of<AutofillCubit>(context).refresh();
+              },
+            ),
+          ),
+          Visibility(
+            visible: widget.isEnabled && KeeVaultPlatform.isAndroid,
             child: SwitchSettingsTile(
               settingKey: 'autofillServiceEnableSaving',
               title: str.offerToSave,

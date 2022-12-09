@@ -410,6 +410,16 @@ class S {
     );
   }
 
+  /// `1. Please switch to your device's Settings app and load the "Passwords" section.\n\n2. Click on "AutoFill passwords".\n\n3. Ensure the switch at the top is enabled.\n\n4. Deselect Keychain (or other selected items) and then select "{appName}".\n\nThen switch back to this Kee Vault App and click "OK" to confirm that you are finished.\n\nFinally, double check that the status information in the Kee Vault Settings page now says that AutoFill is enabled.\n\nApologies that we can't make this easier - Apple won't allow us to help you in this situation.`
+  String enableAutofillIosInstructions(Object appName) {
+    return Intl.message(
+      '1. Please switch to your device\'s Settings app and load the "Passwords" section.\n\n2. Click on "AutoFill passwords".\n\n3. Ensure the switch at the top is enabled.\n\n4. Deselect Keychain (or other selected items) and then select "$appName".\n\nThen switch back to this Kee Vault App and click "OK" to confirm that you are finished.\n\nFinally, double check that the status information in the Kee Vault Settings page now says that AutoFill is enabled.\n\nApologies that we can\'t make this easier - Apple won\'t allow us to help you in this situation.',
+      name: 'enableAutofillIosInstructions',
+      desc: '',
+      args: [appName],
+    );
+  }
+
   /// `You can change your account password and some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault.`
   String get useWebAppForOtherSettings {
     return Intl.message(

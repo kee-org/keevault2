@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:keevault/config/platform.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/interaction_cubit.dart';
 import 'package:keevault/widgets/prc_dismiss_dialog.dart';
 import 'package:keevault/widgets/prc_signup_prompt_dialog.dart';
 
+import '../config/app.dart';
+import '../config/routes.dart';
 import '../cubit/account_cubit.dart';
 import '../cubit/app_settings_cubit.dart';
 import '../generated/l10n.dart';
@@ -49,7 +52,9 @@ class InAppMessengerWidget extends InheritedWidget {
 
       final interactionState = (interactionCubit.state as InteractionBasic);
       final accountCubit = BlocProvider.of<AccountCubit>(context);
-      if (!iam.isSuppressed(accountCubit, BlocProvider.of<AutofillCubit>(context).state, interactionState)) {
+      final autofillState = BlocProvider.of<AutofillCubit>(context).state;
+      if (!iam.isSuppressed(
+          accountCubit, (autofillState is! AutofillAvailable || autofillState.enabled), interactionState)) {
         ScaffoldMessenger.of(context)
           ..removeCurrentMaterialBanner()
           ..showMaterialBanner(_buildMaterialBanner(iamName, context));
@@ -153,7 +158,11 @@ class InAppMessengerWidget extends InheritedWidget {
         TextButton(
           onPressed: () async {
             final sm = ScaffoldMessenger.of(context);
-            await BlocProvider.of<AutofillCubit>(context).requestEnable();
+            if (KeeVaultPlatform.isAndroid) {
+              await BlocProvider.of<AutofillCubit>(context).requestEnable();
+            } else if (KeeVaultPlatform.isIOS) {
+              await AppConfig.router.navigateTo(context, Routes.settings);
+            }
             sm.hideCurrentMaterialBanner();
           },
           child: Text(str.enableAutofill.toUpperCase()),

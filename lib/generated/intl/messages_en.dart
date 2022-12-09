@@ -27,27 +27,30 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m2(name) => "Select the new parent for the \"${name}\" group";
 
   static String m3(appName) =>
+      "1. Please switch to your device\'s Settings app and load the \"Passwords\" section.\n\n2. Click on \"AutoFill passwords\".\n\n3. Ensure the switch at the top is enabled.\n\n4. Deselect Keychain (or other selected items) and then select \"${appName}\".\n\nThen switch back to this Kee Vault App and click \"OK\" to confirm that you are finished.\n\nFinally, double check that the status information in the Kee Vault Settings page now says that AutoFill is enabled.\n\nApologies that we can\'t make this easier - Apple won\'t allow us to help you in this situation.";
+
+  static String m4(appName) =>
       "You must change your device\'s Autofill provider to ${appName}.";
 
-  static String m4(x, y) => "Enter a number between ${x} and ${y}";
+  static String m5(x, y) => "Enter a number between ${x} and ${y}";
 
-  static String m5(criteria) => "Filtered by ${criteria}";
-
-  static String m6(action) =>
-      "Sorry, we can\'t ${action} unless you grant us permission. Please try again.";
+  static String m6(criteria) => "Filtered by ${criteria}";
 
   static String m7(action) =>
+      "Sorry, we can\'t ${action} unless you grant us permission. Please try again.";
+
+  static String m8(action) =>
       "Sorry, we can\'t ${action} unless you grant us permission. Please grant the permission in your settings and then try again.";
 
-  static String m8(email) =>
+  static String m9(email) =>
       "You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with ${email}";
 
-  static String m9(count) => "${count} bytes";
+  static String m10(count) => "${count} bytes";
 
-  static String m10(error) =>
+  static String m11(error) =>
       "Unexpected error. Sorry! Please let us know, then close and restart the app. Details: ${error}";
 
-  static String m11(email) => "Welcome ${email}";
+  static String m12(email) => "Welcome ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -197,11 +200,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "enableAutofill":
             MessageLookupByLibrary.simpleMessage("Enable Autofill"),
-        "enableAutofillRequired": m3,
+        "enableAutofillIosInstructions": m3,
+        "enableAutofillRequired": m4,
         "enabled": MessageLookupByLibrary.simpleMessage("Enabled"),
         "enterNewPresetName": MessageLookupByLibrary.simpleMessage(
             "Enter the new name for the preset"),
-        "enterNumberBetweenXAndY": m4,
+        "enterNumberBetweenXAndY": m5,
         "enterOldPassword": MessageLookupByLibrary.simpleMessage(
             "First, enter your current password."),
         "enter_your_account_password":
@@ -241,7 +245,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Reveal search options and other filters"),
         "filterTooltipOpen":
             MessageLookupByLibrary.simpleMessage("Show matching entries"),
-        "filteredByCriteria": m5,
+        "filteredByCriteria": m6,
         "footerTitleGen": MessageLookupByLibrary.simpleMessage("Generate"),
         "forgotPasswordOrCheckAccount": MessageLookupByLibrary.simpleMessage(
             "Forgot your password or unsure if you have a Kee Vault account?"),
@@ -426,8 +430,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Password strength"),
         "permanentlyDeleteGroupConfirm": MessageLookupByLibrary.simpleMessage(
             "Permanently delete the group and all entries within it?"),
-        "permissionDeniedError": m6,
-        "permissionDeniedPermanentlyError": m7,
+        "permissionDeniedError": m7,
+        "permissionDeniedPermanentlyError": m8,
         "permissionError":
             MessageLookupByLibrary.simpleMessage("Permission error"),
         "permissionReasonAttachFile":
@@ -446,7 +450,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sign up to receive emails"),
         "prcRegistrationSuccess": MessageLookupByLibrary.simpleMessage(
             "Success! Please check your emails soon to confirm that you want to receive updates from us."),
-        "prcSignupOrAccountStatusCheck": m8,
+        "prcSignupOrAccountStatusCheck": m9,
         "preset": MessageLookupByLibrary.simpleMessage("Preset"),
         "privacyStatement":
             MessageLookupByLibrary.simpleMessage("Privacy Statement"),
@@ -520,7 +524,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Showing all entries"),
         "signin": MessageLookupByLibrary.simpleMessage("Sign in"),
         "signout": MessageLookupByLibrary.simpleMessage("Sign out"),
-        "sizeBytes": m9,
+        "sizeBytes": m10,
         "sortCreated": MessageLookupByLibrary.simpleMessage("Newest"),
         "sortCreatedReversed": MessageLookupByLibrary.simpleMessage("Oldest"),
         "sortModified":
@@ -554,7 +558,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("This field is required"),
         "title": MessageLookupByLibrary.simpleMessage("title"),
         "tryAgain": MessageLookupByLibrary.simpleMessage("Try again"),
-        "unexpected_error": m10,
+        "unexpected_error": m11,
         "unlock": MessageLookupByLibrary.simpleMessage("Unlock"),
         "unlockRequired":
             MessageLookupByLibrary.simpleMessage("Unlock your Vault"),
@@ -606,7 +610,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "website": MessageLookupByLibrary.simpleMessage("Website"),
         "welcomeToKeeVault":
             MessageLookupByLibrary.simpleMessage("Welcome to Kee Vault"),
-        "welcome_message": m11,
+        "welcome_message": m12,
         "willTrySamePasswordFirst": MessageLookupByLibrary.simpleMessage(
             "We\'ll try using the same password you have used to open your current Kee Vault. If that doesn\'t work, you can type in the correct password in a moment."),
         "yourPasswordEntries":

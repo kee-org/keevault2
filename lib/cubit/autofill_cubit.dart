@@ -1,10 +1,12 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_autofill_service/flutter_autofill_service.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 
+import '../config/platform.dart';
 import '../urls.dart';
 import '../vault_file.dart';
 
@@ -13,7 +15,21 @@ part 'autofill_state.dart';
 class AutofillCubit extends Cubit<AutofillState> {
   AutofillCubit() : super(AutofillInitial());
 
+  static const _autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
+
   refresh() async {
+    if (KeeVaultPlatform.isIOS) {
+      final iosAutofillStatus = await _autoFillMethodChannel.invokeMethod('getAutofillStatus');
+      final iosAvailable = iosAutofillStatus > 0;
+      final iosEnabled = iosAutofillStatus == 2;
+      if (!iosAvailable) {
+        emit(AutofillMissing());
+        return;
+      } else {
+        emit(AutofillAvailable(iosEnabled));
+        return;
+      }
+    }
     final available = await AutofillService().hasAutofillServicesSupport;
     final enabled = available ? await AutofillService().status == AutofillServiceStatus.enabled : false;
     if (!available) {

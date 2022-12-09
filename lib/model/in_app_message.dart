@@ -183,12 +183,12 @@ class InAppMessage {
         suppressWhenAutofillEnabled.hashCode;
   }
 
-  bool isSuppressed(AccountCubit accountCubit, AutofillState autofillState, InteractionBasic interactionState) {
+  bool isSuppressed(AccountCubit accountCubit, bool autofillUnavailableOrEnabled, InteractionBasic interactionState) {
     if (suppressForRegisteredUser && accountCubit.currentUserIfKnown == null) {
       l.v('Suppressed because user is signed in');
       return true;
     }
-    if (suppressWhenAutofillEnabled && (autofillState is! AutofillAvailable || autofillState.enabled)) {
+    if (suppressWhenAutofillEnabled && autofillUnavailableOrEnabled) {
       l.v('Suppressed because autofill is already enabled or unavailable');
       return true;
     }

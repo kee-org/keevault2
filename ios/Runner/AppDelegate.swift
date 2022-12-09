@@ -1,4 +1,5 @@
 import UIKit
+import AuthenticationServices
 import Flutter
 
 @UIApplicationMain
@@ -34,6 +35,15 @@ import Flutter
 //
 //                }
                 result(true)
+            case "getAutofillStatus":
+                    let store = ASCredentialIdentityStore.shared
+                    store.getState { state in
+                        if state.isEnabled {
+                            result(2)
+                        } else {
+                            result(1)
+                        }
+                    }
             case "getAppGroupDirectory":
                 let groupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as! String
                 let groupURL:URL! = FileManager().containerURL(forSecurityApplicationGroupIdentifier: groupName)
