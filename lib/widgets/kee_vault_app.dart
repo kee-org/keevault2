@@ -186,22 +186,25 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
             child: InAppMessengerWidget(
               appSettingsState: appSettingsState,
               navigatorKey: widget.navigatorKey,
-              child: MaterialApp(
-                debugShowCheckedModeBanner: false,
-                localizationsDelegates: const [
-                  S.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                navigatorKey: widget.navigatorKey,
-                supportedLocales: S.delegate.supportedLocales,
-                title: 'Kee Vault',
-                theme: getThemeData(false, palette),
-                darkTheme: getThemeData(true, palette),
-                themeMode: (appSettingsState as AppSettingsBasic).themeMode,
-                onGenerateRoute: AppConfig.router.generator,
-                initialRoute: '/',
+              child: GestureDetector(
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  localizationsDelegates: const [
+                    S.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  navigatorKey: widget.navigatorKey,
+                  supportedLocales: S.delegate.supportedLocales,
+                  title: 'Kee Vault',
+                  theme: getThemeData(false, palette),
+                  darkTheme: getThemeData(true, palette),
+                  themeMode: (appSettingsState as AppSettingsBasic).themeMode,
+                  onGenerateRoute: AppConfig.router.generator,
+                  initialRoute: '/',
+                ),
               ),
             ),
           );
