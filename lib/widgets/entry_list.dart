@@ -69,6 +69,7 @@ class EntryListWidget extends StatelessWidget {
                   ));
             }
             return ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: listItems,
             );
           },
