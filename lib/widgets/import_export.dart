@@ -15,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart' show Permission;
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 
 import '../permissions.dart';
+import 'coloured_safe_area_widget.dart';
 
 class ImportExportWidget extends StatelessWidget {
   const ImportExportWidget({Key? key}) : super(key: key);
@@ -27,112 +28,114 @@ class ImportExportWidget extends StatelessWidget {
       traceTitle: 'ImportExport',
       child: BlocBuilder<VaultCubit, VaultState>(
         builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(title: Text(str.importExport)),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SafeArea(
-                  top: false,
-                  left: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text(str.keeVaultFormatExplainer),
-                      ),
-                      Divider(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                        child: Text(
-                          str.import,
-                          style: theme.textTheme.headline4,
+          return ColouredSafeArea(
+            child: Scaffold(
+              appBar: AppBar(title: Text(str.importExport)),
+              body: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SafeArea(
+                    top: false,
+                    left: false,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(str.keeVaultFormatExplainer),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Text(str.importOtherInstructions1),
-                      ),
-                      Text(str.importOtherInstructions4),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                        child: Card(
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 6,
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text(str.importKdbx),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Text(
-                                  str.willTrySamePasswordFirst,
-                                ),
-                              ),
-                              ButtonBar(
-                                alignment: MainAxisAlignment.end,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: state is VaultLoaded ? () => {_import(context, state)} : null,
-                                    child: Text(str.import),
-                                  ),
-                                ],
-                              ),
-                            ],
+                        Divider(),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                          child: Text(
+                            str.import,
+                            style: theme.textTheme.headline4,
                           ),
                         ),
-                      ),
-                      Divider(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                        child: Text(
-                          str.export,
-                          style: theme.textTheme.headline4,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(str.importOtherInstructions1),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                        child: Card(
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 6,
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text(str.importKdbx),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Text(
-                                  str.exportUsesCurrentPassword,
+                        Text(str.importOtherInstructions4),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                          child: Card(
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 6,
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text(str.importKdbx),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                                child: Text(
-                                  str.rememberExportsDoNotUpdate,
-                                ),
-                              ),
-                              ButtonBar(
-                                alignment: MainAxisAlignment.end,
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: (state is VaultLoaded) ? () => {_export(context, state)} : null,
-                                    child: Text(str.export),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    str.willTrySamePasswordFirst,
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                ButtonBar(
+                                  alignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: state is VaultLoaded ? () => {_import(context, state)} : null,
+                                      child: Text(str.import),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        Divider(),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                          child: Text(
+                            str.export,
+                            style: theme.textTheme.headline4,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                          child: Card(
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 6,
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text(str.importKdbx),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    str.exportUsesCurrentPassword,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                                  child: Text(
+                                    str.rememberExportsDoNotUpdate,
+                                  ),
+                                ),
+                                ButtonBar(
+                                  alignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: (state is VaultLoaded) ? () => {_export(context, state)} : null,
+                                      child: Text(str.export),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
+              bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
             ),
-            bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
           );
         },
       ),

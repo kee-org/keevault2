@@ -9,6 +9,7 @@ import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/widgets/loading_spinner.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import 'coloured_safe_area_widget.dart';
 import 'entry.dart';
 
 class AutofillSaveWidget extends StatefulWidget {
@@ -127,16 +128,18 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
             deleteAt: (int index) {},
           );
         } else {
-          return Scaffold(
-            key: widget.key,
-            appBar: AppBar(),
-            body: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    LoadingSpinner(tooltip: 'Please wait...'),
-                  ],
+          return ColouredSafeArea(
+            child: Scaffold(
+              key: widget.key,
+              appBar: AppBar(),
+              body: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const <Widget>[
+                      LoadingSpinner(tooltip: 'Please wait...'),
+                    ],
+                  ),
                 ),
               ),
             ),

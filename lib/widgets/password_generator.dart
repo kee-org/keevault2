@@ -11,6 +11,7 @@ import 'package:keevault/model/password_generator_profile.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import '../generated/l10n.dart';
 import '../phonetic.dart';
+import 'coloured_safe_area_widget.dart';
 
 S _str = S();
 
@@ -89,72 +90,74 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
     return BlocConsumer<GeneratorProfilesCubit, GeneratorProfilesState>(
       builder: (context, state) {
         final generatorState = state as GeneratorProfilesEnabled;
-        return Scaffold(
-          key: widget.key,
-          appBar: AppBar(title: Text(str.createSecurePassword)),
-          body: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 2.0),
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    ),
+        return ColouredSafeArea(
+          child: Scaffold(
+            key: widget.key,
+            appBar: AppBar(title: Text(str.createSecurePassword)),
+            body: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 2.0),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(
+                            child: Text(
+                          _currentPassword,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                      )),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Center(
-                          child: Text(
-                        _currentPassword,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )),
-                    )),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: SafeArea(
-                      top: false,
-                      left: false,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: Text(
-                                '${widget.apply != null ? str.createNewPasswordApplyExplanation : str.createNewPasswordCopyExplanation} ${str.createNewPasswordConfigurationExplanation}'),
-                          ),
-                          _profileChooser(context, generatorState),
-                          lengthChooser(context, generatorState.current),
-                          presetCharChooser(context, generatorState.current),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 64.0),
-                            child: additionalCharIncludes(context, generatorState.current, _includeTextController),
-                          ),
-                        ],
+                      child: SafeArea(
+                        top: false,
+                        left: false,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Text(
+                                  '${widget.apply != null ? str.createNewPasswordApplyExplanation : str.createNewPasswordCopyExplanation} ${str.createNewPasswordConfigurationExplanation}'),
+                            ),
+                            _profileChooser(context, generatorState),
+                            lengthChooser(context, generatorState.current),
+                            presetCharChooser(context, generatorState.current),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 64.0),
+                              child: additionalCharIncludes(context, generatorState.current, _includeTextController),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          floatingActionButton: FloatingActionButton.extended(
-            autofocus: true,
-            icon: widget.apply != null ? Icon(Icons.check) : Icon(Icons.copy),
-            label: widget.apply != null ? Text(str.apply.toUpperCase()) : Text(str.alertCopy.toUpperCase()),
-            onPressed: () async {
-              final navigator = Navigator.of(context);
-              if (widget.apply != null) {
-                widget.apply!(_currentPassword);
-              } else {
-                await Clipboard.setData(ClipboardData(text: _currentPassword));
-              }
-              navigator.pop(true);
-            },
+              ],
+            ),
+            floatingActionButton: FloatingActionButton.extended(
+              autofocus: true,
+              icon: widget.apply != null ? Icon(Icons.check) : Icon(Icons.copy),
+              label: widget.apply != null ? Text(str.apply.toUpperCase()) : Text(str.alertCopy.toUpperCase()),
+              onPressed: () async {
+                final navigator = Navigator.of(context);
+                if (widget.apply != null) {
+                  widget.apply!(_currentPassword);
+                } else {
+                  await Clipboard.setData(ClipboardData(text: _currentPassword));
+                }
+                navigator.pop(true);
+              },
+            ),
           ),
         );
       },

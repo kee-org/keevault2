@@ -6,6 +6,7 @@ import 'package:keevault/cubit/generator_profiles_cubit.dart';
 import 'package:keevault/model/password_generator_profile.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import '../generated/l10n.dart';
+import 'coloured_safe_area_widget.dart';
 import 'dialog_utils.dart';
 import 'password_generator.dart';
 
@@ -50,198 +51,202 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
     return BlocBuilder<GeneratorProfilesCubit, GeneratorProfilesState>(
       builder: (context, state) {
         final generatorState = state as GeneratorProfilesEnabled;
-        return Scaffold(
-          key: widget.key,
-          appBar: AppBar(title: Text(_str.managePasswordPresets)),
-          body: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              itemCount: generatorState.all.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListTile(
-                              title: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  generatorState.all[index].title,
-                                  style: theme.textTheme.subtitle1,
-                                ),
-                              ),
-                              subtitle: Text(
-                                describeProfile(context, generatorState.all[index]),
-                                style: theme.textTheme.subtitle2,
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: ListTile(
-                                    title: Text(str.enabled),
-                                    leading: Switch(
-                                      value: !generatorState.profileSettings.disabled
-                                          .contains(generatorState.all[index].name),
-                                      onChanged: (bool? value) async {
-                                        if (value != null) {
-                                          final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                          await cubit.setEnabledProfile(generatorState.all[index].name, value);
-                                        }
-                                      },
-                                    ),
+        return ColouredSafeArea(
+          child: Scaffold(
+            key: widget.key,
+            appBar: AppBar(title: Text(_str.managePasswordPresets)),
+            body: ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                itemCount: generatorState.all.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Card(
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                title: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    generatorState.all[index].title,
+                                    style: theme.textTheme.subtitle1,
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Visibility(
-                                    visible: generatorState.profileSettings.defaultProfileName ==
-                                        generatorState.all[index].name,
-                                    replacement: Visibility(
-                                      visible: !generatorState.profileSettings.disabled
-                                          .contains(generatorState.all[index].name),
-                                      child: OutlinedButton(
-                                        child: Text(str.setDefault),
-                                        onPressed: () async {
-                                          final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                          await cubit.changeDefaultProfile(generatorState.all[index].name);
+                                subtitle: Text(
+                                  describeProfile(context, generatorState.all[index]),
+                                  style: theme.textTheme.subtitle2,
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: ListTile(
+                                      title: Text(str.enabled),
+                                      leading: Switch(
+                                        value: !generatorState.profileSettings.disabled
+                                            .contains(generatorState.all[index].name),
+                                        onChanged: (bool? value) async {
+                                          if (value != null) {
+                                            final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                            await cubit.setEnabledProfile(generatorState.all[index].name, value);
+                                          }
                                         },
                                       ),
                                     ),
-                                    child: Text(str.genPsDefault),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Visibility(
-                              visible: generatorState.all[index].isUserDefined,
-                              child: ButtonBar(
-                                alignment: MainAxisAlignment.start,
-                                children: [
-                                  TextButton(
-                                    onPressed: () async {
-                                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                      final newName = await SimplePromptDialog(
-                                        title: str.renamingPreset,
-                                        labelText: str.enterNewPresetName,
-                                        initialValue: generatorState.all[index].name,
-                                      ).show(context);
-                                      if (newName != null) {
-                                        await cubit.renameProfile(generatorState.all[index].name, newName);
-                                      }
-                                    },
-                                    child: Text(str.tagRename.toUpperCase()),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                    child: Visibility(
+                                      visible: generatorState.profileSettings.defaultProfileName ==
+                                          generatorState.all[index].name,
+                                      replacement: Visibility(
+                                        visible: !generatorState.profileSettings.disabled
+                                            .contains(generatorState.all[index].name),
+                                        child: OutlinedButton(
+                                          child: Text(str.setDefault),
+                                          onPressed: () async {
+                                            final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                            await cubit.changeDefaultProfile(generatorState.all[index].name);
+                                          },
+                                        ),
+                                      ),
+                                      child: Text(str.genPsDefault),
+                                    ),
                                   ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                      await cubit.removeProfile(generatorState.all[index].name);
-                                    },
-                                    child: Text(str.genPsDelete.toUpperCase()),
-                                  )
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }),
-          floatingActionButton: OpenContainer<bool>(
-            key: ValueKey('new password generator profile screen'),
-            tappable: false,
-            closedShape: CircleBorder(),
-            closedElevation: 0,
-            closedColor: Colors.transparent,
-            transitionType: ContainerTransitionType.fade,
-            transitionDuration: const Duration(milliseconds: 300),
-            openBuilder: (context, close) {
-              return BlocBuilder<GeneratorProfilesCubit, GeneratorProfilesState>(
-                builder: (context, state) {
-                  final generatorState = state as GeneratorProfilesCreating;
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: Text(str.newProfile),
-                    ),
-                    body: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: SafeArea(
-                          top: false,
-                          left: false,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              TextFormField(
-                                onChanged: (String value) {
-                                  final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                  cubit.changeName(value);
-                                },
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: str.name.toUpperCase(),
+                              Visibility(
+                                visible: generatorState.all[index].isUserDefined,
+                                child: ButtonBar(
+                                  alignment: MainAxisAlignment.start,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                        final newName = await SimplePromptDialog(
+                                          title: str.renamingPreset,
+                                          labelText: str.enterNewPresetName,
+                                          initialValue: generatorState.all[index].name,
+                                        ).show(context);
+                                        if (newName != null) {
+                                          await cubit.renameProfile(generatorState.all[index].name, newName);
+                                        }
+                                      },
+                                      child: Text(str.tagRename.toUpperCase()),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                        await cubit.removeProfile(generatorState.all[index].name);
+                                      },
+                                      child: Text(str.genPsDelete.toUpperCase()),
+                                    )
+                                  ],
                                 ),
                               ),
-                              lengthChooser(context, generatorState.newProfile),
-                              presetCharChooser(context, generatorState.newProfile),
-                              additionalCharIncludes(context, generatorState.newProfile, _includeTextController),
                             ],
                           ),
                         ),
                       ),
-                    ),
-                    extendBody: true,
-                    bottomNavigationBar: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        OutlinedButton(
-                            child: Text(str.alertCancel.toUpperCase()),
-                            onPressed: () {
-                              final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                              cubit.discardNewProfile();
-                              Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
-                            }),
-                        OutlinedButton(
-                            child: Text(str.add.toUpperCase()),
-                            onPressed: () async {
-                              final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                              await cubit.addNewProfile();
-                              Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
-                            }),
-                      ],
-                    ),
+                    ],
                   );
-                },
-                // Skip rebuilding while we are animating away during close dialog operation
-                buildWhen: (previous, current) => current is GeneratorProfilesCreating,
-              );
-            },
-            onClosed: (bool? wasCleanClose) {
-              if (wasCleanClose == null || !wasCleanClose) {
-                final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                cubit.discardNewProfile();
-              }
-            },
-            closedBuilder: (context, open) {
-              return FloatingActionButton(
-                child: Icon(Icons.add),
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
+                }),
+            floatingActionButton: OpenContainer<bool>(
+              key: ValueKey('new password generator profile screen'),
+              tappable: false,
+              closedShape: CircleBorder(),
+              closedElevation: 0,
+              closedColor: Colors.transparent,
+              transitionType: ContainerTransitionType.fade,
+              transitionDuration: const Duration(milliseconds: 300),
+              openBuilder: (context, close) {
+                return BlocBuilder<GeneratorProfilesCubit, GeneratorProfilesState>(
+                  builder: (context, state) {
+                    final generatorState = state as GeneratorProfilesCreating;
+                    return ColouredSafeArea(
+                      child: Scaffold(
+                        appBar: AppBar(
+                          title: Text(str.newProfile),
+                        ),
+                        body: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SafeArea(
+                              top: false,
+                              left: false,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  TextFormField(
+                                    onChanged: (String value) {
+                                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                      cubit.changeName(value);
+                                    },
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: str.name.toUpperCase(),
+                                    ),
+                                  ),
+                                  lengthChooser(context, generatorState.newProfile),
+                                  presetCharChooser(context, generatorState.newProfile),
+                                  additionalCharIncludes(context, generatorState.newProfile, _includeTextController),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        extendBody: true,
+                        bottomNavigationBar: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            OutlinedButton(
+                                child: Text(str.alertCancel.toUpperCase()),
+                                onPressed: () {
+                                  final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                  cubit.discardNewProfile();
+                                  Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
+                                }),
+                            OutlinedButton(
+                                child: Text(str.add.toUpperCase()),
+                                onPressed: () async {
+                                  final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                  await cubit.addNewProfile();
+                                  Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
+                                }),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  // Skip rebuilding while we are animating away during close dialog operation
+                  buildWhen: (previous, current) => current is GeneratorProfilesCreating,
+                );
+              },
+              onClosed: (bool? wasCleanClose) {
+                if (wasCleanClose == null || !wasCleanClose) {
                   final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                  cubit.startDefiningNewProfile();
-                  open();
-                },
-              );
-            },
+                  cubit.discardNewProfile();
+                }
+              },
+              closedBuilder: (context, open) {
+                return FloatingActionButton(
+                  child: Icon(Icons.add),
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                    cubit.startDefiningNewProfile();
+                    open();
+                  },
+                );
+              },
+            ),
           ),
         );
       },

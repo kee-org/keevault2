@@ -7,6 +7,7 @@ import '../cubit/account_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/vault_cubit.dart';
+import 'coloured_safe_area_widget.dart';
 
 class RootWidget extends StatefulWidget {
   const RootWidget({Key? key}) : super(key: key);
@@ -44,28 +45,30 @@ class RootWidgetState extends State<RootWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Image(
-          image: AssetImage('assets/vault.png'),
-          excludeFromSemantics: true,
-          height: 48,
-          color: Colors.white,
+    return ColouredSafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Image(
+            image: AssetImage('assets/vault.png'),
+            excludeFromSemantics: true,
+            height: 48,
+            color: Colors.white,
+          ),
+          centerTitle: true,
+          toolbarHeight: 80,
         ),
-        centerTitle: true,
-        toolbarHeight: 80,
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const <Widget>[
-              AccountWrapperWidget(),
-            ],
+        body: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const <Widget>[
+                AccountWrapperWidget(),
+              ],
+            ),
           ),
         ),
+        bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
       ),
-      bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
     );
   }
 }

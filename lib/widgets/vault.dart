@@ -17,6 +17,7 @@ import '../config/platform.dart';
 import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
 import '../logging/logger.dart';
+import 'coloured_safe_area_widget.dart';
 import 'autofill_save.dart';
 import 'bottom.dart';
 import 'entry_filters.dart';
@@ -126,21 +127,23 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
             buildWhen: (previous, current) => current is VaultLoaded,
             builder: (context, state) {
               if (state is VaultRefreshCredentialsRequired || state is VaultUploadCredentialsRequired) {
-                return Scaffold(
-                  appBar: AppBar(
-                    title: Image(
-                      image: AssetImage('assets/vault.png'),
-                      excludeFromSemantics: true,
-                      height: 48,
-                      color: Colors.white,
+                return ColouredSafeArea(
+                  child: Scaffold(
+                    appBar: AppBar(
+                      title: Image(
+                        image: AssetImage('assets/vault.png'),
+                        excludeFromSemantics: true,
+                        height: 48,
+                        color: Colors.white,
+                      ),
+                      centerTitle: true,
+                      toolbarHeight: 80,
                     ),
-                    centerTitle: true,
-                    toolbarHeight: 80,
-                  ),
-                  body: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[buildAuthRequest(state, str)],
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[buildAuthRequest(state, str)],
+                      ),
                     ),
                   ),
                 );
@@ -372,15 +375,17 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
     return BlocConsumer<VaultCubit, VaultState>(
       listener: (context, state) {},
       builder: (context, state) {
-        return Scaffold(
-          appBar: appBar,
-          body: LayoutBuilder(
-            builder: _buildStack,
+        return ColouredSafeArea(
+          child: Scaffold(
+            appBar: appBar,
+            body: LayoutBuilder(
+              builder: _buildStack,
+            ),
+            extendBody: true,
+            bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
+            floatingActionButton: NewEntryButton(currentFile: (state as VaultLoaded).vault.files.current),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           ),
-          extendBody: true,
-          bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
-          floatingActionButton: NewEntryButton(currentFile: (state as VaultLoaded).vault.files.current),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         );
       },
       // Sometimes we build this before navigation resulting from change of state

@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
-import 'package:keevault/cubit/autofill_cubit.dart';
-
 import 'package:keevault/cubit/interaction_cubit.dart';
 import 'package:keevault/logging/logger.dart';
 

@@ -18,6 +18,7 @@ import '../generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../logging/logger.dart';
+import 'coloured_safe_area_widget.dart';
 import 'dialog_utils.dart';
 
 class SettingsWidget extends StatefulWidget {
@@ -105,68 +106,70 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
         );
       }
       return BlocBuilder<AutofillCubit, AutofillState>(builder: (context, autofillState) {
-        return SettingsScreen(
-          title: str.settings,
-          children: [
-            SettingsGroup(
-              title: str.setGenTheme,
-              children: [
-                RadioSettingsTile<String>(
-                  title: str.setGenTheme,
-                  showTitles: false,
-                  settingKey: 'theme',
-                  values: <String, String>{
-                    'sys': str.setGenTitlebarStyleDefault,
-                    'lt': str.setGenThemeLt,
-                    'dk': str.setGenThemeDk,
-                  },
-                  selected: 'sys',
-                  onChange: (String value) {
-                    BlocProvider.of<AppSettingsCubit>(context).changeTheme(value);
-                  },
-                ),
-              ],
-            ),
-            SettingsGroup(title: str.deviceSettings, children: [
-              Visibility(
-                visible: autofillState is AutofillAvailable,
-                child: autofillState is AutofillAvailable
-                    ? SettingsContainer(
-                        children: [
-                          AutofillStatusWidget(isEnabled: autofillState.enabled),
-                        ],
-                      )
-                    : Container(),
-              ),
-              BiometricSettingWidget(),
-            ]),
-            SettingsGroup(
-              title: str.menuSetGeneral,
-              children: [
-                SimpleSettingsTile(
-                  title: str.genPsTitle,
-                  subtitle: str.managePasswordPresets,
-                  onTap: () async => await AppConfig.router.navigateTo(
-                    context,
-                    Routes.passwordPresetManager,
-                    transition: TransitionType.inFromRight,
+        return ColouredSafeArea(
+          child: SettingsScreen(
+            title: str.settings,
+            children: [
+              SettingsGroup(
+                title: str.setGenTheme,
+                children: [
+                  RadioSettingsTile<String>(
+                    title: str.setGenTheme,
+                    showTitles: false,
+                    settingKey: 'theme',
+                    values: <String, String>{
+                      'sys': str.setGenTitlebarStyleDefault,
+                      'lt': str.setGenThemeLt,
+                      'dk': str.setGenThemeDk,
+                    },
+                    selected: 'sys',
+                    onChange: (String value) {
+                      BlocProvider.of<AppSettingsCubit>(context).changeTheme(value);
+                    },
                   ),
+                ],
+              ),
+              SettingsGroup(title: str.deviceSettings, children: [
+                Visibility(
+                  visible: autofillState is AutofillAvailable,
+                  child: autofillState is AutofillAvailable
+                      ? SettingsContainer(
+                          children: [
+                            AutofillStatusWidget(isEnabled: autofillState.enabled),
+                          ],
+                        )
+                      : Container(),
                 ),
-                SwitchSettingsTile(
-                  settingKey: 'expandGroups',
-                  title: str.setGenShowSubgroups,
-                  defaultValue: true,
-                ),
-                //TODO:f: Need to store group in DB so this should really be a DB-specific setting.
-                // SwitchSettingsTile(
-                //   settingKey: 'rememberFilterGroup',
-                //   title: str.rememberFilterGroup,
-                //   defaultValue: false,
-                // ),
-                ...accessChildren,
-              ],
-            ),
-          ],
+                BiometricSettingWidget(),
+              ]),
+              SettingsGroup(
+                title: str.menuSetGeneral,
+                children: [
+                  SimpleSettingsTile(
+                    title: str.genPsTitle,
+                    subtitle: str.managePasswordPresets,
+                    onTap: () async => await AppConfig.router.navigateTo(
+                      context,
+                      Routes.passwordPresetManager,
+                      transition: TransitionType.inFromRight,
+                    ),
+                  ),
+                  SwitchSettingsTile(
+                    settingKey: 'expandGroups',
+                    title: str.setGenShowSubgroups,
+                    defaultValue: true,
+                  ),
+                  //TODO:f: Need to store group in DB so this should really be a DB-specific setting.
+                  // SwitchSettingsTile(
+                  //   settingKey: 'rememberFilterGroup',
+                  //   title: str.rememberFilterGroup,
+                  //   defaultValue: false,
+                  // ),
+                  ...accessChildren,
+                ],
+              ),
+            ],
+          ),
         );
       });
     });

@@ -5,6 +5,7 @@ import 'package:kdbx/kdbx.dart';
 import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
 import '../widgets/password_strength.dart';
+import 'coloured_safe_area_widget.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
   const ChangePasswordWidget({Key? key}) : super(key: key);
@@ -33,166 +34,168 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   Widget build(BuildContext context) {
     final str = S.of(context);
     final theme = Theme.of(context);
-    return Scaffold(
-      key: widget.key,
-      appBar: AppBar(title: Text(str.changePassword)),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SafeArea(
-            top: false,
-            left: false,
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(
-                      str.changePasswordDetail,
-                      style: theme.textTheme.headline6,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(str.enterOldPassword),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 12, 0, 32),
-                    child: TextFormField(
-                      controller: _currentPassword,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: str.currentPassword,
-                        errorText: null,
+    return ColouredSafeArea(
+      child: Scaffold(
+        key: widget.key,
+        appBar: AppBar(title: Text(str.changePassword)),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SafeArea(
+              top: false,
+              left: false,
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Text(
+                        str.changePasswordDetail,
+                        style: theme.textTheme.headline6,
                       ),
-                      validator: (value) {
-                        if (value?.isEmpty ?? false) {
-                          return str.this_field_required;
-                        }
-                        if (!checkCurrentPassword(value)) {
-                          return str.currentPasswordNotCorrect;
-                        }
-                        return null;
-                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(str.registrationBlurb1),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      controller: _password,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: str.newPassword,
-                        errorText: null,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(str.enterOldPassword),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 12, 0, 32),
+                      child: TextFormField(
+                        controller: _currentPassword,
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: str.currentPassword,
+                          errorText: null,
+                        ),
+                        validator: (value) {
+                          if (value?.isEmpty ?? false) {
+                            return str.this_field_required;
+                          }
+                          if (!checkCurrentPassword(value)) {
+                            return str.currentPasswordNotCorrect;
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value?.isEmpty ?? false) {
-                          return str.this_field_required;
-                        }
-                        return null;
-                      },
                     ),
-                  ),
-                  ValueListenableBuilder(
-                      valueListenable: _password,
-                      builder: (context, TextEditingValue content, child) {
-                        return PasswordStrengthWidget(
-                          testValue: content.text,
-                        );
-                      }),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      controller: _confirmPassword,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: str.newPasswordRepeat,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Text(str.registrationBlurb1),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: TextFormField(
+                        controller: _password,
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: str.newPassword,
+                          errorText: null,
+                        ),
+                        validator: (value) {
+                          if (value?.isEmpty ?? false) {
+                            return str.this_field_required;
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value?.isEmpty ?? false) {
-                          return str.this_field_required;
-                        }
-                        if (value != _password.text) {
-                          return str.setFilePassNotMatch;
-                        }
-                        return null;
-                      },
-                      onSaved: (String? value) {
-                        submittedValue = value;
-                      },
                     ),
-                  ),
-                  Visibility(
-                    visible: saveError,
-                    child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Text(
-                          'There was a problem saving your new password. Please try again in a moment and then check that your device storage has free space and is not faulty.',
-                          style: theme.textTheme.titleMedium?.copyWith(color: theme.errorColor),
-                        )),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      onPressed: saving
-                          ? null
-                          : () async {
-                              final navigator = Navigator.of(context);
-                              final sm = ScaffoldMessenger.of(context);
-                              setState(() {
-                                saveError = false;
-                              });
-                              if (_formKey.currentState!.validate()) {
+                    ValueListenableBuilder(
+                        valueListenable: _password,
+                        builder: (context, TextEditingValue content, child) {
+                          return PasswordStrengthWidget(
+                            testValue: content.text,
+                          );
+                        }),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: TextFormField(
+                        controller: _confirmPassword,
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: str.newPasswordRepeat,
+                        ),
+                        validator: (value) {
+                          if (value?.isEmpty ?? false) {
+                            return str.this_field_required;
+                          }
+                          if (value != _password.text) {
+                            return str.setFilePassNotMatch;
+                          }
+                          return null;
+                        },
+                        onSaved: (String? value) {
+                          submittedValue = value;
+                        },
+                      ),
+                    ),
+                    Visibility(
+                      visible: saveError,
+                      child: Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            'There was a problem saving your new password. Please try again in a moment and then check that your device storage has free space and is not faulty.',
+                            style: theme.textTheme.titleMedium?.copyWith(color: theme.errorColor),
+                          )),
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        onPressed: saving
+                            ? null
+                            : () async {
+                                final navigator = Navigator.of(context);
+                                final sm = ScaffoldMessenger.of(context);
                                 setState(() {
-                                  saving = true;
+                                  saveError = false;
                                 });
-                                _formKey.currentState!.save();
-                                try {
-                                  await changePassword(submittedValue!);
+                                if (_formKey.currentState!.validate()) {
                                   setState(() {
-                                    saving = false;
+                                    saving = true;
                                   });
-                                  sm.showSnackBar(SnackBar(
-                                    content: Text(str.passwordChanged),
-                                    duration: Duration(seconds: 4),
-                                  ));
-                                  navigator.pop();
-                                } on Exception {
-                                  setState(() {
-                                    saving = false;
-                                    saveError = true;
-                                  });
+                                  _formKey.currentState!.save();
+                                  try {
+                                    await changePassword(submittedValue!);
+                                    setState(() {
+                                      saving = false;
+                                    });
+                                    sm.showSnackBar(SnackBar(
+                                      content: Text(str.passwordChanged),
+                                      duration: Duration(seconds: 4),
+                                    ));
+                                    navigator.pop();
+                                  } on Exception {
+                                    setState(() {
+                                      saving = false;
+                                      saveError = true;
+                                    });
+                                  }
                                 }
-                              }
-                            },
-                      child: saving
-                          ? Container(
-                              width: 24,
-                              height: 24,
-                              padding: const EdgeInsets.all(2.0),
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : Text(str.changePassword),
+                              },
+                        child: saving
+                            ? Container(
+                                width: 24,
+                                height: 24,
+                                padding: const EdgeInsets.all(2.0),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : Text(str.changePassword),
+                      ),
                     ),
-                  ),
-                ]),
+                  ]),
+                ),
               ),
             ),
           ),
