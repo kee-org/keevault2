@@ -22,9 +22,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "KdbxSwift",
-            dependencies: [],
-            resources: [
-                        .copy("resources")]),
+            dependencies: []),
         .testTarget(
             name: "KdbxSwiftTests",
             dependencies: ["KdbxSwift"]),
