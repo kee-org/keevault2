@@ -19,6 +19,9 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     var userId: String?
     var sharedDefaults: UserDefaults?
     var domainParser = try! DomainParser()
+    var key: ByteArray?
+    var keyStatus: OSStatus?
+    let iOSBugWorkaroundAuthenticationDelay = 0.25
     
     override func viewDidLoad() {
         mainController.selectionDelegate = self
@@ -42,56 +45,61 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         // is until real world experience suggests otherwise.
         // Not all apps have a serviceIdentifier!
         
-        guard let key = getKeyForUser(userId: userId) else {
-            let message = "Your access key needs to be refreshed before you can AutoFill Kee Vault entries. Click OK and then sign in to the main Kee Vault app. You can then use AutoFill until your chosen expiry time is next reached."
-            mainController.initWithAuthError(message: message)
-            return
-        }
-        
-        var seachDomains: [String] = []
-        for si in serviceIdentifiers {
-            if si.type == ASCredentialServiceIdentifier.IdentifierType.URL {
-                // To keep everything fast for the user we don't match on full URLs, regexes, etc. like
-                // on the desktop. On Android we don't have the data needed to do this but it appears
-                // that at least in some iOS versions and for Safari only, we could offer this as a
-                // feature in future - for now we'll keep parity with Android.
-                let url = URL(string: si.identifier)
-                guard let host = url?.host else {
-                    continue
-                }
-                seachDomains.append(host)
-                guard let unicodeHost = host.idnaDecoded else {
-                    continue
-                }
-                guard let domain = domainParser.parse(host: unicodeHost)?.domain else {
-                    continue
-                }
-                guard let punycodeDomain = domain.idnaEncoded else {
-                    continue
-                }
-                seachDomains.append(punycodeDomain)
-            } else {
-                seachDomains.append(si.identifier)
+        DispatchQueue.main.asyncAfter(deadline: .now() + iOSBugWorkaroundAuthenticationDelay) { [self] in
+            
+            (key, keyStatus) = getKeyForUser(userId: userId)
+            if key == nil {
+                var message = "Your access key needs to be refreshed before you can AutoFill Kee Vault entries. Click OK and then sign in to the main Kee Vault app. You can then use AutoFill until your chosen expiry time is next reached."
+                message += keyStatus != nil ? " Technical error code: \(String(describing: keyStatus))" : ""
+                mainController.initWithAuthError(message: message)
+                return
             }
+            
+            var seachDomains: [String] = []
+            for si in serviceIdentifiers {
+                if si.type == ASCredentialServiceIdentifier.IdentifierType.URL {
+                    // To keep everything fast for the user we don't match on full URLs, regexes, etc. like
+                    // on the desktop. On Android we don't have the data needed to do this but it appears
+                    // that at least in some iOS versions and for Safari only, we could offer this as a
+                    // feature in future - for now we'll keep parity with Android.
+                    let url = URL(string: si.identifier)
+                    guard let host = url?.host else {
+                        continue
+                    }
+                    seachDomains.append(host)
+                    guard let unicodeHost = host.idnaDecoded else {
+                        continue
+                    }
+                    guard let domain = domainParser.parse(host: unicodeHost)?.domain else {
+                        continue
+                    }
+                    guard let punycodeDomain = domain.idnaEncoded else {
+                        continue
+                    }
+                    seachDomains.append(punycodeDomain)
+                } else {
+                    seachDomains.append(si.identifier)
+                }
+            }
+            
+            let dbFileManager = DatabaseFileManager(status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key!, userId: userId!, sharedGroupName: sharedGroupName!, sharedDefaults: sharedDefaults!)
+            let dbFile = dbFileManager.loadFromFile()
+            let db = dbFile.database
+            var entries: [Entry] = []
+            db.root?.collectAllEntries(to: &entries)
+            mainController.searchDomains = seachDomains
+            mainController.entries = entries
+            mainController.dbFileManager = dbFileManager
+            self.mainController.initAutofillEntries()
         }
-        
-        let dbFileManager = DatabaseFileManager(status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key, userId: userId!, sharedGroupName: sharedGroupName!, sharedDefaults: sharedDefaults!)
-        let dbFile = dbFileManager.loadFromFile()
-        let db = dbFile.database
-        var entries: [Entry] = []
-        db.root?.collectAllEntries(to: &entries)
-        mainController.searchDomains = seachDomains
-        mainController.entries = entries
-        mainController.dbFileManager = dbFileManager
-        self.mainController.initAutofillEntries()
     }
     
     private func getUserIdFromSharedSettings() -> String? {
         return sharedDefaults?.string(forKey: "userId")
     }
     
-    private func getKeyForUser(userId: String?) -> ByteArray? {
-        guard userId != nil else { return nil }
+    private func getKeyForUser(userId: String?) -> (ByteArray?, OSStatus?) {
+        guard userId != nil else { return (nil,nil) }
         let name = Bundle.main.infoDictionary!["KeeVaultSharedBiometricStorageName"] as! String
         let accessGroup = Bundle.main.infoDictionary!["KeeVaultSharedDefaultAccessGroup"] as! String
         let iosKeychainServiceName = "flutter_biometric_storage"
@@ -105,27 +113,27 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
-        guard status != errSecItemNotFound else { return nil }
-        guard status == errSecSuccess else { return nil}
+        guard status != errSecItemNotFound else { return (nil,status) }
+        guard status == errSecSuccess else { return (nil,status)}
         
         guard let existingItem = item as? [String : Any],
               let keyData = existingItem[kSecValueData as String] as? Data
         else {
-            return nil
+            return (nil,nil)
         }
         
         guard let allCredentials =
                 try? JSONDecoder().decode(Dictionary<String,ExpiringCachedCredentials>.self, from: keyData) else {
-            return nil
+            return (nil,nil)
         }
         guard let credentials = allCredentials[userId!] else {
-            return nil
+            return (nil,nil)
         }
         
         if (credentials.expiry < Date.now.millisecondsSinceUnixEpoch) {
-            return nil
+            return (nil,nil)
         }
-        return ByteArray(base64Encoded: credentials.kdbxKdfResultBase64)
+        return (ByteArray(base64Encoded: credentials.kdbxKdfResultBase64),nil)
         
     }
     
