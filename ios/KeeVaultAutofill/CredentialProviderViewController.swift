@@ -23,6 +23,13 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     var keyStatus: OSStatus?
     let iOSBugWorkaroundAuthenticationDelay = 0.25
     
+    override func present(_ viewControllerToPresent: UIViewController,
+                            animated flag: Bool,
+                            completion: (() -> Void)? = nil) {
+        viewControllerToPresent.modalPresentationStyle = .fullScreen
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
+      }
+
     override func viewDidLoad() {
         mainController.selectionDelegate = self
         mainController.domainParser = self.domainParser
