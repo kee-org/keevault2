@@ -51,7 +51,10 @@ class QuickUnlocker {
         storageFileName,
         forceInit: true,
         options: StorageFileInitOptions(
-            authenticationValidityDurationSeconds: authGracePeriod, iosAccessGroupPlistKey: iosAccessGroupPlistKey),
+          authenticationValidityDurationSeconds: authGracePeriod,
+          androidBiometricOnly: false,
+          iosAccessGroupPlistKey: iosAccessGroupPlistKey,
+        ),
         promptInfo: PromptInfo(
           iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
         ),
@@ -154,7 +157,8 @@ $stackTrace''');
       await storage.write(contents,
           promptInfo: PromptInfo(
               androidPromptInfo: AndroidPromptInfo(
-                  title: S.current.rememberVaultPassword, description: S.current.biometricsStoreDescription)));
+                  title: S.current.rememberVaultPassword,
+                  description: S.current.biometricsStoreDescription(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN'))));
       if (KeeVaultPlatform.isIOS) {
         await _autoFillMethodChannel.invokeMethod('setUserId', <String, dynamic>{
           'userId': _currentUser,

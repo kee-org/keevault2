@@ -370,10 +370,10 @@ class S {
     );
   }
 
-  /// `Biometric sign-in`
+  /// `Enable Quick sign-in (biometrics)`
   String get biometricSignIn {
     return Intl.message(
-      'Biometric sign-in',
+      'Enable Quick sign-in (biometrics)',
       name: 'biometricSignIn',
       desc: '',
       args: [],
@@ -395,6 +395,16 @@ class S {
     return Intl.message(
       'Kee Vault is correctly set as your device\'s Autofill provider.',
       name: 'autofillEnabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` You need to add a Passcode, FaceId or TouchId to your device too!`
+  String get autofillRequiresQU {
+    return Intl.message(
+      ' You need to add a Passcode, FaceId or TouchId to your device too!',
+      name: 'autofillRequiresQU',
       desc: '',
       args: [],
     );
@@ -450,13 +460,33 @@ class S {
     );
   }
 
-  /// `Device Settings`
-  String get deviceSettings {
+  /// `Device AutoFill`
+  String get deviceAutoFill {
     return Intl.message(
-      'Device Settings',
-      name: 'deviceSettings',
+      'Device AutoFill',
+      name: 'deviceAutoFill',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Quick sign-in`
+  String get quickSignIn {
+    return Intl.message(
+      'Quick sign-in',
+      name: 'quickSignIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use device biometrics or {pinName} for faster sign-in`
+  String quickSignInExplainer(Object pinName) {
+    return Intl.message(
+      'Use device biometrics or $pinName for faster sign-in',
+      name: 'quickSignInExplainer',
+      desc: '',
+      args: [pinName],
     );
   }
 
@@ -1830,13 +1860,13 @@ class S {
     );
   }
 
-  /// `Access your passwords faster by protecting your password with biometrics`
-  String get biometricsStoreDescription {
+  /// `Access Kee Vault faster by protecting your password with biometrics or your device {PINname}`
+  String biometricsStoreDescription(Object PINname) {
     return Intl.message(
-      'Access your passwords faster by protecting your password with biometrics',
+      'Access Kee Vault faster by protecting your password with biometrics or your device $PINname',
       name: 'biometricsStoreDescription',
       desc: '',
-      args: [],
+      args: [PINname],
     );
   }
 
@@ -3440,13 +3470,13 @@ class S {
     );
   }
 
-  /// `Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you're signed in again but to help protect you against data loss, you can't avoid entering your password forever.`
-  String get biometricsErrorExplanation {
+  /// `Your biometrics/{PINname} access needs refreshing so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your full password. You can adjust this amount of time in the Settings once you're signed in but to help protect you against data loss, you can't avoid entering your password forever.`
+  String biometricsErrorExplanation(Object PINname) {
     return Intl.message(
-      'Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you\'re signed in again but to help protect you against data loss, you can\'t avoid entering your password forever.',
+      'Your biometrics/$PINname access needs refreshing so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your full password. You can adjust this amount of time in the Settings once you\'re signed in but to help protect you against data loss, you can\'t avoid entering your password forever.',
       name: 'biometricsErrorExplanation',
       desc: '',
-      args: [],
+      args: [PINname],
     );
   }
 

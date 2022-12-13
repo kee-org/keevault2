@@ -73,10 +73,10 @@ packages:
     description:
       path: "."
       ref: keevault
-      resolved-ref: "6105b0c494c048b1f87c0ba5b1b8eeb7249c4aa1"
+      resolved-ref: "02267f30d4f62614209d3bebbe9e1d7cffa4255d"
       url: "https://github.com/kee-org/biometric_storage.git"
     source: git
-    version: "4.1.4+2"
+    version: "4.1.4+3"
   bloc:
     dependency: "direct main"
     description:

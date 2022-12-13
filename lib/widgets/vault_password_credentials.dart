@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:keevault/credentials/quick_unlocker.dart';
+import '../config/platform.dart';
 import '../generated/l10n.dart';
 import '../logging/logger.dart';
 
@@ -118,7 +119,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
         widget.showError && widget.quStatus == QUStatus.mapAvailable
             ? Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(str.biometricsErrorExplanation),
+                child: Text(str.biometricsErrorExplanation(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN')),
               )
             : SizedBox.shrink(),
         _showBiometricSigninButton

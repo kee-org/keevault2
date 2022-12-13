@@ -22,35 +22,44 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(name) => "Are you sure you want to delete ${name}";
 
-  static String m1(action) => "Cancel ${action}";
+  static String m1(PINname) =>
+      "Your biometrics/${PINname} access needs refreshing so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your full password. You can adjust this amount of time in the Settings once you\'re signed in but to help protect you against data loss, you can\'t avoid entering your password forever.";
 
-  static String m2(name) => "Select the new parent for the \"${name}\" group";
+  static String m2(PINname) =>
+      "Access Kee Vault faster by protecting your password with biometrics or your device ${PINname}";
 
-  static String m3(appName) =>
+  static String m3(action) => "Cancel ${action}";
+
+  static String m4(name) => "Select the new parent for the \"${name}\" group";
+
+  static String m5(appName) =>
       "1. Please switch to your device\'s Settings app and load the \"Passwords\" section.\n\n2. Click on \"AutoFill passwords\".\n\n3. Ensure the switch at the top is enabled.\n\n4. Deselect Keychain (or other selected items) and then select \"${appName}\".\n\nThen switch back to this Kee Vault App and click \"OK\" to confirm that you are finished.\n\nFinally, double check that the status information in the Kee Vault Settings page now says that AutoFill is enabled.\n\nApologies that we can\'t make this easier - Apple won\'t allow us to help you in this situation.";
 
-  static String m4(appName) =>
+  static String m6(appName) =>
       "You must change your device\'s Autofill provider to ${appName}.";
 
-  static String m5(x, y) => "Enter a number between ${x} and ${y}";
+  static String m7(x, y) => "Enter a number between ${x} and ${y}";
 
-  static String m6(criteria) => "Filtered by ${criteria}";
+  static String m8(criteria) => "Filtered by ${criteria}";
 
-  static String m7(action) =>
+  static String m9(action) =>
       "Sorry, we can\'t ${action} unless you grant us permission. Please try again.";
 
-  static String m8(action) =>
+  static String m10(action) =>
       "Sorry, we can\'t ${action} unless you grant us permission. Please grant the permission in your settings and then try again.";
 
-  static String m9(email) =>
+  static String m11(email) =>
       "You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with ${email}";
 
-  static String m10(count) => "${count} bytes";
+  static String m12(pinName) =>
+      "Use device biometrics or ${pinName} for faster sign-in";
 
-  static String m11(error) =>
+  static String m13(count) => "${count} bytes";
+
+  static String m14(error) =>
       "Unexpected error. Sorry! Please let us know, then close and restart the app. Details: ${error}";
 
-  static String m12(email) => "Welcome ${email}";
+  static String m15(email) => "Welcome ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -89,6 +98,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Kee Vault is correctly set as your device\'s Autofill provider."),
         "autofillNewEntryMakeChangesThenDone": MessageLookupByLibrary.simpleMessage(
             "Entry saved. Make changes below if you want and then click \"Done\" below."),
+        "autofillRequiresQU": MessageLookupByLibrary.simpleMessage(
+            " You need to add a Passcode, FaceId or TouchId to your device too!"),
         "autofilling": MessageLookupByLibrary.simpleMessage("Autofilling"),
         "automaticallySignInFor": MessageLookupByLibrary.simpleMessage(
             "Automatically sign-in for (seconds)"),
@@ -114,15 +125,13 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Remind me..."),
         "bigTechAntiCompetitionStatement": MessageLookupByLibrary.simpleMessage(
             "The \"Big Tech\" companies prohibit us from directly linking to the account registration page on our website."),
-        "biometricSignIn":
-            MessageLookupByLibrary.simpleMessage("Biometric sign-in"),
-        "biometricsErrorExplanation": MessageLookupByLibrary.simpleMessage(
-            "Your biometrics must be refreshed so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your password. You can adjust this amount of time in the Settings once you\'re signed in again but to help protect you against data loss, you can\'t avoid entering your password forever."),
+        "biometricSignIn": MessageLookupByLibrary.simpleMessage(
+            "Enable Quick sign-in (biometrics)"),
+        "biometricsErrorExplanation": m1,
         "biometricsMaybeExpired":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
-        "biometricsStoreDescription": MessageLookupByLibrary.simpleMessage(
-            "Access your passwords faster by protecting your password with biometrics"),
-        "cancelExportOrImport": m1,
+        "biometricsStoreDescription": m2,
+        "cancelExportOrImport": m3,
         "changePassword":
             MessageLookupByLibrary.simpleMessage("Change Password"),
         "changePasswordDetail": MessageLookupByLibrary.simpleMessage(
@@ -132,7 +141,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseAnIcon": MessageLookupByLibrary.simpleMessage("Choose an icon"),
         "chooseNewParentGroupForEntry": MessageLookupByLibrary.simpleMessage(
             "Select the group for this entry"),
-        "chooseNewParentGroupForGroup": m2,
+        "chooseNewParentGroupForGroup": m4,
         "chooseRestoreGroup": MessageLookupByLibrary.simpleMessage(
             "Select the group in which to restore this item"),
         "color": MessageLookupByLibrary.simpleMessage("Colour"),
@@ -188,8 +197,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "detSetupOtpManualButton":
             MessageLookupByLibrary.simpleMessage("Enter code manually"),
         "detUpdated": MessageLookupByLibrary.simpleMessage("Updated"),
-        "deviceSettings":
-            MessageLookupByLibrary.simpleMessage("Device Settings"),
+        "deviceAutoFill":
+            MessageLookupByLibrary.simpleMessage("Device AutoFill"),
         "disabled": MessageLookupByLibrary.simpleMessage("Disabled"),
         "discard": MessageLookupByLibrary.simpleMessage("Discard"),
         "discardChanges":
@@ -200,12 +209,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "enableAutofill":
             MessageLookupByLibrary.simpleMessage("Enable Autofill"),
-        "enableAutofillIosInstructions": m3,
-        "enableAutofillRequired": m4,
+        "enableAutofillIosInstructions": m5,
+        "enableAutofillRequired": m6,
         "enabled": MessageLookupByLibrary.simpleMessage("Enabled"),
         "enterNewPresetName": MessageLookupByLibrary.simpleMessage(
             "Enter the new name for the preset"),
-        "enterNumberBetweenXAndY": m5,
+        "enterNumberBetweenXAndY": m7,
         "enterOldPassword": MessageLookupByLibrary.simpleMessage(
             "First, enter your current password."),
         "enter_your_account_password":
@@ -245,7 +254,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Reveal search options and other filters"),
         "filterTooltipOpen":
             MessageLookupByLibrary.simpleMessage("Show matching entries"),
-        "filteredByCriteria": m6,
+        "filteredByCriteria": m8,
         "footerTitleGen": MessageLookupByLibrary.simpleMessage("Generate"),
         "forgotPasswordOrCheckAccount": MessageLookupByLibrary.simpleMessage(
             "Forgot your password or unsure if you have a Kee Vault account?"),
@@ -430,8 +439,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Password strength"),
         "permanentlyDeleteGroupConfirm": MessageLookupByLibrary.simpleMessage(
             "Permanently delete the group and all entries within it?"),
-        "permissionDeniedError": m7,
-        "permissionDeniedPermanentlyError": m8,
+        "permissionDeniedError": m9,
+        "permissionDeniedPermanentlyError": m10,
         "permissionError":
             MessageLookupByLibrary.simpleMessage("Permission error"),
         "permissionReasonAttachFile":
@@ -450,13 +459,15 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sign up to receive emails"),
         "prcRegistrationSuccess": MessageLookupByLibrary.simpleMessage(
             "Success! Please check your emails soon to confirm that you want to receive updates from us."),
-        "prcSignupOrAccountStatusCheck": m9,
+        "prcSignupOrAccountStatusCheck": m11,
         "preset": MessageLookupByLibrary.simpleMessage("Preset"),
         "privacyStatement":
             MessageLookupByLibrary.simpleMessage("Privacy Statement"),
         "protectField": MessageLookupByLibrary.simpleMessage("Protect field"),
         "protectedClickToReveal": MessageLookupByLibrary.simpleMessage(
             "Protected field. Click to reveal."),
+        "quickSignIn": MessageLookupByLibrary.simpleMessage("Quick sign-in"),
+        "quickSignInExplainer": m12,
         "reenterYourPassword": MessageLookupByLibrary.simpleMessage(
             "Please re-enter your password"),
         "registrationBlurb1": MessageLookupByLibrary.simpleMessage(
@@ -524,7 +535,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Showing all entries"),
         "signin": MessageLookupByLibrary.simpleMessage("Sign in"),
         "signout": MessageLookupByLibrary.simpleMessage("Sign out"),
-        "sizeBytes": m10,
+        "sizeBytes": m13,
         "sortCreated": MessageLookupByLibrary.simpleMessage("Newest"),
         "sortCreatedReversed": MessageLookupByLibrary.simpleMessage("Oldest"),
         "sortModified":
@@ -558,7 +569,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("This field is required"),
         "title": MessageLookupByLibrary.simpleMessage("title"),
         "tryAgain": MessageLookupByLibrary.simpleMessage("Try again"),
-        "unexpected_error": m11,
+        "unexpected_error": m14,
         "unlock": MessageLookupByLibrary.simpleMessage("Unlock"),
         "unlockRequired":
             MessageLookupByLibrary.simpleMessage("Unlock your Vault"),
@@ -610,7 +621,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "website": MessageLookupByLibrary.simpleMessage("Website"),
         "welcomeToKeeVault":
             MessageLookupByLibrary.simpleMessage("Welcome to Kee Vault"),
-        "welcome_message": m12,
+        "welcome_message": m15,
         "willTrySamePasswordFirst": MessageLookupByLibrary.simpleMessage(
             "We\'ll try using the same password you have used to open your current Kee Vault. If that doesn\'t work, you can type in the correct password in a moment."),
         "yourPasswordEntries":

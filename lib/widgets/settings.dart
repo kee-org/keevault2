@@ -34,6 +34,22 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
   @override
   String get traceTitle => widget.toStringShort();
 
+  bool _isDeviceQuickUnlockEnabled = false;
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_initBiometricStorageStatus());
+  }
+
+  Future<void> _initBiometricStorageStatus() async {
+    final enabled = (await BiometricStorage().canAuthenticate()) == CanAuthenticateResponse.success;
+    if (mounted) {
+      setState(() {
+        _isDeviceQuickUnlockEnabled = enabled;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
@@ -129,18 +145,22 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                   ),
                 ],
               ),
-              SettingsGroup(title: str.deviceSettings, children: [
+              SettingsGroup(title: str.deviceAutoFill, children: [
                 Visibility(
                   visible: autofillState is AutofillAvailable,
                   child: autofillState is AutofillAvailable
                       ? SettingsContainer(
                           children: [
-                            AutofillStatusWidget(isEnabled: autofillState.enabled),
+                            AutofillStatusWidget(
+                                isEnabled: autofillState.enabled,
+                                isDeviceQuickUnlockEnabled: _isDeviceQuickUnlockEnabled),
                           ],
                         )
                       : Container(),
                 ),
-                BiometricSettingWidget(),
+              ]),
+              SettingsGroup(title: str.quickSignIn, children: [
+                BiometricSettingWidget(isEnabledOnDevice: _isDeviceQuickUnlockEnabled),
               ]),
               SettingsGroup(
                 title: str.menuSetGeneral,
@@ -177,112 +197,118 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
 }
 
 class BiometricSettingWidget extends StatefulWidget {
-  const BiometricSettingWidget({Key? key}) : super(key: key);
+  final bool isEnabledOnDevice;
+  const BiometricSettingWidget({Key? key, required this.isEnabledOnDevice}) : super(key: key);
 
   @override
   State<BiometricSettingWidget> createState() => _BiometricSettingWidgetState();
 }
 
 class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
-  bool _isEnabled = false;
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_initBiometricStorageStatus());
-  }
-
-  Future<void> _initBiometricStorageStatus() async {
-    final enabled = (await BiometricStorage().canAuthenticate()) == CanAuthenticateResponse.success;
-    if (mounted) {
-      setState(() {
-        _isEnabled = enabled;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    return SwitchSettingsTile(
-      settingKey: 'biometrics-enabled',
-      title: str.biometricSignIn,
-      onChange: (value) async {
-        final vaultCubit = BlocProvider.of<VaultCubit>(context);
-        try {
-          if (!value) {
-            await vaultCubit.disableQuickUnlock();
-          } else {
-            final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-            await vaultCubit.enableQuickUnlock(
-              user,
-              vaultCubit.currentVaultFile?.files.current,
-            );
-          }
-        } on Exception catch (e) {
-          l.e('Exception when changing biometrics setting. Details follow: $e');
-        }
-      },
-      enabled: _isEnabled,
-      defaultValue: true,
-      childrenIfEnabled: [
-        TextInputSettingsTile(
-          title: str.automaticallySignInFor,
-          settingKey: 'authGracePeriod',
-          initialValue: '60',
-          keyboardType: TextInputType.number,
-          validator: (String? gracePeriod) {
-            if (gracePeriod != null) {
-              final number = int.tryParse(gracePeriod);
-              if (number != null && number >= 1 && number <= 3600) {
-                return null;
-              }
-            }
-            return str.enterNumberBetweenXAndY(1, 3600);
-          },
-          onChange: (_) async {
-            final vaultCubit = BlocProvider.of<VaultCubit>(context);
-            await vaultCubit.disableQuickUnlock();
-            final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-            await vaultCubit.enableQuickUnlock(
-              user,
-              vaultCubit.currentVaultFile?.files.current,
-            );
-          },
-          autovalidateMode: AutovalidateMode.always,
-        ),
-        TextInputSettingsTile(
-          title: str.requireFullPasswordEvery,
-          settingKey: 'requireFullPasswordPeriod',
-          initialValue: '60',
-          keyboardType: TextInputType.number,
-          validator: (String? requireFullPasswordPeriod) {
-            if (requireFullPasswordPeriod != null) {
-              final number = int.tryParse(requireFullPasswordPeriod);
-              if (number != null && number >= 1 && number <= 180) {
-                return null;
-              }
-            }
-            return str.enterNumberBetweenXAndY(1, 180);
-          },
-          onChange: (_) async {
-            final vaultCubit = BlocProvider.of<VaultCubit>(context);
-            await vaultCubit.disableQuickUnlock();
-            final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-            await vaultCubit.enableQuickUnlock(
-              user,
-              vaultCubit.currentVaultFile?.files.current,
-            );
-          },
-          autovalidateMode: AutovalidateMode.always,
-        ),
-      ],
-    );
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+        child: Column(children: [
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Text(str.quickSignInExplainer(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN'))),
+          Visibility(
+            visible: !KeeVaultPlatform.isIOS,
+            child: SwitchSettingsTile(
+              settingKey: 'biometrics-enabled',
+              title: str.biometricSignIn,
+              onChange: (value) async {
+                final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                try {
+                  if (!value) {
+                    await vaultCubit.disableQuickUnlock();
+                  } else {
+                    final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+                    await vaultCubit.enableQuickUnlock(
+                      user,
+                      vaultCubit.currentVaultFile?.files.current,
+                    );
+                  }
+                } on Exception catch (e) {
+                  l.e('Exception when changing biometrics setting. Details follow: $e');
+                }
+              },
+              enabled: widget.isEnabledOnDevice,
+              defaultValue: true,
+              childrenIfEnabled: [
+                TextInputSettingsTile(
+                  title: str.automaticallySignInFor,
+                  settingKey: 'authGracePeriod',
+                  initialValue: '60',
+                  keyboardType: TextInputType.number,
+                  validator: (String? gracePeriod) {
+                    if (gracePeriod != null) {
+                      final number = int.tryParse(gracePeriod);
+                      if (number != null && number >= 1 && number <= 3600) {
+                        return null;
+                      }
+                    }
+                    return str.enterNumberBetweenXAndY(1, 3600);
+                  },
+                  onChange: (_) async {
+                    final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                    await vaultCubit.disableQuickUnlock();
+                    final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+                    await vaultCubit.enableQuickUnlock(
+                      user,
+                      vaultCubit.currentVaultFile?.files.current,
+                    );
+                  },
+                  autovalidateMode: AutovalidateMode.always,
+                ),
+                TextInputSettingsTile(
+                  title: str.requireFullPasswordEvery,
+                  settingKey: 'requireFullPasswordPeriod',
+                  initialValue: '60',
+                  keyboardType: TextInputType.number,
+                  validator: (String? requireFullPasswordPeriod) {
+                    if (requireFullPasswordPeriod != null) {
+                      final number = int.tryParse(requireFullPasswordPeriod);
+                      if (number != null && number >= 1 && number <= 180) {
+                        return null;
+                      }
+                    }
+                    return str.enterNumberBetweenXAndY(1, 180);
+                  },
+                  onChange: (_) async {
+                    final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                    await vaultCubit.disableQuickUnlock();
+                    final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+                    await vaultCubit.enableQuickUnlock(
+                      user,
+                      vaultCubit.currentVaultFile?.files.current,
+                    );
+                  },
+                  autovalidateMode: AutovalidateMode.always,
+                ),
+              ],
+            ),
+          ),
+        ]),
+      ),
+      Divider(
+        height: 0.0,
+      ),
+    ]);
   }
 }
 
 class AutofillStatusWidget extends StatefulWidget {
   final bool isEnabled;
-  const AutofillStatusWidget({Key? key, required this.isEnabled}) : super(key: key);
+  final bool isDeviceQuickUnlockEnabled;
+  const AutofillStatusWidget({
+    Key? key,
+    required this.isEnabled,
+    required this.isDeviceQuickUnlockEnabled,
+  }) : super(key: key);
 
   @override
   State<AutofillStatusWidget> createState() => _AutofillStatusWidgetState();
@@ -324,7 +350,8 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
             visible: widget.isEnabled,
             replacement: Text(str.enableAutofillRequired(_packageInfo.appName)),
             child: Text(
-              str.autofillEnabled,
+              str.autofillEnabled +
+                  (!widget.isDeviceQuickUnlockEnabled && KeeVaultPlatform.isIOS ? str.autofillRequiresQU : ''),
             ),
           ),
           Visibility(
