@@ -1,0 +1,4 @@
+* "Biometric sign-in" feature renamed to "Quick sign-in" and now works for people with a device PIN/password as well as secure biometric authentication
+* Improvements to AutoFill detection and saving
+* The text cursor is now clearer in the dark theme
+* Lots of updates to the code libraries we depend upon, such as Flutter 3.3
