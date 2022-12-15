@@ -4,6 +4,7 @@ on:
   release:
     types: [published]
 
+#TODO: Use ${{ github.event.release.tag_name }} to only publish if tag name contains "-android" or contains no "-"
 jobs:
   setupAndTestAndroid:
     name: Build and release Google play to beta channel

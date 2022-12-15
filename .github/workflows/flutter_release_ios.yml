@@ -3,7 +3,7 @@ name: Flutter release ios
 on:
   release:
     types: [published]
-
+#TODO: Use ${{ github.event.release.tag_name }} to only publish if tag name contains "-ios" or contains no "-"
 jobs:
   DeployIosBetaAdhoc:
     name: Build and release beta adhoc
