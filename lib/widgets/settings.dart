@@ -208,6 +208,58 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final quickUnlockSettings = [
+      TextInputSettingsTile(
+        title: str.automaticallySignInFor,
+        settingKey: 'authGracePeriod',
+        initialValue: '60',
+        keyboardType: TextInputType.number,
+        validator: (String? gracePeriod) {
+          if (gracePeriod != null) {
+            final number = int.tryParse(gracePeriod);
+            if (number != null && number >= 1 && number <= 3600) {
+              return null;
+            }
+          }
+          return str.enterNumberBetweenXAndY(1, 3600);
+        },
+        onChange: (_) async {
+          final vaultCubit = BlocProvider.of<VaultCubit>(context);
+          await vaultCubit.disableQuickUnlock();
+          final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+          await vaultCubit.enableQuickUnlock(
+            user,
+            vaultCubit.currentVaultFile?.files.current,
+          );
+        },
+        autovalidateMode: AutovalidateMode.always,
+      ),
+      TextInputSettingsTile(
+        title: str.requireFullPasswordEvery,
+        settingKey: 'requireFullPasswordPeriod',
+        initialValue: '60',
+        keyboardType: TextInputType.number,
+        validator: (String? requireFullPasswordPeriod) {
+          if (requireFullPasswordPeriod != null) {
+            final number = int.tryParse(requireFullPasswordPeriod);
+            if (number != null && number >= 1 && number <= 180) {
+              return null;
+            }
+          }
+          return str.enterNumberBetweenXAndY(1, 180);
+        },
+        onChange: (_) async {
+          final vaultCubit = BlocProvider.of<VaultCubit>(context);
+          await vaultCubit.disableQuickUnlock();
+          final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+          await vaultCubit.enableQuickUnlock(
+            user,
+            vaultCubit.currentVaultFile?.files.current,
+          );
+        },
+        autovalidateMode: AutovalidateMode.always,
+      ),
+    ];
     return Column(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
@@ -217,6 +269,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
               child: Text(str.quickSignInExplainer(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN'))),
           Visibility(
             visible: !KeeVaultPlatform.isIOS,
+            replacement: Column(children: quickUnlockSettings),
             child: SwitchSettingsTile(
               settingKey: 'biometrics-enabled',
               title: str.biometricSignIn,
@@ -238,58 +291,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
               },
               enabled: widget.isEnabledOnDevice,
               defaultValue: true,
-              childrenIfEnabled: [
-                TextInputSettingsTile(
-                  title: str.automaticallySignInFor,
-                  settingKey: 'authGracePeriod',
-                  initialValue: '60',
-                  keyboardType: TextInputType.number,
-                  validator: (String? gracePeriod) {
-                    if (gracePeriod != null) {
-                      final number = int.tryParse(gracePeriod);
-                      if (number != null && number >= 1 && number <= 3600) {
-                        return null;
-                      }
-                    }
-                    return str.enterNumberBetweenXAndY(1, 3600);
-                  },
-                  onChange: (_) async {
-                    final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                    await vaultCubit.disableQuickUnlock();
-                    final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-                    await vaultCubit.enableQuickUnlock(
-                      user,
-                      vaultCubit.currentVaultFile?.files.current,
-                    );
-                  },
-                  autovalidateMode: AutovalidateMode.always,
-                ),
-                TextInputSettingsTile(
-                  title: str.requireFullPasswordEvery,
-                  settingKey: 'requireFullPasswordPeriod',
-                  initialValue: '60',
-                  keyboardType: TextInputType.number,
-                  validator: (String? requireFullPasswordPeriod) {
-                    if (requireFullPasswordPeriod != null) {
-                      final number = int.tryParse(requireFullPasswordPeriod);
-                      if (number != null && number >= 1 && number <= 180) {
-                        return null;
-                      }
-                    }
-                    return str.enterNumberBetweenXAndY(1, 180);
-                  },
-                  onChange: (_) async {
-                    final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                    await vaultCubit.disableQuickUnlock();
-                    final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
-                    await vaultCubit.enableQuickUnlock(
-                      user,
-                      vaultCubit.currentVaultFile?.files.current,
-                    );
-                  },
-                  autovalidateMode: AutovalidateMode.always,
-                ),
-              ],
+              childrenIfEnabled: quickUnlockSettings,
             ),
           ),
         ]),
