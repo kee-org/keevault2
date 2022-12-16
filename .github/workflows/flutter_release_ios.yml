@@ -3,10 +3,11 @@ name: Flutter release ios
 on:
   release:
     types: [published]
-#TODO: Use ${{ github.event.release.tag_name }} to only publish if tag name contains "-ios" or contains no "-"
 jobs:
   DeployIosBetaAdhoc:
     name: Build and release beta adhoc
+    if: ${{ !contains ( github.event.release.tag_name, '_' ) || endsWith( github.event.release.tag_name, '_ios' ) }}
+    # NB: ${{ syntax }} is required despite GitHub docs to the contrary. Appears that ! operator can't be used otherwise.
 
     runs-on: macos-12
 
@@ -66,6 +67,7 @@ jobs:
 
   DeployIosProdTestflight:
     name: Build and release prod testflight
+    if: ${{ !contains ( github.event.release.tag_name, '_' ) || endsWith( github.event.release.tag_name, '_ios' ) }}
 
     runs-on: macos-12
 
