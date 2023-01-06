@@ -865,7 +865,7 @@ class VaultCubit extends Cubit<VaultState> {
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
-    final quStatus = await _qu.initialiseForUser(user?.emailHashed ?? _qu.localUserMagicString, true);
+    final quStatus = await _qu.initialiseForUser(user?.id ?? _qu.localUserMagicString, true);
     if (quStatus != QUStatus.mapAvailable && quStatus != QUStatus.credsAvailable) {
       l.w("Quick unlock credential provider is unavailable or unknown. Can't proceed to save credentials in this state.");
       return;

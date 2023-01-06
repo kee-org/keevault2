@@ -9,7 +9,8 @@ import 'utils.dart';
 class User {
   String? email;
   String? emailHashed;
-  String? emailHashedB64url;
+  String? id;
+  String? idB64url;
   String? salt;
   String? passKey;
   List<String>? kms;
@@ -20,22 +21,30 @@ class User {
 
   // hashedMasterKey may come from a combination of password and keyfile in
   // future but for now, we require a text password
-  static Future<User> fromEmailAndKey(String email, List<int> hashedMasterKey) async {
-    final user = User();
-    user.email = email;
-    user.passKey = await derivePassKey(email, hashedMasterKey);
-    user.emailHashed = await hashString(email, EMAIL_ID_SALT);
-    user.emailHashedB64url =
-        user.emailHashed!.replaceAll(RegExp(r'\+'), '-').replaceAll(RegExp(r'/'), '_').replaceAll(RegExp(r'='), '.');
-    return user;
-  }
+  // static Future<User> fromEmailAndKey(String email, List<int> hashedMasterKey) async {
+  //   final user = User();
+  //   user.email = email;
+  //   user.passKey = await derivePassKey(email, hashedMasterKey);
+  //   user.emailHashed = await hashString(email, EMAIL_ID_SALT);
+  //   user.idB64url =
+  //       user.emailHashed!.replaceAll(RegExp(r'\+'), '-').replaceAll(RegExp(r'/'), '_').replaceAll(RegExp(r'='), '.');
+  //   return user;
+  // }
 
-  static Future<User> fromEmail(String email) async {
+  static Future<User> fromEmail(String email, String? userId) async {
     final user = User();
     user.email = email;
     user.emailHashed = await hashString(email, EMAIL_ID_SALT);
-    user.emailHashedB64url =
-        user.emailHashed!.replaceAll(RegExp(r'\+'), '-').replaceAll(RegExp(r'/'), '_').replaceAll(RegExp(r'='), '.');
+
+    // On upgrade from earlier version, subscribers may only have a locally stored copy of the email
+    // address, rather than their user ID, however, since they can't have modified their email address
+    // using the old version, we can safely assume their emailHashed still equals their user.emailHashed
+    // property. Perhaps someone upgrading a different device after an email address change will
+    // experience a problem but that'll be rare and signing out and back in again should resolve it
+    // for them since they'll then load the user id after loginFinish.
+    user.id = userId ?? user.emailHashed;
+
+    user.idB64url = user.id!.replaceAll(RegExp(r'\+'), '-').replaceAll(RegExp(r'/'), '_').replaceAll(RegExp(r'='), '.');
     return user;
   }
 

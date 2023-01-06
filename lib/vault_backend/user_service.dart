@@ -146,6 +146,9 @@ class UserService {
               // Don't do anything in the unlikely event that the JWT has already expired
               if (claim.exp > DateTime.now().millisecondsSinceEpoch) {
                 user.features = Features(enabled: claim.features, source: 'unknown', validUntil: claim.featureExpiry);
+                user.id = claim.sub;
+                user.idB64url =
+                    user.id!.replaceAll(RegExp(r'\+'), '-').replaceAll(RegExp(r'/'), '_').replaceAll(RegExp(r'='), '.');
                 user.tokens!.client = jwt;
               }
             }

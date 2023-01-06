@@ -106,7 +106,7 @@ class LocalVaultRepository {
 
   Future<LocalVaultFile?> load(User user, Future<CredentialLookupResult> Function() getCredentials) async {
     final directory = await getStorageDirectory();
-    final file = await _loadLocalFile(getCredentials, '${directory.path}/${user.emailHashedB64url}/current.kdbx');
+    final file = await _loadLocalFile(getCredentials, '${directory.path}/${user.idB64url}/current.kdbx');
     return file;
   }
 
@@ -166,7 +166,7 @@ class LocalVaultRepository {
 
   Future<void> create(User user, LockedVaultFile lockedKdbx) async {
     final directory = await getStorageDirectory();
-    final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
+    final file = File('${directory.path}/${user.idB64url}/current.kdbx');
     await file.create(recursive: true);
     await file.writeAsBytes(lockedKdbx.kdbxBytes, flush: true);
   }
@@ -181,7 +181,7 @@ class LocalVaultRepository {
 
   Future<VaultFileVersions> merge(User user, LocalVaultFile local, RemoteVaultFile remote) async {
     final directory = await getStorageDirectory();
-    final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
+    final file = File('${directory.path}/${user.idB64url}/current.kdbx');
     final firstKdbx = await local.files.remoteMergeTarget;
     if (firstKdbx == null) {
       throw Exception("Missing remote merge target. Can't proceed with merge.");
@@ -194,8 +194,7 @@ class LocalVaultRepository {
       finalKdbx = firstKdbx;
       kdbxData = await kdbxFormat().save(firstKdbx);
     } on KdbxUnsupportedException catch (e) {
-      final backupFilename =
-          '${directory.path}/${user.emailHashedB64url}/backup-${DateTime.now().millisecondsSinceEpoch}.kdbx';
+      final backupFilename = '${directory.path}/${user.idB64url}/backup-${DateTime.now().millisecondsSinceEpoch}.kdbx';
       l.w('Merge from remote failed! Most likely this is due to the user resetting their account on another device and then signing in to this device AND they reset their password to the same as it was before. We will create a backup file at $backupFilename just in case manual recovery becomes critical. Detailed reason: ${e.hint}');
       await file.copy(backupFilename);
       finalKdbx = secondKdbx;
@@ -226,7 +225,7 @@ class LocalVaultRepository {
     }
 
     final directory = await getStorageDirectory();
-    final file = File('${directory.path}/${user.emailHashedB64url}/staged.kdbx');
+    final file = File('${directory.path}/${user.idB64url}/staged.kdbx');
     await file.writeAsBytes(bytes, flush: true);
     l.d('staging complete');
   }
@@ -236,15 +235,15 @@ class LocalVaultRepository {
     final directory = await getStorageDirectory();
     return await _loadRemoteFile(
       getCredentials,
-      '${directory.path}/${user.emailHashedB64url}/staged.kdbx',
+      '${directory.path}/${user.idB64url}/staged.kdbx',
       ifNewerThan,
     );
   }
 
   remove(User user) async {
     final directory = await getStorageDirectory();
-    final file = File('${directory.path}/${user.emailHashedB64url}/current.kdbx');
-    final stagedFile = File('${directory.path}/${user.emailHashedB64url}/staged.kdbx');
+    final file = File('${directory.path}/${user.idB64url}/current.kdbx');
+    final stagedFile = File('${directory.path}/${user.idB64url}/staged.kdbx');
     try {
       await file.delete();
     } on Exception {
@@ -279,7 +278,7 @@ class LocalVaultRepository {
   Future<LocalVaultFile> save(User? user, LocalVaultFile vault,
       Future<KdbxFile> Function(KdbxFile vaultFile) applyAndConsumePendingAutofillAssociations) async {
     final directory = await getStorageDirectory();
-    final userFolder = user?.emailHashedB64url ?? 'local_user';
+    final userFolder = user?.idB64url ?? 'local_user';
     final file = File('${directory.path}/$userFolder/current.kdbx');
     (await vault.files.pending)?.merge(vault.files.current);
     final kdbxToSave = await beforeSave(
@@ -314,7 +313,7 @@ class LocalVaultRepository {
 
   Future<LocalVaultFile?> tryAutofillMerge(User? user, Credentials creds, LocalVaultFile vault) async {
     final directory = await getStorageDirectory();
-    final userFolder = user?.emailHashedB64url ?? 'local_user';
+    final userFolder = user?.idB64url ?? 'local_user';
     final fileNameCurrent = File('${directory.path}/$userFolder/current.kdbx');
     final fileNameAutofill = '${directory.path}/$userFolder/autofill.kdbx';
     final fileAutofill = File(fileNameAutofill);

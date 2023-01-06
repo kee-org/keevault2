@@ -34,6 +34,15 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
+  User? get currentUserIfIdKnown {
+    final AccountState currentState = state;
+    if (currentState is AccountChosen && currentState.user.id != null) {
+      return currentState.user;
+    } else {
+      return null;
+    }
+  }
+
   Future<User?> startup() async {
     if (state is! AccountInitial) return null;
     l.d('starting account cubit');
@@ -44,10 +53,16 @@ class AccountCubit extends Cubit<AccountState> {
     } on Exception {
       // no action required
     }
+    String? userId;
+    try {
+      userId = prefs.getString('user.current.id');
+    } on Exception {
+      // no action required
+    }
 
     if (email != null && email.isNotEmpty) {
       l.d('user found');
-      var user = await User.fromEmail(email);
+      var user = await User.fromEmail(email, userId);
       await _userRepo.setQuickUnlockUser(user, force: true);
       emit(AccountChosen(user));
       l.d('account cubit started');
@@ -82,14 +97,20 @@ class AccountCubit extends Cubit<AccountState> {
 
   Future<void> startSignin(String email) async {
     l.d('starting the 1st part of the sign in procedure');
-    var user = await User.fromEmail(email);
+
+    // User ID may not be known at this stage (if user has never signed in on this device before) so we will default to emailHashed but if user has changed their email address in the past, the id will be corrected when we finish the sign in
+    var user = await User.fromEmail(email, userId);
     emit(AccountIdentifying(user));
     try {
       user = await _userRepo.startSignin(user);
       l.d('sign in procedure now awaits a password and resulting SRP parameters');
       emit(AccountIdentified(user, false));
     } on KeeServiceTransportException catch (e) {
-      l.i('Unable to identify user due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e');
+      // I can't think of any circumstance in which the user can have previously stored their vault offline but they ended up here rather than using the path which retrieves their email address and id from storage and thus allows the id to find the correct location for the kdbx file, etc.
+      // Maybe if they sign out and then sign in again while offline!!! We will have deleted their email and id but need to keep the id somewhere permenantly so that we can map from their email address to their id.
+      //TODO: change id storage to a map of emails to ids instead
+      // that will work but what about if they change their email address on a different device? They will have to sign in with the old email address until they reconnect to the network, when the old one will then stop working, new one wills tart and the email address to id mapping will be changed.
+      l.i('Unable to identify user due to a transport error. App should continue to work offline if user has previously stored their Vault unless they have changed their email address previously. Details: $e');
       emit(AccountIdentified(user, false));
     }
   }
@@ -108,11 +129,17 @@ class AccountCubit extends Cubit<AccountState> {
       l.i('Unable to authenticate due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user.current.email', user.email!);
+      if (user.id?.isNotEmpty ?? false) {
+        await prefs.setString('user.current.id', user.id!);
+      }
       emit(AccountAuthenticationBypassed(user));
     } on KeeMaybeOfflineException {
       l.i('Unable to authenticate since initial identification failed, probably due to a transport error. App should continue to work offline if user has previously stored their Vault.');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user.current.email', user.email!);
+      if (user.id?.isNotEmpty ?? false) {
+        await prefs.setString('user.current.id', user.id!);
+      }
       emit(AccountAuthenticationBypassed(user));
     }
     return user;
@@ -152,6 +179,7 @@ class AccountCubit extends Cubit<AccountState> {
     user = await _userRepo.finishSignin(key, user);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user.current.email', user.email!);
+    await prefs.setString('user.current.id', user.id!);
     await _userRepo.setQuickUnlockUser(user);
     final subscriptionStatus = user.subscriptionStatus;
     if (subscriptionStatus == AccountSubscriptionStatus.current) {
@@ -183,7 +211,7 @@ class AccountCubit extends Cubit<AccountState> {
     final AccountState currentState = state;
     if (currentState is AccountChosen && (currentState.user.email?.isNotEmpty ?? false)) {
       l.d('clearing user key material');
-      var user = await User.fromEmail(currentState.user.email!);
+      var user = await User.fromEmail(currentState.user.email!, currentState.user.id);
       // Quick Unlock gets locked when Vault is locked which must happen when
       // user account is signed out so we don't need to do that here too.
       emit(AccountChosen(user));
@@ -194,7 +222,8 @@ class AccountCubit extends Cubit<AccountState> {
     l.d('removing stored user email address');
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user.current.email');
-    l.d('removed stored user email address');
+    await prefs.remove('user.current.id');
+    l.d('removed stored user email address and id');
     await prefs.setBool('user.current.isFree', false);
     signoutVault();
     emit(AccountUnknown());

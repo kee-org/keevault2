@@ -226,7 +226,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
         onChange: (_) async {
           final vaultCubit = BlocProvider.of<VaultCubit>(context);
           await vaultCubit.disableQuickUnlock();
-          final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+          final user = BlocProvider.of<AccountCubit>(context).currentUserIfIdKnown;
           await vaultCubit.enableQuickUnlock(
             user,
             vaultCubit.currentVaultFile?.files.current,
@@ -251,7 +251,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
         onChange: (_) async {
           final vaultCubit = BlocProvider.of<VaultCubit>(context);
           await vaultCubit.disableQuickUnlock();
-          final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+          final user = BlocProvider.of<AccountCubit>(context).currentUserIfIdKnown;
           await vaultCubit.enableQuickUnlock(
             user,
             vaultCubit.currentVaultFile?.files.current,
@@ -279,7 +279,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
                   if (!value) {
                     await vaultCubit.disableQuickUnlock();
                   } else {
-                    final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+                    final user = BlocProvider.of<AccountCubit>(context).currentUserIfIdKnown;
                     await vaultCubit.enableQuickUnlock(
                       user,
                       vaultCubit.currentVaultFile?.files.current,
