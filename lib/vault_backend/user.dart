@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'login_parameters.dart';
 import 'account_verification_status.dart';
 import 'features.dart';
@@ -31,12 +33,35 @@ class User {
   //   return user;
   // }
 
-  static Future<User> fromEmail(String email, String? userId) async {
+  static Future<User> fromEmail(String email) async {
     final user = User();
     user.email = email;
+    final prefsFuture = SharedPreferences.getInstance();
     user.emailHashed = await hashString(email, EMAIL_ID_SALT);
+    final prefs = await prefsFuture;
 
-    // On upgrade from earlier version, subscribers may only have a locally stored copy of the email
+    // We need to persistently store the map of email address hash to user ID so that we can
+    // allow offline access in the increasingly common case that a user's ID is not that same
+    // as their hashed email address. When we "forget" a user, this mapping of non-personally
+    // identifiable information will remain on the device ready for if/when they sign in again
+    // in future.
+
+    // If a user changes email address and then another person signs up with it later, they
+    // would be able to use the original user's device to associate their sign-in credentials
+    // with the user ID of the original user. This can't result in abuse of either the KDBX
+    // file or Kee Vault authentication service because the remote server can see the real
+    // up to date relationship and the KDBX file can only be decrypted if the new user has
+    // selected the same password as the old user (in which case they could access the
+    // data in any number of alternative ways).
+    String? userId;
+    try {
+      userId = prefs.getString('user.authMaterialUserIdMap.${user.emailHashed}');
+    } on Exception {
+      // no action required
+      // User ID may not be known (e.g. if user has never signed in on this device before)
+    }
+
+    // On upgrade from an earlier version, subscribers may only have a locally stored copy of the email
     // address, rather than their user ID, however, since they can't have modified their email address
     // using the old version, we can safely assume their emailHashed still equals their user.emailHashed
     // property. Perhaps someone upgrading a different device after an email address change will
