@@ -60,6 +60,9 @@ class QuickUnlocker {
         ),
       );
 
+  // In 2023 we changed the user string to be the user ID rather than emailHashed. Since we didn't change
+  // any existing user's ID and they used to default to emailHashed anyway, this will keep working.
+  // Maybe one day we could/should rename the user parameter to complete the tidy-up.
   Future<QUStatus> initialiseForUser(String user, bool force) async {
     if (!force && _currentCreds != null && _currentUser != null && _currentUser == user) {
       return QUStatus.credsAvailable;
