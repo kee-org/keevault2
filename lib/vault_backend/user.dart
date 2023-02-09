@@ -20,6 +20,7 @@ class User {
   Tokens? tokens;
   LoginParameters? loginParameters;
   AccountVerificationStatus verificationStatus = AccountVerificationStatus.never;
+  String? subscriptionId;
 
   // hashedMasterKey may come from a combination of password and keyfile in
   // future but for now, we require a text password
@@ -85,7 +86,14 @@ class User {
           now - (86400 * 548 * 1000), DateTime.utc(2022, 4, 1).millisecondsSinceEpoch); // 18 months or 1st April 2022
       if (subValidUntil >= now) {
         return AccountSubscriptionStatus.current;
-      } else if (subValidUntil < newestSubExpiryAllowedForNewTrial) {
+      } else if (subValidUntil < newestSubExpiryAllowedForNewTrial &&
+          subscriptionSource == AccountSubscriptionSource.chargeBee) {
+        // We don't allow retrials for anything except Chargebee and user must have
+        // set up a subscription first. Thus users who get given a temporary subscription
+        // when registering can't later enable a Chargebee trial, even if they never
+        // completed their subscription setup from a different source. We'll render
+        // "create new subscription" features in future using knowledge of the current
+        // device platform rather than the user object.
         return AccountSubscriptionStatus.freeTrialAvailable;
       } else {
         return AccountSubscriptionStatus.expired;
@@ -95,9 +103,22 @@ class User {
     // a user that does not exist in the Kee Vault service
     return AccountSubscriptionStatus.unknown;
   }
+
+  AccountSubscriptionSource get subscriptionSource {
+    if (subscriptionId != null) {
+      if (subscriptionId!.startsWith('adhoc_')) {
+        return AccountSubscriptionSource.adHoc;
+      } else if (subscriptionId!.startsWith('cb_')) {
+        return AccountSubscriptionSource.chargeBee;
+      }
+    }
+    return AccountSubscriptionSource.unknown;
+  }
 }
 
 enum AccountSubscriptionStatus { unknown, current, expired, freeTrialAvailable }
+
+enum AccountSubscriptionSource { unknown, adHoc, chargeBee }
 
 // ignore: constant_identifier_names
 const EMAIL_ID_SALT = 'a7d60f672fc7836e94dabbd7000f7ef4e5e72bfbc66ba4372add41d7d46a1c24';

@@ -150,6 +150,7 @@ class UserService {
                 user.idB64url =
                     user.id!.replaceAll(RegExp(r'\+'), '-').replaceAll(RegExp(r'/'), '_').replaceAll(RegExp(r'='), '.');
                 user.tokens!.client = jwt;
+                user.subscriptionId = claim.subscriptionId;
               }
             }
             break;

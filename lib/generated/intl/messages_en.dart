@@ -557,6 +557,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Subscription expired"),
         "subscriptionExpiredDetails": MessageLookupByLibrary.simpleMessage(
             "Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site."),
+        "subscriptionExpiredNoAction": MessageLookupByLibrary.simpleMessage(
+            "Your subscription or trial period has ended. Please contact us to discuss options for renewal."),
         "subscriptionExpiredTrialAvailable": MessageLookupByLibrary.simpleMessage(
             "Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account."),
         "tagRename": MessageLookupByLibrary.simpleMessage("Rename"),

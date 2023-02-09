@@ -5,6 +5,7 @@ import 'package:keevault/config/environment_config.dart';
 import 'package:keevault/config/routes.dart';
 import 'package:keevault/cubit/account_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
+import 'package:keevault/vault_backend/user.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
 
@@ -37,12 +38,20 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
             style: theme.textTheme.headline6,
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Text(
-            widget.trialAvailable ? str.subscriptionExpiredTrialAvailable : str.subscriptionExpiredDetails,
-          ),
-        ),
+        BlocBuilder<AccountCubit, AccountState>(builder: (context, state) {
+          if (state is AccountExpired) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                widget.trialAvailable
+                    ? str.subscriptionExpiredTrialAvailable
+                    : expiryMessageForSubscriptionSource(state.user.subscriptionSource, str),
+              ),
+            );
+          } else {
+            return Text(str.unexpected_error('Account in invalid state for ExpiredWidget'));
+          }
+        }),
         BlocBuilder<AccountCubit, AccountState>(
           builder: (context, state) {
             if (state is AccountTrialRestartFinished) {
@@ -85,40 +94,57 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
             } else if (state is AccountExpired) {
               final userEmail = state.user.email;
               final loading = state is AccountTrialRestartStarted;
-              return widget.trialAvailable
-                  ? ElevatedButton.icon(
-                      onPressed: loading
-                          ? null
-                          : () async {
-                              final accountCubit = BlocProvider.of<AccountCubit>(context);
-                              await accountCubit.restartTrial();
-                            },
-                      label: Text(str.startFreeTrial),
-                      icon: loading
-                          ? Container(
-                              width: 24,
-                              height: 24,
-                              padding: const EdgeInsets.all(2.0),
-                              child: const CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : Icon(Icons.favorite),
-                    )
-                  : TextButton.icon(
-                      icon: Text(str.restartSubscription),
-                      label: Icon(Icons.open_in_new),
-                      onPressed: () async {
-                        final accountCubit = BlocProvider.of<AccountCubit>(context);
-                        final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                        await DialogUtils.openUrl(EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount');
-                        vaultCubit.signout();
-                        await accountCubit.signout();
-                        await AppConfig.router
-                            .navigateTo(AppConfig.navigatorKey.currentContext!, Routes.root, clearStack: true);
-                      },
-                    );
+              if (state.user.subscriptionSource == AccountSubscriptionSource.chargeBee) {
+                return widget.trialAvailable
+                    ? ElevatedButton.icon(
+                        onPressed: loading
+                            ? null
+                            : () async {
+                                final accountCubit = BlocProvider.of<AccountCubit>(context);
+                                await accountCubit.restartTrial();
+                              },
+                        label: Text(str.startFreeTrial),
+                        icon: loading
+                            ? Container(
+                                width: 24,
+                                height: 24,
+                                padding: const EdgeInsets.all(2.0),
+                                child: const CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : Icon(Icons.favorite),
+                      )
+                    : TextButton.icon(
+                        icon: Text(str.restartSubscription),
+                        label: Icon(Icons.open_in_new),
+                        onPressed: () async {
+                          final accountCubit = BlocProvider.of<AccountCubit>(context);
+                          final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                          await DialogUtils.openUrl(
+                              EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount');
+                          vaultCubit.signout();
+                          await accountCubit.signout();
+                          await AppConfig.router
+                              .navigateTo(AppConfig.navigatorKey.currentContext!, Routes.root, clearStack: true);
+                        },
+                      );
+              } else {
+                return TextButton.icon(
+                  icon: Text(str.visitTheForum),
+                  label: Icon(Icons.open_in_new),
+                  onPressed: () async {
+                    final accountCubit = BlocProvider.of<AccountCubit>(context);
+                    final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                    await DialogUtils.openUrl('https://forum.kee.pm');
+                    vaultCubit.signout();
+                    await accountCubit.signout();
+                    await AppConfig.router
+                        .navigateTo(AppConfig.navigatorKey.currentContext!, Routes.root, clearStack: true);
+                  },
+                );
+              }
             } else {
               return Text(str.unexpected_error('Account in invalid state for ExpiredWidget'));
             }
@@ -126,5 +152,12 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
         ),
       ]),
     );
+  }
+
+  expiryMessageForSubscriptionSource(AccountSubscriptionSource subscriptionSource, S str) {
+    if (subscriptionSource == AccountSubscriptionSource.chargeBee) {
+      return str.subscriptionExpiredDetails;
+    }
+    return str.subscriptionExpiredNoAction;
   }
 }

@@ -126,8 +126,8 @@ dev_dependencies:
   flutter_native_splash: ^2.2.14
 
 dependency_overrides:
-  # barcode_scan2:
-  #   path: ../barcode_scan2/
+  # flutter_autofill_service:
+    # path: ../flutter_autofill_service/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

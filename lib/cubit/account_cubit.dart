@@ -91,7 +91,6 @@ class AccountCubit extends Cubit<AccountState> {
 
   Future<void> startSignin(String email) async {
     l.d('starting the 1st part of the sign in procedure');
-
     var user = await User.fromEmail(email);
     emit(AccountIdentifying(user));
     try {
@@ -99,9 +98,6 @@ class AccountCubit extends Cubit<AccountState> {
       l.d('sign in procedure now awaits a password and resulting SRP parameters');
       emit(AccountIdentified(user, false));
     } on KeeServiceTransportException catch (e) {
-      // I can't think of any circumstance in which the user can have previously stored their vault offline but they ended up here rather than using the path which retrieves their email address and id from storage and thus allows the id to find the correct location for the kdbx file, etc.
-      // Maybe if they sign out and then sign in again while offline!!! We will have deleted their email and id but need to keep the id somewhere permenantly so that we can map from their email address to their id.
-      //TODO: change id storage to a map of emails to ids instead
       l.i('Unable to identify user due to a transport error. App should continue to work offline if user has previously stored their Vault unless they have changed their email address previously. Details: $e');
       emit(AccountIdentified(user, false));
     }

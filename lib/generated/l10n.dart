@@ -3040,6 +3040,16 @@ class S {
     );
   }
 
+  /// `Your subscription or trial period has ended. Please contact us to discuss options for renewal.`
+  String get subscriptionExpiredNoAction {
+    return Intl.message(
+      'Your subscription or trial period has ended. Please contact us to discuss options for renewal.',
+      name: 'subscriptionExpiredNoAction',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Restart subscription`
   String get restartSubscription {
     return Intl.message(
