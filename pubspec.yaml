@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.17+41
+version: 1.0.18+42
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
@@ -126,8 +126,8 @@ dev_dependencies:
   flutter_native_splash: ^2.2.14
 
 dependency_overrides:
-  # barcode_scan2:
-  #   path: ../barcode_scan2/
+  # flutter_autofill_service:
+    # path: ../flutter_autofill_service/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

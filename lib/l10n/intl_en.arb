@@ -298,6 +298,7 @@
   "offerToSave": "Offer to save passwords",
   "subscriptionExpired": "Subscription expired",
   "subscriptionExpiredDetails": "Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site.",
+  "subscriptionExpiredNoAction": "Your subscription or trial period has ended. Please contact us to discuss options for renewal.",
   "restartSubscription": "Restart subscription",
   "subscriptionExpiredTrialAvailable": "Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account.",
   "startFreeTrial": "Start free trial",

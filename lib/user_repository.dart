@@ -10,8 +10,8 @@ class UserRepository {
   UserRepository(this.userService, this.qu);
 
   Future<QUStatus> setQuickUnlockUser(User user, {bool force = false}) async {
-    if (user.emailHashed == null) return QUStatus.unknown;
-    final quStatus = await qu.initialiseForUser(user.emailHashed!, force);
+    if (user.id == null) return QUStatus.unknown;
+    final quStatus = await qu.initialiseForUser(user.id!, force);
     if (quStatus == QUStatus.mapAvailable || quStatus == QUStatus.credsAvailable) {
       if (user.passKey?.isNotEmpty ?? false) {
         await qu.saveQuickUnlockUserPassKey(user.passKey);
@@ -42,6 +42,7 @@ class UserRepository {
     }
 
     await userService.loginFinish(user);
+    if (user.id?.isEmpty ?? true) throw KeeInvalidStateException();
     return user;
   }
 }

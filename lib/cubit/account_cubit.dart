@@ -34,6 +34,15 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
+  User? get currentUserIfIdKnown {
+    final AccountState currentState = state;
+    if (currentState is AccountChosen && currentState.user.id != null) {
+      return currentState.user;
+    } else {
+      return null;
+    }
+  }
+
   Future<User?> startup() async {
     if (state is! AccountInitial) return null;
     l.d('starting account cubit');
@@ -89,7 +98,7 @@ class AccountCubit extends Cubit<AccountState> {
       l.d('sign in procedure now awaits a password and resulting SRP parameters');
       emit(AccountIdentified(user, false));
     } on KeeServiceTransportException catch (e) {
-      l.i('Unable to identify user due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e');
+      l.i('Unable to identify user due to a transport error. App should continue to work offline if user has previously stored their Vault unless they have changed their email address previously. Details: $e');
       emit(AccountIdentified(user, false));
     }
   }
@@ -108,11 +117,17 @@ class AccountCubit extends Cubit<AccountState> {
       l.i('Unable to authenticate due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user.current.email', user.email!);
+      if (user.id?.isNotEmpty ?? false) {
+        await prefs.setString('user.authMaterialUserIdMap.${user.emailHashed}', user.id!);
+      }
       emit(AccountAuthenticationBypassed(user));
     } on KeeMaybeOfflineException {
       l.i('Unable to authenticate since initial identification failed, probably due to a transport error. App should continue to work offline if user has previously stored their Vault.');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user.current.email', user.email!);
+      if (user.id?.isNotEmpty ?? false) {
+        await prefs.setString('user.authMaterialUserIdMap.${user.emailHashed}', user.id!);
+      }
       emit(AccountAuthenticationBypassed(user));
     }
     return user;
@@ -152,6 +167,7 @@ class AccountCubit extends Cubit<AccountState> {
     user = await _userRepo.finishSignin(key, user);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user.current.email', user.email!);
+    await prefs.setString('user.authMaterialUserIdMap.${user.emailHashed}', user.id!);
     await _userRepo.setQuickUnlockUser(user);
     final subscriptionStatus = user.subscriptionStatus;
     if (subscriptionStatus == AccountSubscriptionStatus.current) {
