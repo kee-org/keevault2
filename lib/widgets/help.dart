@@ -68,7 +68,7 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
                     child: Text(
                       'Documentation',
-                      style: theme.textTheme.headline6,
+                      style: theme.textTheme.titleLarge,
                     ),
                   ),
                   Text(
@@ -85,7 +85,7 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
                     child: Text(
                       'Feedback and other support',
-                      style: theme.textTheme.headline6,
+                      style: theme.textTheme.titleLarge,
                     ),
                   ),
                   Text(
@@ -101,7 +101,7 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
                     child: Text(
                       'Diagnostics',
-                      style: theme.textTheme.headline6,
+                      style: theme.textTheme.titleLarge,
                     ),
                   ),
                   Padding(

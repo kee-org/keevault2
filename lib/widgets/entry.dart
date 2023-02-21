@@ -354,7 +354,7 @@ class EntryWidget extends StatelessWidget {
                                               padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
                                               child: Text(
                                                 str.autofillNewEntryMakeChangesThenDone,
-                                                style: theme.textTheme.bodyText1,
+                                                style: theme.textTheme.bodyLarge,
                                               ),
                                             ))
                                           ],

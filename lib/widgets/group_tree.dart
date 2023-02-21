@@ -101,13 +101,13 @@ class GroupTreeWidget extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 8.0),
                             child: Icon(
                               Icons.info,
-                              color: theme.textTheme.caption!.color,
+                              color: theme.textTheme.bodySmall!.color,
                             ),
                           ),
                           Expanded(
                               child: Text(
                             str.longPressGroupExplanation,
-                            style: theme.textTheme.caption,
+                            style: theme.textTheme.bodySmall,
                           )),
                         ],
                       ),

@@ -63,7 +63,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
           padding: const EdgeInsets.all(16.0),
           child: Text(
             widget.reason,
-            style: theme.textTheme.headline6,
+            style: theme.textTheme.titleLarge,
           ),
         ),
         Padding(

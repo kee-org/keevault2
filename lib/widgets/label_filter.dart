@@ -30,7 +30,7 @@ class LabelFilterWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 16.0, bottom: 8.0, left: 8.0, right: 8.0),
                     child: Text(
                       str.labelsExplanation,
-                      style: theme.textTheme.subtitle1,
+                      style: theme.textTheme.titleMedium,
                     ),
                   ),
                   Padding(
@@ -94,13 +94,13 @@ class LabelFilterWidget extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 8.0),
                           child: Icon(
                             Icons.info,
-                            color: theme.textTheme.caption!.color,
+                            color: theme.textTheme.bodySmall!.color,
                           ),
                         ),
                         Expanded(
                             child: Text(
                           str.labelFilteringHint,
-                          style: theme.textTheme.caption,
+                          style: theme.textTheme.bodySmall,
                         )),
                       ],
                     ),

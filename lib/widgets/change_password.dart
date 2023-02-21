@@ -53,7 +53,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: Text(
                         str.changePasswordDetail,
-                        style: theme.textTheme.headline6,
+                        style: theme.textTheme.titleLarge,
                       ),
                     ),
                     Padding(
@@ -145,7 +145,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: Text(
                             'There was a problem saving your new password. Please try again in a moment and then check that your device storage has free space and is not faulty.',
-                            style: theme.textTheme.titleMedium?.copyWith(color: theme.errorColor),
+                            style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.error),
                           )),
                     ),
                     Align(

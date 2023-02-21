@@ -40,7 +40,7 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
               str.chooseAPassword,
-              style: theme.textTheme.headline6,
+              style: theme.textTheme.titleLarge,
             ),
           ),
           Padding(
@@ -113,14 +113,14 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: RichText(
               text: TextSpan(
-                style: theme.textTheme.bodyText2,
+                style: theme.textTheme.bodyMedium,
                 children: <TextSpan>[
                   TextSpan(
                     text: str.localOnlyAgree1,
                   ),
                   TextSpan(
                     text: str.localOnlyAgree2,
-                    style: theme.textTheme.bodyText2!.copyWith(color: theme.primaryColor),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.primaryColor),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
                         await FreeUserTermsDialog().show(context);

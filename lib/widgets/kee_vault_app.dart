@@ -136,10 +136,8 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
           );
     return theme.copyWith(
       primaryColor: palette[500],
-      toggleableActiveColor: theme.colorScheme.secondary,
       canvasColor: isDark ? Colors.grey[900] : Colors.grey[50],
       appBarTheme: theme.appBarTheme.copyWith(backgroundColor: palette[500]),
-      bottomAppBarColor: isDark ? palette[800] : palette[100],
       textSelectionTheme: TextSelectionThemeData(
         selectionHandleColor: palette[500],
         cursorColor: isDark ? palette[50] : palette[500],
@@ -147,7 +145,30 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(foregroundColor: isDark ? palette[100] : palette[600])),
-      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: theme.colorScheme.secondary)),
+      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: theme.colorScheme.secondary)), checkboxTheme: CheckboxThemeData(
+ fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
+ return null;
+ }),
+ ), radioTheme: RadioThemeData(
+ fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
+ return null;
+ }),
+ ), switchTheme: SwitchThemeData(
+ thumbColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
+ return null;
+ }),
+ trackColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+ if (states.contains(MaterialState.disabled)) { return null; }
+ if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
+ return null;
+ }),
+ ), bottomAppBarTheme: BottomAppBarTheme(color: isDark ? palette[800] : palette[100]),
     );
   }
 

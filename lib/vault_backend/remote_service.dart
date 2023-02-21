@@ -45,8 +45,8 @@ class RemoteService {
     var endpoint = endpoints[stage]![name]!;
     var options = BaseOptions(
       baseUrl: endpoint,
-      connectTimeout: 20000,
-      receiveTimeout: 30000,
+      connectTimeout: Duration(milliseconds: 20000),
+      receiveTimeout: Duration(milliseconds: 30000),
       contentType: 'text/plain',
     );
     return RemoteService._(name, Dio(options));

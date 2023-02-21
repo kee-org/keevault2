@@ -53,7 +53,7 @@ class EntryListWidget extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         str.noEntriesCreateNewInstruction,
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
                     OutlinedButton(
@@ -98,27 +98,27 @@ class EntryListHeaderWidget extends StatelessWidget {
           final messageTarget = [
             TextSpan(
               text: 'Select an entry to fill into ',
-              style: theme.textTheme.bodyText2,
+              style: theme.textTheme.bodyMedium,
             ),
             webDomain != ''
                 ? TextSpan(
                     text: webDomain,
-                    style: theme.textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
                   )
                 : TextSpan(
                     text: 'the app described below',
-                    style: theme.textTheme.bodyText2,
+                    style: theme.textTheme.bodyMedium,
                   ),
             TextSpan(
               text: '.',
-              style: theme.textTheme.bodyText2,
+              style: theme.textTheme.bodyMedium,
             ),
           ];
           final messageOutcome = TextSpan(
             text: state.forceInteractive
                 ? " We'll add it to the list of matches for this ${webDomain != '' ? 'site' : 'app'}."
                 : " We'll remember next time.",
-            style: theme.textTheme.bodyText2,
+            style: theme.textTheme.bodyMedium,
           );
 
           final message = RichText(

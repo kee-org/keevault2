@@ -42,7 +42,7 @@ class OtpFieldEntryEditor extends StatelessWidget {
             padding: const EdgeInsets.all(0.0),
             child: Text(
               otpCode,
-              style: Theme.of(context).textTheme.subtitle1?.copyWith(letterSpacing: 5, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(letterSpacing: 5, fontWeight: FontWeight.bold),
               textAlign: TextAlign.start,
             ),
           ),

@@ -33,7 +33,7 @@ class VaultImportedWidget extends StatelessWidget {
             padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
             child: Text(
               str.importComplete,
-              style: theme.textTheme.headline5,
+              style: theme.textTheme.headlineSmall,
             ),
           ),
           ...(vaultState.manual ? _manual(str, theme) : _free(str, theme)),
@@ -56,15 +56,15 @@ class VaultImportedWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: RichText(
           text: TextSpan(
-            style: theme.textTheme.bodyText2,
+            style: theme.textTheme.bodyMedium,
             children: <TextSpan>[
               TextSpan(
                 text: str.importedFree2,
-                style: theme.textTheme.bodyText2,
+                style: theme.textTheme.bodyMedium,
               ),
               TextSpan(
                 text: str.thisCommunityForumTopic,
-                style: theme.textTheme.bodyText2!.copyWith(
+                style: theme.textTheme.bodyMedium!.copyWith(
                   decoration: TextDecoration.underline,
                   fontWeight: FontWeight.w900,
                 ),
@@ -86,15 +86,15 @@ class VaultImportedWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: RichText(
           text: TextSpan(
-            style: theme.textTheme.bodyText2,
+            style: theme.textTheme.bodyMedium,
             children: <TextSpan>[
               TextSpan(
                 text: str.importedManual,
-                style: theme.textTheme.bodyText2,
+                style: theme.textTheme.bodyMedium,
               ),
               TextSpan(
                 text: str.thisCommunityForumTopic,
-                style: theme.textTheme.bodyText2!.copyWith(
+                style: theme.textTheme.bodyMedium!.copyWith(
                   decoration: TextDecoration.underline,
                   fontWeight: FontWeight.w900,
                 ),

@@ -42,7 +42,7 @@ class FreeUserTermsDialog extends StatelessWidget with DialogMixin<bool> {
                     onTap: followLink,
                     child: Text(
                       tosLink,
-                      style: theme.textTheme.bodyText2!.copyWith(color: theme.primaryColor),
+                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.primaryColor),
                     ),
                   );
                 },
@@ -58,7 +58,7 @@ class FreeUserTermsDialog extends StatelessWidget with DialogMixin<bool> {
                     onTap: followLink,
                     child: Text(
                       privacyLink,
-                      style: theme.textTheme.bodyText2!.copyWith(color: theme.primaryColor),
+                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.primaryColor),
                     ),
                   );
                 },

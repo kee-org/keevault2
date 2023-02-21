@@ -208,7 +208,7 @@ class BinaryCardWidget extends StatelessWidget {
             title: Text(attachment.key.key),
             subtitle: Text(
               str.sizeBytes(attachment.value.value.length),
-              style: theme.textTheme.caption,
+              style: theme.textTheme.bodySmall,
             ),
           ),
           Align(

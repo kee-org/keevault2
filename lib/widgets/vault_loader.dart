@@ -124,7 +124,7 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
           padding: const EdgeInsets.all(16.0),
           child: Text(
             'Error: ${state.message}',
-            style: theme.textTheme.bodyText1,
+            style: theme.textTheme.bodyLarge,
           ),
         );
       } else if (state is VaultDownloading) {
