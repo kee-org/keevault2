@@ -60,7 +60,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                         alignment: Alignment.topLeft,
                         child: RichText(
                           text: TextSpan(
-                            style: widget.theme.textTheme.headline6,
+                            style: widget.theme.textTheme.titleLarge,
                             children: [
                               WidgetSpan(
                                 child: Icon(
@@ -83,7 +83,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                           child: RichText(
                             textAlign: TextAlign.right,
                             text: TextSpan(
-                              style: widget.theme.textTheme.headline6,
+                              style: widget.theme.textTheme.titleLarge,
                               children: [
                                 WidgetSpan(
                                   child: Icon(
@@ -109,7 +109,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                       Expanded(
                         child: RichText(
                           text: TextSpan(
-                            style: widget.theme.textTheme.headline6,
+                            style: widget.theme.textTheme.titleLarge,
                             children: [
                               WidgetSpan(
                                 child: Icon(

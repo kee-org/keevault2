@@ -124,7 +124,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> wit
                       border: OutlineInputBorder(),
                       labelText: str.enter_your_email_address,
                       helperMaxLines: 1,
-                      labelStyle: theme.textTheme.subtitle1!.copyWith(color: theme.colorScheme.tertiary),
+                      labelStyle: theme.textTheme.titleMedium!.copyWith(color: theme.colorScheme.tertiary),
                     ),
                     autofocus: true,
                     autocorrect: false,
@@ -135,7 +135,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> wit
                     onEditingComplete: loading ? null : signup,
                     validator: (val) =>
                         !EmailValidator.validate(val ?? '') ? 'Not a valid email address. Please try again.' : null,
-                    style: theme.textTheme.subtitle1!.copyWith(color: theme.colorScheme.tertiary),
+                    style: theme.textTheme.titleMedium!.copyWith(color: theme.colorScheme.tertiary),
                   ),
                 ),
               ),

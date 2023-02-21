@@ -74,7 +74,8 @@ class RemoteVaultRepository {
       throw Exception('Missing URLs from storage service.');
     }
     final dlUrl = siList[0].urls!.dl;
-    final dio = Dio(BaseOptions(connectTimeout: 20000, receiveTimeout: 30000));
+    final dio =
+        Dio(BaseOptions(connectTimeout: Duration(milliseconds: 20000), receiveTimeout: Duration(milliseconds: 30000)));
     var retriesRemaining = 3;
     do {
       retriesRemaining--;
@@ -107,7 +108,8 @@ class RemoteVaultRepository {
       throw Exception('Missing URLs from storage service.');
     }
     final ulUrl = siList[0].urls!.ul;
-    final dio = Dio(BaseOptions(connectTimeout: 20000, sendTimeout: 30000));
+    final dio =
+        Dio(BaseOptions(connectTimeout: Duration(milliseconds: 20000), sendTimeout: Duration(milliseconds: 30000)));
     var retriesRemaining = 3;
     do {
       retriesRemaining--;
@@ -148,7 +150,8 @@ class RemoteVaultRepository {
       throw Exception('Missing URLs from storage service.');
     }
     final headUrl = siList[0].urls!.st;
-    final dio = Dio(BaseOptions(connectTimeout: 20000, receiveTimeout: 15000));
+    final dio =
+        Dio(BaseOptions(connectTimeout: Duration(milliseconds: 20000), receiveTimeout: Duration(milliseconds: 15000)));
     var retriesRemaining = 3;
     do {
       retriesRemaining--;

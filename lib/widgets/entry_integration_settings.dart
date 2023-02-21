@@ -175,7 +175,7 @@ class _MatchAccuracyRadioWidgetState extends State<MatchAccuracyRadioWidget> wit
       children: <Widget>[
         Text(
           str.minURLMatchAccuracy,
-          style: theme.textTheme.subtitle1,
+          style: theme.textTheme.titleMedium,
         ),
         Tooltip(
           message: str.minimumMatchAccuracyDomainExplainer,

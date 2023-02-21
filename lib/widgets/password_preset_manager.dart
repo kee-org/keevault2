@@ -74,12 +74,12 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                                   child: Text(
                                     generatorState.all[index].title,
-                                    style: theme.textTheme.subtitle1,
+                                    style: theme.textTheme.titleMedium,
                                   ),
                                 ),
                                 subtitle: Text(
                                   describeProfile(context, generatorState.all[index]),
-                                  style: theme.textTheme.subtitle2,
+                                  style: theme.textTheme.titleSmall,
                                 ),
                               ),
                               Row(

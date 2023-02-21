@@ -33,7 +33,7 @@ class _EditableListWidgetState<T> extends State<EditableListWidget<T>> {
       children: <Widget>[
         Text(
           widget.title,
-          style: theme.textTheme.subtitle1,
+          style: theme.textTheme.titleMedium,
         ),
         Row(
           children: [
@@ -77,7 +77,7 @@ class _EditableListWidgetState<T> extends State<EditableListWidget<T>> {
                       Expanded(
                         child: Text(
                           widget.items[index].toString(),
-                          style: theme.textTheme.subtitle2,
+                          style: theme.textTheme.titleSmall,
                         ),
                       ),
                       IconButton(

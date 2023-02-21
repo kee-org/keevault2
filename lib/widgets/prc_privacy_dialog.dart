@@ -39,7 +39,7 @@ class PrcPrivacyDialog extends StatelessWidget with DialogMixin<bool> {
                     onTap: followLink,
                     child: Text(
                       privacyLink,
-                      style: theme.textTheme.bodyText2!.copyWith(color: theme.colorScheme.tertiary),
+                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.tertiary),
                     ),
                   );
                 },

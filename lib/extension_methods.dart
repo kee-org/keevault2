@@ -119,13 +119,13 @@ extension DioHelperHandleException on DioError {
       return;
     } else {
       // Something happened in setting up or sending the request that triggered an Error
-      if (type == DioErrorType.connectTimeout) {
+      if (type == DioErrorType.connectionTimeout) {
         throw KeeServerUnreachableException();
       }
       if (type == DioErrorType.receiveTimeout || type == DioErrorType.sendTimeout) {
         throw KeeServerTimeoutException();
       }
-      if (type == DioErrorType.other) {
+      if (type == DioErrorType.unknown) {
         throw KeeServerUnreachableException();
       }
       throw KeeUnexpectedException('[$context] DioError with no response', this, s);

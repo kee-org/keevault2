@@ -49,7 +49,7 @@ class ImportExportWidget extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
                           child: Text(
                             str.import,
-                            style: theme.textTheme.headline4,
+                            style: theme.textTheme.headlineMedium,
                           ),
                         ),
                         Padding(
@@ -91,7 +91,7 @@ class ImportExportWidget extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
                           child: Text(
                             str.export,
-                            style: theme.textTheme.headline4,
+                            style: theme.textTheme.headlineMedium,
                           ),
                         ),
                         Padding(

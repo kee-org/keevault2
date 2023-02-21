@@ -234,7 +234,7 @@ class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBin
               child: Flexible(
                 child: Text(
                   widget.bodyText ?? '',
-                  style: theme.textTheme.bodyText2,
+                  style: theme.textTheme.bodyMedium,
                 ),
               ),
             ),

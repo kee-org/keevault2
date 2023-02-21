@@ -35,7 +35,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
           padding: const EdgeInsets.only(bottom: 16.0),
           child: Text(
             str.subscriptionExpired,
-            style: theme.textTheme.headline6,
+            style: theme.textTheme.titleLarge,
           ),
         ),
         BlocBuilder<AccountCubit, AccountState>(builder: (context, state) {
@@ -77,7 +77,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                       children: [
                         Text(
                           str.startNewTrialError,
-                          style: theme.textTheme.bodyText1,
+                          style: theme.textTheme.bodyLarge,
                         ),
                         ElevatedButton(
                           onPressed: () async {

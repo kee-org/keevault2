@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.18+42
+version: 1.0.17+41
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
@@ -23,24 +23,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  logger: 1.1.0
+  logger: 1.3.0
   logger_flutter: 
     git:
       url: https://github.com/kee-org/logger_flutter.git
       ref: master
-  logging: ^1.1.0
+  logging: ^1.1.1
   kdbx:
     git:
       url: https://github.com/kee-org/kdbx.dart.git
       ref: master
-  path_provider: ^2.0.11
+  path_provider: ^2.0.14
   biometric_storage:
     git:
       url: https://github.com/kee-org/biometric_storage.git
       ref: keevault
 
-  package_info_plus: ^3.0.2
-  shared_preferences: ^2.0.15
+  package_info_plus: ^3.0.3
+  shared_preferences: ^2.0.20
   flutter_settings_screens: 0.3.3-null-safety+2
   argon2_ffi:
     git:
@@ -50,24 +50,24 @@ dependencies:
     git:
       url: https://github.com/kee-org/flutter_autofill_service.git
       ref: master
-  bloc: ^8.1.0
-  flutter_bloc: ^8.1.1
-  fluro: ^2.0.4
-  dio: ^4.0.6
+  bloc: ^8.1.1
+  flutter_bloc: ^8.1.2
+  fluro: ^2.0.5
+  dio: ^5.1.0
   crypto_keys: ^0.3.0+1
-  pointycastle: ^3.6.2
+  pointycastle: ^3.7.2
   srp:
     git:
       url: https://github.com/kee-org/srp.dart.git
       ref: master
   animate_icons: ^2.0.0
   animations: ^2.0.7
-  font_awesome_flutter: ^10.2.1
+  font_awesome_flutter: ^10.4.0
   public_suffix: ^3.0.0
-  url_launcher: ^6.1.6
+  url_launcher: ^6.1.10
   otp: ^3.1.3
   tuple: ^2.0.1
-  collection: ^1.15.0
+  collection: ^1.17.0
   jiffy: ^5.0.0
   # characters: ^1.2.0
   flutter_treeview:
@@ -94,14 +94,14 @@ dependencies:
     git:
       url: https://github.com/kee-org/matomo-tracker
       ref: main
-  file_picker: ^5.2.2
+  file_picker: ^5.2.6
   zxcvbn: ^1.0.0
   flutter_rating_bar: ^4.0.1
-  mime: ^1.0.2
-  share_plus: ^6.3.0
+  mime: ^1.0.4
+  share_plus: ^6.3.1
   path: ^1.8.2
   permission_handler: ^10.2.0
-  flutter_file_dialog: ^2.3.2
+  flutter_file_dialog: ^3.0.0
   base32: ^2.1.3
   barcode_scan2:
     git:
@@ -116,14 +116,15 @@ dependencies:
   argon2_ffi_base: ^1.1.1
   uuid: ^3.0.7
   clock: ^1.1.1
+  flutter_inapp_purchase: ^5.4.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: "^0.11.0"
+  flutter_launcher_icons: "^0.12.0"
   flutter_lints: ^2.0.1
   dependency_validator: ^3.2.2
-  flutter_native_splash: ^2.2.14
+  flutter_native_splash: ^2.2.19
 
 dependency_overrides:
   # flutter_autofill_service:

@@ -50,7 +50,7 @@ class ColorFilterWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Icon(
                       Icons.info,
-                      color: theme.textTheme.caption!.color,
+                      color: theme.textTheme.bodySmall!.color,
                     ),
                   ),
                   Expanded(
@@ -60,12 +60,12 @@ class ColorFilterWidget extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
                           str.colorsExplanation,
-                          style: theme.textTheme.caption,
+                          style: theme.textTheme.bodySmall,
                         ),
                       ),
                       Text(
                         str.colorFilteringHint,
-                        style: theme.textTheme.caption,
+                        style: theme.textTheme.bodySmall,
                       ),
                     ],
                   )),
