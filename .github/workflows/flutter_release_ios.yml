@@ -29,7 +29,7 @@ jobs:
         run: flutter --version
 
       - name: Cache pub dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.PUB_CACHE }}
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
@@ -89,7 +89,7 @@ jobs:
         run: flutter --version
 
       - name: Cache pub dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.PUB_CACHE }}
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}

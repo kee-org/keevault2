@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'adopt' # 'temurin' is apparently the new version of this but only adopt is listed as installed on github runners so need to test changing later
           java-version: '11'
@@ -39,7 +39,7 @@ jobs:
         run: flutter --version
 
       - name: Cache pub dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.PUB_CACHE }}
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Download Android keystore beta
         id: android_keystore_beta
-        uses: timheuer/base64-to-file@v1.1
+        uses: timheuer/base64-to-file@v1.2
         with:
           fileDir: /home/runner/
           fileName: keystore-kv-beta.pfx
@@ -93,7 +93,7 @@ jobs:
         run: flutter --version
 
       - name: Cache pub dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.PUB_CACHE }}
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
