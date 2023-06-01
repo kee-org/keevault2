@@ -1,6 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/config/platform.dart';
+import 'package:keevault/payment_service.dart';
 import 'package:keevault/user_repository.dart';
+import 'package:keevault/vault_backend/account_verification_status.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/vault_backend/user.dart';
 import 'package:meta/meta.dart';
@@ -89,6 +93,104 @@ class AccountCubit extends Cubit<AccountState> {
     emit(AccountLocalOnly());
   }
 
+  Future<bool> subscriptionSuccess(
+    PurchasedItem purchasedItem,
+    bool isAndroid,
+    Future<void> Function() ensureRemoteCreated,
+    Future<void> Function() finishTransaction,
+  ) async {
+    try {
+      if (purchasedItem.purchaseToken == null && purchasedItem.transactionReceipt == null) {
+        emit(AccountSubscribeError(currentUser,
+            'Unexpected error associating your subscription - we found no purchaseToken and no transactionReceipt'));
+        return false;
+      }
+      final success = await _userRepo.associate(
+          currentUser, isAndroid ? 2 : 3, purchasedItem.purchaseToken ?? purchasedItem.transactionReceipt!);
+      if (success) {
+        // Our association request was successful but we rely on the subscription
+        // provider to respond too. Ideally we'd set up a websocket to receive an
+        // immediate notification that this has completed, since that could even
+        // be notified to the user many hours later in extreme situations.
+        // For now we'll just poll a handful of times and then give up.
+        final updatedUser = await _userRepo.waitUntilValidSubscription(currentUser, purchasedItem);
+        if (updatedUser == null) {
+          //TODO:f: Is there anything we can do with the associate stage to return information
+          // that the sub id is already associated with a different user?
+          // "We've recorded your new subscription but some parts of the internet are slower than usual at the moment so we can't yet finalise your account. We will keep trying in the background. Try to sign in again a bit later and if it's not all ready by then, we will pick up where we've left off and get everything working as soon as possible."));
+
+          emit(AccountSubscribeError(currentUser,
+              "We've recorded your new subscription but we can't yet finalise your account. Sometimes this is because you have accidentally tried to associate your device's Subscription with a different account to the one you previously used. Alternatively, this may be a temporary problem with the internet. Please check your email archives and try again later, making sure you use the correct email address."));
+        } else {
+          await finishTransaction();
+          try {
+            // Can't do this in parallel with the subscription association
+            // because we need the new JWT for storage access
+            await ensureRemoteCreated();
+          } catch (ex) {
+            l.w("Initial storage creation failed. Probably a network interruption. We don't retry but it should all get sorted out automatically when the user signs in next time.: $ex");
+          } finally {
+            emit(AccountSubscribed(updatedUser));
+          }
+        }
+      } else {
+        emit(AccountSubscribeError(currentUser, 'Association error.'));
+      }
+    } on KeeSubscriptionExpiredException {
+      l.e('IAP store reports that the supplied subscription has already expired. This should be rare but could happen if we never had a chance to finish a purchase transaction a long time ago (e.g. user did not sign-in during their final subscription renewal period). We will finish the transaction now. User now needs to re-subscribe.');
+      await finishTransaction();
+      return true;
+    } on Exception catch (e) {
+      emit(AccountSubscribeError(currentUser, 'Association error: $e'));
+    }
+    return false;
+  }
+
+  void subscriptionError(String msg) {
+    emit(AccountSubscribeError(currentUser, msg));
+  }
+
+  Future<void> finaliseRegistration(User user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user.current.email', user.email!);
+    await prefs.setString('user.authMaterialUserIdMap.${user.emailHashed}', user.id!);
+    emit(AccountAuthenticated(user));
+  }
+
+  Future<void> startRegistration(String email) async {
+    l.d('starting registration');
+    var user = await User.fromEmail(email);
+    emit(AccountCreateRequested(user));
+  }
+
+  void startSubscribing(User user) {
+    emit(AccountSubscribing(user));
+  }
+
+  Future<User> createUserAccount(String email, String password, bool marketingEmails, int subscriptionSource) async {
+    l.d('starting creation of user account');
+    var user = currentUserIfKnown?.email != email ? await User.fromEmail(email) : currentUser;
+    final protectedValue = ProtectedValue.fromString(password);
+    final key = protectedValue.hash;
+    await user.attachKey(key);
+    emit(AccountCreating(user));
+    try {
+      await _userRepo.createUserAccount(user, marketingEmails, subscriptionSource);
+      return user;
+    } on KeeServerConflictException catch (e) {
+      l.w('User already registered. Details: $e');
+      throw KeeException(
+          'This email address is already registered. Choose a different one or go back and sign in using your existing Kee Vault password, then we will work out any next steps you need to take.',
+          e);
+    } on KeeServiceTransportException catch (e) {
+      l.w('Unable to register user due to a transport error. Details: $e');
+      throw KeeException(
+          'The network connection was interrupted during registration. Usually that can be resolved by moving your device to somewhere with a stronger signal but rarely this could be due to technical problems elsewhere on the internet. If you keep having problems, please try again later in the day or tomorrow.');
+    } on Exception catch (e) {
+      throw KeeException('Unknown error. Details: $e');
+    }
+  }
+
   Future<void> startSignin(String email) async {
     l.d('starting the 1st part of the sign in procedure');
     var user = await User.fromEmail(email);
@@ -169,6 +271,36 @@ class AccountCubit extends Cubit<AccountState> {
     await prefs.setString('user.current.email', user.email!);
     await prefs.setString('user.authMaterialUserIdMap.${user.emailHashed}', user.id!);
     await _userRepo.setQuickUnlockUser(user);
+    emitAuthenticatedOrExpiredOrUnvalidated(user);
+
+    final psi = PaymentService.instance;
+    await psi.ensureReady();
+    if (KeeVaultPlatform.isIOS &&
+        user.subscriptionStatus == AccountSubscriptionStatus.current &&
+        psi.activePurchaseItem != null &&
+        (user.subscriptionId?.startsWith('ap_') ?? false)) {
+      // It's impossible to know what the expected subscriptionId is because apple don't
+      // give us the originaltransactionid unless it is a pointless restoration operation
+      // to a new phone. So all subscription renewals would sit in the queue forever while
+      // we have no way to know that we have dealt with them. Thus we just accept that
+      // everything is probably fine as long as the user has a subscription from the App Store.
+      // Maybe a problem for subscription restarts after an expiry. User's subscription ID
+      // is going to stay the same even after expiry but then a new one should come along
+      // with a whole new original transaction id... or not, if there is some reuse during
+      // grace periods, etc. But surely in all other cases, any valid app store subscription
+      // id associated with a user that has a non-expired set of authentication tokens is
+      // going to be just a renewal operation that we can ignore because we handle it server-side.
+      await psi.finishTransaction(psi.activePurchaseItem!);
+    }
+    l.d('sign in complete');
+    return user;
+  }
+
+  void emitAuthenticatedOrExpiredOrUnvalidated(User user) {
+    if (user.verificationStatus != AccountVerificationStatus.success && user.tokens?.storage == null) {
+      emit(AccountEmailNotVerified(user));
+      return;
+    }
     final subscriptionStatus = user.subscriptionStatus;
     if (subscriptionStatus == AccountSubscriptionStatus.current) {
       emit(AccountAuthenticated(user));
@@ -180,8 +312,6 @@ class AccountCubit extends Cubit<AccountState> {
       throw Exception(
           'Unknown account status. Unable to proceed. This is probably a bug so please report it along with details of the Kee Vault service subscription you are trying to use (if any)');
     }
-    l.d('sign in complete');
-    return user;
   }
 
   Future<void> restartTrial() async {
@@ -214,5 +344,33 @@ class AccountCubit extends Cubit<AccountState> {
     await prefs.setBool('user.current.isFree', false);
     signoutVault();
     emit(AccountUnknown());
+  }
+
+  void emailUnverified() {
+    emit(AccountEmailNotVerified(currentUser));
+  }
+
+  Future<void> refreshUserAndTokens() async {
+    try {
+      final tokens = await _userRepo.userService.refresh(currentUser, false);
+
+      currentUser.tokens = tokens;
+      try {
+        emitAuthenticatedOrExpiredOrUnvalidated(currentUser);
+      } on Exception {
+        // blah
+      }
+    } on KeeAccountUnverifiedException {
+      rethrow;
+    } on KeeLoginRequiredException {
+      // Perhaps user took a very long time before pressing the button and all tokens have expired.
+      // Thus, it's not unreasonable to ask them to start the process again, and if they have
+      // completed verification in the mean time, they won't even end up back at the verification widget.
+      await signout();
+    }
+  }
+
+  Future<bool> resendVerificationEmail() async {
+    return await _userRepo.userService.resendVerificationEmail(currentUser);
   }
 }

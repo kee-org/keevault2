@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/config/app.dart';
-import 'package:keevault/config/environment_config.dart';
 import 'package:keevault/config/routes.dart';
 import 'package:keevault/cubit/account_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/vault_backend/user.dart';
+import '../config/environment_config.dart';
+import '../config/platform.dart';
 import '../cubit/interaction_cubit.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
@@ -118,43 +119,61 @@ class AccountDrawerWidget extends StatelessWidget {
     return BlocBuilder<VaultCubit, VaultState>(builder: (context, state) {
       return BlocBuilder<AutofillCubit, AutofillState>(
         builder: (context, autoFillState) {
-          return Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: (!autofillSimpleUIMode(autoFillState))
-                ? ExpansionTile(
-                    initiallyExpanded: state is! VaultLoaded,
-                    leading: Icon(Icons.person),
-                    title: Text(emailAddress),
+          final registrationEnabled = (EnvironmentConfig.iapGooglePlay && KeeVaultPlatform.isAndroid) ||
+              (EnvironmentConfig.iapAppleAppStore && KeeVaultPlatform.isIOS);
+          final theme = Theme.of(context);
+          final headerColor =
+              theme.brightness == Brightness.light ? theme.colorScheme.primary : theme.colorScheme.onBackground;
+          final accountActionSection = (user?.email != null)
+              ? ExpansionTile(
+                  initiallyExpanded: state is! VaultLoaded,
+                  leading: Icon(Icons.person),
+                  title: Text(emailAddress),
+                  textColor: headerColor,
+                  iconColor: headerColor,
+                  children: [
+                    ButtonBar(
+                      alignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        OutlinedButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            await _forgetUser(context);
+                          },
+                          child: Text(str.signout.toUpperCase()),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : Card(
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 1,
+                  child: Column(
                     children: [
+                      ListTile(
+                        title: Text('Use your Vault on multiple devices with a Kee Vault account',
+                            textAlign: TextAlign.center),
+                      ),
                       ButtonBar(
-                        alignment: MainAxisAlignment.spaceEvenly,
+                        alignment: MainAxisAlignment.center,
                         children: [
-                          if (user?.email != null)
-                            OutlinedButton(
-                              onPressed: () async {
-                                await DialogUtils.openUrl(
-                                    EnvironmentConfig.webUrl + '/#pfEmail=$emailAddress,dest=manageAccount');
-                              },
-                              child: Text(str.manageAccount.toUpperCase()),
-                            ),
-                          if (user?.email != null)
-                            OutlinedButton(
-                              onPressed: () async {
-                                await _forgetUser(context);
-                              },
-                              child: Text(str.signout.toUpperCase()),
-                            ),
-                          if (user?.email == null)
-                            OutlinedButton(
-                              onPressed: () async {
-                                await _forgetUser(context);
-                              },
-                              child: Text(str.signin.toUpperCase()),
-                            ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _forgetUser(context);
+                            },
+                            child: Text('Sign in ${registrationEnabled ? 'or Register' : ''}'.toUpperCase()),
+                          ),
                         ],
                       ),
                     ],
-                  )
+                  ),
+                );
+          return Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: (!autofillSimpleUIMode(autoFillState))
+                ? accountActionSection
                 : ListTile(
                     leading: Icon(Icons.person),
                     title: Text(emailAddress),

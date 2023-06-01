@@ -4,9 +4,11 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:kdbx/kdbx.dart';
 // ignore: implementation_imports
 import 'package:kdbx/src/kdbx_xml.dart';
+import 'package:keevault/config/platform.dart';
 import 'package:keevault/kdf_cache.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:argon2_ffi_base/argon2_ffi_base.dart';
@@ -137,4 +139,15 @@ String? enumToString(o) => o?.toString().split('.').last;
 
 T? enumFromString<T>(Iterable<T> values, String value) {
   return values.firstWhereOrNull((type) => type.toString().split('.').last == value);
+}
+
+extension KVPurchasedItem on PurchasedItem {
+  get keeVaultSubscriptionId {
+    final prefix = purchaseStateAndroid != null ? 'gp_' : 'ap_';
+    if (KeeVaultPlatform.isIOS) {
+      // Apple does not give us the information needed to derive this information
+      return prefix;
+    }
+    return prefix + (purchaseToken ?? '');
+  }
 }

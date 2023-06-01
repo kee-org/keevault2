@@ -6,6 +6,7 @@ import 'package:keevault/config/routes.dart';
 import 'package:keevault/cubit/account_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/vault_backend/user.dart';
+import '../config/platform.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
 
@@ -24,6 +25,9 @@ class AccountExpiredWidget extends StatefulWidget {
 }
 
 class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
+  final registrationEnabled = (EnvironmentConfig.iapGooglePlay && KeeVaultPlatform.isAndroid) ||
+      (EnvironmentConfig.iapAppleAppStore && KeeVaultPlatform.isIOS);
+
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
@@ -46,6 +50,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                 widget.trialAvailable
                     ? str.subscriptionExpiredTrialAvailable
                     : expiryMessageForSubscriptionSource(state.user.subscriptionSource, str),
+                textAlign: TextAlign.center,
               ),
             );
           } else {
@@ -130,6 +135,20 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                               .navigateTo(AppConfig.navigatorKey.currentContext!, Routes.root, clearStack: true);
                         },
                       );
+              } else if (registrationEnabled &&
+                  (state.user.subscriptionSource == AccountSubscriptionSource.googlePlay ||
+                      state.user.subscriptionSource == AccountSubscriptionSource.appleAppStore ||
+                      state.user.subscriptionSource == AccountSubscriptionSource.unknown)) {
+                return TextButton.icon(
+                  icon: Text(str.restartSubscription),
+                  label: Icon(Icons.favorite),
+                  onPressed: () async {
+                    final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                    vaultCubit.signout();
+                    await AppConfig.router
+                        .navigateTo(AppConfig.navigatorKey.currentContext!, Routes.createAccount, clearStack: true);
+                  },
+                );
               } else {
                 return TextButton.icon(
                   icon: Text(str.visitTheForum),
@@ -157,6 +176,11 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
   expiryMessageForSubscriptionSource(AccountSubscriptionSource subscriptionSource, S str) {
     if (subscriptionSource == AccountSubscriptionSource.chargeBee) {
       return str.subscriptionExpiredDetails;
+    }
+    if (subscriptionSource == AccountSubscriptionSource.appleAppStore ||
+        subscriptionSource == AccountSubscriptionSource.googlePlay ||
+        registrationEnabled) {
+      return str.subscriptionExpiredIapDetails;
     }
     return str.subscriptionExpiredNoAction;
   }

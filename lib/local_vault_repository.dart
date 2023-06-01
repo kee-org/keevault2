@@ -12,7 +12,6 @@ import 'package:keevault/config/synced_app_settings.dart';
 import 'package:keevault/locked_vault_file.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 
-import 'argon2_params.dart';
 import 'config/platform.dart';
 import 'credentials/credential_lookup_result.dart';
 import 'kdbx_argon2_ffi.dart';
@@ -110,14 +109,14 @@ class LocalVaultRepository {
     return file;
   }
 
-  Future<LocalVaultFile?> createNewKdbxOnStorage(StrengthAssessedCredentials credentialsWithStrength) async {
+  Future<LocalVaultFile> createNewKdbxOnStorage(StrengthAssessedCredentials credentialsWithStrength) async {
     final directory = await getStorageDirectory();
     final credentials = credentialsWithStrength.credentials;
     final kdbx = kdbxFormat().create(
       credentials,
       'My Kee Vault',
       generator: 'Kee Vault 2',
-      header: createNewKdbxHeader(credentialsWithStrength),
+      header: credentialsWithStrength.createNewKdbxHeader(),
     );
     final saved = await kdbx.save();
 
@@ -296,19 +295,6 @@ class LocalVaultRepository {
           null,
         ));
     return LocalVaultFile(files, persistedTime, persistedTime, vault.uuid, null, null);
-  }
-
-  KdbxHeader createNewKdbxHeader(StrengthAssessedCredentials credentialsWithStrength) {
-    final argon2Params = Argon2Params.forStrength(credentialsWithStrength.strength);
-    final kdfParameters = VarDictionary([
-      KdfField.uuid.item(KeyEncrypterKdf.kdfUuidForType(KdfType.Argon2d).toBytes()),
-      KdfField.salt.item(ByteUtils.randomBytes(argon2Params.saltLength)),
-      KdfField.parallelism.item(argon2Params.parallelism),
-      KdfField.iterations.item(argon2Params.iterations),
-      KdfField.memory.item(argon2Params.memory),
-      KdfField.version.item(argon2Params.version),
-    ]);
-    return KdbxHeader.createV4()..writeKdfParameters(kdfParameters);
   }
 
   Future<LocalVaultFile?> tryAutofillMerge(User? user, Credentials creds, LocalVaultFile vault) async {

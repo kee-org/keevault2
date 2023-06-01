@@ -52,6 +52,19 @@ class FilterCubit extends Cubit<FilterState> {
     ));
   }
 
+  void changeChildGroupInclusion(bool includeChildGroups) {
+    final fa = state as FilterActive;
+    emit(FilterActive(
+      fa.groupUuid,
+      includeChildGroups,
+      fa.colors,
+      fa.tags,
+      fa.text,
+      fa.textOptions,
+      fa.rootGroupUuid,
+    ));
+  }
+
   void toggleTag(String tagInput) {
     final fa = state as FilterActive;
     final tag = tagInput.toLowerCase();

@@ -82,9 +82,10 @@ class User {
     final subValidUntil = features?.validUntil;
     if (subValidUntil != null) {
       final now = DateTime.now().millisecondsSinceEpoch;
+      final expiryTimeWithGracePeriod = subValidUntil + 1200000; // 20 mins
       final newestSubExpiryAllowedForNewTrial = max(
           now - (86400 * 548 * 1000), DateTime.utc(2022, 4, 1).millisecondsSinceEpoch); // 18 months or 1st April 2022
-      if (subValidUntil >= now) {
+      if (expiryTimeWithGracePeriod >= now) {
         return AccountSubscriptionStatus.current;
       } else if (subValidUntil < newestSubExpiryAllowedForNewTrial &&
           subscriptionSource == AccountSubscriptionSource.chargeBee) {
@@ -110,15 +111,65 @@ class User {
         return AccountSubscriptionSource.adHoc;
       } else if (subscriptionId!.startsWith('cb_')) {
         return AccountSubscriptionSource.chargeBee;
+      } else if (subscriptionId!.startsWith('gp_')) {
+        return AccountSubscriptionSource.googlePlay;
+      } else if (subscriptionId!.startsWith('ap_')) {
+        return AccountSubscriptionSource.appleAppStore;
       }
     }
     return AccountSubscriptionSource.unknown;
   }
+
+  List<String> get emailParts {
+    if (email?.isEmpty ?? true) return [];
+    final parts = email!.split(RegExp(r"[.!#$%&'*+\/=?^_`{|}~@-]"));
+    return [...parts, parts.join(''), email!].where((x) => x.length >= 3).toList();
+  }
 }
 
-enum AccountSubscriptionStatus { unknown, current, expired, freeTrialAvailable }
+enum AccountSubscriptionStatus {
+  unknown,
+  current,
+  expired,
+  freeTrialAvailable;
 
-enum AccountSubscriptionSource { unknown, adHoc, chargeBee }
+  String displayName() {
+    if (this == AccountSubscriptionStatus.current) {
+      return 'Active';
+    }
+    if (this == AccountSubscriptionStatus.expired) {
+      return 'Expired';
+    }
+    if (this == AccountSubscriptionStatus.freeTrialAvailable) {
+      return 'Expired (a new free trial is available via Kee Vault / Chargebee)';
+    }
+    return 'Unknown';
+  }
+}
+
+enum AccountSubscriptionSource {
+  unknown,
+  adHoc,
+  chargeBee,
+  googlePlay,
+  appleAppStore;
+
+  String displayName() {
+    if (this == AccountSubscriptionSource.adHoc) {
+      return 'Custom provider';
+    }
+    if (this == AccountSubscriptionSource.chargeBee) {
+      return 'Kee Vault (Chargebee)';
+    }
+    if (this == AccountSubscriptionSource.googlePlay) {
+      return 'Google';
+    }
+    if (this == AccountSubscriptionSource.appleAppStore) {
+      return 'Apple';
+    }
+    return 'Unknown';
+  }
+}
 
 // ignore: constant_identifier_names
 const EMAIL_ID_SALT = 'a7d60f672fc7836e94dabbd7000f7ef4e5e72bfbc66ba4372add41d7d46a1c24';

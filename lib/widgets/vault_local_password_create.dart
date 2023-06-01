@@ -26,6 +26,8 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
   bool _userAgreed = false;
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
+  bool password1Obscured = true;
+  bool password2Obscured = true;
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +59,21 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: TextFormField(
               controller: _password,
-              obscureText: true,
+              obscureText: password1Obscured,
               enableSuggestions: false,
               autocorrect: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: str.newPassword,
                 errorText: null,
+                suffixIcon: IconButton(
+                  icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      password1Obscured = !password1Obscured;
+                    });
+                  },
+                ),
               ),
               validator: (value) {
                 if (value?.isEmpty ?? false) {
@@ -74,6 +84,7 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
               onSaved: (String? value) {
                 submittedValue = value;
               },
+              keyboardType: TextInputType.visiblePassword,
             ),
           ),
           ValueListenableBuilder(
@@ -87,13 +98,21 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: TextFormField(
               controller: _confirmPassword,
-              obscureText: true,
+              obscureText: password2Obscured,
               enableSuggestions: false,
               autocorrect: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: str.newPasswordRepeat,
                 errorText: widget.showError ? str.setFilePassNotMatch : null,
+                suffixIcon: IconButton(
+                  icon: Icon(password2Obscured ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      password2Obscured = !password2Obscured;
+                    });
+                  },
+                ),
               ),
               validator: (value) {
                 if (value?.isEmpty ?? false) {
@@ -107,6 +126,7 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
               onSaved: (String? value) {
                 submittedValue = value;
               },
+              keyboardType: TextInputType.visiblePassword,
             ),
           ),
           Padding(

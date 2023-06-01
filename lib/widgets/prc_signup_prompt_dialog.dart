@@ -111,8 +111,7 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
                   keyboardType: TextInputType.emailAddress,
                   maxLines: 1,
                   onEditingComplete: loading ? null : signup,
-                  validator: (val) =>
-                      !EmailValidator.validate(val ?? '') ? 'Not a valid email address. Please try again.' : null,
+                  validator: (val) => !EmailValidator.validate(val ?? '') ? str.emailValidationFail : null,
                   style: theme.textTheme.titleMedium!.copyWith(color: theme.colorScheme.tertiary),
                 ),
               ),
