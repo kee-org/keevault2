@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_persistent_queue/flutter_persistent_queue.dart';
@@ -24,6 +25,8 @@ import '../logging/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:keevault/generated/l10n.dart';
 
+import 'account_cubit.dart';
+
 part 'vault_state.dart';
 
 class VaultCubit extends Cubit<VaultState> {
@@ -36,6 +39,7 @@ class VaultCubit extends Cubit<VaultState> {
   PersistentQueue? _persistentQueueAfAssociations;
   final bool Function() isAutofilling;
   bool autoFillMergeAttemptDue = true;
+  final AccountCubit _accountCubit;
 
   VaultCubit(
     this._userRepo,
@@ -45,6 +49,7 @@ class VaultCubit extends Cubit<VaultState> {
     this._entryCubit,
     this.isAutofilling,
     this._generatorProfilesCubit,
+    this._accountCubit,
   ) : super(const VaultInitial());
 
   LocalVaultFile? get currentVaultFile {
@@ -207,7 +212,7 @@ class VaultCubit extends Cubit<VaultState> {
       }
       // We end up testing for local free vault on disk a 2nd time but not a high
       // priority to improve this performance because this branch executes very rarely.
-      await download(user, creds);
+      await download(user, kdbxCredentials: creds);
       // Exceptions are handled within download() or so serious that we can't do anything meaningful with them.
     } else {
       try {
@@ -354,14 +359,40 @@ class VaultCubit extends Cubit<VaultState> {
     await emitVaultLoaded(newFile, user, safe: false);
   }
 
-  Future<void> download(User user, Credentials kdbxCredentials) async {
+  Future<void> download(User user,
+      {StrengthAssessedCredentials? credentialsWithStrength, Credentials? kdbxCredentials}) async {
     try {
       l.d('downloading remote file');
       emit(const VaultDownloading());
-      final downloadedFile = await _remoteVaultRepo.downloadWithoutEtagCheck(user, kdbxCredentials);
+      LockedVaultFile downloadedFile;
+      kdbxCredentials ??= credentialsWithStrength?.credentials;
+      try {
+        downloadedFile = await _remoteVaultRepo.downloadWithoutEtagCheck(user, kdbxCredentials);
+      } on KeeMissingPrimaryDBException {
+        // auto-recover by creating a new Kdbx file
+        // We can't do this if we didn't have a copy of the user's master password
+        // for strength calculation so we would have to ask them to type it again
+        if (credentialsWithStrength == null) {
+          emit(const VaultDownloadCredentialsRequired('no message', false));
+          return;
+        }
+        try {
+          downloadedFile = await _remoteVaultRepo.create(user, credentialsWithStrength);
+        } on Exception {
+          emit(const VaultError(
+              'We were unable to complete the setup of your Kee Vault. Please close the app and try again later.'));
+          return;
+        }
+      }
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user.${user.email}.lastRemoteEtag', downloadedFile.etag!);
-      await prefs.setString('user.${user.email}.lastRemoteVersionId', downloadedFile.versionId!);
+      // These can be null if the auto-recovery from a missing primary vault file path was followed
+      // above but normally they will be set
+      if (downloadedFile.etag != null) {
+        await prefs.setString('user.${user.email}.lastRemoteEtag', downloadedFile.etag!);
+      }
+      if (downloadedFile.versionId != null) {
+        await prefs.setString('user.${user.email}.lastRemoteVersionId', downloadedFile.versionId!);
+      }
       l.d('creating new local file from downloaded file');
       final storageIoResult = await waitConcurrently<void, bool>(
         _localVaultRepo.create(user, downloadedFile),
@@ -401,6 +432,12 @@ class VaultCubit extends Cubit<VaultState> {
       emitError(message, forceNotLoaded: true);
     } on KeeMissingPrimaryDBException {
       emitKeeMissingPrimaryDBExceptionError();
+      return;
+    } on KeeSubscriptionExpiredException {
+      emitError(S.current.expiredWhileSignedIn, forceNotLoaded: true);
+      return;
+    } on KeeAccountUnverifiedException {
+      _accountCubit.emailUnverified();
       return;
     } on Exception catch (e) {
       final message = 'Download error. There may be more information in this message: $e';
@@ -587,8 +624,11 @@ class VaultCubit extends Cubit<VaultState> {
         return;
       } on KeeSubscriptionExpiredException {
         emitError(
-            'Your subscription has just expired. Please click "Sign out" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don\'t panic. Unfortunately if you were in the middle of making a change, you will have to make it again when your subscription has been re-activated so we recommend doing so quickly while it is still fresh in your mind.',
+            '${S.current.expiredWhileSignedIn} Unfortunately if you were in the middle of making a change, you will have to make it again when your subscription has been re-activated so we recommend doing so quickly while it is still fresh in your mind.',
             forceNotLoaded: true);
+        return;
+      } on KeeAccountUnverifiedException {
+        handleRefreshEmailVerificationError();
         return;
       } on KeeLoginFailedMITMException {
         rethrow;
@@ -664,6 +704,26 @@ class VaultCubit extends Cubit<VaultState> {
     }
   }
 
+  void handleRefreshEmailVerificationError() {
+    bool entryBeingEdited = false;
+    try {
+      if (_entryCubit.state is EntryLoaded) {
+        entryBeingEdited = true;
+      }
+    } catch (e) {
+      // no action required
+    }
+
+    if (currentVaultFile == null || (!currentVaultFile!.files.current.isDirty && !entryBeingEdited)) {
+      signout();
+      _accountCubit.emailUnverified();
+    } else {
+      emitError(
+          'Your email address has not yet been verified. Please check your emails and do that now. If you want us to resend the email, save your vault then sign out and back in again.',
+          toast: true);
+    }
+  }
+
   void handleUploadAuthError(LocalVaultFile v, bool local) {
     bool entryBeingEdited = false;
     try {
@@ -705,18 +765,48 @@ class VaultCubit extends Cubit<VaultState> {
     }
   }
 
+  Future<void> ensureRemoteCreated(User user, String? password) async {
+    if (password == null) {
+      l.d("skipping creation of new remote and local vault since we don't know the password. User needs to enter it as part of next sign-in instead.");
+      return;
+    }
+    l.d('creating new remote and local vault');
+    final credentialsWithStrength = StrengthAssessedCredentials(ProtectedValue.fromString(password), user.emailParts);
+    LockedVaultFile lockedFile;
+    try {
+      lockedFile = await _remoteVaultRepo.create(user, credentialsWithStrength);
+      l.d('new remote vault created');
+    } on PrimaryKdbxAlreadyExistsException {
+      // We'll just stop here and user's next sign in will have to reconcile any
+      // potential differences between the remote file and local file (which may
+      // not exist, or may be an outdated copy)
+      l.i('Remote file already existed. This must be a recent re-subscription.');
+      return;
+    }
+    await _localVaultRepo.create(user, lockedFile);
+    final unlockedFile = await LocalVaultFile.unlock(lockedFile);
+    l.d('new local vault created');
+    final requireFullPasswordPeriod =
+        int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
+    l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
+
+    final quStatus = await _qu.initialiseForUser(user.id!, false);
+    if (quStatus != QUStatus.unavailable) {
+      await _qu.saveBothSecrets(
+          user.passKey!,
+          credentialsWithStrength.credentials,
+          DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+          await unlockedFile.files.current.kdfCacheKey);
+      l.d('New user password stored in Quick Unlock');
+    }
+  }
+
   Future<void> create(String password) async {
     try {
       l.d('creating new local vault');
       emit(VaultCreating());
       final credentialsWithStrength = StrengthAssessedCredentials(ProtectedValue.fromString(password), []);
       final file = await _localVaultRepo.createNewKdbxOnStorage(credentialsWithStrength);
-      if (file == null) {
-        l.d('new local vault creation failed (file is null)');
-        emitError(
-            'Failed to create new local vault file. Check that you have allowed all permissions and that you have some available storage space.');
-        return;
-      }
       l.d('new local vault created');
       final requireFullPasswordPeriod =
           int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
@@ -980,6 +1070,12 @@ class VaultCubit extends Cubit<VaultState> {
       } on KeeMissingPrimaryDBException {
         emitKeeMissingPrimaryDBExceptionError();
         return;
+      } on KeeSubscriptionExpiredException {
+        emitError(S.current.expiredWhileSignedIn, forceNotLoaded: true);
+        return;
+      } on KeeAccountUnverifiedException {
+        _accountCubit.emailUnverified();
+        return;
       } on Exception catch (e) {
         final message =
             'Error establishing current remote file version. There may be more information in this message: $e';
@@ -1011,6 +1107,12 @@ class VaultCubit extends Cubit<VaultState> {
           return;
         } on KeeMissingPrimaryDBException {
           emitKeeMissingPrimaryDBExceptionError();
+          return;
+        } on KeeSubscriptionExpiredException {
+          emitError(S.current.expiredWhileSignedIn, forceNotLoaded: true);
+          return;
+        } on KeeAccountUnverifiedException {
+          _accountCubit.emailUnverified();
           return;
         } on Exception catch (e) {
           final message =
@@ -1120,6 +1222,12 @@ class VaultCubit extends Cubit<VaultState> {
       } on KeeServiceTransportException catch (e) {
         final message = e.handle('Error uploading');
         emitError(message);
+        return;
+      } on KeeSubscriptionExpiredException {
+        emitError(S.current.expiredWhileSignedIn, forceNotLoaded: true);
+        return;
+      } on KeeAccountUnverifiedException {
+        _accountCubit.emailUnverified();
         return;
       } on Exception catch (e) {
         final message = 'Error uploading. There may be more information in this message: $e';
@@ -1234,7 +1342,7 @@ class VaultCubit extends Cubit<VaultState> {
     reemitLoadedState();
   }
 
-  Future<void> importKdbx(LocalVaultFile destination, LockedVaultFile source, Credentials sourceCredentials,
+  Future<void> importKdbx(LocalVaultFile destination, LockedVaultFile source, Credentials? sourceCredentials,
       bool causedByInteraction, bool manual) async {
     emit(VaultImporting());
     try {
@@ -1256,6 +1364,13 @@ class VaultCubit extends Cubit<VaultState> {
       await emitVaultLoaded(destination, null, safe: false);
       rethrow;
     }
+  }
+
+  Future<void> skipLocalFreeKdbxImport(LocalVaultFile destination) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('user.current.freeImportedAt', (DateTime.now().millisecondsSinceEpoch / 1000).floor());
+    l.d('free vault import skipped. We faked the imported date.');
+    await emitVaultLoaded(destination, null, safe: false);
   }
 
   Future<bool> localFreeKdbxExists() async {
@@ -1282,6 +1397,22 @@ class VaultCubit extends Cubit<VaultState> {
       return false;
     }
     return localFileExists && !importAlreadyPerformed;
+  }
+
+  Future<bool> forceLocalFreeFileDelete() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final deleted = await _localVaultRepo.removeFreeUser();
+    if (deleted) {
+      await prefs.remove('user.current.freeImportedAt');
+      return true;
+    }
+    return false;
+  }
+
+  Future<Uint8List?> loadFreeFileForExport() async {
+    final localFreeFile = await _localVaultRepo.loadFreeUserLocked();
+    return localFreeFile?.kdbxBytes;
   }
 
   Future<void> changeFreeUserPassword(String password) async {

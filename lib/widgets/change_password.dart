@@ -22,6 +22,9 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   final TextEditingController _confirmPassword = TextEditingController();
   late bool saveError;
   late bool saving;
+  bool password1Obscured = true;
+  bool password2Obscured = true;
+  bool password3Obscured = true;
 
   @override
   void initState() {
@@ -64,13 +67,21 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                       padding: const EdgeInsets.fromLTRB(0, 12, 0, 32),
                       child: TextFormField(
                         controller: _currentPassword,
-                        obscureText: true,
+                        obscureText: password1Obscured,
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: str.currentPassword,
                           errorText: null,
+                          suffixIcon: IconButton(
+                            icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                password1Obscured = !password1Obscured;
+                              });
+                            },
+                          ),
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
@@ -81,6 +92,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                           }
                           return null;
                         },
+                        keyboardType: TextInputType.visiblePassword,
                       ),
                     ),
                     Padding(
@@ -91,13 +103,21 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: TextFormField(
                         controller: _password,
-                        obscureText: true,
+                        obscureText: password2Obscured,
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: str.newPassword,
                           errorText: null,
+                          suffixIcon: IconButton(
+                            icon: Icon(password2Obscured ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                password2Obscured = !password2Obscured;
+                              });
+                            },
+                          ),
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
@@ -105,6 +125,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                           }
                           return null;
                         },
+                        keyboardType: TextInputType.visiblePassword,
                       ),
                     ),
                     ValueListenableBuilder(
@@ -118,12 +139,20 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: TextFormField(
                         controller: _confirmPassword,
-                        obscureText: true,
+                        obscureText: password3Obscured,
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: str.newPasswordRepeat,
+                          suffixIcon: IconButton(
+                            icon: Icon(password3Obscured ? Icons.visibility : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                password3Obscured = !password3Obscured;
+                              });
+                            },
+                          ),
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
@@ -137,6 +166,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                         onSaved: (String? value) {
                           submittedValue = value;
                         },
+                        keyboardType: TextInputType.visiblePassword,
                       ),
                     ),
                     Visibility(

@@ -1,9 +1,13 @@
+import 'package:fluro/fluro.dart';
 import 'package:keevault/widgets/vault_loader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/app.dart';
+import '../config/routes.dart';
 import '../cubit/account_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/vault_cubit.dart';
+import 'account_email_not_verified.dart';
 import 'account_expired.dart';
 import 'loading_spinner.dart';
 import 'reset_account_prompt_dialog.dart';
@@ -25,7 +29,16 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
     if (accountCubit.state is AccountIdentified) {
       final user = await accountCubit.finishSignin(password);
-      await vaultCubit.startup(user, password);
+
+      if ((accountCubit.state is AccountAuthenticated &&
+              accountCubit.state is! AccountEmailNotVerified &&
+              accountCubit.state is! AccountExpired) ||
+          accountCubit.state is AccountAuthenticationBypassed) {
+        // No point going through the startup process if the user has just ended up
+        // back in Accountidentified state due to an incorrect password or their
+        // account is expired or unverified
+        await vaultCubit.startup(user, password);
+      }
     } else {
       throw Exception('Account not identified yet');
     }
@@ -33,6 +46,10 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
 
   Future<void> _startSignin(String email) async {
     await BlocProvider.of<AccountCubit>(context).startSignin(email);
+  }
+
+  Future<void> _startRegistration(String email) async {
+    await BlocProvider.of<AccountCubit>(context).startRegistration(email);
   }
 
   Future<void> _requestLocalOnly() async {
@@ -63,7 +80,8 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
           if (state is AccountInitial) {
             return LoadingSpinner(tooltip: str.loading);
           } else if (state is AccountUnknown) {
-            return VaultAccountCredentialsWidget(onSubmit: _startSignin, onLocalOnlyRequested: _requestLocalOnly);
+            return VaultAccountCredentialsWidget(
+                onSubmit: _startSignin, onLocalOnlyRequested: _requestLocalOnly, onRegisterRequest: _startRegistration);
           } else if (state is AccountLocalOnlyRequested) {
             return VaultLocalOnlyCreateWidget(
               onSubmit: _createLocalOnlyVault,
@@ -100,13 +118,31 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
             return LoadingSpinner(tooltip: str.authenticating);
           } else if (state is AccountExpired) {
             return AccountExpiredWidget(trialAvailable: state.trialAvailable);
+          } else if (state is AccountEmailNotVerified) {
+            return AccountEmailNotVerifiedWidget();
           } else if (state is AccountChosen || state is AccountLocalOnly) {
             return VaultLoaderWidget();
           }
           return Text(str.vaultStatusUnknownState);
-        }, listener: (context, state) {
+        }, listenWhen: (prev, current) {
+          if (current is AccountAuthenticated) {
+            if (prev is! AccountEmailNotVerified && prev is! AccountExpired) {
+              return false;
+            }
+          }
+          return true;
+        }, listener: (context, state) async {
           if (state is AccountError) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('account error')));
+          } else if (state is AccountCreateRequested) {
+            await AppConfig.router.navigateTo(
+              context,
+              Routes.createAccount.replaceFirst(':email', state.user.email ?? ''),
+              transition: TransitionType.inFromRight,
+            );
+          } else if (state is AccountAuthenticated) {
+            final vaultCubit = BlocProvider.of<VaultCubit>(context);
+            await vaultCubit.startup(state.user, null);
           }
         }),
       ],

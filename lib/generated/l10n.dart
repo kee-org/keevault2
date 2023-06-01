@@ -370,6 +370,16 @@ class S {
     );
   }
 
+  /// `Not a valid email address. Please try again.`
+  String get emailValidationFail {
+    return Intl.message(
+      'Not a valid email address. Please try again.',
+      name: 'emailValidationFail',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Enable Quick sign-in (biometrics)`
   String get biometricSignIn {
     return Intl.message(
@@ -2780,6 +2790,36 @@ class S {
     );
   }
 
+  /// `New User`
+  String get newUser {
+    return Intl.message(
+      'New User',
+      name: 'newUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Existing User`
+  String get existingUser {
+    return Intl.message(
+      'Existing User',
+      name: 'existingUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Register`
+  String get register {
+    return Intl.message(
+      'Register',
+      name: 'register',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Create my Vault`
   String get createVault {
     return Intl.message(
@@ -2815,6 +2855,66 @@ class S {
     return Intl.message(
       'New password (please repeat)',
       name: 'newPasswordRepeat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password (please repeat)`
+  String get passwordRepeat {
+    return Intl.message(
+      'Password (please repeat)',
+      name: 'passwordRepeat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change email preferences`
+  String get changeEmailPrefs {
+    return Intl.message(
+      'Change email preferences',
+      name: 'changeEmailPrefs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change or Cancel Subscription`
+  String get changeCancelSubscription {
+    return Intl.message(
+      'Change or Cancel Subscription',
+      name: 'changeCancelSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancellation notes: If you cancel, once your current subscription term ends, we will cancel your account in a way that protects your data at all times. After some time, your Kee Vault data will be permanently deleted so you must make sure that you have exported the latest copy of your data before you cancel your subscription. To continue using the app as a free user, you must first export your data to a KDBX file, then uninstall and reinstall the app. You can then import the exported KDBX file once you start using the app again as a free user. We recommend you plan carefully to minimise your risk of data loss.`
+  String get subscriptionCancellationNotes {
+    return Intl.message(
+      'Cancellation notes: If you cancel, once your current subscription term ends, we will cancel your account in a way that protects your data at all times. After some time, your Kee Vault data will be permanently deleted so you must make sure that you have exported the latest copy of your data before you cancel your subscription. To continue using the app as a free user, you must first export your data to a KDBX file, then uninstall and reinstall the app. You can then import the exported KDBX file once you start using the app again as a free user. We recommend you plan carefully to minimise your risk of data loss.',
+      name: 'subscriptionCancellationNotes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Subscription`
+  String get yourSubscription {
+    return Intl.message(
+      'Your Subscription',
+      name: 'yourSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You are not signed in so we cannot proceed. Try returning to the app home page or kill and re-open the app if you are having trouble reaching the sign-in screen again.`
+  String get settingsNotSignedInError {
+    return Intl.message(
+      'You are not signed in so we cannot proceed. Try returning to the app home page or kill and re-open the app if you are having trouble reaching the sign-in screen again.',
+      name: 'settingsNotSignedInError',
       desc: '',
       args: [],
     );
@@ -3040,6 +3140,16 @@ class S {
     );
   }
 
+  /// `Your subscription or trial period has ended. Please restart your subscription to continue.`
+  String get subscriptionExpiredIapDetails {
+    return Intl.message(
+      'Your subscription or trial period has ended. Please restart your subscription to continue.',
+      name: 'subscriptionExpiredIapDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Your subscription or trial period has ended. Please contact us to discuss options for renewal.`
   String get subscriptionExpiredNoAction {
     return Intl.message(
@@ -3095,6 +3205,106 @@ class S {
     return Intl.message(
       'All done!',
       name: 'startNewTrialSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We take pride in how we protect your privacy and security, particularly in comparison to other password management services, so we highlight the most important information right here.`
+  String get privacySummaryExplainer {
+    return Intl.message(
+      'We take pride in how we protect your privacy and security, particularly in comparison to other password management services, so we highlight the most important information right here.',
+      name: 'privacySummaryExplainer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your email address is securely sent to a Kee Vault server (a computer on the internet) and immediately encrypted so that no-one can view it, even if the Kee Vault account database is illegally accessed. Our advanced personal data protection solution means that even when you next sign in to Kee Vault, your email address is not transmitted.`
+  String get registrationBlurb2 {
+    return Intl.message(
+      'Your email address is securely sent to a Kee Vault server (a computer on the internet) and immediately encrypted so that no-one can view it, even if the Kee Vault account database is illegally accessed. Our advanced personal data protection solution means that even when you next sign in to Kee Vault, your email address is not transmitted.',
+      name: 'registrationBlurb2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We will share your email address only with 3rd parties that are essential to the operation of the Kee Vault service. For example, for payment processing. We demand the highest level of security and privacy from these recipients of your personal data.`
+  String get registrationBlurb3 {
+    return Intl.message(
+      'We will share your email address only with 3rd parties that are essential to the operation of the Kee Vault service. For example, for payment processing. We demand the highest level of security and privacy from these recipients of your personal data.',
+      name: 'registrationBlurb3',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The Kee Vault servers are connected to the internet so various internet infrastructure companies may be in a position to view your email address. As explained above, we will encrypt it during transfer and storage, and follow all other best practice to minimise this risk.`
+  String get registrationBlurb4old {
+    return Intl.message(
+      'The Kee Vault servers are connected to the internet so various internet infrastructure companies may be in a position to view your email address. As explained above, we will encrypt it during transfer and storage, and follow all other best practice to minimise this risk.',
+      name: 'registrationBlurb4old',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Potentially personally identifiable information is only kept for as long as is needed for us to deliver the service to you and meet our legal obligations. For example, the server logs IP addresses as part of protecting your account from unauthorised access attempts.`
+  String get registrationBlurb4 {
+    return Intl.message(
+      'Potentially personally identifiable information is only kept for as long as is needed for us to deliver the service to you and meet our legal obligations. For example, the server logs IP addresses as part of protecting your account from unauthorised access attempts.',
+      name: 'registrationBlurb4',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To improve Kee Vault for you, we may record anonymous usage data across our apps, keevault.pm and our associated websites. This never includes personally identifiable information (or passwords!) and is never shared.`
+  String get registrationBlurb5 {
+    return Intl.message(
+      'To improve Kee Vault for you, we may record anonymous usage data across our apps, keevault.pm and our associated websites. This never includes personally identifiable information (or passwords!) and is never shared.',
+      name: 'registrationBlurb5',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The security of your information depends upon the security of the devices that you use to access Kee Vault. This is no different to every other online or offline app but we want to re-iterate that point here: any software or service that claims to protect you from a security breach on a local device is misleading you - it is your responsibility to keep your local device secure.`
+  String get registrationBlurb7 {
+    return Intl.message(
+      'The security of your information depends upon the security of the devices that you use to access Kee Vault. This is no different to every other online or offline app but we want to re-iterate that point here: any software or service that claims to protect you from a security breach on a local device is misleading you - it is your responsibility to keep your local device secure.',
+      name: 'registrationBlurb7',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We and/or our essential 3rd party partners will send you emails that relate to critical service or security issues as necessary. We'll send a handful of introductory emails with usage instructions and tips which are legitimately in your interest but you can unsubscribe any time from the emails themselves. Receiving marketing emails is optional. We recommend opting in to evaluate whether the frequency and content of emails is suitable for you because it's easy to unsubscribe at any time.`
+  String get registrationEmailUsage1 {
+    return Intl.message(
+      'We and/or our essential 3rd party partners will send you emails that relate to critical service or security issues as necessary. We\'ll send a handful of introductory emails with usage instructions and tips which are legitimately in your interest but you can unsubscribe any time from the emails themselves. Receiving marketing emails is optional. We recommend opting in to evaluate whether the frequency and content of emails is suitable for you because it\'s easy to unsubscribe at any time.',
+      name: 'registrationEmailUsage1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please send me occasional emails including new feature announcements and tips/advice on how to stay secure and get the most out of your Kee Vault account.`
+  String get occasionalNotifications {
+    return Intl.message(
+      'Please send me occasional emails including new feature announcements and tips/advice on how to stay secure and get the most out of your Kee Vault account.',
+      name: 'occasionalNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The information above is intended as simple guide to what we think are the most critical privacy and security concerns relating to your use of the Kee Vault service but they are not a substitute for our full Terms of Service and Privacy Statement. Also note that your Subscription (payment) agreement may be with a 3rd party and they will show you those additional terms and conditions at the appropriate point of your subscription sign-up.`
+  String get registrationPrivacyOverview1 {
+    return Intl.message(
+      'The information above is intended as simple guide to what we think are the most critical privacy and security concerns relating to your use of the Kee Vault service but they are not a substitute for our full Terms of Service and Privacy Statement. Also note that your Subscription (payment) agreement may be with a 3rd party and they will show you those additional terms and conditions at the appropriate point of your subscription sign-up.',
+      name: 'registrationPrivacyOverview1',
       desc: '',
       args: [],
     );
@@ -3535,6 +3745,66 @@ class S {
     return Intl.message(
       'Your device stopped us opening that resource',
       name: 'urlOpenFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nearly there. Your subscription is being processed and we are setting up your account. This usually takes a few seconds but can take longer at busy times. We'll keep trying for a minute so don't close the app or lock your phone before then.`
+  String get subscriptionAssociatingDescription {
+    return Intl.message(
+      'Nearly there. Your subscription is being processed and we are setting up your account. This usually takes a few seconds but can take longer at busy times. We\'ll keep trying for a minute so don\'t close the app or lock your phone before then.',
+      name: 'subscriptionAssociatingDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email verification`
+  String get emailVerification {
+    return Intl.message(
+      'Email verification',
+      name: 'emailVerification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please verify your email address. When you registered we sent you a verification link to {email}. Please now follow the instructions in that email. If you can't find it, you can request that we send a new one.`
+  String verificationRequest(Object email) {
+    return Intl.message(
+      'Please verify your email address. When you registered we sent you a verification link to $email. Please now follow the instructions in that email. If you can\'t find it, you can request that we send a new one.',
+      name: 'verificationRequest',
+      desc: '',
+      args: [email],
+    );
+  }
+
+  /// `Resend the verification link`
+  String get resendVerification {
+    return Intl.message(
+      'Resend the verification link',
+      name: 'resendVerification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When your email address is successfully verified you can click the button below to continue your sign-in.`
+  String get signInAgainWhenVerified {
+    return Intl.message(
+      'When your email address is successfully verified you can click the button below to continue your sign-in.',
+      name: 'signInAgainWhenVerified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your subscription has just expired. Please click "Sign out" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don't panic.`
+  String get expiredWhileSignedIn {
+    return Intl.message(
+      'Your subscription has just expired. Please click "Sign out" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don\'t panic.',
+      name: 'expiredWhileSignedIn',
       desc: '',
       args: [],
     );

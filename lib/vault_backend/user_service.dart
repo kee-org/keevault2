@@ -4,6 +4,9 @@ import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/vault_backend/login_parameters.dart';
 import 'package:keevault/vault_backend/remote_service.dart';
 import 'package:srp/client.dart';
+import '../config/platform.dart';
+import '../payment_service.dart';
+import 'account_verification_status.dart';
 import 'features.dart';
 import 'jwt.dart';
 import 'srp.dart';
@@ -36,7 +39,7 @@ class UserService {
   }
 
   // Actually can't ever be false - just throws instead
-  Future<bool> loginFinish(User user, [List<int>? hashedMasterKey]) async {
+  Future<bool> loginFinish(User user, {List<int>? hashedMasterKey, required bool notifyListeners}) async {
     if (user.loginParameters == null) throw KeeMaybeOfflineException();
     if (user.emailHashed?.isEmpty ?? true) throw KeeInvalidStateException();
     if (user.salt?.isEmpty ?? true) throw KeeInvalidStateException();
@@ -70,18 +73,71 @@ class UserService {
       throw KeeLoginFailedMITMException();
     }
 
-    await _parseJWTs(user, srp2.JWTs);
+    await _parseJWTs(user, srp2.JWTs, notifyListeners: notifyListeners);
     user.verificationStatus = srp2.verificationStatus;
+
+    await _finishIosIapTransaction(user);
     return true;
   }
 
-  Future<Tokens> refresh(User user) async {
+  Future<void> _finishIosIapTransaction(User user) async {
+    final psi = PaymentService.instance;
+    await psi.ensureReady();
+    if (KeeVaultPlatform.isIOS &&
+        user.subscriptionStatus == AccountSubscriptionStatus.current &&
+        psi.activePurchaseItem != null &&
+        (user.subscriptionId?.startsWith('ap_') ?? false)) {
+      // It's impossible to know what the expected subscriptionId is because apple don't
+      // give us the originaltransactionid unless it is a pointless restoration operation
+      // to a new phone. So all subscription renewals would sit in the queue forever while
+      // we have no way to know that we have dealt with them. Thus we just accept that
+      // everything is probably fine as long as the user has a subscription from the App Store.
+      // Maybe a problem for subscription restarts after an expiry. User's subscription ID
+      // is going to stay the same even after expiry but then a new one should come along
+      // with a whole new original transaction id... or not, if there is some reuse during
+      // grace periods, etc. But surely in all other cases, any valid app store subscription
+      // id associated with a user that has a non-expired set of authentication tokens is
+      // going to be just a renewal operation that we can ignore because we handle it server-side.
+      await psi.finishTransaction(psi.activePurchaseItem!);
+    }
+  }
+
+  Future<User> createAccount(User user, int marketingEmailStatus, int subscriptionSource) async {
+    final hexSalt = generateSalt();
+    user.salt = hex2base64(hexSalt);
+    final privateKey = derivePrivateKey(hexSalt, user.id!, user.passKey!);
+    final verifier = deriveVerifier(privateKey);
+    final response = await _service.postRequest<String>('register', {
+      'emailHashed': user.emailHashed,
+      'verifier': hex2base64(verifier),
+      'salt': user.salt,
+      'email': user.email,
+      'introEmailStatus': 1,
+      'marketingEmailStatus': marketingEmailStatus,
+      'provider': subscriptionSource
+    });
+    final jwts = List<String>.from(json.decode(response.data!)['JWTs']);
+    await _parseJWTs(user, jwts);
+    return user;
+  }
+
+  Future<Tokens> refresh(User user, bool notifyListeners) async {
     try {
       if (user.tokens != null && user.tokens!.identity != null && user.tokens!.identity!.isNotEmpty) {
         final response = await _service.postRequest<String>('refresh', {}, user.tokens!.identity);
+        final refreshResult = json.decode(response.data!);
 
-        final jwts = List<String>.from(json.decode(response.data!)['JWTs']);
-        await _parseJWTs(user, jwts);
+        final jwts = List<String>.from(refreshResult['JWTs']);
+        await _parseJWTs(user, jwts, notifyListeners: notifyListeners);
+        final verificationStatus = refreshResult['verificationStatus'];
+        if (verificationStatus != null) {
+          user.verificationStatus = AccountVerificationStatus.values[verificationStatus];
+          if (user.verificationStatus != AccountVerificationStatus.success && user.tokens?.storage == null) {
+            // May well be expired too but we will expect the user to fix the validation
+            // of their email address before resubscribing if required.
+            throw KeeAccountUnverifiedException();
+          }
+        }
         return user.tokens!;
       } else {
         throw KeeLoginRequiredException();
@@ -97,7 +153,8 @@ class UserService {
             user.emailHashed!.isNotEmpty &&
             user.passKey!.isNotEmpty) {
           await loginStart(user);
-          final loginResult = await loginFinish(user);
+          final loginResult = await loginFinish(user, notifyListeners: notifyListeners);
+          // Unlike with the refresh operation above, user.verificationStatus is updated as part of the loginFinish function
           if (loginResult && user.tokens != null) {
             return user.tokens!;
           } else {
@@ -112,6 +169,8 @@ class UserService {
         throw KeeLoginRequiredException();
       }
     } on KeeServiceTransportException {
+      rethrow;
+    } on KeeAccountUnverifiedException {
       rethrow;
     } catch (e) {
       // We can't handle any other errors
@@ -131,7 +190,19 @@ class UserService {
     return true;
   }
 
-  Future<void> _parseJWTs(User user, List<String> jwts) async {
+  Future<bool> resendVerificationEmail(User user) async {
+    if (user.emailHashed?.isEmpty ?? true) throw KeeInvalidStateException();
+
+    try {
+      await _service.postRequest<String>('resendVerificationEmail', {}, user.tokens?.identity);
+    } catch (error) {
+      l.e('Resending verification email failed because: $error');
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _parseJWTs(User user, List<String> jwts, {bool notifyListeners = false}) async {
     user.tokens = Tokens();
 
     // Extract features from the client claim supplied by the server and cache
@@ -172,6 +243,6 @@ class UserService {
       }
     }
 
-    if (onTokenChange != null) onTokenChange!(user.tokens);
+    if (notifyListeners && onTokenChange != null) onTokenChange!(user);
   }
 }

@@ -71,6 +71,8 @@ class KeeAlreadyRegisteredException extends KeeException {}
 
 class KeeMissingPrimaryDBException extends KeeException {}
 
+class PrimaryKdbxAlreadyExistsException extends KeeException {}
+
 class KeeLoginFailedMITMException extends KeeException {}
 
 class KeeServerFailException extends KeeServiceTransportException {}
@@ -96,3 +98,5 @@ class KeeInvalidClaimException extends KeeException {}
 class KeeInvalidClaimIssuerException extends KeeException {}
 
 class KeeSubscriptionExpiredException extends KeeException {}
+
+class KeeAccountUnverifiedException extends KeeException {}

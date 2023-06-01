@@ -22,6 +22,8 @@ import '../cubit/interaction_cubit.dart';
 import '../remote_vault_repository.dart';
 import '../user_repository.dart';
 import '../vault_backend/storage_service.dart';
+import '../vault_backend/subscription_service.dart';
+import '../vault_backend/user.dart';
 import '../vault_backend/user_service.dart';
 import '../cubit/account_cubit.dart';
 import '../cubit/vault_cubit.dart';
@@ -50,18 +52,40 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   @override
   String get traceTitle => widget.toStringShort();
 
+  final entryCubit = EntryCubit();
+  final generatorProfilesCubit = GeneratorProfilesCubit();
+  final autofillCubit = AutofillCubit();
+  late UserRepository userRepo;
+  late AccountCubit accountCubit;
+
+  onTokensChange(User user) {
+    // A lot of background operations can result in updated information about the
+    // user's authentication status or subscription status being changed (via requests
+    // like refresh which end up changing the authentication tokens and features
+    // available).
+    try {
+      accountCubit.emitAuthenticatedOrExpiredOrUnvalidated(user);
+    } on Exception {
+      // blah
+    }
+  }
+
   KeeVaultAppState(GlobalKey<NavigatorState> navigatorKey) {
     final router = FluroRouter();
     Routes.configureRoutes(router);
     AppConfig.router = router;
     AppConfig.navigatorKey = navigatorKey;
-    userService = UserService(EnvironmentConfig.stage.toStage(), null);
+    userService = UserService(EnvironmentConfig.stage.toStage(), onTokensChange);
     storageService = StorageService(EnvironmentConfig.stage.toStage(), userService.refresh);
+    subscriptionService = SubscriptionService(EnvironmentConfig.stage.toStage(), userService.refresh);
+    userRepo = UserRepository(userService, subscriptionService, quickUnlocker);
+    accountCubit = AccountCubit(userRepo);
   }
 
   final QuickUnlocker quickUnlocker = QuickUnlocker();
   late UserService userService;
   late StorageService storageService;
+  late SubscriptionService subscriptionService;
 
   @override
   void initState() {
@@ -145,41 +169,57 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(foregroundColor: isDark ? palette[100] : palette[600])),
-      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: theme.colorScheme.secondary)), checkboxTheme: CheckboxThemeData(
- fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
- if (states.contains(MaterialState.disabled)) { return null; }
- if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
- return null;
- }),
- ), radioTheme: RadioThemeData(
- fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
- if (states.contains(MaterialState.disabled)) { return null; }
- if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
- return null;
- }),
- ), switchTheme: SwitchThemeData(
- thumbColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
- if (states.contains(MaterialState.disabled)) { return null; }
- if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
- return null;
- }),
- trackColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
- if (states.contains(MaterialState.disabled)) { return null; }
- if (states.contains(MaterialState.selected)) { return theme.colorScheme.secondary; }
- return null;
- }),
- ), bottomAppBarTheme: BottomAppBarTheme(color: isDark ? palette[800] : palette[100]),
+      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: theme.colorScheme.secondary)),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          if (states.contains(MaterialState.disabled)) {
+            return null;
+          }
+          if (states.contains(MaterialState.selected)) {
+            return theme.colorScheme.secondary;
+          }
+          return null;
+        }),
+      ),
+      radioTheme: RadioThemeData(
+        fillColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          if (states.contains(MaterialState.disabled)) {
+            return null;
+          }
+          if (states.contains(MaterialState.selected)) {
+            return theme.colorScheme.secondary;
+          }
+          return null;
+        }),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          if (states.contains(MaterialState.disabled)) {
+            return null;
+          }
+          if (states.contains(MaterialState.selected)) {
+            return theme.colorScheme.secondary;
+          }
+          return null;
+        }),
+        trackColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          if (states.contains(MaterialState.disabled)) {
+            return null;
+          }
+          if (states.contains(MaterialState.selected)) {
+            return theme.colorScheme.secondary;
+          }
+          return null;
+        }),
+      ),
+      bottomAppBarTheme: BottomAppBarTheme(color: isDark ? palette[800] : palette[100]),
     );
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final entryCubit = EntryCubit();
-    final generatorProfilesCubit = GeneratorProfilesCubit();
-    final autofillCubit = AutofillCubit();
     const palette = AppPalettes.keeVaultPalette;
-    final userRepo = UserRepository(userService, quickUnlocker);
     return BlocProvider(
       create: (context) => AppSettingsCubit(),
       child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
@@ -195,8 +235,9 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                         entryCubit,
                         autofillCubit.isAutofilling,
                         generatorProfilesCubit,
+                        accountCubit,
                       )),
-              BlocProvider(create: (context) => AccountCubit(userRepo)),
+              BlocProvider(create: (context) => accountCubit),
               BlocProvider(create: (context) => entryCubit),
               BlocProvider(create: (context) => FilterCubit()),
               BlocProvider(create: (context) => SortCubit()),

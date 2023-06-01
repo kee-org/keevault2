@@ -12,6 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/interaction_cubit.dart';
 import '../cubit/vault_cubit.dart';
 import 'package:kdbx/kdbx.dart';
+import '../password_strength.dart';
+import 'import_credentials.dart';
 import 'loading_spinner.dart';
 import 'vault_password_credentials.dart';
 import '../generated/l10n.dart';
@@ -36,7 +38,15 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
     } else {
       throw Exception('Account not chosen yet');
     }
-    await vaultCubit.download(user, Credentials(ProtectedValue.fromString(password)));
+    final latestState = accountCubit.state;
+
+    if ((latestState is AccountAuthenticated &&
+            latestState is! AccountEmailNotVerified &&
+            latestState is! AccountExpired) ||
+        latestState is AccountAuthenticationBypassed) {
+      await vaultCubit.download(user,
+          credentialsWithStrength: StrengthAssessedCredentials(ProtectedValue.fromString(password), user.emailParts));
+    }
   }
 
   Future<void> _localAuthenticate(String password) async {
@@ -114,10 +124,9 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
           showError: state.causedByInteraction,
         );
       } else if (state is VaultImportingCredentialsRequired) {
-        return VaultPasswordCredentialsWidget(
-          reason: str.importUnlockRequired,
-          onSubmit: _importAuthenticate,
-          showError: state.causedByInteraction,
+        return ImportCredentialsWidget(
+          vaultState: state,
+          submitPassword: _importAuthenticate,
         );
       } else if (state is VaultError) {
         return Padding(

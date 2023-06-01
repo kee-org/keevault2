@@ -14,10 +14,12 @@ import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import '../config/platform.dart';
+import '../cubit/filter_cubit.dart';
 import '../generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../logging/logger.dart';
+import '../vault_backend/user.dart';
 import 'coloured_safe_area_widget.dart';
 import 'dialog_utils.dart';
 
@@ -33,6 +35,8 @@ class SettingsWidget extends StatefulWidget {
 class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMixin {
   @override
   String get traceTitle => widget.toStringShort();
+  final registrationEnabled = (EnvironmentConfig.iapGooglePlay && KeeVaultPlatform.isAndroid) ||
+      (EnvironmentConfig.iapAppleAppStore && KeeVaultPlatform.isIOS);
 
   bool _isDeviceQuickUnlockEnabled = false;
   @override
@@ -56,9 +60,44 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
 
     return BlocBuilder<AccountCubit, AccountState>(builder: (context, accountState) {
       final accessChildren = [];
+      final accountChildren = [];
       if (accountState is AccountChosen) {
         final userEmail = accountState.user.email;
+
+        accountChildren.add(Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text('Your account status is ${accountState.user.subscriptionStatus.displayName()}'),
+        ));
+
         if (userEmail != null) {
+          if (accountState.user.subscriptionSource == AccountSubscriptionSource.chargeBee) {
+            accountChildren.add(SettingsContainer(
+              children: [
+                Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                    child: Column(
+                      children: [
+                        Text(str.manageAccountSettingsDetail),
+                        TextButton.icon(
+                          icon: Text(str.manageAccount),
+                          label: Icon(Icons.open_in_new),
+                          onPressed: () async {
+                            await DialogUtils.openUrl(
+                                EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    height: 0.0,
+                  ),
+                ])
+              ],
+            ));
+          }
+
           accessChildren.add(SettingsContainer(
             children: [
               Column(children: [
@@ -82,33 +121,52 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
             ],
           ));
 
-          accessChildren.add(SettingsContainer(
-            children: [
-              Column(children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                  child: Column(
-                    children: [
-                      Text(str.manageAccountSettingsDetail),
-                      TextButton.icon(
-                        icon: Text(str.manageAccount),
-                        label: Icon(Icons.open_in_new),
-                        onPressed: () async {
-                          await DialogUtils.openUrl(
-                              EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount');
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(
-                  height: 0.0,
-                ),
-              ])
-            ],
-          ));
+          // In future we can add a "Change email address" feature here too
+          accountChildren.add(
+            SimpleSettingsTile(
+              title: str.changeEmailPrefs,
+              onTap: () async => await AppConfig.router.navigateTo(
+                context,
+                Routes.changeEmailPrefs,
+                transition: TransitionType.inFromRight,
+              ),
+            ),
+          );
+          accountChildren.add(
+            SimpleSettingsTile(
+              title: str.changeCancelSubscription,
+              onTap: () async => await AppConfig.router.navigateTo(
+                context,
+                Routes.changeSubscription,
+                transition: TransitionType.inFromRight,
+              ),
+            ),
+          );
         }
-      } else {
+      } else if (accountState is AccountLocalOnly) {
+        final subscribeItems = Column(children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+            child: Column(children: [
+              Text(
+                  'You are using the free version of Kee Vault so automatic backups and access from other devices are not available.'),
+              TextButton.icon(
+                icon: Text('Sign in ${registrationEnabled ? 'or Subscribe to a' : 'to your'} Kee Vault Account'),
+                label: Icon(Icons.favorite),
+                onPressed: () async {
+                  // sign out so user can see initial signin/register page again.
+                  final vc = BlocProvider.of<VaultCubit>(context);
+                  await BlocProvider.of<AccountCubit>(context).forgetUser(vc.signout);
+                },
+              ),
+            ]),
+          ),
+          Divider(
+            height: 0.0,
+          ),
+        ]);
+        accessChildren.add(subscribeItems);
+        accountChildren.add(subscribeItems);
         accessChildren.add(
           SimpleSettingsTile(
             title: str.changePassword,
@@ -121,6 +179,29 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
           ),
         );
       }
+
+      accessChildren.add(SettingsContainer(
+        children: [
+          Column(children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+              child: Column(
+                children: [
+                  TextButton.icon(
+                      icon: Icon(Icons.history),
+                      label: Text(
+                          'Need to recover from a mistake in just one entry? You can use the History feature when viewing that entry in order to revert your recent changes.'),
+                      onPressed: null),
+                ],
+              ),
+            ),
+            Divider(
+              height: 0.0,
+            ),
+          ])
+        ],
+      ));
+
       return BlocBuilder<AutofillCubit, AutofillState>(builder: (context, autofillState) {
         return ColouredSafeArea(
           child: SettingsScreen(
@@ -178,6 +259,9 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                     settingKey: 'expandGroups',
                     title: str.setGenShowSubgroups,
                     defaultValue: true,
+                    onChange: (showChildren) {
+                      BlocProvider.of<FilterCubit>(context).changeChildGroupInclusion(showChildren);
+                    },
                   ),
                   //TODO:f: Need to store group in DB so this should really be a DB-specific setting.
                   // SwitchSettingsTile(
@@ -185,7 +269,20 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                   //   title: str.rememberFilterGroup,
                   //   defaultValue: false,
                   // ),
-                  ...accessChildren,
+                  SimpleSettingsTile(
+                    title: 'Access / Recovery',
+                    child: SettingsScreen(
+                      title: 'Access / Recovery',
+                      children: <Widget>[...accessChildren],
+                    ),
+                  ),
+                  SimpleSettingsTile(
+                    title: 'Account / Subscription',
+                    child: SettingsScreen(
+                      title: 'Account / Subscription',
+                      children: <Widget>[...accountChildren],
+                    ),
+                  ),
                 ],
               ),
             ],

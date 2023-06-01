@@ -32,6 +32,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
   final _formKey = GlobalKey<FormState>();
   String? submittedValue;
   bool _showBiometricSigninButton = false;
+  bool password1Obscured = true;
 
   @override
   void initState() {
@@ -73,7 +74,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
             children: [
               Expanded(
                 child: TextFormField(
-                  obscureText: true,
+                  obscureText: password1Obscured,
                   enableSuggestions: false,
                   autocorrect: false,
                   decoration: InputDecoration(
@@ -83,6 +84,14 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                     errorText: widget.showError
                         ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
                         : null,
+                    suffixIcon: IconButton(
+                      icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          password1Obscured = !password1Obscured;
+                        });
+                      },
+                    ),
                   ),
                   validator: (value) {
                     if (value?.isEmpty ?? false) {
@@ -99,6 +108,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                     }
                   },
                   autofocus: true,
+                  keyboardType: TextInputType.visiblePassword,
                 ),
               ),
               Padding(

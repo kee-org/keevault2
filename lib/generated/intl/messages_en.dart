@@ -59,7 +59,10 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m14(error) =>
       "Unexpected error. Sorry! Please let us know, then close and restart the app. Details: ${error}";
 
-  static String m15(email) => "Welcome ${email}";
+  static String m15(email) =>
+      "Please verify your email address. When you registered we sent you a verification link to ${email}. Please now follow the instructions in that email. If you can\'t find it, you can request that we send a new one.";
+
+  static String m16(email) => "Welcome ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -132,6 +135,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "biometricsStoreDescription": m2,
         "cancelExportOrImport": m3,
+        "changeCancelSubscription": MessageLookupByLibrary.simpleMessage(
+            "Change or Cancel Subscription"),
+        "changeEmailPrefs":
+            MessageLookupByLibrary.simpleMessage("Change email preferences"),
         "changePassword":
             MessageLookupByLibrary.simpleMessage("Change Password"),
         "changePasswordDetail": MessageLookupByLibrary.simpleMessage(
@@ -207,6 +214,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "done": MessageLookupByLibrary.simpleMessage("Done"),
         "downloading": MessageLookupByLibrary.simpleMessage("Downloading"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "emailValidationFail": MessageLookupByLibrary.simpleMessage(
+            "Not a valid email address. Please try again."),
+        "emailVerification":
+            MessageLookupByLibrary.simpleMessage("Email verification"),
         "enableAutofill":
             MessageLookupByLibrary.simpleMessage("Enable Autofill"),
         "enableAutofillIosInstructions": m5,
@@ -237,8 +248,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "everyoneElseCanUseForFree": MessageLookupByLibrary.simpleMessage(
             "Everyone else is welcome to use the app for free without an account."),
         "exact": MessageLookupByLibrary.simpleMessage("Exact"),
+        "existingUser": MessageLookupByLibrary.simpleMessage("Existing User"),
         "existingUsersSignInBelow": MessageLookupByLibrary.simpleMessage(
             "If you already have a Kee Vault account on the https://keevault.pm \"Web App\" you can sign-in below."),
+        "expiredWhileSignedIn": MessageLookupByLibrary.simpleMessage(
+            "Your subscription has just expired. Please click \"Sign out\" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don\'t panic."),
         "export": MessageLookupByLibrary.simpleMessage("Export"),
         "exportAnyway": MessageLookupByLibrary.simpleMessage("Export anyway"),
         "exportDirtyFileWarning": MessageLookupByLibrary.simpleMessage(
@@ -407,10 +421,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "newPasswordRepeat": MessageLookupByLibrary.simpleMessage(
             "New password (please repeat)"),
         "newProfile": MessageLookupByLibrary.simpleMessage("New profile"),
+        "newUser": MessageLookupByLibrary.simpleMessage("New User"),
         "noEntriesCreateNewInstruction": MessageLookupByLibrary.simpleMessage(
             "You have no password entries yet. Create one using the + button below. If you have passwords already stored in the standard KDBX (KeePass) format you can import them."),
         "notSignedIn": MessageLookupByLibrary.simpleMessage("Not signed in"),
         "notes": MessageLookupByLibrary.simpleMessage("Notes"),
+        "occasionalNotifications": MessageLookupByLibrary.simpleMessage(
+            "Please send me occasional emails including new feature announcements and tips/advice on how to stay secure and get the most out of your Kee Vault account."),
         "offerToSave":
             MessageLookupByLibrary.simpleMessage("Offer to save passwords"),
         "openError": MessageLookupByLibrary.simpleMessage("Error"),
@@ -435,6 +452,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordChanged": MessageLookupByLibrary.simpleMessage(
             "Password changed. Use it when you next unlock Kee Vault."),
+        "passwordRepeat":
+            MessageLookupByLibrary.simpleMessage("Password (please repeat)"),
         "passwordStrength":
             MessageLookupByLibrary.simpleMessage("Password strength"),
         "permanentlyDeleteGroupConfirm": MessageLookupByLibrary.simpleMessage(
@@ -463,6 +482,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "preset": MessageLookupByLibrary.simpleMessage("Preset"),
         "privacyStatement":
             MessageLookupByLibrary.simpleMessage("Privacy Statement"),
+        "privacySummaryExplainer": MessageLookupByLibrary.simpleMessage(
+            "We take pride in how we protect your privacy and security, particularly in comparison to other password management services, so we highlight the most important information right here."),
         "protectField": MessageLookupByLibrary.simpleMessage("Protect field"),
         "protectedClickToReveal": MessageLookupByLibrary.simpleMessage(
             "Protected field. Click to reveal."),
@@ -470,8 +491,25 @@ class MessageLookup extends MessageLookupByLibrary {
         "quickSignInExplainer": m12,
         "reenterYourPassword": MessageLookupByLibrary.simpleMessage(
             "Please re-enter your password"),
+        "register": MessageLookupByLibrary.simpleMessage("Register"),
         "registrationBlurb1": MessageLookupByLibrary.simpleMessage(
             "Choose a secure password to protect your Kee Vault. There are no \"requirements\" so just make it as strong as you can. Only you will know this password - it never leaves your device. It can not be reset so you must not forget it, but you can change it when you\'re signed in to Kee Vault."),
+        "registrationBlurb2": MessageLookupByLibrary.simpleMessage(
+            "Your email address is securely sent to a Kee Vault server (a computer on the internet) and immediately encrypted so that no-one can view it, even if the Kee Vault account database is illegally accessed. Our advanced personal data protection solution means that even when you next sign in to Kee Vault, your email address is not transmitted."),
+        "registrationBlurb3": MessageLookupByLibrary.simpleMessage(
+            "We will share your email address only with 3rd parties that are essential to the operation of the Kee Vault service. For example, for payment processing. We demand the highest level of security and privacy from these recipients of your personal data."),
+        "registrationBlurb4": MessageLookupByLibrary.simpleMessage(
+            "Potentially personally identifiable information is only kept for as long as is needed for us to deliver the service to you and meet our legal obligations. For example, the server logs IP addresses as part of protecting your account from unauthorised access attempts."),
+        "registrationBlurb4old": MessageLookupByLibrary.simpleMessage(
+            "The Kee Vault servers are connected to the internet so various internet infrastructure companies may be in a position to view your email address. As explained above, we will encrypt it during transfer and storage, and follow all other best practice to minimise this risk."),
+        "registrationBlurb5": MessageLookupByLibrary.simpleMessage(
+            "To improve Kee Vault for you, we may record anonymous usage data across our apps, keevault.pm and our associated websites. This never includes personally identifiable information (or passwords!) and is never shared."),
+        "registrationBlurb7": MessageLookupByLibrary.simpleMessage(
+            "The security of your information depends upon the security of the devices that you use to access Kee Vault. This is no different to every other online or offline app but we want to re-iterate that point here: any software or service that claims to protect you from a security breach on a local device is misleading you - it is your responsibility to keep your local device secure."),
+        "registrationEmailUsage1": MessageLookupByLibrary.simpleMessage(
+            "We and/or our essential 3rd party partners will send you emails that relate to critical service or security issues as necessary. We\'ll send a handful of introductory emails with usage instructions and tips which are legitimately in your interest but you can unsubscribe any time from the emails themselves. Receiving marketing emails is optional. We recommend opting in to evaluate whether the frequency and content of emails is suitable for you because it\'s easy to unsubscribe at any time."),
+        "registrationPrivacyOverview1": MessageLookupByLibrary.simpleMessage(
+            "The information above is intended as simple guide to what we think are the most critical privacy and security concerns relating to your use of the Kee Vault service but they are not a substitute for our full Terms of Service and Privacy Statement. Also note that your Subscription (payment) agreement may be with a 3rd party and they will show you those additional terms and conditions at the appropriate point of your subscription sign-up."),
         "rememberExportsDoNotUpdate": MessageLookupByLibrary.simpleMessage(
             "Remember that Exports do not automatically update. The information stored within and the password required to unlock it does not change after you create the export."),
         "rememberFilterGroup": MessageLookupByLibrary.simpleMessage(
@@ -485,6 +523,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Renaming preset"),
         "requireFullPasswordEvery": MessageLookupByLibrary.simpleMessage(
             "Require full password every (days)"),
+        "resendVerification": MessageLookupByLibrary.simpleMessage(
+            "Resend the verification link"),
         "resetEntryToThis":
             MessageLookupByLibrary.simpleMessage("Reset entry to this state"),
         "resetPasswordInstructions": MessageLookupByLibrary.simpleMessage(
@@ -525,6 +565,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "setGenTitlebarStyleDefault":
             MessageLookupByLibrary.simpleMessage("Default"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+        "settingsNotSignedInError": MessageLookupByLibrary.simpleMessage(
+            "You are not signed in so we cannot proceed. Try returning to the app home page or kill and re-open the app if you are having trouble reaching the sign-in screen again."),
         "share": MessageLookupByLibrary.simpleMessage("Share"),
         "show": MessageLookupByLibrary.simpleMessage("Show"),
         "showEntryInBrowsersAndApps": MessageLookupByLibrary.simpleMessage(
@@ -533,6 +575,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Show protected field"),
         "showing_all_entries":
             MessageLookupByLibrary.simpleMessage("Showing all entries"),
+        "signInAgainWhenVerified": MessageLookupByLibrary.simpleMessage(
+            "When your email address is successfully verified you can click the button below to continue your sign-in."),
         "signin": MessageLookupByLibrary.simpleMessage("Sign in"),
         "signout": MessageLookupByLibrary.simpleMessage("Sign out"),
         "sizeBytes": m13,
@@ -553,10 +597,16 @@ class MessageLookup extends MessageLookupByLibrary {
             "Sorry, we weren\'t able to restart your trial now. Please try again later and ask for help on the community forum if the problem continues."),
         "startNewTrialSuccess":
             MessageLookupByLibrary.simpleMessage("All done!"),
+        "subscriptionAssociatingDescription": MessageLookupByLibrary.simpleMessage(
+            "Nearly there. Your subscription is being processed and we are setting up your account. This usually takes a few seconds but can take longer at busy times. We\'ll keep trying for a minute so don\'t close the app or lock your phone before then."),
+        "subscriptionCancellationNotes": MessageLookupByLibrary.simpleMessage(
+            "Cancellation notes: If you cancel, once your current subscription term ends, we will cancel your account in a way that protects your data at all times. After some time, your Kee Vault data will be permanently deleted so you must make sure that you have exported the latest copy of your data before you cancel your subscription. To continue using the app as a free user, you must first export your data to a KDBX file, then uninstall and reinstall the app. You can then import the exported KDBX file once you start using the app again as a free user. We recommend you plan carefully to minimise your risk of data loss."),
         "subscriptionExpired":
             MessageLookupByLibrary.simpleMessage("Subscription expired"),
         "subscriptionExpiredDetails": MessageLookupByLibrary.simpleMessage(
             "Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site."),
+        "subscriptionExpiredIapDetails": MessageLookupByLibrary.simpleMessage(
+            "Your subscription or trial period has ended. Please restart your subscription to continue."),
         "subscriptionExpiredNoAction": MessageLookupByLibrary.simpleMessage(
             "Your subscription or trial period has ended. Please contact us to discuss options for renewal."),
         "subscriptionExpiredTrialAvailable": MessageLookupByLibrary.simpleMessage(
@@ -616,6 +666,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Uploading"),
         "vaultTooLarge": MessageLookupByLibrary.simpleMessage(
             "Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again."),
+        "verificationRequest": m15,
         "viewDocumentation":
             MessageLookupByLibrary.simpleMessage("View documentation"),
         "visitTheForum":
@@ -623,10 +674,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "website": MessageLookupByLibrary.simpleMessage("Website"),
         "welcomeToKeeVault":
             MessageLookupByLibrary.simpleMessage("Welcome to Kee Vault"),
-        "welcome_message": m15,
+        "welcome_message": m16,
         "willTrySamePasswordFirst": MessageLookupByLibrary.simpleMessage(
             "We\'ll try using the same password you have used to open your current Kee Vault. If that doesn\'t work, you can type in the correct password in a moment."),
         "yourPasswordEntries":
-            MessageLookupByLibrary.simpleMessage("Your password entries")
+            MessageLookupByLibrary.simpleMessage("Your password entries"),
+        "yourSubscription":
+            MessageLookupByLibrary.simpleMessage("Your Subscription")
       };
 }

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:argon2_ffi_base/argon2_ffi_base.dart';
 import 'package:dio/dio.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/password_strength.dart';
 import 'package:keevault/vault_backend/user.dart';
 import 'kdf_cache.dart';
 import 'locked_vault_file.dart';
@@ -52,6 +53,29 @@ class RemoteVaultRepository {
     }
     var result = await _putPrimaryFile(user, vault.kdbxBytes, siList, vault.credentials);
     return result;
+  }
+
+  Future<LockedVaultFile> create(User user, StrengthAssessedCredentials credentialsWithStrength) async {
+    final credentials = credentialsWithStrength.credentials;
+    final vault = kdbxFormat().create(
+      credentials,
+      'My Kee Vault',
+      generator: 'Kee Vault 2',
+      header: credentialsWithStrength.createNewKdbxHeader(),
+    );
+    final lockedFile = LockedVaultFile(await vault.save(), DateTime.now(), credentials, null, null);
+    await storageService.create(user, lockedFile);
+
+    // We skip the redownloading of the file we just uploaded. That means we can't know
+    // the etag, etc. from S3 but it is faster this way and we don't risk AWS race
+    // conditions causing failures to download the file. Only consider implementing
+    // a reliable download operation if we can't avoid the need for that metadata.
+
+    // We don't call list again because we already have the SI list from the create response.
+    // However, that means we bypass some of the storage token caching code paths and
+    // thus if bugs after sign-up occur, this is worth closer inspection.
+    //final lockedFile = await _getPrimaryFile(user, credentials, [si]);
+    return lockedFile;
   }
 
   Future<LockedVaultFile?> _downloadPrimaryFile(User user, Credentials? kdbxCredentials, String? lastRemoteEtag) async {

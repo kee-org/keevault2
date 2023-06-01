@@ -35,6 +35,14 @@ class AccountAuthenticating extends AccountChosen {
   const AccountAuthenticating(User user) : super(user);
 }
 
+class AccountCreateRequested extends AccountChosen {
+  const AccountCreateRequested(User user) : super(user);
+}
+
+class AccountCreating extends AccountChosen {
+  const AccountCreating(User user) : super(user);
+}
+
 class AccountAuthenticated extends AccountChosen {
   const AccountAuthenticated(User user) : super(user);
 }
@@ -48,6 +56,10 @@ class AccountExpired extends AccountAuthenticated {
   const AccountExpired(User user, this.trialAvailable) : super(user);
 }
 
+class AccountEmailNotVerified extends AccountAuthenticated {
+  const AccountEmailNotVerified(User user) : super(user);
+}
+
 class AccountTrialRestartStarted extends AccountExpired {
   const AccountTrialRestartStarted(User user, bool trialAvailable) : super(user, trialAvailable);
 }
@@ -55,6 +67,19 @@ class AccountTrialRestartStarted extends AccountExpired {
 class AccountTrialRestartFinished extends AccountExpired {
   final bool success;
   const AccountTrialRestartFinished(User user, bool trialAvailable, this.success) : super(user, trialAvailable);
+}
+
+class AccountSubscribing extends AccountAuthenticated {
+  const AccountSubscribing(User user) : super(user);
+}
+
+class AccountSubscribed extends AccountAuthenticated {
+  const AccountSubscribed(User user) : super(user);
+}
+
+class AccountSubscribeError extends AccountAuthenticated {
+  final String message;
+  const AccountSubscribeError(User user, this.message) : super(user);
 }
 
 class AccountError extends AccountState {}

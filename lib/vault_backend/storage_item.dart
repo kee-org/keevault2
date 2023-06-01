@@ -11,6 +11,14 @@ class URLlist {
       : ul = data['ul'],
         dl = data['dl'],
         st = data['st'];
+
+  Map<String, dynamic> toMap() {
+    return {
+      'ul': ul,
+      'dl': dl,
+      'st': st,
+    };
+  }
 }
 
 class StorageItem {
@@ -31,11 +39,11 @@ class StorageItem {
       required this.type,
       this.urls});
 
-  static fromUserId(String userId) {
+  static StorageItem fromUserId(String userId) {
     return StorageItem(userId: userId, schemaVersion: 1, type: StorageType.keeS3);
   }
 
-  static fromUserIdAndId(String userId, String id) {
+  static StorageItem fromUserIdAndId(String userId, String id) {
     return StorageItem(userId: userId, schemaVersion: 1, type: StorageType.keeS3, id: id);
   }
 
@@ -47,4 +55,18 @@ class StorageItem {
         userId = data['emailHashed'],
         schemaVersion = data['schemaVersion'],
         urls = URLlist.fromJson(data['urls']);
+
+  Map<String, dynamic> toMap() {
+    return {
+      'emailHashed': userId,
+      'schemaVersion': schemaVersion,
+      'id': id,
+      'location': location,
+      'type': type,
+      'urls': urls?.toMap(),
+      'name': name,
+    };
+  }
+
+  Map<String, dynamic> toJson() => toMap();
 }

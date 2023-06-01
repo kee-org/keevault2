@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
@@ -10,6 +13,8 @@ import 'package:keevault/logging/logger.dart';
 import 'package:keevault/widgets/bottom.dart';
 import 'package:keevault/widgets/dialog_utils.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../cubit/account_cubit.dart';
 import '../generated/l10n.dart';
 import 'package:permission_handler/permission_handler.dart' show Permission;
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
@@ -17,13 +22,105 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import '../permissions.dart';
 import 'coloured_safe_area_widget.dart';
 
-class ImportExportWidget extends StatelessWidget {
+class ImportExportWidget extends StatefulWidget {
   const ImportExportWidget({Key? key}) : super(key: key);
+
+  @override
+  State<ImportExportWidget> createState() => _ImportExportWidgetState();
+}
+
+class _ImportExportWidgetState extends State<ImportExportWidget> {
+  bool? _localFreeKdbxExists;
+  DateTime? _localFreeKdbxImportedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_detectFreeKdbx());
+  }
+
+  Future<void> _detectFreeKdbx() async {
+    // Only bother if user is signed in account holder, not a free local only user
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
+    if (BlocProvider.of<AccountCubit>(context).state is AccountLocalOnly) {
+      setState(() {
+        _localFreeKdbxExists = false;
+      });
+      return;
+    }
+    final localFreeKdbxExists = await vaultCubit.localFreeKdbxExists();
+    final prefs = await SharedPreferences.getInstance();
+    int? importedAt;
+    DateTime? localFreeKdbxImportedAt;
+    try {
+      importedAt = prefs.getInt('user.current.freeImportedAt');
+      localFreeKdbxImportedAt = importedAt != null ? DateTime.fromMillisecondsSinceEpoch(importedAt * 1000) : null;
+    } on Exception {
+      // no action required
+    }
+    setState(() {
+      _localFreeKdbxExists = localFreeKdbxExists;
+      _localFreeKdbxImportedAt = localFreeKdbxImportedAt;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final str = S.of(context);
+    final timeOfDeath = (_localFreeKdbxImportedAt?.toLocal() ?? DateTime.now()).add(Duration(days: 90));
+    final freeVaultWidgets = (_localFreeKdbxExists ?? false) && _localFreeKdbxImportedAt != null
+        ? [
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+              child: Text(
+                'Free Vault (local only)',
+                style: theme.textTheme.headlineMedium,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 6,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text('We found an old Vault from the time when you were using Kee Vault as a free user.'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                      child: Text(
+                        'It is due to be automatically destroyed soon after ${Jiffy(timeOfDeath).yMMMMEEEEd} ${Jiffy(timeOfDeath).jm}.',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                      child: Text(
+                        'You can export it in KDBX format or force it to be destroyed immediately, only if you are certain that it contains no important information which has yet to be exported or imported into your current Vault.',
+                      ),
+                    ),
+                    ButtonBar(
+                      alignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => {_exportFreeKdbx(context)},
+                          child: Text(str.export),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => {_deleteFreeKdbx(context)},
+                          style: ElevatedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                          child: Text(str.detDelEntryPerm),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ]
+        : [];
     return TraceableWidget(
       traceTitle: 'ImportExport',
       child: BlocBuilder<VaultCubit, VaultState>(
@@ -129,6 +226,7 @@ class ImportExportWidget extends StatelessWidget {
                             ),
                           ),
                         ),
+                        ...freeVaultWidgets
                       ],
                     ),
                   ),
@@ -246,5 +344,94 @@ class ImportExportWidget extends StatelessWidget {
         await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
       }
     }
+  }
+
+  _exportFreeKdbx(BuildContext context) async {
+    final str = S.of(context);
+    final sm = ScaffoldMessenger.of(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
+
+    final bytes = await vaultCubit.loadFreeFileForExport();
+
+    if (bytes == null) {
+      sm.showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(str.exportError),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+      ));
+      return;
+    }
+
+    final permissionResult = await tryToGetPermission(
+      context,
+      Permission.storage,
+      'Storage',
+      str.export.toLowerCase(),
+      str.cancelExportOrImport(str.export.toLowerCase()),
+    );
+    if (permissionResult == PermissionResult.approved) {
+      try {
+        final params = SaveFileDialogParams(
+          data: bytes,
+          fileName: 'kee-vault-export-${DateTime.now().millisecondsSinceEpoch}.kdbx',
+        );
+        final outputFilename = await FlutterFileDialog.saveFile(params: params);
+        if (outputFilename == null) {
+          l.d('File system integration reports that the export was cancelled.');
+          return;
+        }
+        l.i('Exported vault to $outputFilename');
+        sm.showSnackBar(SnackBar(
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(str.exported),
+            ],
+          ),
+          duration: Duration(seconds: 3),
+        ));
+      } on Exception catch (e, st) {
+        l.e('Export failed: $e', st);
+        await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+      }
+    }
+  }
+
+  _deleteFreeKdbx(BuildContext context) async {
+    final str = S.of(context);
+    final sm = ScaffoldMessenger.of(context);
+    final vaultCubit = BlocProvider.of<VaultCubit>(context);
+
+    final deleted = await vaultCubit.forceLocalFreeFileDelete();
+
+    if (!deleted) {
+      sm.showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(str.openError),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+      ));
+      return;
+    }
+    sm.showSnackBar(SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Text('Deleted'),
+        ],
+      ),
+      duration: Duration(seconds: 3),
+    ));
+    setState(() {
+      _localFreeKdbxExists = false;
+      _localFreeKdbxImportedAt = null;
+    });
   }
 }
