@@ -13,7 +13,7 @@ Set env variables by executing the code in the "Setup Env" field of these entrie
 ## Release to "internal" testing group
 
 ```
-flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play
+flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play --dart-define IAP_GOOGLE_PLAY=yes
 bundle exec fastlane internal
 ```
 

@@ -41,6 +41,15 @@ end
 
 platform :ios do
 
+  desc "Get IAP development certificates"
+  lane :iapdevcert do
+    sync_code_signing(
+      type: "development",
+      app_identifier: ['com.keevault.keevault', 'com.keevault.keevault.autofill'],
+      force_for_new_devices: true
+    )
+  end
+
   desc "Get certificates"
   lane :certificates do
     sync_code_signing(

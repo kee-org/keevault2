@@ -311,10 +311,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "9fe3b766ef831243e9d64fac3162bb6c1933b2f1"
+      resolved-ref: a59c2329266bd3513f7206abcc4f48e7df22612d
       url: "https://github.com/kee-org/flutter_chips_input.git"
     source: git
-    version: "2.0.0+1"
+    version: "2.0.0+2"
   flutter_file_dialog:
     dependency: "direct main"
     description:

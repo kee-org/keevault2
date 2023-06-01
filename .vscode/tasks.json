@@ -59,7 +59,9 @@
 					"--dart-define",
 					"KEEVAULT_STAGE=prod",
 					"--dart-define",
-					"KEEVAULT_CHANNEL=play"
+					"KEEVAULT_CHANNEL=play",
+					"--dart-define",
+					"IAP_GOOGLE_PLAY=yes"
 				
 			],
 			"group": "build",
@@ -115,7 +117,9 @@
 					"--dart-define",
 					"KEEVAULT_NAME_SUFFIX=",
 					"--dart-define",
-					"KEEVAULT_ID_SUFFIX="
+					"KEEVAULT_ID_SUFFIX=",
+					"--dart-define",
+					"IAP_APPLE_APP_STORE=yes"
 				
 			],
 			"group": "build",

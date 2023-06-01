@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -20,20 +22,30 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>KeeVaultSharedBiometricStorageName</key>
+	<string>KeeVaultQuickUnlock_v2_$(KEEVAULT_STAGE)</string>
 	<key>KeeVaultSharedDefaultAccessGroup</key>
 	<string>$(KEE_VAULT_SHARED_DEFAULT_ACCESS_GROUP)</string>
 	<key>KeeVaultSharedDefaultGroupName</key>
-	<string>$(KEE_VAULT_SHARED_DEFAULT_GROUP_NAME)</string>	
-	<key>KeeVaultSharedBiometricStorageName</key>
-	<string>KeeVaultQuickUnlock_v2_$(KEEVAULT_STAGE)</string>
+	<string>$(KEE_VAULT_SHARED_DEFAULT_GROUP_NAME)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>TOTP QR scanning</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Unlock your Vault without having to enter your password</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Adding attachments to entries and Import/Export functionality</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIStatusBarHidden</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -47,19 +59,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIStatusBarHidden</key>
-	<false/>
 	<key>UISupportsDocumentBrowser</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>TOTP QR scanning</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Adding attachments to entries and Import/Export functionality</string>
 </dict>
 </plist>
