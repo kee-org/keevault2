@@ -26,6 +26,32 @@
             ]
         },
         {
+            "name": "keevault IAP hack debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "--dart-define",
+                "KEEVAULT_STAGE=dev",
+                "--dart-define",
+                "KEEVAULT_CHANNEL=play",
+                "--dart-define",
+                "IAP_GOOGLE_PLAY=yes",
+                "--dart-define",
+                "IAP_APPLE_APP_STORE=yes"
+            ]
+        },
+        {
+            "name": "keevault iOS IAP hack debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "--dart-define",
+                "IAP_APPLE_APP_STORE=yes"
+            ]
+        },
+        {
             "name": "keevault beta profile",
             "request": "launch",
             "type": "dart",

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,7 @@
 		8B94D3B0291D4A0A00667FDA /* KeychainError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B94D3AF291D4A0A00667FDA /* KeychainError.swift */; };
 		8B94D3B2291D4A1B00667FDA /* ExpiringCachedCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B94D3B1291D4A1B00667FDA /* ExpiringCachedCredentials.swift */; };
 		8B94D3B4291D4D2300667FDA /* PriorityCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B94D3B3291D4D2300667FDA /* PriorityCategory.swift */; };
+		8BAB06C02A0D486700F8759A /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BAB06BF2A0D486700F8759A /* StoreKit.framework */; };
 		8BB2225128DB2DFF00693094 /* EntryListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225028DB2DFF00693094 /* EntryListViewController.swift */; };
 		8BB2225328DB542900693094 /* KeeVaultKeychainEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225228DB542900693094 /* KeeVaultKeychainEntry.swift */; };
 		8BB2225528DC81F100693094 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB2225428DC81F100693094 /* SpinnerViewController.swift */; };
@@ -94,6 +95,8 @@
 		8B94D3AF291D4A0A00667FDA /* KeychainError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainError.swift; sourceTree = "<group>"; };
 		8B94D3B1291D4A1B00667FDA /* ExpiringCachedCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpiringCachedCredentials.swift; sourceTree = "<group>"; };
 		8B94D3B3291D4D2300667FDA /* PriorityCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityCategory.swift; sourceTree = "<group>"; };
+		8BAB06BF2A0D486700F8759A /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		8BAB06C12A0D5A1A00F8759A /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
 		8BB2225028DB2DFF00693094 /* EntryListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryListViewController.swift; sourceTree = "<group>"; };
 		8BB2225228DB542900693094 /* KeeVaultKeychainEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeeVaultKeychainEntry.swift; sourceTree = "<group>"; };
 		8BB2225428DC81F100693094 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
@@ -125,6 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BAB06C02A0D486700F8759A /* StoreKit.framework in Frameworks */,
 				8B253A0D28BE667A00AA6762 /* AuthenticationServices.framework in Frameworks */,
 				CB99B9856EC33EF985D3B1A9 /* Pods_Runner.framework in Frameworks */,
 			);
@@ -193,6 +197,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				8BAB06C12A0D5A1A00F8759A /* RunnerDebug.entitlements */,
 				8B253A0B28BE667A00AA6762 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -209,6 +214,7 @@
 		B37FA36980CFA87944E965B7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8BAB06BF2A0D486700F8759A /* StoreKit.framework */,
 				8B253A0C28BE667A00AA6762 /* AuthenticationServices.framework */,
 				3EC49DBAF9792E1F4C10E0E3 /* Pods_Runner.framework */,
 			);
@@ -341,6 +347,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -355,6 +362,7 @@
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
