@@ -107,7 +107,9 @@ android {
 
     defaultConfig {
         applicationId "com.keevault.keevault"
-        applicationIdSuffix idSuffix
+        //TODO: undo IAP testing hack...
+        // applicationIdSuffix idSuffix
+        applicationIdSuffix ''
         minSdkVersion 26
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
@@ -124,9 +126,10 @@ android {
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86_64"
             }
         }
-        debug {
-            applicationIdSuffix ".debug"
-        }
+        //TODO: undo IAP testing hack...
+        // debug {
+        //     applicationIdSuffix ".debug"
+        // }
     }
     lint {
         disable 'InvalidPackage'

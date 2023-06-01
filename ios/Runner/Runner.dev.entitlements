@@ -6,13 +6,13 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.keevault.keevault.dev</string>
+		<string>group.com.keevault.keevault</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)com.keevault.keevault.dev</string>
-		<string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default.dev</string>
-		<string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default.dev</string>
+		<string>$(AppIdentifierPrefix)com.keevault.keevault</string>
+		<string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default</string>
+		<string>$(AppIdentifierPrefix)com.keevault.keevault.shared.default</string>
 	</array>
 </dict>
 </plist>
