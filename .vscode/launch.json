@@ -26,7 +26,7 @@
             ]
         },
         {
-            "name": "keevault IAP hack debug",
+            "name": "keevault Android IAP hack debug",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
@@ -36,9 +36,7 @@
                 "--dart-define",
                 "KEEVAULT_CHANNEL=play",
                 "--dart-define",
-                "IAP_GOOGLE_PLAY=yes",
-                "--dart-define",
-                "IAP_APPLE_APP_STORE=yes"
+                "IAP_GOOGLE_PLAY=yes"
             ]
         },
         {

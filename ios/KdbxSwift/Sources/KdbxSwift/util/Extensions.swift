@@ -72,9 +72,7 @@ public extension Bool {
     }
 }
 
-public extension Date {
-    static var now: Date { return Date() }
-    
+public extension Date {    
     private static let iso8601DateFormatter = { () -> ISO8601DateFormatter in
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
