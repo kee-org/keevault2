@@ -9,7 +9,7 @@ jobs:
     if: ${{ !contains ( github.event.release.tag_name, '_' ) || endsWith( github.event.release.tag_name, '_ios' ) }}
     # NB: ${{ syntax }} is required despite GitHub docs to the contrary. Appears that ! operator can't be used otherwise.
 
-    runs-on: macos-12
+    runs-on: macos-13
 
     steps:
       - name: Checkout
@@ -69,7 +69,7 @@ jobs:
     name: Build and release prod testflight
     if: ${{ !contains ( github.event.release.tag_name, '_' ) || endsWith( github.event.release.tag_name, '_ios' ) }}
 
-    runs-on: macos-12
+    runs-on: macos-13
 
     steps:
       - name: Checkout
