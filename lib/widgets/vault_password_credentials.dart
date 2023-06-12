@@ -84,6 +84,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                     errorText: widget.showError
                         ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
                         : null,
+                    suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                     suffixIcon: IconButton(
                       icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
                       onPressed: () {

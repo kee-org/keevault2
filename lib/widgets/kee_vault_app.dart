@@ -213,6 +213,9 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
         }),
       ),
       bottomAppBarTheme: BottomAppBarTheme(color: isDark ? palette[800] : palette[100]),
+      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+          errorStyle: theme.inputDecorationTheme.errorStyle?.copyWith(fontWeight: FontWeight.bold) ??
+              TextStyle(fontWeight: FontWeight.bold)),
     );
   }
 

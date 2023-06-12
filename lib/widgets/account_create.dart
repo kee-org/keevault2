@@ -436,6 +436,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                               });
                             },
                           ),
+                          suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
@@ -471,6 +472,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                               });
                             },
                           ),
+                          suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
