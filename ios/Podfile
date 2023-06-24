@@ -31,6 +31,14 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
+  target 'RunnerUITests' do
+    inherit! :complete
+  end
+
+  # As of June 2023, there is conflicting information on the Patrol documentation and
+  # issue tracker regarding whether this line should appear before or after the
+  # RunnerUITests target configuration lines. Both seemed to work(ish) so if it
+  # matters, it is not yet clear why.
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 

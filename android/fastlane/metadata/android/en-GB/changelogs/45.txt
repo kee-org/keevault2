@@ -1,0 +1,7 @@
+* Enabled new account registration via in-app purchases on Google Play and Apple App Store
+* Text in main password fields can be made visible
+* Allow file imports to be cancelled at password entry step
+* Allow old free (local-only) vaults to be exported again or deleted ahead of the usual automatic deletion date
+* Clarify purpose of "Sign in" button in menu for free users
+* Enforce the existing requirement for email address validation
+* Improved performance and reliability; dependency updates
