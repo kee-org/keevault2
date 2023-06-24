@@ -241,15 +241,12 @@ class BottomBarWidget extends StatelessWidget {
                 onPressed: _toggleBottomDrawerVisibility,
               ),
               VaultStatusIconWidget(),
-              Visibility(
-                maintainSize: true,
-                maintainAnimation: true,
-                maintainState: true,
-                // not sure if it makes sense to show this when saving locally
-                // after an autofill merge operation but probably better than nothing.
-                visible: loadedVaultState is VaultSaving || loadedVaultState is VaultUpdatingLocalFromAutofill,
-                child: sipi,
-              ),
+              if (loadedVaultState is VaultSaving || loadedVaultState is VaultUpdatingLocalFromAutofill) sipi,
+              if (loadedVaultState is! VaultSaving && loadedVaultState is! VaultUpdatingLocalFromAutofill)
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                ),
               centreButton != null
                   ? centreButton!
                   : SaveButtonWidget(
