@@ -115,6 +115,7 @@ android {
         resValue "string", "app_name", "Kee Vault" + nameSuffix
         resValue "string", "flutter_autofill_service_label", "Kee Vault" + nameSuffix
         ndk.debugSymbolLevel = symbolLevel
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -132,6 +133,8 @@ android {
         disable 'InvalidPackage'
     }
     namespace 'com.keevault.keevault'
+
+    ndkVersion "23.1.7779620"
 }
 
 flutter {
@@ -140,4 +143,5 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testImplementation "junit:junit:4.13.2"
 }

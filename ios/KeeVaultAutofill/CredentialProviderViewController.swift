@@ -105,6 +105,7 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         return sharedDefaults?.string(forKey: "userId")
     }
     
+    // userId will be nil if user has disabled biometrics (e.g. during integration testing)
     private func getKeyForUser(userId: String?) -> (ByteArray?, OSStatus?) {
         guard userId != nil else { return (nil,nil) }
         let name = Bundle.main.infoDictionary!["KeeVaultSharedBiometricStorageName"] as! String
