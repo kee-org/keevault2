@@ -66,6 +66,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "accountDeletionNotes": MessageLookupByLibrary.simpleMessage(
+            "You don\'t need to delete your account. If you want to cancel your subscription, just do that using the information above. We\'ll then automatically delete your account, but if you really want to take additional steps to request the deletion of your account, we have created a way for you to do this on our website, which you can access by using the button below."),
         "add": MessageLookupByLibrary.simpleMessage("Add"),
         "addAttachment":
             MessageLookupByLibrary.simpleMessage("Add small attachment"),
@@ -178,6 +180,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "currentPasswordNotCorrect": MessageLookupByLibrary.simpleMessage(
             "Current password is not correct"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+        "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteAttachment":
             MessageLookupByLibrary.simpleMessage("Delete attachment"),
         "deleteGroupConfirm": MessageLookupByLibrary.simpleMessage(

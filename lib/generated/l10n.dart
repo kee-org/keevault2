@@ -2900,6 +2900,26 @@ class S {
     );
   }
 
+  /// `You don't need to delete your account. If you want to cancel your subscription, just do that using the information above. We'll then automatically delete your account, but if you really want to take additional steps to request the deletion of your account, we have created a way for you to do this on our website, which you can access by using the button below.`
+  String get accountDeletionNotes {
+    return Intl.message(
+      'You don\'t need to delete your account. If you want to cancel your subscription, just do that using the information above. We\'ll then automatically delete your account, but if you really want to take additional steps to request the deletion of your account, we have created a way for you to do this on our website, which you can access by using the button below.',
+      name: 'accountDeletionNotes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Account`
+  String get deleteAccount {
+    return Intl.message(
+      'Delete Account',
+      name: 'deleteAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Your Subscription`
   String get yourSubscription {
     return Intl.message(

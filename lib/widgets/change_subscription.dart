@@ -24,6 +24,7 @@ class _ChangeSubscriptionWidgetState extends State<ChangeSubscriptionWidget> {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final theme = Theme.of(context);
 
     return BlocBuilder<AccountCubit, AccountState>(builder: (context, accountState) {
       List<Widget> children = [Text(str.settingsNotSignedInError)];
@@ -113,6 +114,22 @@ class _ChangeSubscriptionWidgetState extends State<ChangeSubscriptionWidget> {
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(str.subscriptionCancellationNotes),
         ));
+
+        children.add(Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Text(str.accountDeletionNotes),
+        ));
+
+        children.add(
+          Align(
+            alignment: Alignment.center,
+            child: OutlinedButton(
+              onPressed: () async => await DialogUtils.openUrl('https://kee.pm/keevault/delete-account/'),
+              style: OutlinedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+              child: Text(str.deleteAccount),
+            ),
+          ),
+        );
       }
 
       return ColouredSafeArea(
