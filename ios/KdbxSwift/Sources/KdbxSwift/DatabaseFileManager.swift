@@ -89,7 +89,7 @@ public class DatabaseFileManager {
             database = db
             
         } catch {
-            fatalError("Unprocessed exception while opening database. Probably hardware failure has corrupted the data on this device.")
+            fatalError("Unprocessed exception while opening database. Possibly hardware failure has corrupted the data on this device.")
         }
         return dbFile
     }

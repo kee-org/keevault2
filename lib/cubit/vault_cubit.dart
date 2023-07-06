@@ -951,7 +951,7 @@ class VaultCubit extends Cubit<VaultState> {
       l.w("No credentials available so can't save to quick unlock");
       return;
     }
-    l.d('Enabling quick unlock data for current user. Other users will have to sign in with their master password next time.');
+    l.d('Enabling quick unlock data for current user ($user). Other users will have to sign in with their master password next time.');
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
