@@ -128,8 +128,9 @@ class LocalVaultRepository {
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
-    await qu.saveQuickUnlockFileCredentials(credentials,
-        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await kdbx.kdfCacheKey);
+    // this fails every time cos we don't know the currentuser yet. Remove in 2024 if no unexpected issues crop up.
+    // await qu.saveQuickUnlockFileCredentials(credentials,
+    //     DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await kdbx.kdfCacheKey);
 
     final lockedKdbx = LockedVaultFile(
       saved,

@@ -55,15 +55,13 @@ class QuickUnlocker {
           androidBiometricOnly: false,
           iosAccessGroupPlistKey: iosAccessGroupPlistKey,
         ),
-        promptInfo: PromptInfo(
-          iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
-        ),
       );
 
   // In 2023 we changed the user string to be the user ID rather than emailHashed. Since we didn't change
   // any existing user's ID and they used to default to emailHashed anyway, this will keep working.
   // Maybe one day we could/should rename the user parameter to complete the tidy-up.
   Future<QUStatus> initialiseForUser(String user, bool force) async {
+    l.v('initialiseForUser $user');
     if (!force && _currentCreds != null && _currentUser != null && _currentUser == user) {
       return QUStatus.credsAvailable;
     }
@@ -134,9 +132,11 @@ class QuickUnlocker {
   }
 
   Future<String?> _read(BiometricStorageFile storage) async {
+    l.v('QU _read');
     try {
       final contents = await storage.read(
           promptInfo: PromptInfo(
+              iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
               androidPromptInfo: AndroidPromptInfo(title: S.current.unlock, description: S.current.confirmItsYou)));
       return contents;
     } on AuthException catch (e, stackTrace) {
@@ -155,14 +155,19 @@ $stackTrace''');
     }
   }
 
+// This is the only place we enable autofill for ios
+// maybe do it in more places? one day?
   Future<void> _write(BiometricStorageFile storage, String contents) async {
+    l.v('QU _write');
     try {
       await storage.write(contents,
           promptInfo: PromptInfo(
+              iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
               androidPromptInfo: AndroidPromptInfo(
                   title: S.current.rememberVaultPassword,
                   description: S.current.biometricsStoreDescription(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN'))));
       if (KeeVaultPlatform.isIOS) {
+        l.v('setUserId = $_currentUser');
         await _autoFillMethodChannel.invokeMethod('setUserId', <String, dynamic>{
           'userId': _currentUser,
         });
@@ -213,6 +218,7 @@ $stackTrace''');
   }
 
   Future<void> saveQuickUnlockUserPassKey(String? userPassKey) async {
+    l.v('saveQuickUnlockUserPassKey start');
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
@@ -241,6 +247,7 @@ $stackTrace''');
   }
 
   Future<void> saveQuickUnlockFileCredentials(Credentials? creds, int expiryTime, String kdfCacheKey) async {
+    l.v('saveQuickUnlockFileCredentials start');
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
@@ -251,6 +258,8 @@ $stackTrace''');
     }
 
     ExpiringCachedCredentials? updatedCreds = _currentCreds;
+    final encodedCreds = base64.encode(creds!.getHash());
+    final kdfResult = base64.encode(kdfCache.getItemByKey(kdfCacheKey)!);
     if (updatedCreds == null) {
       if (newUserPassKey?.isEmpty ?? true) {
         if (_currentUser != localUserMagicString) {
@@ -259,16 +268,22 @@ $stackTrace''');
         }
         newUserPassKey = 'notARealPassword';
       }
-      final encodedCreds = base64.encode(creds!.getHash());
-      final kdfResult = base64.encode(kdfCache.getItemByKey(kdfCacheKey)!);
       updatedCreds = ExpiringCachedCredentials(encodedCreds, kdfCacheKey, kdfResult, newUserPassKey!, expiryTime);
     } else {
-      final encodedCreds = base64.encode(creds!.getHash());
-      if (encodedCreds == _currentCreds!.kdbxBase64Hash) {
+      // Important to check more than just the encodedCreds because keychain items in iOS persist after
+      // reinstallation of the app and if the user picks the same password again for their new empty
+      // vault, autofill won't work (and the app will be slower in general because the kdf cache won't
+      // be correctly repopulated at startup).
+      if (encodedCreds == _currentCreds!.kdbxBase64Hash &&
+          kdfCacheKey == _currentCreds!.kdbxKdfCacheKey &&
+          kdfResult == _currentCreds!.kdbxKdfResultBase64) {
         l.d('FileCredentials has not changed');
         return;
       }
       updatedCreds.kdbxBase64Hash = encodedCreds;
+      updatedCreds.kdbxKdfCacheKey = kdfCacheKey;
+      updatedCreds.kdbxKdfResultBase64 = kdfResult;
+      updatedCreds.expiry = expiryTime;
     }
 
     final storage = await _storageFile();
@@ -278,6 +293,7 @@ $stackTrace''');
   }
 
   Future<void> saveBothSecrets(String userPassKey, Credentials creds, int expiryTime, String kdfCacheKey) async {
+    l.v('saveBothSecrets start');
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
