@@ -44,4 +44,18 @@ platform :android do
     )
   end
 
+  desc "upload new android screenshots for review but no other items"
+  lane :screenshots_only do
+  upload_to_play_store(
+    #aab: "../build/app/outputs/bundle/release/app-release.aab",
+    track: "beta",
+    skip_upload_apk: true,
+    skip_upload_aab: true,
+    skip_upload_changelogs: true,
+    skip_upload_images: true,
+    skip_upload_screenshots: false,
+    skip_upload_metadata: true,
+    #version_name: flutter_version()["version_code"] + " (" + flutter_version()["version_name"] + ")"
+  )
+  end
 end
