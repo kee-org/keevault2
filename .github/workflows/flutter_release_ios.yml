@@ -67,6 +67,8 @@ jobs:
           bundle exec fastlane beta_stage
       
       - name: Store symbols on GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           pwd
           gh release upload $GITHUB_REF ios/Runner.app.dSYM.zip#fairySymbols
@@ -135,6 +137,8 @@ jobs:
           bundle exec fastlane prod_stage_testflight
       
       - name: Store symbols on GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           pwd
           gh release upload $GITHUB_REF ios/Runner.app.dSYM.zip#productionSymbols
