@@ -219,7 +219,9 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
       }
     }
 
-    // Something has gone wrong at Store level so we have to inform user purchases are not available
+    // Something has gone wrong at Store level so we have to inform user purchases are not available.
+    // Easiest way is by using absence of any known price so we check for formattedPrice == null
+    l.d('no IAP products available');
     setState(() {
       iap = IapDetails(products: [], offerTokenIndex: 0, trialAvailable: false, formattedPrice: null);
     });
@@ -300,6 +302,43 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
               mainTitle: 'Subscribe');
         } else if (state is AccountAuthenticated && state is! AccountSubscribing) {
           final reasonText = resubscriptionNeededReason(state);
+          final pricingText = pricingTextRenewal();
+          final renewalWidgets = isRenewalMode(state)
+              ? [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      pricingText,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: RichText(
+                      text: TextSpan(
+                        style: theme.textTheme.bodySmall,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'You have already agreed to our ',
+                          ),
+                          TextSpan(
+                            text: str.localOnlyAgree2,
+                            style: theme.textTheme.bodyMedium!.copyWith(color: mainColor),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () async {
+                                await SubscriberTermsDialog().show(context);
+                              },
+                          ),
+                          TextSpan(
+                            text:
+                                '. You should recall that if your subscription has been expired for less than approximately 6 months, we may backdate any new subscription to the time that one expired, so that we can recover your protected password data.',
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ]
+              : [];
           final actionButton = state is AccountSubscribeError
               ? ElevatedButton(
                   onPressed: () async {
@@ -312,7 +351,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                   child: Text('Sign in'),
                 )
               : ElevatedButton(
-                  onPressed: saving
+                  onPressed: saving || iap == null || iap!.formattedPrice == null
                       ? null
                       : () async {
                           setState(() {
@@ -348,7 +387,14 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
               saving: false,
               mainContent: Column(
                 children: [
-                  Text(reasonText),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      reasonText,
+                      style: theme.textTheme.titleLarge,
+                    ),
+                  ),
+                  ...renewalWidgets,
                   Align(
                     alignment: Alignment.center,
                     child: actionButton,
@@ -607,6 +653,16 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     return 'The Kee Vault service ${iap!.trialAvailable ? 'is free to try for the first month but ' : ''}does cost us money to run so we request a small contribution of ${iap!.formattedPrice} per year.';
   }
 
+  String pricingTextRenewal() {
+    if (iap == null) {
+      return "We're working out the pricing details for your local currency, sales tax, etc. Just a second...";
+    }
+    if (iap!.formattedPrice == null) {
+      return "Unfortunately, we can't offer you a subscription directly from this device. Please try https://keevault.pm for alternative subscription offers and then sign in to this device using the account you create there.";
+    }
+    return "You should be charged ${iap?.formattedPrice} but you'll have an opportunity to check this after you click the Subscribe button.";
+  }
+
   bool checkCurrentPassword(String? value) {
     if (value == null) {
       return false;
@@ -641,6 +697,12 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
       return;
     }
     try {
+      if (iap?.products.isEmpty ?? true) {
+        // This is known to happen when Apple are being unreliable in delivery of IAP subscriptions
+        // for purchase. Such as when they randomly require new agreements to be signed with no notice.
+        // Although we should now be unable to reach this point if that has happened we double-check now.
+        throw Exception('No products found');
+      }
       await PaymentService.instance.buyProduct(iap!.products[0], iap!.offerTokenIndex);
     } on Exception {
       setState(() {
@@ -673,12 +735,25 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
       return 'Could not subscribe you this time. Please try again. Reason: ${(state).message}';
     }
     if (state is AccountExpired) {
-      return 'Your subscription has expired. That is easy to fix - just hit the button below and follow any steps your Subscription Provider presents.';
+      return 'Your subscription has expired.';
     }
     if (PaymentService.instance.activePurchaseItem != null) {
       return 'We found a Kee Vault subscription on this device. We will attach it to the new Kee Vault account when you press the button below.';
     }
     return 'Your account is enabled but you have no active subscription. That could happen for a variety of reasons but is easy to fix - just hit the button below and follow any steps your Subscription Provider presents.';
+  }
+
+  isRenewalMode(AccountAuthenticated state) {
+    if (state is AccountSubscribeError) {
+      return false;
+    }
+    if (state is AccountExpired) {
+      return true;
+    }
+    if (PaymentService.instance.activePurchaseItem != null) {
+      return false;
+    }
+    return true;
   }
 }
 

@@ -44,6 +44,11 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
             latestState is! AccountEmailNotVerified &&
             latestState is! AccountExpired) ||
         latestState is AccountAuthenticationBypassed) {
+      // If user enters incorrect password when prompted after resubscribing following account expiry,
+      // an error saying their account password is out of sync with the Kdbx may get thrown by download().
+      // If they follow the suggested resolution of signing in again or kill the app first to do that,
+      // it seems to resolve itself. In future would be good to get to the bottom of why that happens
+      // and maybe workaround the issue in a neater way for the user.
       await vaultCubit.download(user,
           credentialsWithStrength: StrengthAssessedCredentials(ProtectedValue.fromString(password), user.emailParts));
     }
