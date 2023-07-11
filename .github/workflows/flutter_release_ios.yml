@@ -10,6 +10,7 @@ jobs:
     # NB: ${{ syntax }} is required despite GitHub docs to the contrary. Appears that ! operator can't be used otherwise.
 
     runs-on: macos-13
+    permissions: write-all
 
     steps:
       - name: Checkout
@@ -64,12 +65,18 @@ jobs:
         run: |
           cd ios
           bundle exec fastlane beta_stage
+      
+      - name: Store symbols on GitHub Release
+        run: |
+          pwd
+          gh release upload $GITHUB_REF ios/Runner.app.dSYM.zip#fairySymbols
 
   DeployIosProdTestflight:
     name: Build and release prod testflight
     if: ${{ !contains ( github.event.release.tag_name, '_' ) || endsWith( github.event.release.tag_name, '_ios' ) }}
 
     runs-on: macos-13
+    permissions: write-all
 
     steps:
       - name: Checkout
@@ -126,3 +133,8 @@ jobs:
         run: |
           cd ios
           bundle exec fastlane prod_stage_testflight
+      
+      - name: Store symbols on GitHub Release
+        run: |
+          pwd
+          gh release upload $GITHUB_REF ios/Runner.app.dSYM.zip#productionSymbols
