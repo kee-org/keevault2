@@ -70,7 +70,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
-        run: gh release upload $GH_RELEASE_TAG_NAME ios/Runner.app.dSYM.zip#fairySymbols
+        run: |
+          mv ios/Runner.app.dSYM.zip ios/fairy.Runner.app.dSYM.zip
+          gh release upload $GH_RELEASE_TAG_NAME ios/fairy.Runner.app.dSYM.zip
 
   DeployIosProdTestflight:
     name: Build and release prod testflight
@@ -139,4 +141,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
-        run: gh release upload $GH_RELEASE_TAG_NAME ios/Runner.app.dSYM.zip#productionSymbols
+        run: |
+          mv ios/Runner.app.dSYM.zip ios/production.Runner.app.dSYM.zip
+          gh release upload $GH_RELEASE_TAG_NAME ios/production.Runner.app.dSYM.zip
