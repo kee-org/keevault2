@@ -121,6 +121,9 @@ class PaymentService {
   Future<void> finishTransaction(PurchasedItem purchasedItem) async {
     if (KeeVaultPlatform.isIOS) {
       await FlutterInappPurchase.instance.finishTransaction(purchasedItem);
+      // if above fails, we'll not remove the purchasedItem from the queue. If we did
+      // we would risk not responding to App Store update notifications even if there
+      // is only a transient problem.
       PaymentService.instance.deferPurchaseItem(null);
     }
   }
@@ -231,8 +234,10 @@ class PaymentService {
     List<IAPItem> items = await FlutterInappPurchase.instance.getSubscriptions(_productIds);
     _products = [];
     for (var item in items) {
+      l.d('IAP item found: ${item.productId}');
       _products!.add(item);
     }
+    l.d('${_products!.length} IAP items found.');
   }
 
   Future<PurchasedItem?> _getPastPurchases() async {
