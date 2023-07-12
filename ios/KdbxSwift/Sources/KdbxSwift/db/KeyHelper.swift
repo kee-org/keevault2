@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class KeyHelper {
     public static let compositeKeyLength = 32
@@ -24,16 +25,16 @@ public class KeyHelper {
         
         let keyFileDataSize = keyFileData.count
         if keyFileDataSize == keyFileKeyLength {
-            Diag.debug("Key file format is: binary")
+            Logger.mainLog.debug("Key file format is: binary")
             return keyFileData
         }
         
         if let key = try processXmlKeyFile(keyFileData: keyFileData) {
-            Diag.debug("Key file format is: XML")
+            Logger.mainLog.debug("Key file format is: XML")
             return key
         }
         
-        Diag.debug("Key file format is: other")
+        Logger.mainLog.debug("Key file format is: other")
         return keyFileData.sha256
     }
     

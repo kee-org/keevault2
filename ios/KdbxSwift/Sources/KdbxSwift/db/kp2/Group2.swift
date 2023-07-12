@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class Group2: Group {
     public var isExpanded: Bool
@@ -65,7 +66,7 @@ public class Group2: Group {
     override public func apply(to target: Group, makeNewUUID: Bool) {
         super.apply(to: target, makeNewUUID: makeNewUUID)
         guard let targetGroup2 = target as? Group2 else {
-            Diag.warning("Tried to apply group state to unexpected group class")
+            Logger.mainLog.warning("Tried to apply group state to unexpected group class")
             assertionFailure()
             return
         }
@@ -129,7 +130,7 @@ public class Group2: Group {
         timeParser: Database2XMLTimeParser
     ) throws {
         assert(xml.name == Xml2.group)
-        Diag.verbose("Loading XML: group")
+        Logger.mainLog.trace("Loading XML: group")
         
         let parent = self.parent
         erase()
@@ -144,7 +145,7 @@ public class Group2: Group {
             case Xml2.uuid:
                 self.uuid = UUID(base64Encoded: tag.value) ?? UUID.ZERO
                 if uuid == meta.recycleBinGroupUUID && meta.isRecycleBinEnabled {
-                    Diag.verbose("Is a backup group")
+                    Logger.mainLog.trace("Is a backup group")
                     isRecycleBin = true
                 }
             case Xml2.name:
@@ -161,7 +162,7 @@ public class Group2: Group {
                 self.customIconUUID = UUID(base64Encoded: tag.value) ?? UUID.ZERO
             case Xml2.times:
                 try loadTimes(xml: tag, timeParser: timeParser)
-                Diag.verbose("Group times loaded OK")
+                Logger.mainLog.trace("Group times loaded OK")
             case Xml2.isExpanded:
                 self.isExpanded = Bool(string: tag.value)
             case Xml2.defaultAutoTypeSequence:
@@ -186,7 +187,7 @@ public class Group2: Group {
                     timeParser: timeParser,
                     xmlParentName: "Group"
                 )
-                Diag.verbose("Custom data loaded OK")
+                Logger.mainLog.trace("Custom data loaded OK")
             case Xml2.group:
                 let subGroup = Group2(database: database)
                 try subGroup.load(
@@ -196,7 +197,7 @@ public class Group2: Group {
                     timeParser: timeParser
                 ) 
                 self.add(group: subGroup)
-                Diag.verbose("Subgroup loaded OK")
+                Logger.mainLog.trace("Subgroup loaded OK")
             case Xml2.entry:
                 let entry = Entry2(database: database)
                 try entry.load(
@@ -206,9 +207,9 @@ public class Group2: Group {
                     timeParser: timeParser
                 ) 
                 self.add(entry: entry)
-                Diag.verbose("Entry loaded OK")
+                Logger.mainLog.trace("Entry loaded OK")
             default:
-                Diag.error("Unexpected XML tag in Group: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Group: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Group/*")
             }
         }
@@ -224,11 +225,11 @@ public class Group2: Group {
         timeParser: Database2XMLTimeParser
     ) throws -> Date {
         if (value == nil || value!.isEmpty) && fallbackToEpoch {
-            Diag.warning("\(tag) is empty, will use 1970-01-01 instead")
+            Logger.mainLog.warning("\(tag) is empty, will use 1970-01-01 instead")
             return Date(timeIntervalSince1970: 0.0)
         }
         guard let time = timeParser.xmlStringToDate(value) else {
-            Diag.error("Cannot parse \(tag) as Date")
+            Logger.mainLog.error("Cannot parse \(tag) as Date")
             throw Xml2.ParsingError.malformedValue(
                 tag: tag,
                 value: value)
@@ -238,7 +239,7 @@ public class Group2: Group {
     
     func loadTimes(xml: AEXMLElement, timeParser: Database2XMLTimeParser) throws {
         assert(xml.name == Xml2.times)
-        Diag.verbose("Loading XML: group times")
+        Logger.mainLog.trace("Loading XML: group times")
         
         for tag in xml.children {
             switch tag.name {
@@ -277,7 +278,7 @@ public class Group2: Group {
                     fallbackToEpoch: true,
                     timeParser: timeParser)
             default:
-                Diag.error("Unexpected XML tag in Group/Times: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Group/Times: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Group/Times/*")
             }
         }
@@ -288,7 +289,7 @@ public class Group2: Group {
         streamCipher: StreamCipher,
         timeFormatter: Database2XMLTimeFormatter
     ) throws -> AEXMLElement {
-        Diag.verbose("Generating XML: group")
+        Logger.mainLog.trace("Generating XML: group")
         let xmlGroup = AEXMLElement(name: Xml2.group)
         xmlGroup.addChild(name: Xml2.uuid, value: uuid.base64EncodedString())
         xmlGroup.addChild(name: Xml2.name, value: name)

@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 final class KDFParams: VarDict {
     public static let uuidParam = "$UUID"
@@ -12,16 +13,16 @@ final class KDFParams: VarDict {
     }
     
     override func read(data: ByteArray) -> Bool {
-        Diag.debug("Parsing KDF params")
+        Logger.mainLog.debug("Parsing KDF params")
         guard super.read(data: data) else { return false }
         
         guard let value = getValue(key: KDFParams.uuidParam) else {
-            Diag.warning("KDF UUID is missing")
+            Logger.mainLog.warning("KDF UUID is missing")
             return false
         }
         guard let uuidData = value.asByteArray(),
             let _ = UUID(data: uuidData) else {
-                Diag.warning("KDF UUID is malformed")
+                Logger.mainLog.warning("KDF UUID is malformed")
                 return false
         }
         return true

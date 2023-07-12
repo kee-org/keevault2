@@ -1,5 +1,6 @@
 import Foundation
 import CommonCrypto.CommonHMAC
+import os.log
 
 public enum CryptoError: Error {
     case invalidKDFParam(kdfName: String, paramName: String)
@@ -36,7 +37,7 @@ public final class CryptoManager {
             return SecRandomCopyBytes(kSecRandomDefault, outBytes.count, &outBytes)
         }
         if status != errSecSuccess {
-            Diag.warning("Failed to generate random bytes [count: \(count), status: \(status)]")
+            Logger.mainLog.warning("Failed to generate random bytes [count: \(count), status: \(status)]")
             throw CryptoError.rngError(code: Int(status))
         }
         return output

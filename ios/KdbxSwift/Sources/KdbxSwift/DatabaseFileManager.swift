@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class DatabaseFileManager {
     public enum Error {
@@ -43,10 +44,10 @@ public class DatabaseFileManager {
     
     private func initDatabase(signature data: ByteArray) -> Database? {
         if Database2.isSignatureMatches(data: data) {
-            Diag.info("DB signature: KDBX")
+            Logger.mainLog.info("DB signature: KDBX")
             return Database2()
         } else {
-            Diag.info("DB signature: no match")
+            Logger.mainLog.info("DB signature: no match")
             return nil
         }
     }
@@ -59,12 +60,12 @@ public class DatabaseFileManager {
             let autofillFileData = try ByteArray(contentsOf: kdbxAutofillURL, options: [.uncached, .mappedIfSafe])
             fileData = autofillFileData
         } catch {
-            Diag.info("Autofill file not found. Expected unless recent changes have been made via autofill and main app not opened yet.")
+            Logger.mainLog.info("Autofill file not found. Expected unless recent changes have been made via autofill and main app not opened yet.")
             do {
                     fileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
                 
             } catch {
-                Diag.error("Failed to read current KDBX file [message: \(error.localizedDescription)]")
+                Logger.mainLog.error("Failed to read current KDBX file [message: \(error.localizedDescription)]")
                 fatalError("couldn't read KDBX file")
             }
         }
@@ -102,7 +103,7 @@ public class DatabaseFileManager {
             let fileData = try targetDatabase.save()
             try fileData.write(to: kdbxAutofillURL, options: .atomic)
         } catch {
-            Diag.error("Failed to write autofill KDBX file [message: \(error.localizedDescription)]")
+            Logger.mainLog.error("Failed to write autofill KDBX file [message: \(error.localizedDescription)]")
         }
     }
 }

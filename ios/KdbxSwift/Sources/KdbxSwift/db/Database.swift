@@ -1,3 +1,5 @@
+import os.log
+
 public struct SearchQuery {
     public let includeSubgroups: Bool
     public let includeDeleted: Bool
@@ -114,7 +116,7 @@ open class Database: Eraseable {
         allEntries: T)
         where T: Collection, T.Element: Entry
     {
-        Diag.debug("Resolving references")
+        Logger.mainLog.debug("Resolving references")
                 
         allEntries.forEach { entry in
             entry.fields.forEach { field in
@@ -127,6 +129,6 @@ open class Database: Eraseable {
                 field.resolveReferences(entries: allEntries)
             }
         }
-        Diag.debug("References resolved OK")
+        Logger.mainLog.debug("References resolved OK")
     }
 }

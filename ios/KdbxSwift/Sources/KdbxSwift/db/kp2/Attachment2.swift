@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class Attachment2: Attachment {
     public var id: Int
@@ -28,7 +29,7 @@ public class Attachment2: Attachment {
     {
         assert(xml.name == Xml2.binary)
         
-        Diag.verbose("Loading XML: entry attachment")
+        Logger.mainLog.trace("Loading XML: entry attachment")
         var name: String?
         var binary: Binary2?
         for tag in xml.children {
@@ -38,7 +39,7 @@ public class Attachment2: Attachment {
             case Xml2.value:
                 let refString = tag.attributes[Xml2.ref]
                 guard let binaryID = Int(refString) else {
-                    Diag.error("Cannot parse Entry/Binary/Value/Ref as Int")
+                    Logger.mainLog.error("Cannot parse Entry/Binary/Value/Ref as Int")
                     throw Xml2.ParsingError.malformedValue(
                         tag: "Entry/Binary/Value/Ref",
                         value: refString)
@@ -55,16 +56,16 @@ public class Attachment2: Attachment {
                     )
                 }
             default:
-                Diag.error("Unexpected XML tag in Entry/Binary: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/Binary: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/Binary/*")
             }
         }
         let _name = name ?? ""
         if _name.isEmpty {
-            Diag.error("Missing Entry/Binary/Name, ignoring")
+            Logger.mainLog.error("Missing Entry/Binary/Name, ignoring")
         }
         guard let _binary = binary else {
-            Diag.error("Missing Entry/Binary/Value")
+            Logger.mainLog.error("Missing Entry/Binary/Value")
             throw Xml2.ParsingError.malformedValue(tag: "Entry/Binary/Value/Ref", value: nil)
         }
         return Attachment2(
@@ -75,7 +76,7 @@ public class Attachment2: Attachment {
     }
     
     internal func toXml() -> AEXMLElement {
-        Diag.verbose("Generating XML: entry attachment")
+        Logger.mainLog.trace("Generating XML: entry attachment")
         let xmlAtt = AEXMLElement(name: Xml2.binary)
         xmlAtt.addChild(name: Xml2.key, value: self.name)
         xmlAtt.addChild(name: Xml2.value, value: nil, attributes: [Xml2.ref: String(self.id)])
