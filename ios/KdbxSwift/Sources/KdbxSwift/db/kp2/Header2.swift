@@ -449,7 +449,7 @@ final class Header2: Eraseable {
     
     internal func initStreamCipher() {
         guard let protectedStreamKey = protectedStreamKey else {
-            fatalError()
+            Logger.fatalError("initStreamCipher: Failed to assign protectedStreamKey")
         }
         self.streamCipher = StreamCipherFactory.create(
             algorithm: innerStreamAlgorithm,
@@ -581,7 +581,7 @@ final class Header2: Eraseable {
     
     func writeInner(to stream: ByteArray.OutputStream) throws {
         assert(formatVersion >= .v4)
-        guard let protectedStreamKey = protectedStreamKey else { fatalError() }
+        guard let protectedStreamKey = protectedStreamKey else { Logger.fatalError("writeInner: failed to assign protectedStreamKey") }
         
         Logger.mainLog.trace("Writing kdbx4 inner header")
         stream.write(value: InnerFieldID.innerRandomStreamID.rawValue) 

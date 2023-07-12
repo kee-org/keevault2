@@ -9,15 +9,15 @@ public class KeyHelper {
         passwordData: ByteArray,
         keyFileData: ByteArray
     ) throws -> ByteArray {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func getKey(fromCombinedComponents combinedComponents: ByteArray) -> ByteArray {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func getPasswordData(password: String) -> ByteArray {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func processKeyFile(keyFileData: ByteArray) throws -> ByteArray {

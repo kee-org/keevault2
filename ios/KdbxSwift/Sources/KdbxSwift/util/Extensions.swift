@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 extension StringProtocol {
     func base64ToBase64url() -> String {
@@ -145,7 +146,7 @@ extension UUID {
     internal var data: ByteArray {
         var bytes = Array<UInt8>(repeating: 0, count: UUID.byteWidth)
         guard let nsuuid = NSUUID(uuidString: self.uuidString) else {
-            fatalError()
+            Logger.fatalError("failed to create NSUUID")
         }
         nsuuid.getBytes(&bytes)
         return ByteArray(bytes: bytes)

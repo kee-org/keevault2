@@ -5,6 +5,11 @@ extension Logger {
     private static var subsystem = Bundle.main.bundleIdentifier!
 
     static let mainLog = Logger(subsystem: subsystem, category: "main")
+    
+    static func fatalError(_ message:String) -> Never {
+        mainLog.fault("\(message)")
+        Swift.fatalError(message)
+    }
 }
 
 //

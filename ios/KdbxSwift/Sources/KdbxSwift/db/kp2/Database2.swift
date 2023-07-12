@@ -591,7 +591,7 @@ public class Database2: Database {
             try header.writeInner(to: contentStream) 
             Logger.mainLog.trace("Header written OK")
             contentStream.write(data: xmlData)
-            guard let contentData = contentStream.data else { fatalError() }
+            guard let contentData = contentStream.data else { Logger.fatalError("Failed to get data from contentStream") }
             
             var dataToEncrypt = contentData
             if header.isCompressed {
@@ -720,7 +720,7 @@ public class Database2: Database {
     }
     
     override public func delete(group: Group) {
-        guard let group = group as? Group2 else { fatalError() }
+        guard let group = group as? Group2 else { Logger.fatalError("Cannot delete group: not a Group") }
         guard let parentGroup = group.parent else {
             Logger.mainLog.warning("Cannot delete group: no parent group")
             return

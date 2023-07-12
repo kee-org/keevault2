@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class EntryField: Eraseable {
     public static let title    = "Title"
@@ -203,7 +204,7 @@ public class Entry: DatabaseItem, Eraseable {
     
     public var isHiddenFromSearch: Bool {
         get { return false }
-        set { fatalError("This property can be modified only in some DB formats") }
+        set { Logger.fatalError("This property can be modified only in some DB formats") }
     }
     
     public var attachments: Array<Attachment>
@@ -298,7 +299,7 @@ public class Entry: DatabaseItem, Eraseable {
     }
     
     public func clone(makeNewUUID: Bool) -> Entry {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func apply(to target: Entry, makeNewUUID: Bool) {
@@ -326,7 +327,7 @@ public class Entry: DatabaseItem, Eraseable {
     }
     
     public func backupState() {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     override public func touch(_ mode: DatabaseItem.TouchMode, updateParents: Bool = true) {

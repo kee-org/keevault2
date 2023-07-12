@@ -42,7 +42,7 @@ open class Database: Eraseable {
     }
     
     public var keyHelper: KeyHelper {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     internal init() {
@@ -59,7 +59,7 @@ open class Database: Eraseable {
     }
 
     public class func isSignatureMatches(data: ByteArray) -> Bool {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func load(
@@ -67,19 +67,19 @@ open class Database: Eraseable {
         dbFileData: ByteArray,
         preTransformedKeyMaterial: ByteArray
     ) throws {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func save() throws -> ByteArray {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func changeCompositeKey(to newKey: CompositeKey) {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func getBackupGroup(createIfMissing: Bool) -> Group? {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func count(includeGroups: Bool = true, includeEntries: Bool = true) -> Int {
@@ -101,15 +101,15 @@ open class Database: Eraseable {
     }
     
     public func delete(group: Group) {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func delete(entry: Entry) {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
 
     public func makeAttachment(name: String, data: ByteArray) -> Attachment {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     internal func resolveReferences<T>(

@@ -66,12 +66,12 @@ public class DatabaseFileManager {
                 
             } catch {
                 Logger.mainLog.error("Failed to read current KDBX file [message: \(error.localizedDescription)]")
-                fatalError("couldn't read KDBX file")
+                Logger.fatalError("couldn't read KDBX file")
             }
         }
         
         guard let db = initDatabase(signature: fileData) else {
-            fatalError("database init failed")
+            Logger.fatalError("database init failed")
         }
         
         let dbFile = DatabaseFile(
@@ -90,7 +90,7 @@ public class DatabaseFileManager {
             database = db
             
         } catch {
-            fatalError("Unprocessed exception while opening database. Possibly hardware failure has corrupted the data on this device.")
+            Logger.fatalError("Unprocessed exception while opening database. Possibly hardware failure has corrupted the data on this device.")
         }
         return dbFile
     }
@@ -98,7 +98,7 @@ public class DatabaseFileManager {
     public func saveToFile(db: Database?) {
         do {
             guard let targetDatabase = db ?? database else {
-                fatalError("No database to save")
+                Logger.fatalError("No database to save")
             }
             let fileData = try targetDatabase.save()
             try fileData.write(to: kdbxAutofillURL, options: .atomic)

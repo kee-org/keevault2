@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 protocol DataCipher: AnyObject {
     var uuid: UUID { get }
@@ -48,7 +49,7 @@ extension DataCipher {
         if keySize < hashSize {
             return hash.prefix(keySize)
         } else {
-            fatalError("Not implemented")
+            Logger.fatalError("Not implemented")
         }
     }
 }
