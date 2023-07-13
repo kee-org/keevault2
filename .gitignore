@@ -54,3 +54,5 @@ ios/fastlane/.env.default
 ios/android/.env.default
 ios/Flutter/KeeVault-generated.xcconfig
 ios/fastlane/report.xml
+ios/Runner.app.dSYM.zip
+ios/Runner.ipa

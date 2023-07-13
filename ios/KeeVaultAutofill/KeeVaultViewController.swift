@@ -3,6 +3,7 @@ import AuthenticationServices
 import LocalAuthentication
 import KdbxSwift
 import DomainParser
+import os.log
 
 class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
     weak var selectionDelegate: EntrySelectionDelegate?
@@ -240,6 +241,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         guard let db = entry.database else {
             fatalError("Invalid entry found while saving new URL")
         }
+        Logger.mainLog.debug("saveUrlToEntry started")
         addUrlToEntry(entry, url)
         entry.setModified()
         dbFileManager.saveToFile(db: db)

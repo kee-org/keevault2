@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConvertible {
 
@@ -17,7 +18,7 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
             base.close()
         }
         
-        func read(count: Int) -> ByteArray? {
+        func read(count: Int) -> ByteArray? { // not sure how this works
             var out = [UInt8].init(repeating: 0, count: count)
 
             var bytesRead = 0
@@ -129,7 +130,9 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
     
     public var sha512: ByteArray {
         if sha512cache == nil {
+            Logger.mainLog.debug("calculating sha512 of \(String(describing: self.bytes), privacy: .public)")
             sha512cache = ByteArray(bytes: CryptoManager.sha512(of: bytes))
+            Logger.mainLog.debug("calculated sha512 as \(String(describing: self.sha512cache), privacy: .public)")
         }
         return sha512cache! 
     }
@@ -138,7 +141,7 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
     
     subscript (index: Int) -> UInt8 {
         get { return bytes[index] }
-        set { bytes[index] = newValue }
+     // Need to invalidate hash caches if we want this to be possible:   set { bytes[index] = newValue }
     }
     subscript (range: CountableRange<Int>) -> ByteArray {
         return ByteArray(bytes: self.bytes[range])
@@ -283,7 +286,9 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
     }
     
     public static func empty() -> ByteArray {
-        return ByteArray(bytes: [])
+        // Using [UInt8]() instead of [] in case this suffers from same Swift bug
+        // where after the first execution of the autofill extension, [1] becomes [0]
+        return ByteArray(bytes: [UInt8]())
     }
     
     public func append(_ value: UInt8) {

@@ -372,7 +372,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */,
+				8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser.git" */,
 				8BB2225928F6F27A00693094 /* XCRemoteSwiftPackageReference "PunycodeSwift" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -794,6 +794,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.keevault.keevault$(KEEVAULT_ID_SUFFIX).autofill";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "07b058a1-6ec6-4e76-bd78-2ceeafc552e1";
 				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc com.keevault.keevault.beta.autofill";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -892,6 +893,8 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.keevault.RunnerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "86548a63-176d-4ed6-b2b6-3311355e8c7c";
+				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc com.keevault.keevault.beta";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Runner;
@@ -1095,7 +1098,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.keevault.keevault$(KEEVAULT_ID_SUFFIX)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.keevault.keevault.beta";
+				PROVISIONING_PROFILE = "86548a63-176d-4ed6-b2b6-3311355e8c7c";
+				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc com.keevault.keevault.beta";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1148,7 +1152,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */ = {
+		8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Dashlane/SwiftDomainParser.git";
 			requirement = {
@@ -1173,7 +1177,7 @@
 		};
 		8BB2225728F5B39C00693094 /* DomainParser */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */;
+			package = 8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser.git" */;
 			productName = DomainParser;
 		};
 		8BB2225A28F6F27A00693094 /* Punnycode */ = {

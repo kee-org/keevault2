@@ -203,6 +203,7 @@ final class Header2: Eraseable {
     }
     
     init(database: Database2) {
+        Logger.mainLog.debug("DB header init")
         self.database = database
         initialized = false
         formatVersion = .v4
@@ -221,6 +222,7 @@ final class Header2: Eraseable {
     }
     
     func erase() {
+        Logger.mainLog.debug("DB header erase")
         initialized = false
         formatVersion = .v4
         data.erase()
@@ -303,12 +305,14 @@ final class Header2: Eraseable {
             return
         }
         
-        Logger.mainLog.error("Unsupported file version [version: \(fileVersion.asHexString)]")
+        Logger.mainLog.error("Unsupported file version [version: \(fileVersion.asHexString, privacy: .public)]")
         throw HeaderError.unsupportedFileVersion(actualVersion: fileVersion.asHexString)
     }
     
     func read(data inputData: ByteArray) throws {
-        assert(!initialized, "Tried to read already initialized header")
+        if (initialized) {
+            Logger.fatalError("Tried to read already initialized header")
+        }
         
         Logger.mainLog.trace("Will read header")
         var headerSize = 0 
@@ -431,18 +435,18 @@ final class Header2: Eraseable {
                 [.cipherID, .compressionFlags, .masterSeed, .encryptionIV, .kdfParameters]
         for fieldID in importantFields {
             guard let fieldData = fields[fieldID] else {
-                Logger.mainLog.error("\(fieldID.name) is missing")
+                Logger.mainLog.error("\(fieldID.name, privacy: .public) is missing")
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
             if fieldData.isEmpty {
-                Logger.mainLog.error("\(fieldID.name) is present, but empty")
+                Logger.mainLog.error("\(fieldID.name, privacy: .public) is present, but empty")
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
         }
         Logger.mainLog.trace("All important fields are OK")
         
         guard initialVector.count == dataCipher.initialVectorSize else {
-            Logger.mainLog.error("Initial vector size is inappropritate for the cipher [size: \(self.initialVector.count), cipher UUID: \(self.dataCipher.uuid)]")
+            Logger.mainLog.error("Initial vector size is inappropritate for the cipher [size: \(self.initialVector.count, privacy: .public), cipher UUID: \(self.dataCipher.uuid, privacy: .public)]")
             throw HeaderError.corruptedField(fieldName: FieldID.encryptionIV.name)
         }
     }
@@ -499,11 +503,11 @@ final class Header2: Eraseable {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let protectedStreamAlgorithm = ProtectedStreamAlgorithm(rawValue: rawID) else {
-                    Logger.mainLog.error("Unrecognized protected stream algorithm [rawID: \(rawID)]")
+                    Logger.mainLog.error("Unrecognized protected stream algorithm [rawID: \(rawID, privacy: .public)]")
                     throw HeaderError.unsupportedStreamCipher(id: rawID)
                 }
                 self.innerStreamAlgorithm = protectedStreamAlgorithm
-                Logger.mainLog.trace("\(fieldID.name) read OK [name: \(self.innerStreamAlgorithm.name)]")
+                Logger.mainLog.trace("\(fieldID.name) read OK [name: \(self.innerStreamAlgorithm.name, privacy: .public)]")
             case .innerRandomStreamKey:
                 guard fieldData.count > 0 else {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
@@ -519,7 +523,7 @@ final class Header2: Eraseable {
                     isCompressed: false,
                     isProtected: isProtected) 
                 database.binaries[newBinaryID] = binary
-                Logger.mainLog.trace("\(fieldID.name) read OK [size: \(fieldData.count) bytes]")
+                Logger.mainLog.trace("\(fieldID.name, privacy: .public) read OK [size: \(fieldData.count) bytes]")
             case .end:
                 initStreamCipher()
                 Logger.mainLog.trace("Stream cipher init OK")

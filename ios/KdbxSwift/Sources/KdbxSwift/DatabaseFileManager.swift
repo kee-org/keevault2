@@ -33,6 +33,7 @@ public class DatabaseFileManager {
         sharedGroupName: String,
         sharedDefaults: UserDefaults
     ) {
+        Logger.mainLog.debug("DatabaseFileManager.init started")
         self.preTransformedKeyMaterial = preTransformedKeyMaterial.clone()
         self.status = status
         
@@ -59,16 +60,20 @@ public class DatabaseFileManager {
         do {
             let autofillFileData = try ByteArray(contentsOf: kdbxAutofillURL, options: [.uncached, .mappedIfSafe])
             fileData = autofillFileData
+            Logger.mainLog.debug("Loaded autofill KDBX")
         } catch {
             Logger.mainLog.info("Autofill file not found. Expected unless recent changes have been made via autofill and main app not opened yet.")
             do {
                     fileData = try ByteArray(contentsOf: kdbxCurrentURL, options: [.uncached, .mappedIfSafe])
+                Logger.mainLog.debug("Loaded main KDBX")
                 
             } catch {
                 Logger.mainLog.error("Failed to read current KDBX file [message: \(error.localizedDescription)]")
                 Logger.fatalError("couldn't read KDBX file")
             }
         }
+        
+        Logger.mainLog.debug("fileData count: \(fileData.count)");
         
         guard let db = initDatabase(signature: fileData) else {
             Logger.fatalError("database init failed")
@@ -97,6 +102,7 @@ public class DatabaseFileManager {
     
     public func saveToFile(db: Database?) {
         do {
+            Logger.mainLog.debug("Saving to autofill KDBX")
             guard let targetDatabase = db ?? database else {
                 Logger.fatalError("No database to save")
             }

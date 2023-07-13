@@ -102,6 +102,7 @@ public class Database2: Database {
     private let _keyHelper = KeyHelper2()
     
     override public init() {
+        Logger.mainLog.debug("Database2 init")
         super.init()
         header = Header2(database: self)
         meta = Meta2(database: self)
@@ -155,7 +156,7 @@ public class Database2: Database {
         Logger.mainLog.info("Loading KDBX database")
         do {
             try header.read(data: dbFileData) 
-            Logger.mainLog.debug("Header read OK [format: \(self.header.formatVersion)]")
+            Logger.mainLog.debug("Header read OK [format: \(self.header.formatVersion, privacy: .public)]")
             importMasterKey(preTransformedKeyMaterial: preTransformedKeyMaterial, cipher: header.dataCipher)
             var decryptedData: ByteArray
             let dbWithoutHeader: ByteArray = dbFileData.suffix(from: header.size)
@@ -407,22 +408,59 @@ public class Database2: Database {
     
     func importMasterKey(preTransformedKeyMaterial: ByteArray, cipher: DataCipher) {
         
+        //TODO: hack
+        Logger.mainLog.error("preTransformedKeyMaterial: \(String(describing: preTransformedKeyMaterial), privacy: .public)")
+        
         // Have to do this or change CompositeKey class to support importing directly
         compositeKey = CompositeKey(staticComponents: preTransformedKeyMaterial)
         
         let secureMasterSeed = header.masterSeed.clone()
+        Logger.mainLog.error("secureMasterSeed: \(String(describing: secureMasterSeed), privacy: .public)")
         let joinedKey = ByteArray.concat(secureMasterSeed, preTransformedKeyMaterial)
+        Logger.mainLog.error("joinedKey: \(String(describing: joinedKey), privacy: .public)")
         self.cipherKey = cipher.resizeKey(key: joinedKey)
-        let one = ByteArray(bytes: [1])
+        Logger.mainLog.error("cipherKey: \(String(describing: self.cipherKey), privacy: .public)")
+        Logger.mainLog.error("cipherKeydone")
+        var oneBytes = [UInt8]()
+        Logger.mainLog.error("onebytes")
+        oneBytes.append(1)
+        Logger.mainLog.error("onebytesassigned")
+        Logger.mainLog.error("oneBytes: \(String(describing: oneBytes), privacy: .public)")
+        let one = ByteArray(bytes: oneBytes)
         self.hmacKey = ByteArray.concat(joinedKey, one).sha512
+//
+//        Logger.mainLog.error("one: \(String(describing: one), privacy: .public)")
+//
+//        // everything is identical up till now. somehow next line produces different results 2nd time around
+//
+//
+//        let temp = ByteArray.concat(joinedKey, one)
+//        Logger.mainLog.error("temp: \(String(describing: temp), privacy: .public)")
+//
+//        self.hmacKey = temp.sha512 // hmac set here
+//        Logger.mainLog.error("hmacKey: \(String(describing: self.hmacKey), privacy: .public)")
         compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
     
-    func rederiveMasterKey(key: CompositeKey, cipher: DataCipher) {
+    func rederiveMasterKey(key: CompositeKey, cipher: DataCipher) { // is only called upon Save
         let secureMasterSeed = header.masterSeed.clone()
         let joinedKey = ByteArray.concat(secureMasterSeed, key.combinedStaticComponents!)
         self.cipherKey = cipher.resizeKey(key: joinedKey)
-        let one = ByteArray(bytes: [1])
+        
+        var oneBytes = [UInt8]()
+        oneBytes.append(1)
+        let one = ByteArray(bytes: oneBytes)
+        // SOMEHOW, when Swift evaluates this array literal assignment for the 2nd time, it decides to use 0 instead of 1 for
+        // the value it initialises with. Thus, it is critical that the hacky workaround above remain in place and no
+        // seemingly innocuous change like the below is allowed to be made, at least until a version of Swift >5.7
+        // resolves the bug or some deeper workaround in the ByteArray initialiser is made possible.
+        // Theory: [1] is syntactic sugar for a let declaration of a new array and thus the optimiser determines that
+        // it can never be mutated. Therefore when we actually do mutate it as part of the empty() memory sanitation
+        // step at the end of the first run through the autofill extension, we end up modifying something that the
+        // compiler has reasonably determiend will never change and thus can be re-used safely in future. Creating
+        // oneBytes as a var ensures this optimisation is not performed.
+        //let one = ByteArray(bytes: [1])
+        
         self.hmacKey = ByteArray.concat(joinedKey, one).sha512
         compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
