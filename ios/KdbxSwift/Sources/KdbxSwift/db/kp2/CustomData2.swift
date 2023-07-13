@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class CustomData2: Eraseable {
     
@@ -57,7 +58,7 @@ public class CustomData2: Eraseable {
         xmlParentName: String
     ) throws {
         assert(xml.name == Xml2.customData)
-        Diag.verbose("Loading XML: custom data")
+        Logger.mainLog.trace("Loading XML: custom data")
         erase()
         for tag in xml.children {
             switch tag.name {
@@ -68,9 +69,9 @@ public class CustomData2: Eraseable {
                     timeParser: timeParser,
                     xmlParentName: xmlParentName
                 )
-                Diag.verbose("Item loaded OK")
+                Logger.mainLog.trace("Item loaded OK")
             default:
-                Diag.error("Unexpected XML tag in CustomData: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in CustomData: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(
                     actual: tag.name,
                     expected: xmlParentName + "/CustomData/*")
@@ -97,20 +98,20 @@ public class CustomData2: Eraseable {
             case Xml2.lastModificationTime:
                 optionalTimestamp = timeParser.xmlStringToDate(tag.value)
             default:
-                Diag.error("Unexpected XML tag in CustomData/Item: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in CustomData/Item: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(
                     actual: tag.name,
                     expected: xmlParentName + "/CustomData/Item/*")
             }
         }
         guard let _key = key else {
-            Diag.error("Missing \(xmlParentName)/CustomData/Item/Key")
+            Logger.mainLog.error("Missing \(xmlParentName)/CustomData/Item/Key")
             throw Xml2.ParsingError.malformedValue(
                 tag: xmlParentName + "/CustomData/Item/Key",
                 value: nil)
         }
         guard let _value = value else {
-            Diag.error("Missing \(xmlParentName)/CustomData/Item/Value")
+            Logger.mainLog.error("Missing \(xmlParentName)/CustomData/Item/Value")
             throw Xml2.ParsingError.malformedValue(
                 tag: xmlParentName + "/CustomData/Item/Value",
                 value: nil)
@@ -120,7 +121,7 @@ public class CustomData2: Eraseable {
     
     
     func toXml(timeFormatter: Database2XMLTimeFormatter) -> AEXMLElement {
-        Diag.verbose("Generating XML: custom data")
+        Logger.mainLog.trace("Generating XML: custom data")
         let xml = AEXMLElement(name: Xml2.customData)
         if dict.isEmpty {
             return xml

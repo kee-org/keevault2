@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 final class Meta2: Eraseable {
     public static let generatorName = "Kee Vault 2" 
@@ -23,7 +24,7 @@ final class Meta2: Eraseable {
         
         mutating func load(xml: AEXMLElement) throws {
             assert(xml.name == Xml2.memoryProtection)
-            Diag.verbose("Loading XML: memory protection")
+            Logger.mainLog.trace("Loading XML: memory protection")
             
             erase()
             for tag in xml.children {
@@ -39,7 +40,7 @@ final class Meta2: Eraseable {
                 case Xml2.protectNotes:
                     isProtectNotes = Bool(string: tag.value)
                 default:
-                    Diag.error("Unexpected XML tag in Meta/MemoryProtection: \(tag.name)")
+                    Logger.mainLog.error("Unexpected XML tag in Meta/MemoryProtection: \(tag.name)")
                     throw Xml2.ParsingError.unexpectedTag(
                         actual: tag.name,
                         expected: "Meta/MemoryProtection/*")
@@ -48,7 +49,7 @@ final class Meta2: Eraseable {
         }
         
         func toXml() -> AEXMLElement {
-            Diag.verbose("Generating XML: memory protection")
+            Logger.mainLog.trace("Generating XML: memory protection")
             let xmlMP = AEXMLElement(name: Xml2.memoryProtection)
             xmlMP.addChild(
                 name: Xml2.protectTitle,
@@ -174,22 +175,22 @@ final class Meta2: Eraseable {
         timeParser: Database2XMLTimeParser
     ) throws {
         assert(xml.name == Xml2.meta)
-        Diag.verbose("Loading XML: meta")
+        Logger.mainLog.trace("Loading XML: meta")
         erase()
         
         for tag in xml.children {
             switch tag.name {
             case Xml2.generator:
                 self.generator = tag.value ?? ""
-                Diag.info("Database was last edited by: \(generator)")
+                Logger.mainLog.info("Database was last edited by: \(self.generator, privacy: .public)")
             case Xml2.settingsChanged: 
                 guard formatVersion >= .v4 else {
-                    Diag.error("Found \(tag.name) tag in non-V4 database")
+                    Logger.mainLog.error("Found \(tag.name, privacy: .public) tag in non-V4 database")
                     throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: nil)
                 }
                 self.settingsChangedTime = timeParser.xmlStringToDate(tag.value) ?? Date.now
             case Xml2.headerHash:
-                    Diag.warning("Found \(tag.name) tag in non-V3 database. Ignoring")
+                    Logger.mainLog.warning("Found \(tag.name, privacy: .public) tag in non-V3 database. Ignoring")
                     continue
             case Xml2.databaseName:
                 self.databaseName = tag.value ?? ""
@@ -219,10 +220,10 @@ final class Meta2: Eraseable {
                 self.masterKeyChangeForceOnce = Bool(string: tag.value)
             case Xml2.memoryProtection:
                 try memoryProtection.load(xml: tag)
-                Diag.verbose("Memory protection loaded OK")
+                Logger.mainLog.trace("Memory protection loaded OK")
             case Xml2.customIcons:
                 try loadCustomIcons(xml: tag, timeParser: timeParser)
-                Diag.verbose("Custom icons loaded OK [count: \(customIcons.count)]")
+                Logger.mainLog.trace("Custom icons loaded OK [count: \(self.customIcons.count, privacy: .public)]")
             case Xml2.recycleBinEnabled:
                 self.isRecycleBinEnabled = Bool(string: tag.value)
             case Xml2.recycleBinUUID:
@@ -244,7 +245,7 @@ final class Meta2: Eraseable {
                 self.lastTopVisibleGroupUUID = UUID(base64Encoded: tag.value) ?? UUID.ZERO
             case Xml2.binaries:
                 try loadBinaries(xml: tag, formatVersion: formatVersion, streamCipher: streamCipher)
-                Diag.verbose("Binaries loaded OK [count: \(database.binaries.count)]")
+                Logger.mainLog.trace("Binaries loaded OK [count: \(self.database.binaries.count, privacy: .public)]")
             case Xml2.customData:
                 try customData.load(
                     xml: tag,
@@ -252,9 +253,9 @@ final class Meta2: Eraseable {
                     timeParser: timeParser,
                     xmlParentName: "Meta"
                 ) 
-                Diag.verbose("Custom data loaded OK [count: \(customData.count)]")
+                Logger.mainLog.trace("Custom data loaded OK [count: \(self.customData.count, privacy: .public)]")
             default:
-                Diag.error("Unexpected XML tag in Meta: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Meta: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Meta/*")
             }
         }
@@ -262,16 +263,16 @@ final class Meta2: Eraseable {
     
     func loadCustomIcons(xml: AEXMLElement, timeParser: Database2XMLTimeParser) throws {
         assert(xml.name == Xml2.customIcons)
-        Diag.verbose("Loading XML: custom icons")
+        Logger.mainLog.trace("Loading XML: custom icons")
         for tag in xml.children {
             switch tag.name {
             case Xml2.icon:
                 let icon = CustomIcon2()
                 try icon.load(xml: tag, timeParser: timeParser) 
                 customIcons.append(icon)
-                Diag.verbose("Custom icon loaded OK")
+                Logger.mainLog.trace("Custom icon loaded OK")
             default:
-                Diag.error("Unexpected XML tag in Meta/CustomIcons: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Meta/CustomIcons: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(
                     actual: tag.name,
                     expected: "Meta/CustomIcons/*")
@@ -286,10 +287,10 @@ final class Meta2: Eraseable {
     ) throws {
         assert(xml.name == Xml2.binaries)
             if let tag = xml.children.first {
-                Diag.error("Unexpected XML content in V4 Meta/Binaries: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML content in V4 Meta/Binaries: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: nil)
             } else {
-                Diag.warning("Found empty Meta/Binaries in a V4 database, ignoring.")
+                Logger.mainLog.warning("Found empty Meta/Binaries in a V4 database, ignoring.")
             }
             return
     }
@@ -325,7 +326,7 @@ final class Meta2: Eraseable {
         formatVersion: Database2.FormatVersion,
         timeFormatter: Database2XMLTimeFormatter
     ) throws -> AEXMLElement {
-        Diag.verbose("Generating XML: meta")
+        Logger.mainLog.trace("Generating XML: meta")
         let xmlMeta = AEXMLElement(name: Xml2.meta)
         xmlMeta.addChild(name: Xml2.generator, value: Meta2.generatorName)
         
@@ -429,10 +430,10 @@ final class Meta2: Eraseable {
     
     internal func binariesToXml(streamCipher: StreamCipher) throws -> AEXMLElement? {
         if database.binaries.isEmpty {
-            Diag.verbose("No binaries in Meta")
+            Logger.mainLog.trace("No binaries in Meta")
             return nil
         } else {
-            Diag.verbose("Generating XML: meta binaries")
+            Logger.mainLog.trace("Generating XML: meta binaries")
             let xmlBinaries = AEXMLElement(name: Xml2.binaries)
             for binaryID in database.binaries.keys.sorted() {
                 let binary = database.binaries[binaryID]! 

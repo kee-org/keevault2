@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class CustomIcon2: Eraseable {
     public private(set) var uuid: UUID
@@ -54,7 +55,7 @@ public class CustomIcon2: Eraseable {
     
     func load(xml: AEXMLElement, timeParser: Database2XMLTimeParser) throws {
         assert(xml.name == Xml2.icon)
-        Diag.verbose("Loading XML: custom icon")
+        Logger.mainLog.trace("Loading XML: custom icon")
         
         erase()
         var xmlUUID: UUID?
@@ -72,16 +73,16 @@ public class CustomIcon2: Eraseable {
             case Xml2.lastModificationTime:
                 xmlLastModificationTime = timeParser.xmlStringToDate(tag.value)
             default:
-                Diag.error("Unexpected XML tag in CustomIcon: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in CustomIcon: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "CustomIcon/*")
             }
         }
         if xmlUUID == nil {
-            Diag.warning("Missing CustomIcon/UUID. Will generate a new one.")
+            Logger.mainLog.warning("Missing CustomIcon/UUID. Will generate a new one.")
         }
         let _uuid = xmlUUID ?? UUID()
         guard let _data = xmlData else {
-            Diag.error("Missing CustomIcon/Data")
+            Logger.mainLog.error("Missing CustomIcon/Data")
             throw Xml2.ParsingError.malformedValue(tag: "CustomIcon/Data", value: nil)
         }
         self.uuid = _uuid
@@ -94,7 +95,7 @@ public class CustomIcon2: Eraseable {
         formatVersion: Database2.FormatVersion,
         timeFormatter: Database2XMLTimeFormatter
     ) -> AEXMLElement {
-        Diag.verbose("Generating XML: custom icon")
+        Logger.mainLog.trace("Generating XML: custom icon")
         let xmlIcon = AEXMLElement(name: Xml2.icon)
         xmlIcon.addChild(name: Xml2.uuid, value: uuid.base64EncodedString())
         xmlIcon.addChild(name: Xml2.data, value: data.base64EncodedString())

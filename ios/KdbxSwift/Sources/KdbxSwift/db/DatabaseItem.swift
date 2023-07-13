@@ -1,3 +1,5 @@
+import os.log
+
 open class DatabaseItem {
     public enum TouchMode {
         case accessed
@@ -18,6 +20,6 @@ open class DatabaseItem {
     }
     
     public func touch(_ mode: TouchMode, updateParents: Bool = true) {
-        fatalError("Pure abstract method")
+        Logger.fatalError("Pure abstract method")
     }
 }

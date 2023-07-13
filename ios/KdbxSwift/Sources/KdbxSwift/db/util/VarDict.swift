@@ -59,9 +59,11 @@ public class VarDict: Eraseable {
             self.type = type
             self.data = data
         }
-        init(value: Bool) {
-            self.init(type: .Bool, data: ByteArray(bytes: [value ? 1 : 0]))
-        }
+// Below may suffer from same bug where 0 == 1 in Database2 deriveMasterKey when array
+// literal is assigned to a new ByteArray so thoroughly test before using!
+//        init(value: Bool) {
+//            self.init(type: .Bool, data: ByteArray(bytes: [value ? 1 : 0]))
+//        }
         init(value: UInt32) {
             self.init(type: .UInt32, data: value.data)
         }

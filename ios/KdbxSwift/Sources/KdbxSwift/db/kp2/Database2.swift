@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 protocol Database2XMLTimeFormatter {
     func dateToXMLString(_ date: Date) -> String
@@ -101,6 +102,7 @@ public class Database2: Database {
     private let _keyHelper = KeyHelper2()
     
     override public init() {
+        Logger.mainLog.debug("Database2 init")
         super.init()
         header = Header2(database: self)
         meta = Meta2(database: self)
@@ -118,7 +120,7 @@ public class Database2: Database {
         hmacKey.erase()
         deletedObjects.removeAll()
         super.erase()
-        Diag.debug("DB memory cleaned up")
+        Logger.mainLog.debug("DB memory cleaned up")
     }
     
     internal static func makeNewV4() -> Database2 {
@@ -151,10 +153,10 @@ public class Database2: Database {
         dbFileData: ByteArray,
         preTransformedKeyMaterial: ByteArray
     ) throws {
-        Diag.info("Loading KDBX database")
+        Logger.mainLog.info("Loading KDBX database")
         do {
             try header.read(data: dbFileData) 
-            Diag.debug("Header read OK [format: \(header.formatVersion)]")
+            Logger.mainLog.debug("Header read OK [format: \(self.header.formatVersion, privacy: .public)]")
             importMasterKey(preTransformedKeyMaterial: preTransformedKeyMaterial, cipher: header.dataCipher)
             var decryptedData: ByteArray
             let dbWithoutHeader: ByteArray = dbFileData.suffix(from: header.size)
@@ -162,13 +164,13 @@ public class Database2: Database {
             decryptedData = try decryptBlocksV4(
                 data: dbWithoutHeader,
                 cipher: header.dataCipher)
-            Diag.debug("Block decryption OK")
+            Logger.mainLog.debug("Block decryption OK")
             
             if header.isCompressed {
-                Diag.debug("Inflating Gzip data")
+                Logger.mainLog.debug("Inflating Gzip data")
                 decryptedData = try decryptedData.gunzipped() 
             } else {
-                Diag.debug("Data not compressed")
+                Logger.mainLog.debug("Data not compressed")
             }
             
             var xmlData: ByteArray
@@ -176,7 +178,7 @@ public class Database2: Database {
             case .v4, .v4_1:
                 let innerHeaderSize = try header.readInner(data: decryptedData) 
                 xmlData = decryptedData.suffix(from: innerHeaderSize)
-                Diag.debug("Inner header read OK")
+                Logger.mainLog.debug("Inner header read OK")
             }
             
             try load(xmlData: xmlData, timeParser: self)
@@ -201,7 +203,7 @@ public class Database2: Database {
                 allEntries: allEntriesPlusHistory
             )
             
-            Diag.debug("Content loaded OK")
+            Logger.mainLog.debug("Content loaded OK")
         } catch is Header2.HeaderError {
             throw DatabaseError.loadError(
                 reason: "load error"
@@ -221,7 +223,7 @@ public class Database2: Database {
     }
     
     func decryptBlocksV4(data: ByteArray, cipher: DataCipher) throws -> ByteArray {
-        Diag.debug("Decrypting V4 blocks")
+        Logger.mainLog.debug("Decrypting V4 blocks")
         let inStream = data.asInputStream()
         inStream.open()
         defer { inStream.close() }
@@ -230,7 +232,7 @@ public class Database2: Database {
             throw FormatError.prematureDataEnd
         }
         guard header.hash == storedHash else {
-            Diag.error("Header hash mismatch. Database corrupted?")
+            Logger.mainLog.error("Header hash mismatch. Database corrupted?")
             throw Header2.HeaderError.hashMismatch
         }
         
@@ -239,11 +241,11 @@ public class Database2: Database {
             throw FormatError.prematureDataEnd
         }
         guard headerHMAC == storedHMAC else {
-            Diag.error("Header HMAC mismatch. Invalid master key?")
+            Logger.mainLog.error("Header HMAC mismatch. Invalid master key?")
             throw DatabaseError.invalidKey
         }
         
-        Diag.verbose("Reading blocks")
+        Logger.mainLog.trace("Reading blocks")
         let blockBytesCount = data.count - storedHash.count - storedHMAC.count
         let allBlocksData = ByteArray(capacity: blockBytesCount)
         
@@ -269,7 +271,7 @@ public class Database2: Database {
             let dataForHMAC = ByteArray.concat(blockIndex.data, blockSize.data, blockData)
             let blockHMAC = CryptoManager.hmacSHA256(data: dataForHMAC, key: blockKey)
             guard blockHMAC == storedBlockHMAC else {
-                Diag.error("Block HMAC mismatch")
+                Logger.mainLog.error("Block HMAC mismatch")
                 throw FormatError.blockHMACMismatch(blockIndex: Int(blockIndex))
             }
             
@@ -279,7 +281,7 @@ public class Database2: Database {
             blockIndex += 1
         }
         
-        Diag.verbose("Will decrypt \(allBlocksData.count) bytes")
+        Logger.mainLog.trace("Will decrypt \(allBlocksData.count) bytes")
         
 #if DEBUG
         print("hmacKey plain: \(hmacKey.asHexString)")
@@ -294,7 +296,7 @@ public class Database2: Database {
             key: cipherKey,
             iv: header.initialVector
         ) 
-        Diag.verbose("Decrypted \(decryptedData.count) bytes")
+        Logger.mainLog.trace("Decrypted \(decryptedData.count) bytes")
         
         return decryptedData
     }
@@ -308,14 +310,14 @@ public class Database2: Database {
         parsingOptions.documentHeader.standalone = "yes"
         parsingOptions.parserSettings.shouldTrimWhitespace = false
         do {
-            Diag.debug("Parsing XML")
+            Logger.mainLog.debug("Parsing XML")
             let xmlDoc = try AEXMLDocument(xml: xmlData.asData, options: parsingOptions)
             if let xmlError = xmlDoc.error {
-                Diag.error("Cannot parse XML: \(xmlError.localizedDescription)")
+                Logger.mainLog.error("Cannot parse XML: \(xmlError.localizedDescription)")
                 throw Xml2.ParsingError.xmlError(details: xmlError.localizedDescription)
             }
             guard xmlDoc.root.name == Xml2.keePassFile else {
-                Diag.error("Not a KeePass XML document [xmlRoot: \(xmlDoc.root.name)]")
+                Logger.mainLog.error("Not a KeePass XML document [xmlRoot: \(xmlDoc.root.name)]")
                 throw Xml2.ParsingError.notKeePassDocument
             }
             
@@ -333,32 +335,32 @@ public class Database2: Database {
                     ) 
                     
                     if meta.headerHash != nil && (header.hash != meta.headerHash!) {
-                        Diag.error("kdbx3 meta meta hash mismatch")
+                        Logger.mainLog.error("kdbx3 meta meta hash mismatch")
                         throw Header2.HeaderError.hashMismatch
                     }
-                    Diag.verbose("Meta loaded OK")
+                    Logger.mainLog.trace("Meta loaded OK")
                 case Xml2.root:
                     try loadRoot(
                         xml: tag,
                         root: rootGroup,
                         timeParser: timeParser
                     ) 
-                    Diag.verbose("XML root loaded OK")
+                    Logger.mainLog.trace("XML root loaded OK")
                 default:
                     throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "KeePassFile/*")
                 }
             }
             
             self.root = rootGroup
-            Diag.debug("XML content loaded OK")
+            Logger.mainLog.debug("XML content loaded OK")
         } catch let error as Header2.HeaderError {
-            Diag.error("Header error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("Header error [reason: \(error.localizedDescription)]")
             throw FormatError.parsingError(reason: error.localizedDescription)
         } catch let error as Xml2.ParsingError {
-            Diag.error("XML parsing error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("XML parsing error [reason: \(error.localizedDescription)]")
             throw FormatError.parsingError(reason: error.localizedDescription)
         } catch let error as AEXMLError {
-            Diag.error("Raw XML parsing error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("Raw XML parsing error [reason: \(error.localizedDescription)]")
             throw FormatError.parsingError(reason: error.localizedDescription)
         }
     }
@@ -369,7 +371,7 @@ public class Database2: Database {
         timeParser: Database2XMLTimeParser
     ) throws {
         assert(xml.name == Xml2.root)
-        Diag.debug("Loading XML root")
+        Logger.mainLog.debug("Loading XML root")
         for tag in xml.children {
             switch tag.name {
             case Xml2.group:
@@ -412,7 +414,21 @@ public class Database2: Database {
         let secureMasterSeed = header.masterSeed.clone()
         let joinedKey = ByteArray.concat(secureMasterSeed, preTransformedKeyMaterial)
         self.cipherKey = cipher.resizeKey(key: joinedKey)
-        let one = ByteArray(bytes: [1])
+
+        var oneBytes = [UInt8]()
+        oneBytes.append(1)
+        let one = ByteArray(bytes: oneBytes)
+        // SOMEHOW, when Swift evaluates this array literal assignment for the 2nd time, it decides to use 0 instead of 1 for
+        // the value it initialises with. Thus, it is critical that the hacky workaround above remain in place and no
+        // seemingly innocuous change like below is allowed to be made, at least until a version of Swift >5.7
+        // resolves the bug or some deeper workaround in the ByteArray initialiser is made possible.
+        // Theory: [1] is syntactic sugar for a let declaration of a new array and thus the optimiser determines that
+        // it can never be mutated. Therefore when we actually do mutate it as part of the empty() memory sanitation
+        // step at the end of the first run through the autofill extension, we end up modifying something that the
+        // compiler has reasonably determined will never change and thus can be re-used safely in future. Creating
+        // oneBytes as a var ensures this optimisation is not performed.
+        //let one = ByteArray(bytes: [1])
+        
         self.hmacKey = ByteArray.concat(joinedKey, one).sha512
         compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
@@ -421,7 +437,13 @@ public class Database2: Database {
         let secureMasterSeed = header.masterSeed.clone()
         let joinedKey = ByteArray.concat(secureMasterSeed, key.combinedStaticComponents!)
         self.cipherKey = cipher.resizeKey(key: joinedKey)
-        let one = ByteArray(bytes: [1])
+        
+        var oneBytes = [UInt8]()
+        oneBytes.append(1)
+        let one = ByteArray(bytes: oneBytes)
+        // See importMasterKey before changing this function
+        //let one = ByteArray(bytes: [1])
+        
         self.hmacKey = ByteArray.concat(joinedKey, one).sha512
         compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
@@ -435,19 +457,19 @@ public class Database2: Database {
     override public func getBackupGroup(createIfMissing: Bool) -> Group? {
         assert(root != nil)
         if !meta.isRecycleBinEnabled {
-            Diag.verbose("RecycleBin disabled in Meta")
+            Logger.mainLog.trace("RecycleBin disabled in Meta")
             return nil
         }
         
         guard let root = root else {
-            Diag.warning("Tried to get RecycleBin group without the root one")
+            Logger.mainLog.warning("Tried to get RecycleBin group without the root one")
             assertionFailure()
             return nil
         }
         
         if meta.recycleBinGroupUUID != UUID.ZERO {
             if let backupGroup = root.findGroup(byUUID: meta.recycleBinGroupUUID) {
-                Diag.verbose("RecycleBin group found")
+                Logger.mainLog.trace("RecycleBin group found")
                 return backupGroup
             }
         }
@@ -458,15 +480,15 @@ public class Database2: Database {
             backupGroup.isDeleted = true
             backupGroup.isSearchingEnabled = false
             backupGroup.isAutoTypeEnabled = false
-            Diag.verbose("RecycleBin group created")
+            Logger.mainLog.trace("RecycleBin group created")
             return backupGroup
         }
-        Diag.verbose("RecycleBin group not found nor created.")
+        Logger.mainLog.trace("RecycleBin group not found nor created.")
         return nil
     }
     
     private func updateBinaries(root: Group2) {
-        Diag.verbose("Updating all binaries")
+        Logger.mainLog.trace("Updating all binaries")
         var allEntries = [Entry2]() as [Entry]
         root.collectAllEntries(to: &allEntries)
         
@@ -532,19 +554,19 @@ public class Database2: Database {
     }
     
     override public func save() throws -> ByteArray {
-        Diag.info("Saving KDBX database")
+        Logger.mainLog.info("Saving KDBX database")
         assert(root != nil, "Load or create a DB before saving.")
         
         header.maybeUpdateFormatVersion()
         let formatVersion = header.formatVersion
-        Diag.debug("Format version: \(formatVersion)")
+        Logger.mainLog.debug("Format version: \(formatVersion)")
         do {
             try header.randomizeSeeds() 
-            Diag.debug("Seeds randomized OK")
+            Logger.mainLog.debug("Seeds randomized OK")
             rederiveMasterKey(
                 key: compositeKey,
                 cipher: header.dataCipher)
-            Diag.debug("Key derivation OK")
+            Logger.mainLog.debug("Key derivation OK")
         } catch let error as CryptoError {
             throw DatabaseError.saveError(reason: error.localizedDescription)
         } catch is KeyFileError {
@@ -552,7 +574,7 @@ public class Database2: Database {
         }
         
         updateBinaries(root: root! as! Group2)
-        Diag.verbose("Binaries updated OK")
+        Logger.mainLog.trace("Binaries updated OK")
         
         let outStream = ByteArray.makeOutputStream()
         outStream.open()
@@ -563,10 +585,10 @@ public class Database2: Database {
         meta.headerHash = header.hash
         let xmlString = try self.toXml(timeFormatter: self).xml 
         let xmlData = ByteArray(utf8String: xmlString)
-        Diag.debug("XML generation OK")
+        Logger.mainLog.debug("XML generation OK")
         
         try encryptBlocksV4(to: outStream, xmlData: xmlData)
-        Diag.debug("Content encryption OK")
+        Logger.mainLog.debug("Content encryption OK")
         
         var allEntries = [Entry]()
         root?.collectAllEntries(to: &allEntries)
@@ -578,7 +600,7 @@ public class Database2: Database {
     }
     
     internal func encryptBlocksV4(to outStream: ByteArray.OutputStream, xmlData: ByteArray) throws {
-        Diag.debug("Encrypting kdbx4 blocks")
+        Logger.mainLog.debug("Encrypting kdbx4 blocks")
         outStream.write(data: header.hash)
         outStream.write(data: header.getHMAC(key: hmacKey))
         
@@ -588,32 +610,32 @@ public class Database2: Database {
         
         do {
             try header.writeInner(to: contentStream) 
-            Diag.verbose("Header written OK")
+            Logger.mainLog.trace("Header written OK")
             contentStream.write(data: xmlData)
-            guard let contentData = contentStream.data else { fatalError() }
+            guard let contentData = contentStream.data else { Logger.fatalError("Failed to get data from contentStream") }
             
             var dataToEncrypt = contentData
             if header.isCompressed {
                 dataToEncrypt = try contentData.gzipped()
-                Diag.verbose("Gzip compression OK")
+                Logger.mainLog.trace("Gzip compression OK")
             } else {
-                Diag.verbose("No compression required")
+                Logger.mainLog.trace("No compression required")
             }
             
-            Diag.verbose("Encrypting \(dataToEncrypt.count) bytes")
+            Logger.mainLog.trace("Encrypting \(dataToEncrypt.count) bytes")
             let encData = try header.dataCipher.encrypt(
                 plainText: dataToEncrypt,
                 key: cipherKey,
                 iv: header.initialVector.clone())
-            Diag.verbose("Encrypted \(encData.count) bytes")
+            Logger.mainLog.trace("Encrypted \(encData.count) bytes")
             
             try writeAsBlocksV4(to: outStream, data: encData) 
-            Diag.verbose("Blocks written OK")
+            Logger.mainLog.trace("Blocks written OK")
         } catch let error as Header2.HeaderError {
-            Diag.error("Header error [message: \(error.localizedDescription)]")
+            Logger.mainLog.error("Header error [message: \(error.localizedDescription)]")
             throw DatabaseError.saveError(reason: error.localizedDescription)
         } catch let error as GzipError {
-            Diag.error("Gzip error [kind: \(error.kind), message: \(error.message)]")
+            Logger.mainLog.error("Gzip error [kind: \(String(describing: error.kind)), message: \(error.message)]")
             let errMsg = String.localizedStringWithFormat(
                 NSLocalizedString(
                     "[Database2/Saving/Error] Data compression error: %@",
@@ -623,7 +645,7 @@ public class Database2: Database {
                 error.localizedDescription)
             throw DatabaseError.saveError(reason: errMsg)
         } catch let error as CryptoError {
-            Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("Crypto error [reason: \(error.localizedDescription)]")
             let errMsg = String.localizedStringWithFormat(
                 NSLocalizedString(
                     "[Database2/Saving/Error] Encryption error: %@",
@@ -636,12 +658,12 @@ public class Database2: Database {
     }
     
     internal func writeAsBlocksV4(to blockStream: ByteArray.OutputStream, data: ByteArray) throws {
-        Diag.debug("Writing kdbx4 blocks")
+        Logger.mainLog.debug("Writing kdbx4 blocks")
         let defaultBlockSize  = 1024 * 1024 
         var blockStart: Int = 0
         var blockIndex: UInt64 = 0
         
-        Diag.verbose("\(data.count) bytes to write")
+        Logger.mainLog.trace("\(data.count) bytes to write")
         while blockStart != data.count {
             let blockSize = min(defaultBlockSize, data.count - blockStart)
             let blockData = data[blockStart..<blockStart+blockSize]
@@ -665,7 +687,7 @@ public class Database2: Database {
     }
     
     func toXml(timeFormatter: Database2XMLTimeFormatter) throws -> AEXMLDocument {
-        Diag.debug("Will generate XML")
+        Logger.mainLog.debug("Will generate XML")
         var options = AEXMLOptions()
         options.documentHeader.encoding = "utf-8"
         options.documentHeader.standalone = "yes"
@@ -680,7 +702,7 @@ public class Database2: Database {
                 timeFormatter: timeFormatter
             )
         ) 
-        Diag.verbose("XML generation: Meta OK")
+        Logger.mainLog.trace("XML generation: Meta OK")
         
         let xmlRoot = xmlMain.addChild(name: Xml2.root)
         let root2 = root! as! Group2
@@ -690,7 +712,7 @@ public class Database2: Database {
             timeFormatter: timeFormatter
         ) 
         xmlRoot.addChild(rootXML)
-        Diag.verbose("XML generation: Root group OK")
+        Logger.mainLog.trace("XML generation: Root group OK")
         
         let xmlDeletedObjects = xmlRoot.addChild(name: Xml2.deletedObjects)
         for deletedObject in deletedObjects {
@@ -719,9 +741,9 @@ public class Database2: Database {
     }
     
     override public func delete(group: Group) {
-        guard let group = group as? Group2 else { fatalError() }
+        guard let group = group as? Group2 else { Logger.fatalError("Cannot delete group: not a Group") }
         guard let parentGroup = group.parent else {
-            Diag.warning("Cannot delete group: no parent group")
+            Logger.mainLog.warning("Cannot delete group: no parent group")
             return
         }
         
@@ -731,7 +753,7 @@ public class Database2: Database {
         
         let moveOnly = !group.isDeleted && meta.isRecycleBinEnabled
         if moveOnly, let backupGroup = getBackupGroup(createIfMissing: meta.isRecycleBinEnabled) {
-            Diag.debug("Moving group to RecycleBin")
+            Logger.mainLog.debug("Moving group to RecycleBin")
             group.move(to: backupGroup) 
             group.touch(.accessed, updateParents: false)
             
@@ -739,7 +761,7 @@ public class Database2: Database {
             subGroups.forEach { $0.isDeleted = true }
             subEntries.forEach { $0.isDeleted = true }
         } else {
-            Diag.debug("Removing the group permanently.")
+            Logger.mainLog.debug("Removing the group permanently.")
             if group === getBackupGroup(createIfMissing: false) {
                 meta?.resetRecycleBinGroupUUID()
             }
@@ -748,17 +770,17 @@ public class Database2: Database {
             subEntries.forEach { addDeletedObject(uuid: $0.uuid) }
             parentGroup.remove(group: group)
         }
-        Diag.debug("Delete group OK")
+        Logger.mainLog.debug("Delete group OK")
     }
     
     override public func delete(entry: Entry) {
         guard let parentGroup = entry.parent else {
-            Diag.warning("Cannot delete entry: no parent group")
+            Logger.mainLog.warning("Cannot delete entry: no parent group")
             return
         }
         
         if entry.isDeleted {
-            Diag.debug("Already in Backup, removing permanently")
+            Logger.mainLog.debug("Already in Backup, removing permanently")
             addDeletedObject(uuid: entry.uuid)
             parentGroup.remove(entry: entry)
             return
@@ -770,11 +792,11 @@ public class Database2: Database {
             entry.move(to: backupGroup) 
             entry.touch(.accessed)
         } else {
-            Diag.debug("Backup disabled, removing permanently.")
+            Logger.mainLog.debug("Backup disabled, removing permanently.")
             addDeletedObject(uuid: entry.uuid)
             parentGroup.remove(entry: entry)
         }
-        Diag.debug("Delete entry OK")
+        Logger.mainLog.debug("Delete entry OK")
     }
     
     override public func makeAttachment(name: String, data: ByteArray) -> Attachment {
@@ -785,7 +807,7 @@ public class Database2: Database {
                 let compressedData = try data.gzipped()
                 return Attachment2(name: name, isCompressed: true, data: compressedData)
             } catch {
-                Diag.warning("Failed to compress attachment data [message: \(error.localizedDescription)]")
+                Logger.mainLog.warning("Failed to compress attachment data [message: \(error.localizedDescription)]")
             }
         }
         
@@ -800,7 +822,7 @@ public class Database2: Database {
         
         let newCustomIcon = CustomIcon2(uuid: UUID(), data: pngData)
         meta.addCustomIcon(newCustomIcon)
-        Diag.debug("Custom icon added OK")
+        Logger.mainLog.debug("Custom icon added OK")
         return newCustomIcon
     }
     
@@ -815,13 +837,13 @@ public class Database2: Database {
     @discardableResult
     public func deleteCustomIcon(uuid: UUID) -> Bool {
         guard customIcons.contains(where: { $0.uuid == uuid }) else {
-            Diag.warning("Tried to delete non-existent custom icon")
+            Logger.mainLog.warning("Tried to delete non-existent custom icon")
             return false
         }
         meta.deleteCustomIcon(uuid: uuid)
         deletedObjects.append(DeletedObject2(database: self, uuid: uuid))
         removeUnusedCustomIconRefs()
-        Diag.debug("Custom icon deleted OK")
+        Logger.mainLog.debug("Custom icon deleted OK")
         return true
     }
     
@@ -846,7 +868,7 @@ extension Database2: Database2XMLTimeParser {
             return formatAppropriateDate
         }
         if let altFormatDate = Date(iso8601string: trimmedString) {
-            Diag.warning("Found ISO8601-formatted timestamp in \(header.formatVersion) DB.")
+            Logger.mainLog.warning("Found ISO8601-formatted timestamp in \(self.header.formatVersion) DB.")
             return altFormatDate
         }
         return nil

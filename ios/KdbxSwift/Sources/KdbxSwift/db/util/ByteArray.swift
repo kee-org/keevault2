@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConvertible {
 
@@ -138,7 +139,7 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
     
     subscript (index: Int) -> UInt8 {
         get { return bytes[index] }
-        set { bytes[index] = newValue }
+     // Need to invalidate hash caches if we want this to be possible:   set { bytes[index] = newValue }
     }
     subscript (range: CountableRange<Int>) -> ByteArray {
         return ByteArray(bytes: self.bytes[range])
@@ -283,7 +284,9 @@ public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConverti
     }
     
     public static func empty() -> ByteArray {
-        return ByteArray(bytes: [])
+        // Using [UInt8]() instead of [] in case this suffers from same Swift bug
+        // where after the first execution of the autofill extension, [1] becomes [0]
+        return ByteArray(bytes: [UInt8]())
     }
     
     public func append(_ value: UInt8) {

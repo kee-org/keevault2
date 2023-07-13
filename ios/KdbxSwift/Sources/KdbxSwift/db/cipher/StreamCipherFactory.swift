@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 internal enum ProtectedStreamAlgorithm: UInt32 {
     case Null      = 0
@@ -26,10 +27,10 @@ final class StreamCipherFactory {
     static func create(algorithm: ProtectedStreamAlgorithm, key: ByteArray) -> StreamCipher {
         switch algorithm {
         case .Null:
-            Diag.verbose("Creating Null stream cipher")
+            Logger.mainLog.trace("Creating Null stream cipher")
             return UselessStreamCipher()
         case .ChaCha20:
-            Diag.verbose("Creating ChaCha20 stream cipher")
+            Logger.mainLog.trace("Creating ChaCha20 stream cipher")
             let sha512 = key.sha512
             let chacha20 = sha512.withThrowableBytes { (sha512bytes) -> ChaCha20 in
                 let chachaKey = ByteArray(bytes: sha512bytes.prefix(32))

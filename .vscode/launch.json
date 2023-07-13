@@ -60,6 +60,18 @@
                 "--dart-define",
                 "KEEVAULT_CHANNEL=dev"
             ]
+        },
+        {
+            "name": "keevault release local device",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define",
+                "KEEVAULT_STAGE=",
+                "--dart-define",
+                "KEEVAULT_CHANNEL=play"
+            ]
         }
     ]
 }

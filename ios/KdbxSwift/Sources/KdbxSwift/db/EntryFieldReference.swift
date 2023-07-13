@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class EntryFieldReference {
     public enum Status {
@@ -81,7 +82,7 @@ public class EntryFieldReference {
         where T: Collection, T.Element: Entry
     {
         guard maxDepth > 0 else {
-            Diag.warning("Too many chained references")
+            Logger.mainLog.warning("Too many chained references")
             return .tooDeepReferences
         }
         
@@ -132,20 +133,20 @@ public class EntryFieldReference {
             guard let targetFieldCode = string[targetFieldCodeRange].first,
                   let targetFieldType = FieldType.fromCode(targetFieldCode) else
             {
-                Diag.debug("Unrecognized target field")
+                Logger.mainLog.debug("Unrecognized target field")
                 continue
             }
             
             guard let searchFieldCode = string[searchFieldCodeRange].first,
                   let searchFieldType = FieldType.fromCode(searchFieldCode) else
             {
-                Diag.debug("Unrecognized search field")
+                Logger.mainLog.debug("Unrecognized search field")
                 continue
             }
             
             let searchValue = string[searchValueRange]
             guard !searchValue.isEmpty else {
-                Diag.debug("Empty search criterion")
+                Logger.mainLog.debug("Empty search criterion")
                 continue
             }
             let ref = EntryFieldReference(
@@ -225,7 +226,7 @@ public class EntryFieldReference {
                 _uuid = UUID(uuidString: String(value)) 
             }
             guard let uuid = _uuid else {
-                Diag.debug("Malformed UUID: \(value)")
+                Logger.mainLog.debug("Malformed UUID: \(value)")
                 return nil
             }
             result = entries.first(where: { $0.uuid == uuid })
@@ -260,7 +261,7 @@ extension EntryFieldReference {
         case EntryField.notes:
             fieldCode = "N"
         default:
-            Diag.warning("References to custom fields are not supported")
+            Logger.mainLog.warning("References to custom fields are not supported")
             return nil
         }
         let result = "{REF:\(fieldCode)@I:\(entry.uuid.uuidString)}"

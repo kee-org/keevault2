@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class Binary2: Eraseable {
     public typealias ID = Int
@@ -35,11 +36,11 @@ public class Binary2: Eraseable {
     
     static func load(xml: AEXMLElement, streamCipher: StreamCipher) throws -> Binary2 {
         assert(xml.name == Xml2.binary)
-        Diag.verbose("Loading XML: binary")
+        Logger.mainLog.trace("Loading XML: binary")
         
         let idString = xml.attributes[Xml2.id]
         guard let id = Int(idString) else {
-            Diag.error("Cannot parse Meta/Binary/ID as Int")
+            Logger.mainLog.error("Cannot parse Meta/Binary/ID as Int")
             throw Xml2.ParsingError.malformedValue(tag: "Meta/Binary/ID", value: idString)
         }
         let isCompressedString = xml.attributes[Xml2.compressed]
@@ -48,12 +49,12 @@ public class Binary2: Eraseable {
         let isProtected: Bool = Bool(string: isProtectedString ?? "")
         let base64 = xml.value ?? ""
         guard var data = ByteArray(base64Encoded: base64) else {
-            Diag.error("Cannot parse Meta/Binary/Value as Base64 string")
+            Logger.mainLog.error("Cannot parse Meta/Binary/Value as Base64 string")
             throw Xml2.ParsingError.malformedValue(tag: "Meta/Binary/ValueBase64", value: String(base64.prefix(16)))
         }
         
         if isProtected {
-            Diag.verbose("Decrypting binary")
+            Logger.mainLog.trace("Decrypting binary")
             data = try streamCipher.decrypt(data: data, progress: nil) 
         }
         
@@ -61,7 +62,7 @@ public class Binary2: Eraseable {
     }
     
     func toXml(streamCipher: StreamCipher) throws -> AEXMLElement {
-        Diag.verbose("Generating XML: binary")
+        Logger.mainLog.trace("Generating XML: binary")
         var attributes = [
             Xml2.id: String(id),
             Xml2.compressed: isCompressed ? Xml2._true : Xml2._false
@@ -69,7 +70,7 @@ public class Binary2: Eraseable {
         
         let value: ByteArray
         if isProtected {
-            Diag.verbose("Encrypting binary")
+            Logger.mainLog.trace("Encrypting binary")
             value = try streamCipher.encrypt(data: data, progress: nil) 
             attributes[Xml2.protected] = Xml2._true
         } else {

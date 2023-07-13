@@ -55,6 +55,14 @@ Push a new beta build to test service
 
 Push a new prod build to testflight
 
+### ios beta_local_device
+
+```sh
+[bundle exec] fastlane ios beta_local_device
+```
+
+Push a new beta build to local device
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

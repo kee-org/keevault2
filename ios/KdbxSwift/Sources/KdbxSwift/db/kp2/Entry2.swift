@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class EntryField2: EntryField {
     
@@ -37,7 +38,7 @@ public class EntryField2: EntryField {
     
     func load(xml: AEXMLElement, streamCipher: StreamCipher) throws {
         assert(xml.name == Xml2.string)
-        Diag.verbose("Loading XML: entry field")
+        Logger.mainLog.trace("Loading XML: entry field")
         erase()
         
         
@@ -52,35 +53,31 @@ public class EntryField2: EntryField {
                 isProtected = Bool(string: tag.attributes[Xml2.protected])
                 if isProtected {
                     if let encData = ByteArray(base64Encoded: tag.value ?? "") {
-                        Diag.verbose("Decrypting field value")
+                        Logger.mainLog.trace("Decrypting field value")
                         let plainData = try streamCipher.decrypt(data: encData, progress: nil)
                         value = plainData.toString(using: .utf8) 
                         if value == nil {
-                            Diag.warning("Failed to decrypt field value")
-                            if Diag.isDeepDebugMode() {
-                                Diag.debug("Encrypted field value: `\(encData.asHexString)`")
-                                Diag.debug("Decrypted field value: `\(plainData.asHexString)`")
-                            }
+                            Logger.mainLog.warning("Failed to decrypt field value")
                         }
                     }
                 } else {
                     value = tag.value ?? ""
                 }
             default:
-                Diag.error("Unexpected XML tag in Entry/String: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/String: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/String/*")
             }
         }
         guard let _key = key else {
-            Diag.error("Missing Entry/String/Key")
+            Logger.mainLog.error("Missing Entry/String/Key")
             throw Xml2.ParsingError.malformedValue(tag: "Entry/String/Key", value: nil)
         }
         guard let _value = value else {
-            Diag.error("Missing Entry/String/Value")
+            Logger.mainLog.error("Missing Entry/String/Value")
             throw Xml2.ParsingError.malformedValue(tag: "Entry/String/Value", value: nil)
         }
         if _key.isEmpty && _value.isNotEmpty {
-            Diag.error("Missing Entry/String/Key with present Value")
+            Logger.mainLog.error("Missing Entry/String/Key with present Value")
         }
         self.name = _key
         self.value = _value
@@ -89,12 +86,12 @@ public class EntryField2: EntryField {
     
     
     func toXml(streamCipher: StreamCipher) throws -> AEXMLElement {
-        Diag.verbose("Generating XML: entry string")
+        Logger.mainLog.trace("Generating XML: entry string")
         let xmlField = AEXMLElement(name: Xml2.string)
         xmlField.addChild(name: Xml2.key, value: name)
         if isProtected {
             let openData = ByteArray(utf8String: value)
-            Diag.verbose("Encrypting field value")
+            Logger.mainLog.trace("Encrypting field value")
             let encData = try streamCipher.encrypt(data: openData, progress: nil)
             xmlField.addChild(
                 name: Xml2.value,
@@ -148,7 +145,7 @@ public class Entry2: Entry {
 
         func load(xml: AEXMLElement, streamCipher: StreamCipher) throws {
             assert(xml.name == Xml2.autoType)
-            Diag.verbose("Loading XML: entry autotype")
+            Logger.mainLog.trace("Loading XML: entry autotype")
             erase()
             
             for tag in xml.children {
@@ -162,7 +159,7 @@ public class Entry2: Entry {
                 case Xml2.association:
                     try loadAssociation(xml: tag)
                 default:
-                    Diag.error("Unexpected XML tag in Entry/AutoType: \(tag.name)")
+                    Logger.mainLog.error("Unexpected XML tag in Entry/AutoType: \(tag.name)")
                     throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/*")
                 }
             }
@@ -180,20 +177,20 @@ public class Entry2: Entry {
                 case Xml2.keystrokeSequence:
                     sequence = tag.value ?? ""
                 default:
-                    Diag.error("Unexpected XML tag in Entry/AutoType/Association: \(tag.name)")
+                    Logger.mainLog.error("Unexpected XML tag in Entry/AutoType/Association: \(tag.name)")
                     throw Xml2.ParsingError.unexpectedTag(
                         actual: tag.name,
                         expected: "Entry/AutoType/Association/*")
                 }
             }
             guard window != nil else {
-                Diag.error("Missing Entry/AutoType/Association/Window")
+                Logger.mainLog.error("Missing Entry/AutoType/Association/Window")
                 throw Xml2.ParsingError.malformedValue(
                     tag: "Entry/AutoType/Association/Window",
                     value: window)
             }
             guard sequence != nil else {
-                Diag.error("Missing Entry/AutoType/Association/Sequence")
+                Logger.mainLog.error("Missing Entry/AutoType/Association/Sequence")
                 throw Xml2.ParsingError.malformedValue(
                     tag: "Entry/AutoType/Association/Sequence",
                     value: sequence)
@@ -202,7 +199,7 @@ public class Entry2: Entry {
         }
         
         internal func toXml() -> AEXMLElement {
-            Diag.verbose("Generating XML: entry autotype")
+            Logger.mainLog.trace("Generating XML: entry autotype")
             let xmlAutoType = AEXMLElement(name: Xml2.autoType)
             xmlAutoType.addChild(
                 name: Xml2.enabled,
@@ -314,7 +311,7 @@ public class Entry2: Entry {
     override public func apply(to target: Entry, makeNewUUID: Bool) {
         super.apply(to: target, makeNewUUID: makeNewUUID)
         guard let targetEntry2 = target as? Entry2 else {
-            Diag.warning("Tried to apply entry state to unexpected entry class")
+            Logger.mainLog.warning("Tried to apply entry state to unexpected entry class")
             assertionFailure()
             return
         }
@@ -397,7 +394,7 @@ public class Entry2: Entry {
         timeParser: Database2XMLTimeParser
     ) throws {
         assert(xml.name == Xml2.entry)
-        Diag.verbose("Loading XML: entry")
+        Logger.mainLog.trace("Loading XML: entry")
         
         let parent = self.parent
         erase()
@@ -423,17 +420,17 @@ public class Entry2: Entry {
                 let field = makeEntryField(name: "", value: "", isProtected: true) as! EntryField2
                 try field.load(xml: tag, streamCipher: streamCipher)
                 if field.isEmpty {
-                    Diag.debug("Loaded empty entry field, ignoring.")
+                    Logger.mainLog.debug("Loaded empty entry field, ignoring.")
                 } else if field.name.isEmpty {
-                    Diag.warning("Loaded entry field with an empty name, will show a warning.")
+                    Logger.mainLog.warning("Loaded entry field with an empty name, will show a warning.")
                     setField(name: field.name, value: field.value, isProtected: field.isProtected)
                 } else {
-                    Diag.verbose("Entry field loaded OK")
+                    Logger.mainLog.trace("Entry field loaded OK")
                     setField(name: field.name, value: field.value, isProtected: field.isProtected)
                 }
             case Xml2.binary:
                 guard !tag.children.isEmpty else {
-                    Diag.warning("Skipping an empty Binary tag")
+                    Logger.mainLog.warning("Skipping an empty Binary tag")
                     continue
                 }
                 let att = try Attachment2.load(
@@ -441,13 +438,13 @@ public class Entry2: Entry {
                     database: database as! Database2,
                     streamCipher: streamCipher)
                 attachments.append(att)
-                Diag.verbose("Entry attachment loaded OK")
+                Logger.mainLog.trace("Entry attachment loaded OK")
             case Xml2.times:
                 try loadTimes(xml: tag, timeParser: timeParser)
-                Diag.verbose("Entry times loaded OK")
+                Logger.mainLog.trace("Entry times loaded OK")
             case Xml2.autoType:
                 try autoType.load(xml: tag, streamCipher: streamCipher)
-                Diag.verbose("Entry autotype loaded OK")
+                Logger.mainLog.trace("Entry autotype loaded OK")
             case Xml2.previousParentGroup:
                 assert(formatVersion >= .v4)
                 previousParentGroupUUID = UUID(base64Encoded: tag.value) ?? UUID.ZERO
@@ -461,7 +458,7 @@ public class Entry2: Entry {
                     streamCipher: streamCipher,
                     timeParser: timeParser,
                     xmlParentName: "Entry")
-                Diag.verbose("Entry custom data loaded OK")
+                Logger.mainLog.trace("Entry custom data loaded OK")
             case Xml2.history:
                 try loadHistory(
                     xml: tag,
@@ -469,9 +466,9 @@ public class Entry2: Entry {
                     streamCipher: streamCipher,
                     timeParser: timeParser
                 ) 
-                Diag.verbose("Entry history loaded OK")
+                Logger.mainLog.trace("Entry history loaded OK")
             default:
-                Diag.error("Unexpected XML tag in Entry: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/*")
             }
         }
@@ -479,14 +476,14 @@ public class Entry2: Entry {
     
     func loadTimes(xml: AEXMLElement, timeParser: Database2XMLTimeParser) throws {
         assert(xml.name == Xml2.times)
-        Diag.verbose("Loading XML: entry times")
+        Logger.mainLog.trace("Loading XML: entry times")
         
         var optionalExpiryTime: Date?
         for tag in xml.children {
             switch tag.name {
             case Xml2.lastModificationTime:
                 guard let time = timeParser.xmlStringToDate(tag.value) else {
-                    Diag.error("Cannot parse Entry/Times/LastModificationTime as Date")
+                    Logger.mainLog.error("Cannot parse Entry/Times/LastModificationTime as Date")
                      throw Xml2.ParsingError.malformedValue(
                         tag: "Entry/Times/LastModificationTime",
                         value: tag.value)
@@ -494,7 +491,7 @@ public class Entry2: Entry {
                 lastModificationTime = time
             case Xml2.creationTime:
                 guard let time = timeParser.xmlStringToDate(tag.value) else {
-                    Diag.error("Cannot parse Entry/Times/CreationTime as Date")
+                    Logger.mainLog.error("Cannot parse Entry/Times/CreationTime as Date")
                     throw Xml2.ParsingError.malformedValue(
                         tag: "Entry/Times/CreationTime",
                         value: tag.value)
@@ -502,7 +499,7 @@ public class Entry2: Entry {
                 creationTime = time
             case Xml2.lastAccessTime:
                 guard let time = timeParser.xmlStringToDate(tag.value) else {
-                    Diag.error("Cannot parse Entry/Times/LastAccessTime as Date")
+                    Logger.mainLog.error("Cannot parse Entry/Times/LastAccessTime as Date")
                     throw Xml2.ParsingError.malformedValue(
                         tag: "Entry/Times/LastAccessTime",
                         value: tag.value)
@@ -510,12 +507,12 @@ public class Entry2: Entry {
                 lastAccessTime = time
             case Xml2.expiryTime:
                 guard let tagValue = tag.value else {
-                    Diag.warning("Entry/Times/ExpiryTime is nil")
+                    Logger.mainLog.warning("Entry/Times/ExpiryTime is nil")
                     optionalExpiryTime = nil 
                     continue
                 }
                 guard let time = timeParser.xmlStringToDate(tagValue) else {
-                    Diag.error("Cannot parse Entry/Times/ExpiryTime as Date")
+                    Logger.mainLog.error("Cannot parse Entry/Times/ExpiryTime as Date")
                     throw Xml2.ParsingError.malformedValue(
                         tag: "Entry/Times/ExpiryTime",
                         value: tagValue)
@@ -527,14 +524,14 @@ public class Entry2: Entry {
                 usageCount = UInt32(tag.value) ?? 0
             case Xml2.locationChanged:
                 guard let time = timeParser.xmlStringToDate(tag.value) else {
-                    Diag.error("Cannot parse Entry/Times/LocationChanged as Date")
+                    Logger.mainLog.error("Cannot parse Entry/Times/LocationChanged as Date")
                     throw Xml2.ParsingError.malformedValue(
                         tag: "Entry/Times/LocationChanged",
                         value: tag.value)
                 }
                 locationChangedTime = time
             default:
-                Diag.error("Unexpected XML tag in Entry/Times: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/Times: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/Times/*")
             }
         }
@@ -543,7 +540,7 @@ public class Entry2: Entry {
             self.expiryTime = expiryTime
         } else {
             if canExpire {
-                Diag.error("Parsed an entry that can expire, but Entry/Times/ExpiryTime is nil")
+                Logger.mainLog.error("Parsed an entry that can expire, but Entry/Times/ExpiryTime is nil")
                 throw Xml2.ParsingError.malformedValue(
                     tag: "Entry/Times/ExpiryTime",
                     value: nil)
@@ -561,7 +558,7 @@ public class Entry2: Entry {
         ) throws
     {
         assert(xml.name == Xml2.history)
-        Diag.verbose("Loading XML: entry history")
+        Logger.mainLog.trace("Loading XML: entry history")
         for tag in xml.children {
             switch tag.name {
             case Xml2.entry:
@@ -573,9 +570,9 @@ public class Entry2: Entry {
                     timeParser: timeParser
                 ) 
                 history.append(histEntry)
-                Diag.verbose("Entry history item loaded OK")
+                Logger.mainLog.trace("Entry history item loaded OK")
             default:
-                Diag.error("Unexpected XML tag in Entry/History: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/History: \(tag.name)")
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/History/*")
             }
         }
@@ -586,7 +583,7 @@ public class Entry2: Entry {
         streamCipher: StreamCipher,
         timeFormatter: Database2XMLTimeFormatter
     ) throws -> AEXMLElement {
-        Diag.verbose("Generating XML: entry")
+        Logger.mainLog.trace("Generating XML: entry")
         let meta: Meta2 = (database as! Database2).meta
         
         let xmlEntry = AEXMLElement(name: Xml2.entry)
