@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 class AbstractArgon2KDF {
     public static let saltParam        = "S" 
@@ -25,10 +26,10 @@ class AbstractArgon2KDF {
     fileprivate let defaultParallelism: UInt32 = 2
     
     fileprivate var name: String {
-        fatalError("Abstract method, override this")
+        Logger.fatalError("Abstract method, override this")
     }
     fileprivate var uuid: UUID {
-        fatalError("Abstract method, override this")
+        Logger.fatalError("Abstract method, override this")
     }
     
     fileprivate var progress = ProgressEx()
@@ -111,7 +112,7 @@ class AbstractArgon2KDF {
     }
     
     func transform(key: ByteArray, params: KDFParams) -> ByteArray {
-        fatalError("argon2 not implemented")
+        Logger.fatalError("argon2 not implemented")
     }
 }
 

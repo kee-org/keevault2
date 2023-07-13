@@ -1,5 +1,6 @@
 import Foundation
 import CommonCrypto
+import os.log
 
 final class Header2: Eraseable {
     private static let signature1: UInt32 = 0x9AA2D903
@@ -202,6 +203,7 @@ final class Header2: Eraseable {
     }
     
     init(database: Database2) {
+        Logger.mainLog.debug("DB header init")
         self.database = database
         initialized = false
         formatVersion = .v4
@@ -220,6 +222,7 @@ final class Header2: Eraseable {
     }
     
     func erase() {
+        Logger.mainLog.debug("DB header erase")
         initialized = false
         formatVersion = .v4
         data.erase()
@@ -271,23 +274,23 @@ final class Header2: Eraseable {
         guard let sign1: UInt32 = stream.readUInt32(),
               let sign2: UInt32 = stream.readUInt32()
         else {
-            Diag.error("Signature is too short")
+            Logger.mainLog.error("Signature is too short")
             throw HeaderError.readingError
         }
         headerSize += sign1.byteWidth + sign2.byteWidth
         guard sign1 == Header2.signature1 else {
-            Diag.error("Wrong signature #1")
+            Logger.mainLog.error("Wrong signature #1")
             throw HeaderError.wrongSignature
         }
         guard sign2 == Header2.signature2 else {
-            Diag.error("Wrong signature #2")
+            Logger.mainLog.error("Wrong signature #2")
             throw HeaderError.wrongSignature
         }
     }
     
     private func readFormatVersion(stream: ByteArray.InputStream, headerSize: inout Int) throws {
         guard let fileVersion: UInt32 = stream.readUInt32() else {
-            Diag.error("Signature is too short")
+            Logger.mainLog.error("Signature is too short")
             throw HeaderError.readingError
         }
         headerSize += fileVersion.byteWidth
@@ -298,18 +301,20 @@ final class Header2: Eraseable {
             if fileVersion == Header2.fileVersion4_1 {
                 formatVersion = .v4_1
             }
-            Diag.verbose("Database format: \(formatVersion)")
+            Logger.mainLog.trace("Database format: \(self.formatVersion)")
             return
         }
         
-        Diag.error("Unsupported file version [version: \(fileVersion.asHexString)]")
+        Logger.mainLog.error("Unsupported file version [version: \(fileVersion.asHexString, privacy: .public)]")
         throw HeaderError.unsupportedFileVersion(actualVersion: fileVersion.asHexString)
     }
     
     func read(data inputData: ByteArray) throws {
-        assert(!initialized, "Tried to read already initialized header")
+        if (initialized) {
+            Logger.fatalError("Tried to read already initialized header")
+        }
         
-        Diag.verbose("Will read header")
+        Logger.mainLog.trace("Will read header")
         var headerSize = 0 
         let stream = inputData.asInputStream()
         stream.open()
@@ -317,7 +322,7 @@ final class Header2: Eraseable {
         
         try verifyFileSignature(stream: stream, headerSize: &headerSize) 
         try readFormatVersion(stream: stream, headerSize: &headerSize) 
-        Diag.verbose("Header signatures OK")
+        Logger.mainLog.trace("Header signatures OK")
         
         while (true) {
             guard let rawFieldID: UInt8 = stream.readUInt8() else { throw HeaderError.readingError }
@@ -329,7 +334,7 @@ final class Header2: Eraseable {
                 headerSize += MemoryLayout.size(ofValue: fSize) + fieldSize
             
             guard let fieldID: FieldID = FieldID(rawValue: rawFieldID) else {
-                Diag.warning("Unknown field ID, skipping [fieldID: \(rawFieldID)]")
+                Logger.mainLog.warning("Unknown field ID, skipping [fieldID: \(rawFieldID)]")
                 continue
             }
             
@@ -345,70 +350,70 @@ final class Header2: Eraseable {
 
             switch fieldID {
             case .end:
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
                 break 
             case .comment:
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
                 break
             case .cipherID:
                 guard let _cipherUUID = UUID(data: fieldValueData) else {
-                    Diag.error("Cipher UUID is misformatted")
+                    Logger.mainLog.error("Cipher UUID is misformatted")
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let _dataCipher = DataCipherFactory.instance.createFor(uuid: _cipherUUID) else {
-                    Diag.error("Unsupported cipher ID: \(fieldValueData.asHexString)")
+                    Logger.mainLog.error("Unsupported cipher ID: \(fieldValueData.asHexString, privacy: .public)")
                     throw HeaderError.unsupportedDataCipher(
                         uuidHexString: fieldValueData.asHexString)
                 }
                 self.dataCipher = _dataCipher
-                Diag.verbose("\(fieldID.name) read OK [name: \(dataCipher.name)]")
+                Logger.mainLog.trace("\(fieldID.name) read OK [name: \(self.dataCipher.name)]")
             case .compressionFlags:
                 guard let compressionFlags32 = UInt32(data: fieldValueData) else {
                     throw HeaderError.readingError
                 }
                 guard let compressionFlags8 = UInt8(exactly: compressionFlags32) else {
-                    Diag.error("Unknown compression algorithm [compressionFlags32: \(compressionFlags32)]")
+                    Logger.mainLog.error("Unknown compression algorithm [compressionFlags32: \(compressionFlags32, privacy: .public)]")
                     throw HeaderError.unknownCompressionAlgorithm
                 }
                 guard CompressionAlgorithm(rawValue: compressionFlags8) != nil else {
-                    Diag.error("Unknown compression algorithm [compressionFlags8: \(compressionFlags8)]")
+                    Logger.mainLog.error("Unknown compression algorithm [compressionFlags8: \(compressionFlags8, privacy: .public)]")
                     throw HeaderError.unknownCompressionAlgorithm
                 }
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
             case .masterSeed:
                 guard fieldSize == SHA256_SIZE else {
-                    Diag.error("Unexpected \(fieldID.name) field size [\(fieldSize) bytes]")
+                    Logger.mainLog.error("Unexpected \(fieldID.name) field size [\(fieldSize) bytes]")
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
             
             case .encryptionIV:
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
                 break
             
             case .kdfParameters: 
                 guard formatVersion >= .v4 else {
-                    Diag.error("Found \(fieldID.name) in non-V4 header. Database corrupted?")
+                    Logger.mainLog.error("Found \(fieldID.name) in non-V4 header. Database corrupted?")
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let kdfParams = KDFParams(data: fieldValueData) else {
-                    Diag.error("Cannot parse KDF params. Database corrupted?")
+                    Logger.mainLog.error("Cannot parse KDF params. Database corrupted?")
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 self.kdfParams = kdfParams
                 self.kdf = Argon2dKDF()
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
             case .publicCustomData:
                 guard formatVersion >= .v4 else {
-                    Diag.error("Found \(fieldID.name) in non-V4 header. Database corrupted?")
+                    Logger.mainLog.error("Found \(fieldID.name) in non-V4 header. Database corrupted?")
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let publicCustomData = VarDict(data: fieldValueData) else {
-                    Diag.error("Cannot parse public custom data. Database corrupted?")
+                    Logger.mainLog.error("Cannot parse public custom data. Database corrupted?")
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 self.publicCustomData = publicCustomData
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
             default:
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
@@ -419,36 +424,36 @@ final class Header2: Eraseable {
         self.hash = self.data.sha256
         
         try verifyImportantFields()
-        Diag.verbose("All important fields are in place")
+        Logger.mainLog.trace("All important fields are in place")
         
     }
     
     private func verifyImportantFields() throws {
-        Diag.verbose("Will check all important fields are present")
+        Logger.mainLog.trace("Will check all important fields are present")
         var importantFields: [FieldID]
             importantFields =
                 [.cipherID, .compressionFlags, .masterSeed, .encryptionIV, .kdfParameters]
         for fieldID in importantFields {
             guard let fieldData = fields[fieldID] else {
-                Diag.error("\(fieldID.name) is missing")
+                Logger.mainLog.error("\(fieldID.name, privacy: .public) is missing")
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
             if fieldData.isEmpty {
-                Diag.error("\(fieldID.name) is present, but empty")
+                Logger.mainLog.error("\(fieldID.name, privacy: .public) is present, but empty")
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
         }
-        Diag.verbose("All important fields are OK")
+        Logger.mainLog.trace("All important fields are OK")
         
         guard initialVector.count == dataCipher.initialVectorSize else {
-            Diag.error("Initial vector size is inappropritate for the cipher [size: \(initialVector.count), cipher UUID: \(dataCipher.uuid)]")
+            Logger.mainLog.error("Initial vector size is inappropritate for the cipher [size: \(self.initialVector.count, privacy: .public), cipher UUID: \(self.dataCipher.uuid, privacy: .public)]")
             throw HeaderError.corruptedField(fieldName: FieldID.encryptionIV.name)
         }
     }
     
     internal func initStreamCipher() {
         guard let protectedStreamKey = protectedStreamKey else {
-            fatalError()
+            Logger.fatalError("initStreamCipher: Failed to assign protectedStreamKey")
         }
         self.streamCipher = StreamCipherFactory.create(
             algorithm: innerStreamAlgorithm,
@@ -470,7 +475,7 @@ final class Header2: Eraseable {
         stream.open()
         defer { stream.close() }
         
-        Diag.verbose("Will read inner header")
+        Logger.mainLog.trace("Will read inner header")
         var size: Int = 0
         while true {
             guard let rawFieldID = stream.readUInt8() else {
@@ -498,17 +503,17 @@ final class Header2: Eraseable {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let protectedStreamAlgorithm = ProtectedStreamAlgorithm(rawValue: rawID) else {
-                    Diag.error("Unrecognized protected stream algorithm [rawID: \(rawID)]")
+                    Logger.mainLog.error("Unrecognized protected stream algorithm [rawID: \(rawID, privacy: .public)]")
                     throw HeaderError.unsupportedStreamCipher(id: rawID)
                 }
                 self.innerStreamAlgorithm = protectedStreamAlgorithm
-                Diag.verbose("\(fieldID.name) read OK [name: \(innerStreamAlgorithm.name)]")
+                Logger.mainLog.trace("\(fieldID.name) read OK [name: \(self.innerStreamAlgorithm.name, privacy: .public)]")
             case .innerRandomStreamKey:
                 guard fieldData.count > 0 else {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 self.protectedStreamKey = fieldData.clone()
-                Diag.verbose("\(fieldID.name) read OK")
+                Logger.mainLog.trace("\(fieldID.name) read OK")
             case .binary:
                 let isProtected = (fieldData[0] & 0x01 != 0)
                 let newBinaryID = database.binaries.count
@@ -518,11 +523,11 @@ final class Header2: Eraseable {
                     isCompressed: false,
                     isProtected: isProtected) 
                 database.binaries[newBinaryID] = binary
-                Diag.verbose("\(fieldID.name) read OK [size: \(fieldData.count) bytes]")
+                Logger.mainLog.trace("\(fieldID.name, privacy: .public) read OK [size: \(fieldData.count) bytes]")
             case .end:
                 initStreamCipher()
-                Diag.verbose("Stream cipher init OK")
-                Diag.verbose("Inner header read OK [size: \(size) bytes]")
+                Logger.mainLog.trace("Stream cipher init OK")
+                Logger.mainLog.trace("Inner header read OK [size: \(size) bytes]")
                 return size
             }
         }
@@ -532,7 +537,7 @@ final class Header2: Eraseable {
     }
     
     func write(to outStream: ByteArray.OutputStream) {
-        Diag.verbose("Will write header")
+        Logger.mainLog.trace("Will write header")
         let headerStream = ByteArray.makeOutputStream()
         headerStream.open()
         defer { headerStream.close() }
@@ -543,11 +548,11 @@ final class Header2: Eraseable {
         case .v4:
             headerStream.write(value: Header2.fileVersion4)
             writeV4(stream: headerStream)
-            Diag.verbose("kdbx4 header written OK")
+            Logger.mainLog.trace("kdbx4 header written OK")
         case .v4_1:
             headerStream.write(value: Header2.fileVersion4_1)
             writeV4(stream: headerStream)
-            Diag.verbose("kdbx4.1 header written OK")
+            Logger.mainLog.trace("kdbx4.1 header written OK")
         }
         
         let headerData = headerStream.data!
@@ -580,9 +585,9 @@ final class Header2: Eraseable {
     
     func writeInner(to stream: ByteArray.OutputStream) throws {
         assert(formatVersion >= .v4)
-        guard let protectedStreamKey = protectedStreamKey else { fatalError() }
+        guard let protectedStreamKey = protectedStreamKey else { Logger.fatalError("writeInner: failed to assign protectedStreamKey") }
         
-        Diag.verbose("Writing kdbx4 inner header")
+        Logger.mainLog.trace("Writing kdbx4 inner header")
         stream.write(value: InnerFieldID.innerRandomStreamID.rawValue) 
         stream.write(value: UInt32(MemoryLayout.size(ofValue: innerStreamAlgorithm.rawValue))) 
         stream.write(value: innerStreamAlgorithm.rawValue) 
@@ -595,7 +600,7 @@ final class Header2: Eraseable {
             #endif
         
         for binaryID in database.binaries.keys.sorted() {
-            Diag.verbose("Writing a binary")
+            Logger.mainLog.trace("Writing a binary")
             let binary = database.binaries[binaryID]! 
             
             let data: ByteArray
@@ -603,7 +608,7 @@ final class Header2: Eraseable {
                 do {
                     data = try binary.data.gunzipped() 
                 } catch {
-                    Diag.error("Failed to uncompress attachment data [message: \(error.localizedDescription)]")
+                    Logger.mainLog.error("Failed to uncompress attachment data [message: \(error.localizedDescription, privacy: .public)]")
                     throw HeaderError.binaryUncompressionError(reason: error.localizedDescription)
                 }
             } else {
@@ -617,11 +622,11 @@ final class Header2: Eraseable {
         }
         stream.write(value: InnerFieldID.end.rawValue) 
         stream.write(value: UInt32(0)) 
-        Diag.verbose("Inner header written OK")
+        Logger.mainLog.trace("Inner header written OK")
     }
     
     internal func randomizeSeeds() throws {
-        Diag.verbose("Randomizing the seeds")
+        Logger.mainLog.trace("Randomizing the seeds")
         fields[.masterSeed] = try CryptoManager.getRandomBytes(count: SHA256_SIZE)
         fields[.encryptionIV] = try CryptoManager.getRandomBytes(count: dataCipher.initialVectorSize)
         protectedStreamKey = try CryptoManager.getRandomBytes(count: 64)

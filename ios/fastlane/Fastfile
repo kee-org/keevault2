@@ -195,4 +195,53 @@ platform :ios do
       delete_temp_keychain(keychain_name)
     end
   end
+
+  ### Warning!! Only thing that determines whether this points at beta or prod servers is 
+  # the command most recently executed!
+  #
+  # Remember to revert the changes made to ios/Runner.xcodeproj/project.pbxproj before comitting!
+  desc "Push a new beta build to local device"
+  lane :beta_local_device do
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+
+    begin
+      ensure_temp_keychain(keychain_name, keychain_password)
+
+      match(
+        type: "adhoc",
+        app_identifier: ['com.keevault.keevault.beta', 'com.keevault.keevault.beta.autofill'],
+        readonly: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password 
+      )
+      update_project_provisioning(
+        xcodeproj: "Runner.xcodeproj",
+        profile: ENV['sigh_com.keevault.keevault.beta_adhoc_profile-path'],
+        target_filter: ".*Runner.*",
+        build_configuration: "Release"
+      )
+      update_project_provisioning(
+        xcodeproj: "Runner.xcodeproj",
+        profile: ENV['sigh_com.keevault.keevault.beta.autofill_adhoc_profile-path'],
+        target_filter: ".*KeeVaultAutofill.*",
+        build_configuration: "Release"
+      )
+      build_app(
+        workspace: "Runner.xcworkspace",
+        scheme: "Runner",
+        configuration: 'Release',
+        export_method: 'ad-hoc',
+        export_options: {
+          provisioningProfiles: { 
+            'com.keevault.keevault.beta' => 'match AdHoc com.keevault.keevault.beta',
+            'com.keevault.keevault.beta.autofill' => 'match AdHoc com.keevault.keevault.beta.autofill'
+          }
+        }
+      )
+      install_on_device()
+    ensure
+      delete_temp_keychain(keychain_name)
+    end
+  end
 end

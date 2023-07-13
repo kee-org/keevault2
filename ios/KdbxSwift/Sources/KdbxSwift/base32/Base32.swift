@@ -25,6 +25,7 @@
 //  THE SOFTWARE.
 
 import Foundation
+import os.log
 
 // https://tools.ietf.org/html/rfc4648
 
@@ -232,7 +233,7 @@ private func base32encode(_ data: UnsafeRawPointer, _ length: Int, _ table: [Int
         return base32Encoded
     } else {
         resultBuffer.deallocate()
-        fatalError("internal error")
+        Logger.fatalError("internal error")
     }
 }
 

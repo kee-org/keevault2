@@ -1,3 +1,6 @@
+import Foundation
+import os.log
+
 public struct SearchQuery {
     public let includeSubgroups: Bool
     public let includeDeleted: Bool
@@ -40,7 +43,7 @@ open class Database: Eraseable {
     }
     
     public var keyHelper: KeyHelper {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     internal init() {
@@ -57,7 +60,7 @@ open class Database: Eraseable {
     }
 
     public class func isSignatureMatches(data: ByteArray) -> Bool {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func load(
@@ -65,19 +68,19 @@ open class Database: Eraseable {
         dbFileData: ByteArray,
         preTransformedKeyMaterial: ByteArray
     ) throws {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func save() throws -> ByteArray {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func changeCompositeKey(to newKey: CompositeKey) {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func getBackupGroup(createIfMissing: Bool) -> Group? {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func count(includeGroups: Bool = true, includeEntries: Bool = true) -> Int {
@@ -99,22 +102,22 @@ open class Database: Eraseable {
     }
     
     public func delete(group: Group) {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func delete(entry: Entry) {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
 
     public func makeAttachment(name: String, data: ByteArray) -> Attachment {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     internal func resolveReferences<T>(
         allEntries: T)
         where T: Collection, T.Element: Entry
     {
-        Diag.debug("Resolving references")
+        Logger.mainLog.debug("Resolving references")
                 
         allEntries.forEach { entry in
             entry.fields.forEach { field in
@@ -127,6 +130,6 @@ open class Database: Eraseable {
                 field.resolveReferences(entries: allEntries)
             }
         }
-        Diag.debug("References resolved OK")
+        Logger.mainLog.debug("References resolved OK")
     }
 }

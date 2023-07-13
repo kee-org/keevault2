@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 final class KeyHelper2: KeyHelper {
     
@@ -19,18 +20,18 @@ final class KeyHelper2: KeyHelper {
         
         var preKey = ByteArray.empty()
         if hasPassword {
-            Diag.info("Using password")
+            Logger.mainLog.info("Using password")
             preKey = ByteArray.concat(preKey, passwordData.sha256)
         }
         if hasKeyFile {
-            Diag.info("Using key file")
+            Logger.mainLog.info("Using key file")
             preKey = ByteArray.concat(
                 preKey,
                 try processKeyFile(keyFileData: keyFileData) 
             )
         }
         if preKey.isEmpty {
-            Diag.warning("All key components are empty after being checked.")
+            Logger.mainLog.warning("All key components are empty after being checked.")
         }
         return preKey 
     }

@@ -1,4 +1,5 @@
 import Foundation
+import os.log
 
 public class Group: DatabaseItem, Eraseable {
     public static let defaultIconID = IconID.folder
@@ -79,7 +80,7 @@ public class Group: DatabaseItem, Eraseable {
     }
     
     public func clone(makeNewUUID: Bool) -> Group {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func deepClone(makeNewUUIDs: Bool) -> Group {
@@ -192,11 +193,11 @@ public class Group: DatabaseItem, Eraseable {
     }
 
     public func createEntry(detached: Bool = false) -> Entry {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     public func createGroup(detached: Bool = false) -> Group {
-        fatalError("Pure virtual method")
+        Logger.fatalError("Pure virtual method")
     }
     
     override public func touch(_ mode: DatabaseItem.TouchMode, updateParents: Bool = true) {
