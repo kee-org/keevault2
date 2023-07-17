@@ -61,14 +61,11 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
   submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      await widget.onSubmit(submittedValue!);
-    }
-  }
-
-  onRegisterRequest() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      await widget.onRegisterRequest(submittedValue!);
+      if (newUser) {
+        await widget.onRegisterRequest(submittedValue!);
+      } else {
+        await widget.onSubmit(submittedValue!);
+      }
     }
   }
 
@@ -178,7 +175,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: ElevatedButton(
-                    onPressed: newUser == true ? onRegisterRequest : submit,
+                    onPressed: submit,
                     child: Text(newUser == true ? str.register : str.signin),
                   ),
                 ),
