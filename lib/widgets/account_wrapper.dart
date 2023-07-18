@@ -81,7 +81,9 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
             return LoadingSpinner(tooltip: str.loading);
           } else if (state is AccountUnknown) {
             return VaultAccountCredentialsWidget(
-                onSubmit: _startSignin, onLocalOnlyRequested: _requestLocalOnly, onRegisterRequest: _startRegistration);
+                onSignInRequest: _startSignin,
+                onLocalOnlyRequested: _requestLocalOnly,
+                onRegisterRequest: _startRegistration);
           } else if (state is AccountLocalOnlyRequested) {
             return VaultLocalOnlyCreateWidget(
               onSubmit: _createLocalOnlyVault,

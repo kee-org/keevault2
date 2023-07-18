@@ -9,12 +9,12 @@ typedef SubmitCallback = Future<void> Function(String string);
 class VaultAccountCredentialsWidget extends StatefulWidget {
   const VaultAccountCredentialsWidget({
     Key? key,
-    required this.onSubmit,
+    required this.onSignInRequest,
     required this.onLocalOnlyRequested,
     required this.onRegisterRequest,
   }) : super(key: key);
 
-  final SubmitCallback onSubmit;
+  final SubmitCallback onSignInRequest;
   final void Function() onLocalOnlyRequested;
   final SubmitCallback onRegisterRequest;
 
@@ -58,14 +58,18 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
     super.dispose();
   }
 
-  submit() async {
+  Future<void> onSubmitButton() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (newUser) {
-        await widget.onRegisterRequest(submittedValue!);
-      } else {
-        await widget.onSubmit(submittedValue!);
-      }
+      await registerOrSignin(submittedValue!);
+    }
+  }
+
+  Future<void> registerOrSignin(String value) async {
+    if (newUser) {
+      await widget.onRegisterRequest(value);
+    } else {
+      await widget.onSignInRequest(value);
     }
   }
 
@@ -162,7 +166,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                     },
                     onFieldSubmitted: (value) async {
                       if (_formKey.currentState!.validate()) {
-                        await widget.onSubmit(value);
+                        await registerOrSignin(value);
                       }
                     },
                     autofocus: false,
@@ -175,7 +179,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: ElevatedButton(
-                    onPressed: submit,
+                    onPressed: onSubmitButton,
                     child: Text(newUser == true ? str.register : str.signin),
                   ),
                 ),
