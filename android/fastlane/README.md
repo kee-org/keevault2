@@ -39,6 +39,14 @@ release to all beta testers
 
 Push a new beta build to test service
 
+### android screenshots_only
+
+```sh
+[bundle exec] fastlane android screenshots_only
+```
+
+upload new android screenshots for review but no other items
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
