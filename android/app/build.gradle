@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 def dartEnvironmentVariables = [
     KEEVAULT_STAGE: 'dev',
     KEEVAULT_CHANNEL: 'dev'
-];
+]
 
 if (project.hasProperty('dart-defines')) {
     dartEnvironmentVariables = dartEnvironmentVariables + project.property('dart-defines')
@@ -81,7 +81,7 @@ def symbolLevel = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].symbolLeve
 def chosenSigningConfig = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].signingConfig
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -109,15 +109,20 @@ android {
         applicationId "com.keevault.keevault"
         applicationIdSuffix idSuffix
         minSdkVersion 26
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         resValue "string", "app_name", "Kee Vault" + nameSuffix
         resValue "string", "flutter_autofill_service_label", "Kee Vault" + nameSuffix
         ndk.debugSymbolLevel = symbolLevel
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
+    testOptions {
+        execution "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+    
     buildTypes {
         release {
             signingConfig signingConfigs[chosenSigningConfig]
@@ -143,5 +148,5 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testImplementation "junit:junit:4.13.2"
+    androidTestUtil "androidx.test:orchestrator:1.4.2"
 }

@@ -115,7 +115,7 @@ class RemoteVaultRepository {
           etag,
           versionId,
         );
-      } on DioError catch (e, s) {
+      } on DioException catch (e, s) {
         await e.handle('Get primary file', s, retriesRemaining, () async {
           throw KeeLoginRequiredException();
         });
@@ -158,7 +158,7 @@ class RemoteVaultRepository {
           etag,
           versionId,
         );
-      } on DioError catch (e, s) {
+      } on DioException catch (e, s) {
         await e.handle('Put primary file', s, retriesRemaining, () async {
           throw KeeLoginRequiredException();
         });
@@ -183,7 +183,7 @@ class RemoteVaultRepository {
         var response = await dio.head(headUrl, options: Options(responseType: ResponseType.bytes));
         final etag = response.headers['etag']![0];
         return etag;
-      } on DioError catch (e, s) {
+      } on DioException catch (e, s) {
         await e.handle('Head primary file', s, retriesRemaining, () async {
           throw KeeLoginRequiredException();
         });

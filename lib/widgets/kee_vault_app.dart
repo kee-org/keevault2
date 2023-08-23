@@ -137,11 +137,9 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
               cardColor: Color(0xFF292929),
               accentColor: AppPalettes.keeVaultPaletteAccent[100],
               backgroundColor: Colors.grey[900],
-              primaryColorDark: palette[700],
             ).copyWith(
               surface: Colors.grey[850],
-              // ignore: deprecated_member_use
-              secondaryVariant: palette[700],
+              secondaryContainer: palette[700],
             ),
           )
         : ThemeData.from(
@@ -151,11 +149,9 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
               cardColor: Colors.white,
               accentColor: palette[500],
               backgroundColor: Colors.grey[50],
-              primaryColorDark: palette[700],
             ).copyWith(
               surface: Colors.grey[100],
-              // ignore: deprecated_member_use
-              secondaryVariant: palette[700],
+              secondaryContainer: palette[700],
             ),
           );
     return theme.copyWith(
