@@ -407,7 +407,6 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
   }
 
   Future<void> _handleMenuEntrySelected(EntryAction entryAction) async {
-    // ignore: missing_enum_constant_in_switch
     switch (entryAction) {
       case EntryAction.copy:
         await copyValue();
@@ -416,6 +415,9 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
         setState(() {
           _isValueObscured = !_isValueObscured;
         });
+        break;
+      default:
+        break;
     }
   }
 
