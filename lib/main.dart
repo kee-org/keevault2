@@ -6,7 +6,7 @@ import 'package:keevault/logging/logger.dart';
 import 'package:keevault/payment_service.dart';
 import 'package:keevault/widgets/dialog_utils.dart';
 import 'package:logger/logger.dart';
-import 'package:matomo_tracker/matomo_tracker.dart';
+import 'package:matomo_tracker/matomo_tracker.dart' hide Level;
 import 'package:public_suffix/public_suffix.dart';
 import 'vault_backend/exceptions.dart';
 import 'widgets/kee_vault_app.dart';
@@ -50,7 +50,7 @@ void main() async {
             l.w('Error while localising error message', e, stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, message);
-          MatomoTracker.instance.trackEvent(eventCategory: 'main', eventName: 'error', action: 'mitm');
+          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', name: 'error', action: 'mitm'));
         });
       } else if (error is FlutterError &&
           error.message.startsWith('Scaffold.geometryOf() must only be accessed during the paint phase.')) {
@@ -65,7 +65,7 @@ void main() async {
             l.w('Error while localising error message', e, stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, '$message : $stackTrace');
-          MatomoTracker.instance.trackEvent(eventCategory: 'main', eventName: 'error', action: 'wtf');
+          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', name: 'error', action: 'wtf'));
         });
       }
     },

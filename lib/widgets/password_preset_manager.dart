@@ -25,7 +25,7 @@ class PasswordPresetManagerWidget extends StatefulWidget {
 
 class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidget> with TraceableClientMixin {
   @override
-  String get traceTitle => widget.toStringShort();
+  String get actionName => widget.toStringShort();
 
   final TextEditingController _includeTextController = TextEditingController();
 
