@@ -115,7 +115,7 @@ class RemoteService {
         var response =
             await _dio.request<T>(path, queryParameters: {if (haveAToken) 't': token}, options: config, data: obj);
         return response;
-      } on DioError catch (e, s) {
+      } on DioException catch (e, s) {
         await e.handle(_name, s, retriesRemaining, () async {
           if (shouldGetNewTokenIfRequired && retriesRemaining == 2) {
             // We make one attempt to reauthenticate in case the token has

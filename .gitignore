@@ -32,6 +32,7 @@
 /build/
 .gradle/
 .fvm/flutter_sdk
+integration_test/test_bundle.dart
 
 # Web related
 lib/generated_plugin_registrant.dart

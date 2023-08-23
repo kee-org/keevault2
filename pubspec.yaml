@@ -67,7 +67,7 @@ dependencies:
   url_launcher: ^6.1.12
   otp: ^3.1.4
   tuple: ^2.0.2
-  collection: ^1.18.0
+  collection: ^1.17.2
   jiffy: ^6.2.1
   # characters: ^1.2.0
   flutter_treeview:
@@ -96,7 +96,7 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   mime: ^1.0.4
   share_plus: ^7.1.0
-  path: 1.8.2 #flutter sdk always lags behind so upgrade this only when needed
+  path: 1.8.3 #flutter sdk always lags behind so upgrade this only when needed
   permission_handler: ^10.4.3
   flutter_file_dialog: ^3.0.2
   base32: ^2.1.3
@@ -106,7 +106,7 @@ dependencies:
       ref: main
   flutter_speed_dial: ^7.0.0
   receive_intent: ^0.2.4
-  platform: ^3.1.1
+  platform: ^3.1.0
   email_validator: ^2.1.17
   convert: ^3.1.1
   meta: ^1.9.1
@@ -122,22 +122,16 @@ dev_dependencies:
   flutter_lints: ^2.0.2
   dependency_validator: ^3.2.2
   flutter_native_splash: ^2.3.2
-  patrol: ^1.1.4
+  patrol: ^2.2.3
 
 dependency_overrides:
-  path: 1.8.2
-  meta: 1.8.0
-  js: 0.6.5
-  collection: 1.17.0
-  platform: 3.1.0
-  http: 0.13.6
-  #jiffy: 5.0.0
-  logger_flutter:
-    path: ../logger_flutter/
-  biometric_storage:
-    path: ../biometric_storage/
-  flutter_chips_input:
-    path: ../flutter_chips_input/
+  http: 1.1.0
+  # logger_flutter:
+  #   path: ../logger_flutter/
+  # biometric_storage:
+  #   path: ../biometric_storage/
+  # flutter_chips_input:
+  #   path: ../flutter_chips_input/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

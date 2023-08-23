@@ -17,6 +17,8 @@ void main() {
   // for this in early 2023 and it's still not been fixed in June.
   patrolTest(
     'free user unlock and screenshot pauses',
+    // not actually deprecated - bugs occur if this is removed.
+    // ignore: deprecated_member_use
     nativeAutomation: true,
     config: const PatrolTesterConfig(
       existsTimeout: Duration(seconds: 60),

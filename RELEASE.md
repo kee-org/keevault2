@@ -84,3 +84,16 @@ pbcopy < /dev/null
 * iPad = iPad Pro 12.9" 16.4
 * Android phone = Nexus 6 (16:9) API 33
 * Android tablet = Nexus 10 API 31 (do not go higher than this API until Google has enabled a way for us to hide the huge bottom taskbar introduced in API 32)
+
+
+# Renewing Apple certificates
+
+* Might cause TestFlight builds to become invalidated?
+
+```
+cd ios
+bundle exec fastlane match nuke development
+bundle exec fastlane match nuke distribution
+bundle exec fastlane generate_new_certificates
+bundle exec fastlane iapdevcert
+```

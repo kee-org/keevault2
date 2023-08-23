@@ -93,7 +93,7 @@ extension KdbxGroupRecursion on KdbxGroup {
   }
 }
 
-extension DioHelperHandleException on DioError {
+extension DioHelperHandleException on DioException {
   Future<void> handle(String context, StackTrace s, int retriesRemaining, loginRequiredHandler) async {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx and is also not 304.
@@ -115,22 +115,22 @@ extension DioHelperHandleException on DioError {
           throw KeeServerFailException();
         default:
           if (retriesRemaining > 0) return;
-          throw KeeUnexpectedException('[$context] DioError with invalid response', this, s);
+          throw KeeUnexpectedException('[$context] DioException with invalid response', this, s);
       }
     } else if (retriesRemaining > 0) {
       return;
     } else {
       // Something happened in setting up or sending the request that triggered an Error
-      if (type == DioErrorType.connectionTimeout) {
+      if (type == DioExceptionType.connectionTimeout) {
         throw KeeServerUnreachableException();
       }
-      if (type == DioErrorType.receiveTimeout || type == DioErrorType.sendTimeout) {
+      if (type == DioExceptionType.receiveTimeout || type == DioExceptionType.sendTimeout) {
         throw KeeServerTimeoutException();
       }
-      if (type == DioErrorType.unknown) {
+      if (type == DioExceptionType.unknown) {
         throw KeeServerUnreachableException();
       }
-      throw KeeUnexpectedException('[$context] DioError with no response', this, s);
+      throw KeeUnexpectedException('[$context] DioException with no response', this, s);
     }
   }
 }
