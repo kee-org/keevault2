@@ -28,7 +28,7 @@ class EntryHistoryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final str = S.of(context);
     return TraceableWidget(
-      traceTitle: 'EntryHistory',
+      actionName: 'EntryHistory',
       child: BlocBuilder<EntryCubit, EntryState>(builder: (context, state) {
         if (state is! EntryLoaded) return Container();
         final EditEntryViewModel entry = state.entry;
@@ -214,8 +214,8 @@ class EntryHistoryItem extends StatelessWidget {
                   ),
                   Tooltip(
                     message:
-                        '${Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.createdTime.toLocal()).jms}',
-                    child: Text(Jiffy(entry.createdTime).fromNow()),
+                        '${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).jms}',
+                    child: Text(Jiffy.parseFromDateTime(entry.createdTime).fromNow()),
                   ),
                 ],
               ),
@@ -227,8 +227,8 @@ class EntryHistoryItem extends StatelessWidget {
                   ),
                   Tooltip(
                     message:
-                        '${Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.modifiedTime.toLocal()).jms}',
-                    child: Text(Jiffy(entry.modifiedTime).fromNow()),
+                        '${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).jms}',
+                    child: Text(Jiffy.parseFromDateTime(entry.modifiedTime).fromNow()),
                   ),
                 ],
               ),

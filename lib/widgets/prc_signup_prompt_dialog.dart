@@ -23,7 +23,7 @@ class PRCSignupPromptDialog extends StatefulWidget with DialogMixin<bool> {
 class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
     with WidgetsBindingObserver, TraceableClientMixin {
   @override
-  String get traceTitle => widget.toStringShort();
+  String get actionName => widget.toStringShort();
 
   late TextEditingController _controller;
   AppLifecycleState? _previousState;
@@ -69,7 +69,7 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
         l.d('signup successful');
         navigator.pop(true);
         sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
-        MatomoTracker.instance.trackEvent(eventCategory: 'main', eventName: 'prcSignup', action: 'free');
+        MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', name: 'prcSignup', action: 'free'));
       } else {
         l.e('signup failed');
         setState(() {

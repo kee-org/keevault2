@@ -50,7 +50,7 @@ class KeeVaultApp extends StatefulWidget {
 
 class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, TraceableClientMixin {
   @override
-  String get traceTitle => widget.toStringShort();
+  String get actionName => widget.toStringShort();
 
   final entryCubit = EntryCubit();
   final generatorProfilesCubit = GeneratorProfilesCubit();
@@ -90,7 +90,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async => await Jiffy.locale('en_gb'));
+    WidgetsBinding.instance.addPostFrameCallback((_) async => await Jiffy.setLocale('en_gb'));
     WidgetsBinding.instance.addObserver(this);
     if (KeeVaultPlatform.isAndroid) _initReceiveIntentSubscription();
   }
@@ -269,6 +269,9 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                   themeMode: (appSettingsState as AppSettingsBasic).themeMode,
                   onGenerateRoute: AppConfig.router.generator,
                   initialRoute: '/',
+                  navigatorObservers: [
+                    matomoObserver,
+                  ],
                 ),
               ),
             ),

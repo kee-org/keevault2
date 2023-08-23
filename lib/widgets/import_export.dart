@@ -92,7 +92,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
                       child: Text(
-                        'It is due to be automatically destroyed soon after ${Jiffy(timeOfDeath).yMMMMEEEEd} ${Jiffy(timeOfDeath).jm}.',
+                        'It is due to be automatically destroyed soon after ${Jiffy.parseFromDateTime(timeOfDeath).yMMMMEEEEd} ${Jiffy.parseFromDateTime(timeOfDeath).jm}.',
                       ),
                     ),
                     Padding(
@@ -122,7 +122,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
           ]
         : [];
     return TraceableWidget(
-      traceTitle: 'ImportExport',
+      actionName: 'ImportExport',
       child: BlocBuilder<VaultCubit, VaultState>(
         builder: (context, state) {
           return ColouredSafeArea(

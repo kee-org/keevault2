@@ -28,7 +28,7 @@ class PasswordGeneratorWidget extends StatefulWidget {
 
 class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with TraceableClientMixin {
   @override
-  String get traceTitle => widget.toStringShort();
+  String get actionName => widget.toStringShort();
 
   String _currentPassword = '';
   final TextEditingController _includeTextController = TextEditingController();
@@ -164,7 +164,7 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
       listener: (context, state) {
         if (state is! GeneratorProfilesEnabled) return;
         final generatorState = state;
-        setState(() => {_currentPassword = _generate(generatorState.current)});
+        setState(() => _currentPassword = _generate(generatorState.current));
       },
     );
   }

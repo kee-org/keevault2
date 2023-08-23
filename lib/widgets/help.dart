@@ -22,7 +22,7 @@ class HelpWidget extends StatefulWidget {
 
 class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
   @override
-  String get traceTitle => widget.toStringShort();
+  String get actionName => widget.toStringShort();
 
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',

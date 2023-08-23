@@ -34,7 +34,7 @@ class SettingsWidget extends StatefulWidget {
 
 class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMixin {
   @override
-  String get traceTitle => widget.toStringShort();
+  String get actionName => widget.toStringShort();
   final registrationEnabled = (EnvironmentConfig.iapGooglePlay && KeeVaultPlatform.isAndroid) ||
       (EnvironmentConfig.iapAppleAppStore && KeeVaultPlatform.isIOS);
 

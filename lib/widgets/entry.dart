@@ -152,7 +152,6 @@ class EntryWidget extends StatelessWidget {
           ));
       cubit.addField(field);
       //TODO:f focus keyboard on new field - maybe with an onNextAnimationFrame type of callback or maybe a bloclistener to inspect the old and new state
-
     }
   }
 
@@ -500,8 +499,8 @@ class EntryWidget extends StatelessWidget {
                                       ),
                                       Tooltip(
                                         message:
-                                            '${Jiffy(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.createdTime.toLocal()).jms}',
-                                        child: Text(Jiffy(entry.createdTime).fromNow()),
+                                            '${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).jms}',
+                                        child: Text(Jiffy.parseFromDateTime(entry.createdTime).fromNow()),
                                       ),
                                     ],
                                   ),
@@ -513,8 +512,8 @@ class EntryWidget extends StatelessWidget {
                                       ),
                                       Tooltip(
                                         message:
-                                            '${Jiffy(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy(entry.modifiedTime.toLocal()).jms}',
-                                        child: Text(Jiffy(entry.modifiedTime).fromNow()),
+                                            '${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).jms}',
+                                        child: Text(Jiffy.parseFromDateTime(entry.modifiedTime).fromNow()),
                                       ),
                                     ],
                                   ),

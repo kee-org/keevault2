@@ -23,7 +23,7 @@ class AutofillSaveWidget extends StatefulWidget {
 
 class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableClientMixin {
   @override
-  String get traceTitle => widget.toStringShort();
+  String get actionName => widget.toStringShort();
 
   KdbxEntry? newEntry;
   @override

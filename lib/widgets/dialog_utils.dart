@@ -59,11 +59,8 @@ class DialogUtils {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
-                  child: LogConsoleOnShake(
-                    dark: true,
-                    child: Center(
-                      child: Text(content),
-                    ),
+                  child: Center(
+                    child: Text(content),
                   ),
                 ),
               ],
