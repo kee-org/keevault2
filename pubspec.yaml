@@ -123,7 +123,7 @@ dev_dependencies:
   flutter_lints: ^2.0.2
   dependency_validator: ^3.2.2
   flutter_native_splash: ^2.3.2
-  patrol: ^2.2.3
+  #patrol: ^2.2.3
 
 dependency_overrides:
   http: 1.1.0
