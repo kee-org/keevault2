@@ -12,6 +12,7 @@ import 'package:keevault/model/entry.dart';
 import 'package:clock/clock.dart';
 import 'package:keevault/model/field.dart';
 import 'package:otp/otp.dart';
+import '../kee_clipboard.dart';
 import '../otpauth.dart';
 import '../generated/l10n.dart';
 import 'dialog_utils.dart';
@@ -392,16 +393,19 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
   Future<bool> copyValue() async {
     final sm = ScaffoldMessenger.of(context);
     final str = S.of(context);
-    await Clipboard.setData(ClipboardData(text: widget.field.textValue));
-    sm.showSnackBar(SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(str.detFieldCopied),
-        ],
-      ),
-      duration: Duration(seconds: 3),
-    ));
+    final isSensitive = widget.field.value is ProtectedValue || widget.field.protect == true;
+    final userNotified = await KeeClipboard.set(widget.field.textValue, isSensitive);
+    if (!userNotified) {
+      sm.showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(str.detFieldCopied),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+      ));
+    }
     return true;
   }
 
@@ -553,16 +557,18 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
     l.d('Copying OTP value.');
     final sm = ScaffoldMessenger.of(context);
     final str = S.of(context);
-    await Clipboard.setData(ClipboardData(text: _currentOtp));
-    sm.showSnackBar(SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(str.detFieldCopied),
-        ],
-      ),
-      duration: Duration(seconds: 3),
-    ));
+    final userNotified = await KeeClipboard.set(_currentOtp, true);
+    if (!userNotified) {
+      sm.showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(str.detFieldCopied),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+      ));
+    }
     return true;
   }
 
@@ -578,7 +584,21 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
   @override
   Future<void> _handleMenuEntrySelected(BuildContext context, EntryAction entryAction) async {
     if (entryAction == EntryAction.copyRawData) {
-      await Clipboard.setData(ClipboardData(text: widget.field.textValue));
+      l.d('Copying raw OTP data.');
+      final sm = ScaffoldMessenger.of(context);
+      final str = S.of(context);
+      final userNotified = await KeeClipboard.set(widget.field.textValue, true);
+      if (!userNotified) {
+        sm.showSnackBar(SnackBar(
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(str.detFieldCopied),
+            ],
+          ),
+          duration: Duration(seconds: 3),
+        ));
+      }
       return;
     }
     return super._handleMenuEntrySelected(context, entryAction);

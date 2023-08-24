@@ -918,6 +918,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.4"
+  sensitive_clipboard:
+    dependency: "direct main"
+    description:
+      name: sensitive_clipboard
+      sha256: f5b115bedd4350b7be6fad5f99824633f4f712abda3ffdbcc430c0cc5e107b46
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   share_plus:
     dependency: "direct main"
     description:
