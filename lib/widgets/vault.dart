@@ -170,8 +170,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
               if (state is! VaultLoaded && state is! VaultImporting) {
                 BlocProvider.of<FilterCubit>(context).reset();
                 await AppConfig.router.navigateTo(context, Routes.root, clearStack: true);
-              }
-              if (state is VaultBackgroundError) {
+              } else if (state is VaultBackgroundError) {
                 if (state.toast) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(state.message),

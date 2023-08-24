@@ -256,16 +256,23 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
           type: FileType.any,
           withData: true,
         );
-        await FilePicker.platform.clearTemporaryFiles(); //TODO:f: concurrently with below
+        final cleanupFuture = FilePicker.platform.clearTemporaryFiles(); //TODO:f: concurrently with below
 
         final bytes = result?.files.firstOrNull?.bytes;
         if (bytes == null) {
           // User canceled the picker
+          await cleanupFuture;
           return;
         }
         final extension = result?.files.firstOrNull?.extension;
         if (extension != 'kdbx') {
-          await DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
+          l.w('${str.incorrectFile} ${str.selectKdbxFile}');
+          if (context.mounted) {
+            await DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
+          } else {
+            l.w('context was destroyed so could not notify user of previous error');
+          }
+          await cleanupFuture;
           return;
         }
         final lockedSource = LockedVaultFile(
@@ -277,6 +284,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         );
         await vaultCubit.importKdbx(
             vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
+        await cleanupFuture;
       } on KdbxUnsupportedException catch (e) {
         l.e('Import failed: $e');
         WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -311,6 +319,9 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         return;
       }
     }
+    if (!context.mounted) {
+      return;
+    }
     final permissionResult = await tryToGetPermission(
       context,
       Permission.storage,
@@ -341,7 +352,11 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         ));
       } on Exception catch (e, st) {
         l.e('Export failed: $e', st);
-        await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+        if (context.mounted) {
+          await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+        } else {
+          l.w('context was destroyed so could not notify user of previous error');
+        }
       }
     }
   }
@@ -350,6 +365,14 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final str = S.of(context);
     final sm = ScaffoldMessenger.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
+
+    final permissionResult = await tryToGetPermission(
+      context,
+      Permission.storage,
+      'Storage',
+      str.export.toLowerCase(),
+      str.cancelExportOrImport(str.export.toLowerCase()),
+    );
 
     final bytes = await vaultCubit.loadFreeFileForExport();
 
@@ -366,13 +389,6 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
       return;
     }
 
-    final permissionResult = await tryToGetPermission(
-      context,
-      Permission.storage,
-      'Storage',
-      str.export.toLowerCase(),
-      str.cancelExportOrImport(str.export.toLowerCase()),
-    );
     if (permissionResult == PermissionResult.approved) {
       try {
         final params = SaveFileDialogParams(
@@ -396,7 +412,11 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         ));
       } on Exception catch (e, st) {
         l.e('Export failed: $e', st);
-        await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+        if (context.mounted) {
+          await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+        } else {
+          l.w('context was destroyed so could not notify user of previous error');
+        }
       }
     }
   }

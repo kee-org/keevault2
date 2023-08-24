@@ -709,12 +709,19 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
       setState(() {
         saving = false;
       });
-      BlockingOverlay.of(context).hide();
+      try {
+        blockingOverlay.hide();
+      } on Exception {
+        if (context.mounted) {
+          BlockingOverlay.of(context).hide();
+        }
+      }
     }
   }
 
   registerAccount(String email, String password, bool marketingEmails) async {
-    BlockingOverlay.of(context).show(null, Duration(seconds: 1));
+    final blockingOverlay = BlockingOverlay.of(context);
+    blockingOverlay.show(null, Duration(seconds: 1));
     final accountCubit = BlocProvider.of<AccountCubit>(context);
     User user;
     try {
@@ -725,7 +732,13 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
         saveError = true;
         saving = false;
       });
-      BlockingOverlay.of(context).hide();
+      try {
+        blockingOverlay.hide();
+      } on Exception {
+        if (context.mounted) {
+          BlockingOverlay.of(context).hide();
+        }
+      }
       return;
     }
     await subscribeUser(user);
@@ -794,6 +807,8 @@ class AccountCreateWrapperWidget extends StatelessWidget {
             ),
           ),
           onWillPop: () async {
+            final vc = BlocProvider.of<VaultCubit>(context);
+            final ac = BlocProvider.of<AccountCubit>(context);
             final result = skipBackCheck ||
                 await showDialog(
                     routeSettings: RouteSettings(),
@@ -812,8 +827,7 @@ class AccountCreateWrapperWidget extends StatelessWidget {
                             ]));
             if (result) {
               // sign out so user can see initial signin/register page again.
-              final vc = BlocProvider.of<VaultCubit>(context);
-              await BlocProvider.of<AccountCubit>(context).forgetUser(vc.signout);
+              await ac.forgetUser(vc.signout);
               return true;
             }
             return false;

@@ -92,7 +92,7 @@ class DialogUtils {
     }
     if (!result) {
       final context = AppConfig.navigatorKey.currentContext;
-      if (context != null) {
+      if (context != null && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(S.of(context).urlOpenFailed),
           duration: Duration(seconds: 4),

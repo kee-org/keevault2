@@ -19,6 +19,9 @@ Future<PermissionResult> tryToGetPermission(
     PermissionStatus permissionStatus = await permission.status;
     if (permissionStatus == PermissionStatus.denied) {
       permissionStatus = await permission.request();
+      if (!context.mounted) {
+        return PermissionResult.rejected;
+      }
       if (permissionStatus == PermissionStatus.permanentlyDenied) {
         l.w('$permissionName permission permanently denied');
         if (await DialogUtils.showConfirmDialog(
@@ -31,12 +34,14 @@ Future<PermissionResult> tryToGetPermission(
             ))) {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             if (!await openAppSettings()) {
-              await DialogUtils.showSimpleAlertDialog(
-                context,
-                str.vaultStatusError,
-                str.permissionSettingsOpenError,
-                routeAppend: 'couldNotOpenPermissionSettings',
-              );
+              if (context.mounted) {
+                await DialogUtils.showSimpleAlertDialog(
+                  context,
+                  str.vaultStatusError,
+                  str.permissionSettingsOpenError,
+                  routeAppend: 'couldNotOpenPermissionSettings',
+                );
+              }
             }
           });
           // User should return later after changing settings so we can try again
