@@ -9,6 +9,7 @@ import 'package:keevault/model/entry.dart';
 import 'package:keevault/model/field.dart';
 import 'package:keevault/widgets/binaries.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import '../kee_clipboard.dart';
 import '../generated/l10n.dart';
 import 'coloured_safe_area_widget.dart';
 import 'dialog_utils.dart';
@@ -424,16 +425,19 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
   Future<bool> copyValue() async {
     final sm = ScaffoldMessenger.of(context);
     final str = S.of(context);
-    await Clipboard.setData(ClipboardData(text: widget.field.textValue));
-    sm.showSnackBar(SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(str.detFieldCopied),
-        ],
-      ),
-      duration: Duration(seconds: 3),
-    ));
+    final isSensitive = widget.field.value is ProtectedValue || widget.field.protect == true;
+    final userNotified = await KeeClipboard.set(widget.field.textValue, isSensitive);
+    if (!userNotified) {
+      sm.showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(str.detFieldCopied),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+      ));
+    }
     return true;
   }
 

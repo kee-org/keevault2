@@ -9,6 +9,7 @@ import 'package:keevault/config/routes.dart';
 import 'package:keevault/cubit/generator_profiles_cubit.dart';
 import 'package:keevault/model/password_generator_profile.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import '../kee_clipboard.dart';
 import '../generated/l10n.dart';
 import '../phonetic.dart';
 import 'coloured_safe_area_widget.dart';
@@ -153,7 +154,7 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                 if (widget.apply != null) {
                   widget.apply!(_currentPassword);
                 } else {
-                  await Clipboard.setData(ClipboardData(text: _currentPassword));
+                  await KeeClipboard.set(_currentPassword, true);
                 }
                 navigator.pop(true);
               },
