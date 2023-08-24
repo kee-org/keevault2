@@ -90,17 +90,26 @@ class EntryWidget extends StatelessWidget {
           type: FileType.any,
           withData: true,
         );
-        await FilePicker.platform.clearTemporaryFiles(); //TODO:f concurrently with below await operation
+        final cleanupFuture = FilePicker.platform.clearTemporaryFiles();
 
         final bytes = result?.files.firstOrNull?.bytes;
         if (bytes == null) {
           // User canceled the picker
+          await cleanupFuture;
           return;
         }
         final fileName = result?.files.firstOrNull?.name ?? UuidUtil.createNonCryptoUuid();
-        await _attachFileContent(context, fileName, bytes);
+        if (context.mounted) {
+          await _attachFileContent(context, fileName, bytes);
+        }
+        await cleanupFuture;
       } on Exception {
-        await DialogUtils.showErrorDialog(context, str.attachmentError, str.attachmentErrorDetails);
+        l.e('${str.attachmentError} ${str.attachmentErrorDetails}');
+        if (context.mounted) {
+          await DialogUtils.showErrorDialog(context, str.attachmentError, str.attachmentErrorDetails);
+        } else {
+          l.w('context was destroyed so could not notify user of previous error');
+        }
       }
     }
   }
@@ -192,6 +201,7 @@ class EntryWidget extends StatelessWidget {
           final barcodeResult = await barcode.BarcodeScanner.scan();
           if (barcodeResult.type == barcode.ResultType.Barcode) {
             final result = await cleanOtpCodeCode(barcodeResult.rawContent);
+            if (!context.mounted) break;
             if (result == null) {
               final tryAgain = await DialogUtils.showConfirmDialog(
                   context: context,
@@ -209,6 +219,7 @@ class EntryWidget extends StatelessWidget {
             }
           }
           if (barcodeResult.type == barcode.ResultType.Error) {
+            if (!context.mounted) break;
             final tryAgain = await DialogUtils.showConfirmDialog(
                 context: context,
                 params: ConfirmDialogParams(
@@ -239,6 +250,7 @@ class EntryWidget extends StatelessWidget {
     }
 
     while (true) {
+      if (!context.mounted) return null;
       final totpCode = await SimplePromptDialog(
               title: str.otpManualTitle,
               bodyText: str.otpExplainer1,
@@ -249,6 +261,7 @@ class EntryWidget extends StatelessWidget {
         return null;
       }
       final result = await cleanOtpCodeCode(totpCode);
+      if (!context.mounted) return null;
       if (result == null) {
         await DialogUtils.showSimpleAlertDialog(
           context,

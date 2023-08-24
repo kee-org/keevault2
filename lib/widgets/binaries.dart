@@ -234,8 +234,8 @@ class BinaryCardWidget extends StatelessWidget {
                       await file.create(recursive: true);
                       await file.writeAsBytes(bytes, flush: true);
                       try {
-                        final xfile = XFile(file.path, mimeType: mimeType);
-                        await Share.shareXFiles([xfile], subject: 'Kee Vault attachment');
+                        final xFile = XFile(file.path, mimeType: mimeType);
+                        await Share.shareXFiles([xFile], subject: 'Kee Vault attachment');
                       } finally {
                         await file.delete();
                       }
@@ -308,7 +308,11 @@ class BinaryCardWidget extends StatelessWidget {
                               ));
                             } on Exception catch (e, st) {
                               l.e('Export failed: $e', st);
-                              await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+                              if (context.mounted) {
+                                await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+                              } else {
+                                l.w('context was destroyed so could not notify user of previous error');
+                              }
                             }
                           }
                         });
@@ -325,7 +329,7 @@ class BinaryCardWidget extends StatelessWidget {
                             final proceed = await DialogUtils.showConfirmDialog(
                                 context: context,
                                 params: ConfirmDialogParams(content: str.attachmentConfirmDelete(attachment.key.key)));
-                            if (proceed) {
+                            if (proceed && context.mounted) {
                               _deleteFile(context, attachment.key);
                             }
                           });

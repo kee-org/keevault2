@@ -330,8 +330,9 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
         },
         onChange: (_) async {
           final vaultCubit = BlocProvider.of<VaultCubit>(context);
+          final accountCubit = BlocProvider.of<AccountCubit>(context);
           await vaultCubit.disableQuickUnlock();
-          final user = BlocProvider.of<AccountCubit>(context).currentUserIfIdKnown;
+          final user = accountCubit.currentUserIfIdKnown;
           await vaultCubit.enableQuickUnlock(
             user,
             vaultCubit.currentVaultFile?.files.current,
@@ -355,8 +356,9 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
         },
         onChange: (_) async {
           final vaultCubit = BlocProvider.of<VaultCubit>(context);
+          final accountCubit = BlocProvider.of<AccountCubit>(context);
           await vaultCubit.disableQuickUnlock();
-          final user = BlocProvider.of<AccountCubit>(context).currentUserIfIdKnown;
+          final user = accountCubit.currentUserIfIdKnown;
           await vaultCubit.enableQuickUnlock(
             user,
             vaultCubit.currentVaultFile?.files.current,
@@ -475,10 +477,11 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
             child: ElevatedButton(
               child: Text(str.enableAutofill),
               onPressed: () async {
+                var autofillCubit = BlocProvider.of<AutofillCubit>(context);
                 await DialogUtils.showSimpleAlertDialog(
                     context, str.enableAutofill, str.enableAutofillIosInstructions(_packageInfo.appName),
                     routeAppend: 'autofill-ios-instructions');
-                await BlocProvider.of<AutofillCubit>(context).refresh();
+                await autofillCubit.refresh();
               },
             ),
           ),

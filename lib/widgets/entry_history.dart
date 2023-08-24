@@ -68,6 +68,9 @@ class EntryHistoryWidget extends StatelessWidget {
                                     return;
                                   }
                                 }
+                                if (!context.mounted) {
+                                  return;
+                                }
                                 final proceed = await DialogUtils.showConfirmDialog(
                                     context: context,
                                     params: ConfirmDialogParams(
