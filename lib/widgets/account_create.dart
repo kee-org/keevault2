@@ -323,7 +323,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                           ),
                           TextSpan(
                             text: str.localOnlyAgree2,
-                            style: theme.textTheme.bodyMedium!.copyWith(color: mainColor),
+                            style: theme.textTheme.bodyMedium!.copyWith(color: mainColor, fontWeight: FontWeight.bold),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
                                 await SubscriberTermsDialog().show(context);
@@ -559,7 +559,8 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                             ),
                             TextSpan(
                               text: str.localOnlyAgree2,
-                              style: theme.textTheme.bodyMedium!.copyWith(color: mainColor),
+                              style:
+                                  theme.textTheme.bodyMedium!.copyWith(color: mainColor, fontWeight: FontWeight.bold),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () async {
                                   await SubscriberTermsDialog().show(context);

@@ -62,8 +62,9 @@ class SubscriberTermsDialog extends StatelessWidget with DialogMixin<bool> {
                     onTap: followLink,
                     child: Text(
                       tosLink,
-                      style: theme.textTheme.bodyMedium!
-                          .copyWith(color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white),
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                          color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   );
                 },
@@ -79,8 +80,9 @@ class SubscriberTermsDialog extends StatelessWidget with DialogMixin<bool> {
                     onTap: followLink,
                     child: Text(
                       privacyLink,
-                      style: theme.textTheme.bodyMedium!
-                          .copyWith(color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white),
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                          color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   );
                 },

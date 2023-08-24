@@ -6,7 +6,11 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:keevault/config/platform.dart';
 import 'package:keevault/widgets/kee_vault_app.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:path_provider/path_provider.dart';
+// We have to exclude this package from pubspec.yaml most of the time but don't want
+// to have to come back here to reenable it when it is occasionally re-enabled.
+// ignore: depend_on_referenced_packages
 import 'package:patrol/patrol.dart';
 import 'package:public_suffix/public_suffix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +36,11 @@ void main() {
       await Settings.setValue('biometrics-enabled', false);
       await Settings.setValue('introShownVaultSummary', true);
 //    await Settings.setValue('currentSortOrder', enumToString(mode));
+
+      await MatomoTracker.instance.initialize(
+        siteId: 7,
+        url: 'https://fakematomoaddressfortesting.kee.pm/',
+      );
 
       // install local user kdbx file for demo
       await createDemo();

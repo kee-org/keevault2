@@ -33,6 +33,7 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
   Widget build(BuildContext context) {
     final str = S.of(context);
     final theme = Theme.of(context);
+    final mainColor = theme.brightness == Brightness.dark ? theme.colorScheme.secondary : theme.colorScheme.primary;
     return Form(
       key: _formKey,
       child: Padding(
@@ -142,7 +143,7 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
                   ),
                   TextSpan(
                     text: str.localOnlyAgree2,
-                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.primaryColor),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: mainColor, fontWeight: FontWeight.bold),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
                         await FreeUserTermsDialog().show(context);

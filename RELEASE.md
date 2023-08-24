@@ -33,6 +33,13 @@ We use Patrol integration testing framework to orchestrate navigation through th
 
 0. Build:
 
+BOTH:
+
+Uncomment patrol dependency in pubspec.yaml and run `flutter pub get`
+
+Above is needed until we can leave the dependency in permanently:
+https://github.com/leancodepl/patrol/issues/681#issuecomment-1362021165
+
 ios:
 
 ```
@@ -97,3 +104,5 @@ bundle exec fastlane match nuke distribution
 bundle exec fastlane generate_new_certificates
 bundle exec fastlane iapdevcert
 ```
+
+`bundle exec fastlane certificates` on any other mac devices to get the latest certs that were just generated.
