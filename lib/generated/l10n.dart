@@ -3829,6 +3829,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Open in browser`
+  String get openInBrowser {
+    return Intl.message(
+      'Open in browser',
+      name: 'openInBrowser',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
