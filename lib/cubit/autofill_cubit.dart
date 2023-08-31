@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_autofill_service/flutter_autofill_service.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/logging/logger.dart';
-import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 
 import '../config/platform.dart';
@@ -47,23 +47,12 @@ class AutofillCubit extends Cubit<AutofillState> {
       emit(AutofillAvailable(enabled));
       return;
     }
-
+    //TODO:f: should below be here? or after potential emit of autofill request for filling?
+    // if (state is AutofillSaved) {
+    //   emit(AutofillAvailable(enabled));
+    //   return;
+    // }
     if (saveRequested) {
-      if (state is AutofillSaving || state is AutofillSaved) {
-        // After launching with a save intent, if we then restore after the save
-        // has been completed we need to proceed as if no save has been requested...
-        // but still work the next time a save request intent is sent to the instance.
-        // Probably need to track a unique ID for each save operation via the intent
-        // extras? then flag what the latest received via intent is, and the
-        // latest that user has completed.
-        //
-        // A first simple attempt at a solution is below
-        // See https://github.com/kee-org/keevault2/issues/9 for next steps
-        final newRequest = (state as AutofillModeActive).androidMetadata.toJson() != androidMetadata!.toJson();
-        if (!newRequest) {
-          return;
-        }
-      }
       emit(AutofillSaving(androidMetadata!));
       return;
     }
@@ -72,6 +61,8 @@ class AutofillCubit extends Cubit<AutofillState> {
       throw Exception('Android failed to provide the necessary autofill information.');
     }
 
+    // we only call this cubit's function if we have some sort of intent relating to the
+    // autofill service so we can now assume the user is asking for us to autofill another app/site
     emit(AutofillRequested(autofillForceInteractive, androidMetadata));
   }
 
