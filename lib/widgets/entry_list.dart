@@ -7,6 +7,7 @@ import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/cubit/sort_cubit.dart';
+import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:keevault/widgets/entry.dart';
 import 'package:keevault/widgets/in_app_messenger.dart';
@@ -277,6 +278,10 @@ class EntryListItemWidget extends StatelessWidget {
                       );
                     },
                     onClosed: (bool? keepChanges) async {
+                      if (!context.mounted) {
+                        l.e("context not mounted so we can't tidy up or save the entry. Presumably something happened to make the underlying Vault go away, such as autofill save entry screen replacing the main vault.");
+                        return;
+                      }
                       final entryCubit = BlocProvider.of<EntryCubit>(context);
                       final iam = InAppMessengerWidget.of(context);
                       if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
