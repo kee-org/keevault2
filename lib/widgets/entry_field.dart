@@ -332,6 +332,11 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
       case EntryAction.changeIcon:
         widget.onChangeIcon();
         break;
+      case EntryAction.openInBrowser:
+        if (widget.field.textValue.isNotEmpty) {
+          await DialogUtils.openUrl(widget.field.textValue);
+        }
+        break;
     }
   }
 
@@ -354,6 +359,16 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
         child: ListTile(
           leading: const Icon(Icons.check_box_outline_blank_rounded),
           title: Text(str.detSetIcon),
+        ),
+      ));
+    }
+
+    if (widget.field.name == KdbxKeyCommon.KEY_URL) {
+      mutableMenuItems.add(PopupMenuItem(
+        value: EntryAction.openInBrowser,
+        child: ListTile(
+          leading: const Icon(Icons.open_in_new),
+          title: Text(str.openInBrowser),
         ),
       ));
     }

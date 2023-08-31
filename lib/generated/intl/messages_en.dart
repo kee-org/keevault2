@@ -434,6 +434,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "offerToSave":
             MessageLookupByLibrary.simpleMessage("Offer to save passwords"),
         "openError": MessageLookupByLibrary.simpleMessage("Error"),
+        "openInBrowser":
+            MessageLookupByLibrary.simpleMessage("Open in browser"),
         "openLogConsole":
             MessageLookupByLibrary.simpleMessage("Open log console"),
         "openSettings": MessageLookupByLibrary.simpleMessage("Open settings"),

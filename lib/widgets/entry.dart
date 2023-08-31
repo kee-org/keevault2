@@ -822,4 +822,5 @@ enum EntryAction {
   rename,
   protect,
   delete,
+  openInBrowser,
 }

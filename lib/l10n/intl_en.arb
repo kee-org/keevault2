@@ -376,5 +376,6 @@
   "verificationRequest": "Please verify your email address. When you registered we sent you a verification link to {email}. Please now follow the instructions in that email. If you can't find it, you can request that we send a new one.",
   "resendVerification": "Resend the verification link",
   "signInAgainWhenVerified": "When your email address is successfully verified you can click the button below to continue your sign-in.",
-  "expiredWhileSignedIn": "Your subscription has just expired. Please click \"Sign out\" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don't panic."
+  "expiredWhileSignedIn": "Your subscription has just expired. Please click \"Sign out\" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don't panic.",
+  "openInBrowser": "Open in browser"
 }
