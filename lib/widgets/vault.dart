@@ -121,7 +121,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    return BlocBuilder<AutofillCubit, AutofillState>(
+    return BlocConsumer<AutofillCubit, AutofillState>(
       builder: (context, autofillState) {
         return BlocConsumer<VaultCubit, VaultState>(
             buildWhen: (previous, current) => current is VaultLoaded,
@@ -179,6 +179,14 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
                 }
               }
             });
+      },
+      listener: (BuildContext context, AutofillState state) {
+        if (state is AutofillSaving) {
+          l.d('Popping until top level reached');
+          AppConfig.navigatorKey.currentState?.popUntil((r) {
+            return r.isFirst;
+          });
+        }
       },
     );
   }
