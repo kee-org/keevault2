@@ -91,7 +91,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   matomo_tracker: ^4.0.0
-  file_picker: ^5.3.3
+  file_picker: ^5.5.0
   zxcvbn: ^1.0.0
   flutter_rating_bar: ^4.0.1
   mime: ^1.0.4

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:kdbx/kdbx.dart';
@@ -16,9 +17,7 @@ import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../cubit/account_cubit.dart';
 import '../generated/l10n.dart';
-import 'package:permission_handler/permission_handler.dart' show Permission;
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
-
 import '../permissions.dart';
 import 'coloured_safe_area_widget.dart';
 
@@ -243,59 +242,64 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
   _import(BuildContext context, VaultLoaded vaultState) async {
     final str = S.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
-    final permissionResult = await tryToGetPermission(
-      context,
-      Permission.storage,
-      'Storage',
-      str.import.toLowerCase(),
-      str.cancelExportOrImport(str.import.toLowerCase()),
-    );
-    if (permissionResult == PermissionResult.approved) {
-      try {
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.any,
-          withData: true,
-        );
-        final cleanupFuture = FilePicker.platform.clearTemporaryFiles(); //TODO:f: concurrently with below
 
-        final bytes = result?.files.firstOrNull?.bytes;
-        if (bytes == null) {
-          // User canceled the picker
-          await cleanupFuture;
-          return;
-        }
-        final extension = result?.files.firstOrNull?.extension;
-        if (extension != 'kdbx') {
-          l.w('${str.incorrectFile} ${str.selectKdbxFile}');
-          if (context.mounted) {
-            await DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
-          } else {
-            l.w('context was destroyed so could not notify user of previous error');
-          }
-          await cleanupFuture;
-          return;
-        }
-        final lockedSource = LockedVaultFile(
-          bytes,
-          DateTime.now(),
-          vaultState.vault.files.current.credentials,
-          null,
-          null,
-        );
-        await vaultCubit.importKdbx(
-            vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
+    //TODO: Test ios < 16 still works for all permissions stuff
+
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        //TODO:f: restrict to kdbx files when file picker library supports this
+        //type: FileType.custom,
+        //allowedExtensions: ['kdbx'],
+        withData: true,
+      );
+      final cleanupFuture = FilePicker.platform.clearTemporaryFiles();
+
+      final bytes = result?.files.firstOrNull?.bytes;
+      if (bytes == null) {
+        // User canceled the picker
         await cleanupFuture;
-      } on KdbxUnsupportedException catch (e) {
-        l.e('Import failed: $e');
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await DialogUtils.showErrorDialog(context, str.importError, str.importErrorKdbx + e.hint);
-        });
-      } on Exception catch (e, st) {
-        l.e('Import failed: $e ; $st');
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await DialogUtils.showErrorDialog(context, str.importError, str.importErrorDetails);
-        });
+        return;
       }
+      final extension = result?.files.firstOrNull?.extension;
+      if (extension != 'kdbx') {
+        l.w('${str.incorrectFile} ${str.selectKdbxFile}');
+        if (context.mounted) {
+          await DialogUtils.showErrorDialog(context, str.incorrectFile, str.selectKdbxFile);
+        } else {
+          l.w('context was destroyed so could not notify user of previous error');
+        }
+        await cleanupFuture;
+        return;
+      }
+      final lockedSource = LockedVaultFile(
+        bytes,
+        DateTime.now(),
+        vaultState.vault.files.current.credentials,
+        null,
+        null,
+      );
+      await vaultCubit.importKdbx(
+          vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
+      await cleanupFuture;
+    } on KdbxUnsupportedException catch (e) {
+      l.e('Import failed: $e');
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await DialogUtils.showErrorDialog(context, str.importError, str.importErrorKdbx + e.hint);
+      });
+    } on Exception catch (e, st) {
+      l.e('Import failed: $e ; $st');
+      if (e is PlatformException) {
+        // Might not work for iOS since it's supposed to give implicit access
+        // to storage without need for specific permissions
+        if (e.code == 'read_external_storage_denied' && context.mounted) {
+          alertUserToPermissionsProblem(context, 'import');
+          return;
+        }
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await DialogUtils.showErrorDialog(context, str.importError, str.importErrorDetails);
+      });
     }
   }
 
@@ -322,41 +326,38 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     if (!context.mounted) {
       return;
     }
-    final permissionResult = await tryToGetPermission(
-      context,
-      Permission.storage,
-      'Storage',
-      str.export.toLowerCase(),
-      str.cancelExportOrImport(str.export.toLowerCase()),
-    );
-    if (permissionResult == PermissionResult.approved) {
-      try {
-        final params = SaveFileDialogParams(
-          data: state.vault.files.remoteMergeTargetLocked.kdbxBytes,
-          fileName: 'kee-vault-export-${DateTime.now().millisecondsSinceEpoch}.kdbx',
-        );
-        final outputFilename = await FlutterFileDialog.saveFile(params: params);
-        if (outputFilename == null) {
-          l.d('File system integration reports that the export was cancelled.');
+    try {
+      final params = SaveFileDialogParams(
+        data: state.vault.files.remoteMergeTargetLocked.kdbxBytes,
+        fileName: 'kee-vault-export-${DateTime.now().millisecondsSinceEpoch}.kdbx',
+      );
+      final outputFilename = await FlutterFileDialog.saveFile(params: params);
+      if (outputFilename == null) {
+        l.d('File system integration reports that the export was cancelled.');
+        return;
+      }
+      l.i('Exported vault to $outputFilename');
+      sm.showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(str.exported),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+      ));
+    } on Exception catch (e, st) {
+      l.e('Export failed: $e', st);
+      if (e is PlatformException) {
+        if (e.code == 'read_external_storage_denied' && context.mounted) {
+          alertUserToPermissionsProblem(context, 'export');
           return;
         }
-        l.i('Exported vault to $outputFilename');
-        sm.showSnackBar(SnackBar(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(str.exported),
-            ],
-          ),
-          duration: Duration(seconds: 3),
-        ));
-      } on Exception catch (e, st) {
-        l.e('Export failed: $e', st);
-        if (context.mounted) {
-          await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
-        } else {
-          l.w('context was destroyed so could not notify user of previous error');
-        }
+      }
+      if (context.mounted) {
+        await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+      } else {
+        l.w('context was destroyed so could not notify user of previous error');
       }
     }
   }
@@ -365,14 +366,6 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final str = S.of(context);
     final sm = ScaffoldMessenger.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
-
-    final permissionResult = await tryToGetPermission(
-      context,
-      Permission.storage,
-      'Storage',
-      str.export.toLowerCase(),
-      str.cancelExportOrImport(str.export.toLowerCase()),
-    );
 
     final bytes = await vaultCubit.loadFreeFileForExport();
 
@@ -389,34 +382,38 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
       return;
     }
 
-    if (permissionResult == PermissionResult.approved) {
-      try {
-        final params = SaveFileDialogParams(
-          data: bytes,
-          fileName: 'kee-vault-export-${DateTime.now().millisecondsSinceEpoch}.kdbx',
-        );
-        final outputFilename = await FlutterFileDialog.saveFile(params: params);
-        if (outputFilename == null) {
-          l.d('File system integration reports that the export was cancelled.');
+    try {
+      final params = SaveFileDialogParams(
+        data: bytes,
+        fileName: 'kee-vault-export-${DateTime.now().millisecondsSinceEpoch}.kdbx',
+      );
+      final outputFilename = await FlutterFileDialog.saveFile(params: params);
+      if (outputFilename == null) {
+        l.d('File system integration reports that the export was cancelled.');
+        return;
+      }
+      l.i('Exported vault to $outputFilename');
+      sm.showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(str.exported),
+          ],
+        ),
+        duration: Duration(seconds: 3),
+      ));
+    } on Exception catch (e, st) {
+      l.e('Export failed: $e', st);
+      if (e is PlatformException) {
+        if (e.code == 'read_external_storage_denied' && context.mounted) {
+          alertUserToPermissionsProblem(context, 'export');
           return;
         }
-        l.i('Exported vault to $outputFilename');
-        sm.showSnackBar(SnackBar(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(str.exported),
-            ],
-          ),
-          duration: Duration(seconds: 3),
-        ));
-      } on Exception catch (e, st) {
-        l.e('Export failed: $e', st);
-        if (context.mounted) {
-          await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
-        } else {
-          l.w('context was destroyed so could not notify user of previous error');
-        }
+      }
+      if (context.mounted) {
+        await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+      } else {
+        l.w('context was destroyed so could not notify user of previous error');
       }
     }
   }
