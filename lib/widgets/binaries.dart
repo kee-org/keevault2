@@ -215,33 +215,42 @@ class BinaryCardWidget extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextButton.icon(
-                  onPressed: () async {
-                    WidgetsBinding.instance.addPostFrameCallback((_) async {
-                      final attachmentSource = AttachmentSourceKdbx();
-                      final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
-                      final mimeType = lookupMimeType(
-                        attachment.key.key,
-                        headerBytes: bytes.length > defaultMagicNumbersMaxLength
-                            ? Uint8List.sublistView(bytes, 0, defaultMagicNumbersMaxLength)
-                            : null,
-                      );
-                      l.d('Sharing attachment with mimeType $mimeType');
+                Builder(
+                  builder: (BuildContext context) {
+                    return TextButton.icon(
+                      onPressed: () async {
+                        final box = context.findRenderObject() as RenderBox?;
+                        WidgetsBinding.instance.addPostFrameCallback((_) async {
+                          final attachmentSource = AttachmentSourceKdbx();
+                          final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
+                          final mimeType = lookupMimeType(
+                            attachment.key.key,
+                            headerBytes: bytes.length > defaultMagicNumbersMaxLength
+                                ? Uint8List.sublistView(bytes, 0, defaultMagicNumbersMaxLength)
+                                : null,
+                          );
+                          l.d('Sharing attachment with mimeType $mimeType');
 
-                      final tempDir = await getTemporaryDirectory();
-                      final file = File('${tempDir.path}/${attachment.key.key}');
-                      await file.create(recursive: true);
-                      await file.writeAsBytes(bytes, flush: true);
-                      try {
-                        final xFile = XFile(file.path, mimeType: mimeType);
-                        await Share.shareXFiles([xFile], subject: 'Kee Vault attachment');
-                      } finally {
-                        await file.delete();
-                      }
-                    });
+                          final tempDir = await getTemporaryDirectory();
+                          final file = File('${tempDir.path}/${attachment.key.key}');
+                          await file.create(recursive: true);
+                          await file.writeAsBytes(bytes, flush: true);
+                          try {
+                            final xFile = XFile(file.path, mimeType: mimeType);
+                            await Share.shareXFiles(
+                              [xFile],
+                              subject: 'Kee Vault attachment',
+                              sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+                            );
+                          } finally {
+                            await file.delete();
+                          }
+                        });
+                      },
+                      icon: Icon(Icons.share),
+                      label: Text(str.share.toUpperCase()),
+                    );
                   },
-                  icon: Icon(Icons.share),
-                  label: Text(str.share.toUpperCase()),
                 ),
                 // TextButton.icon(
                 //   onPressed: () async {
