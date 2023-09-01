@@ -71,3 +71,29 @@ Future<PermissionResult> tryToGetPermission(
     }
   }
 }
+
+void alertUserToPermissionsProblem(BuildContext context, String action) {
+  final str = S.of(context);
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    if (await DialogUtils.showConfirmDialog(
+        context: context,
+        params: ConfirmDialogParams(
+          title: str.permissionError,
+          content: str.permissionDeniedPermanentlyError(action),
+          positiveButtonText: str.openSettings,
+        ))) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!await openAppSettings()) {
+          if (context.mounted) {
+            await DialogUtils.showSimpleAlertDialog(
+              context,
+              str.vaultStatusError,
+              str.permissionSettingsOpenError,
+              routeAppend: 'couldNotOpenPermissionSettings',
+            );
+          }
+        }
+      });
+    }
+  });
+}

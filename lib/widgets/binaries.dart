@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:kdbx/kdbx.dart';
@@ -10,7 +10,6 @@ import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart' show Permission;
 import 'package:share_plus/share_plus.dart';
 import '../generated/l10n.dart';
 import '../permissions.dart';
@@ -274,45 +273,41 @@ class BinaryCardWidget extends StatelessWidget {
                       onTap: () async {
                         WidgetsBinding.instance.addPostFrameCallback((_) async {
                           final sm = ScaffoldMessenger.of(context);
-                          final permissionResult = await tryToGetPermission(
-                            context,
-                            Permission.storage,
-                            'Storage',
-                            'export',
-                            str.cancelExportOrImport('export'),
-                          );
-
-                          if (permissionResult == PermissionResult.approved) {
-                            try {
-                              final attachmentSource = AttachmentSourceKdbx();
-                              final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
-                              l.d('Exporting attachment');
-                              final params = SaveFileDialogParams(
-                                data: bytes,
-                                fileName: attachment.key.key,
-                              );
-                              final outputFilename = await FlutterFileDialog.saveFile(params: params);
-                              if (outputFilename == null) {
-                                l.d('File system integration reports that the export was cancelled.');
+                          try {
+                            final attachmentSource = AttachmentSourceKdbx();
+                            final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
+                            l.d('Exporting attachment');
+                            final params = SaveFileDialogParams(
+                              data: bytes,
+                              fileName: attachment.key.key,
+                            );
+                            final outputFilename = await FlutterFileDialog.saveFile(params: params);
+                            if (outputFilename == null) {
+                              l.d('File system integration reports that the export was cancelled.');
+                              return;
+                            }
+                            l.i('Exported attachment to $outputFilename');
+                            sm.showSnackBar(SnackBar(
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(str.exported),
+                                ],
+                              ),
+                              duration: Duration(seconds: 3),
+                            ));
+                          } on Exception catch (e, st) {
+                            l.e('Export failed: $e', st);
+                            if (e is PlatformException) {
+                              if (e.code == 'read_external_storage_denied' && context.mounted) {
+                                alertUserToPermissionsProblem(context, 'export');
                                 return;
                               }
-                              l.i('Exported attachment to $outputFilename');
-                              sm.showSnackBar(SnackBar(
-                                content: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(str.exported),
-                                  ],
-                                ),
-                                duration: Duration(seconds: 3),
-                              ));
-                            } on Exception catch (e, st) {
-                              l.e('Export failed: $e', st);
-                              if (context.mounted) {
-                                await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
-                              } else {
-                                l.w('context was destroyed so could not notify user of previous error');
-                              }
+                            }
+                            if (context.mounted) {
+                              await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+                            } else {
+                              l.w('context was destroyed so could not notify user of previous error');
                             }
                           }
                         });

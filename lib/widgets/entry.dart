@@ -77,39 +77,36 @@ class EntryWidget extends StatelessWidget {
 
   Future<void> _attachFile(BuildContext context) async {
     final str = S.of(context);
-    final permissionResult = await tryToGetPermission(
-      context,
-      Permission.storage,
-      'Storage',
-      str.permissionReasonAttachFile,
-      str.alertCancel,
-    );
-    if (permissionResult == PermissionResult.approved) {
-      try {
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.any,
-          withData: true,
-        );
-        final cleanupFuture = FilePicker.platform.clearTemporaryFiles();
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        withData: true,
+      );
+      final cleanupFuture = FilePicker.platform.clearTemporaryFiles();
 
-        final bytes = result?.files.firstOrNull?.bytes;
-        if (bytes == null) {
-          // User canceled the picker
-          await cleanupFuture;
+      final bytes = result?.files.firstOrNull?.bytes;
+      if (bytes == null) {
+        // User canceled the picker
+        await cleanupFuture;
+        return;
+      }
+      final fileName = result?.files.firstOrNull?.name ?? UuidUtil.createNonCryptoUuid();
+      if (context.mounted) {
+        await _attachFileContent(context, fileName, bytes);
+      }
+      await cleanupFuture;
+    } on Exception catch (e) {
+      l.e('${str.attachmentError} ${str.attachmentErrorDetails}');
+      if (e is PlatformException) {
+        if (e.code == 'read_external_storage_denied' && context.mounted) {
+          alertUserToPermissionsProblem(context, 'attach');
           return;
         }
-        final fileName = result?.files.firstOrNull?.name ?? UuidUtil.createNonCryptoUuid();
-        if (context.mounted) {
-          await _attachFileContent(context, fileName, bytes);
-        }
-        await cleanupFuture;
-      } on Exception {
-        l.e('${str.attachmentError} ${str.attachmentErrorDetails}');
-        if (context.mounted) {
-          await DialogUtils.showErrorDialog(context, str.attachmentError, str.attachmentErrorDetails);
-        } else {
-          l.w('context was destroyed so could not notify user of previous error');
-        }
+      }
+      if (context.mounted) {
+        await DialogUtils.showErrorDialog(context, str.attachmentError, str.attachmentErrorDetails);
+      } else {
+        l.w('context was destroyed so could not notify user of previous error');
       }
     }
   }
