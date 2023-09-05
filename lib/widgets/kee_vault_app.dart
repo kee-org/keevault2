@@ -112,7 +112,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
 
   void _initReceiveIntentSubscription() async {
     _receiveIntentSubscription = ri.ReceiveIntent.receivedIntentStream.listen((ri.Intent? intent) {
-      l.w('Received intent: $intent');
+      l.d('Received intent: $intent');
       final navigator = widget.navigatorKey.currentState;
       final navContext = navigator?.overlay?.context;
       if (navContext == null) {

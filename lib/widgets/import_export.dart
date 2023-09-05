@@ -243,8 +243,6 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final str = S.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
 
-    //TODO: Test ios < 16 still works for all permissions stuff
-
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.any,

@@ -363,7 +363,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
       ));
     }
 
-    if (widget.field.name == KdbxKeyCommon.KEY_URL) {
+    if (widget.field.name == KdbxKeyCommon.KEY_URL && widget.field.textValue.isNotEmpty) {
       mutableMenuItems.add(PopupMenuItem(
         value: EntryAction.openInBrowser,
         child: ListTile(
