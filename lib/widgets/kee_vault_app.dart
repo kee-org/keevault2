@@ -18,6 +18,7 @@ import 'package:matomo_tracker/matomo_tracker.dart';
 //import 'package:platform/platform.dart';
 import '../colors.dart';
 import '../config/platform.dart';
+import '../cubit/app_rating_cubit.dart';
 import '../cubit/interaction_cubit.dart';
 import '../remote_vault_repository.dart';
 import '../user_repository.dart';
@@ -243,6 +244,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
               BlocProvider(create: (context) => autofillCubit),
               BlocProvider(create: (context) => generatorProfilesCubit),
               BlocProvider(create: (context) => InteractionCubit()),
+              BlocProvider(create: (context) => AppRatingCubit()),
             ],
             child: InAppMessengerWidget(
               appSettingsState: appSettingsState,

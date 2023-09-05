@@ -847,6 +847,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
+  rate_my_app:
+    dependency: "direct main"
+    description:
+      name: rate_my_app
+      sha256: fe210e9e6068095945f89fc2310a71b1cc2caae7f64fa65b83fc796badcb05e3
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.4"
   receive_intent:
     dependency: "direct main"
     description:

@@ -69,7 +69,7 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
         l.d('signup successful');
         navigator.pop(true);
         sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
-        MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', name: 'prcSignup', action: 'free'));
+        MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'prcSignup', name: 'free'));
       } else {
         l.e('signup failed');
         setState(() {

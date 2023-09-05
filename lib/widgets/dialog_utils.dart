@@ -113,6 +113,17 @@ class DialogUtils {
         )) ==
         true;
   }
+
+  static Future<bool?> showIgnorableConfirmDialog({
+    required BuildContext context,
+    required ConfirmDialogParams params,
+  }) async {
+    return (await showDialog<bool>(
+      context: context,
+      routeSettings: const RouteSettings(name: '/dialog/ignorableConfirm'),
+      builder: (context) => ConfirmDialog(params: params),
+    ));
+  }
 }
 
 class ConfirmDialogParams {
