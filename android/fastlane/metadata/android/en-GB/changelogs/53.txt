@@ -1,0 +1,4 @@
+* Support new Android 13 features such as clipboard overlays
+* Fixes a couple of Autofill bugs that could cause confusion when saving new entries
+* Improved performance and reliability by upgrading to Flutter 3.13
+* You can now open a URL from the field menu as well as the entry list
