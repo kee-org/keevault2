@@ -14,6 +14,7 @@ import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import '../config/platform.dart';
+import '../cubit/app_rating_cubit.dart';
 import '../cubit/filter_cubit.dart';
 import '../generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -291,6 +292,17 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                       children: <Widget>[...accountChildren],
                     ),
                   ),
+
+                  BlocBuilder<AppRatingCubit, AppRatingState>(builder: (context, appRatingState) {
+                    return SimpleSettingsTile(
+                      enabled: appRatingState is AppRatingReady,
+                      title: 'Provide Feedback',
+                      onTap: () async {
+                        final arc = BlocProvider.of<AppRatingCubit>(context);
+                        await arc.showRatingDialog(context);
+                      },
+                    );
+                  }),
                 ],
               ),
             ],

@@ -27,6 +27,7 @@ void main() async {
       await MatomoTracker.instance.initialize(
         siteId: 7,
         url: 'https://matomo.kee.pm/js/',
+        dispatchSettings: DispatchSettings.persistent(onLoad: DispatchSettings.whereNotOlderThan(Duration(days: 14))),
       );
       // Responsibility to check initialisation completed is deferred to any
       // Flutter views that actually want to use the IAP feature
@@ -50,7 +51,7 @@ void main() async {
             l.w('Error while localising error message', e, stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, message);
-          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', name: 'error', action: 'mitm'));
+          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'error', name: 'mitm'));
         });
       } else if (error is FlutterError &&
           error.message.startsWith('Scaffold.geometryOf() must only be accessed during the paint phase.')) {
@@ -65,7 +66,7 @@ void main() async {
             l.w('Error while localising error message', e, stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, '$message : $stackTrace');
-          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', name: 'error', action: 'wtf'));
+          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'error', name: 'wtf'));
         });
       }
     },

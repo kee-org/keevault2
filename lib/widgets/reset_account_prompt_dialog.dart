@@ -71,7 +71,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> wit
         l.d('signup successful');
         navigator.pop(true);
         sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
-        MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', name: 'prcSignup', action: 'home'));
+        MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'prcSignup', name: 'home'));
         await appSettingsCubit.iamEmailSignupSuppressUntil(DateTime(2122));
       } else {
         l.e('signup failed');
