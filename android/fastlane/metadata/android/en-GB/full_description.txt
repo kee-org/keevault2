@@ -1,5 +1,19 @@
-Save time and hassle, sign in easily to the websites you use every day and never go through another password reset procedure.
+Save time and hassle, sign in easily to the apps and websites you use every day and never go through another password reset procedure.
 
 Protect yourself and people you know from the nightmare of your accounts being hacked.
 
 One strong password protects all your passwords using the latest secure encryption technology.
+
+Our innovative use of Argon2 technology adapts to the strength of your main Kee Vault password to provide extra protection when it's needed. Compared to the old "PBKDF2 SHA" approach, Argon2 is massively more secured against brute force attacks using modern computer equipment. We were an early adopter of this high-security technology and still one of only a handful of password managers in 2023 that can boast this level of security protection for your passwords!
+
+Kee Vault comes in two versions. This is version 2, which works on Android and iOS devices. Version 1 works on all devices and can be accessed from anywhere at https://keevault.pm.
+
+You can make changes in both versions, even while offline (disconnected).
+
+You can mix and match between both versions seamlessly and rest assured that both use the latest secure encryption technology. Version 2 is simply an upgraded version and a way for us to donate our software to those that can’t pay for a subscription.
+
+If you can find a little spare change each year, adding a Kee Vault Subscription to your account allows us to synchronise your passwords across all of your devices, ensure there is a backup of your important information and helps support our ongoing development work.
+
+All Kee Vault security software is Open Source because this is the only safe way to develop security software. Surprisingly, if you have heard of any other password manager brands, there's a good chance they are Closed Source - the complete opposite of the secure way to develop security software! You can find out more on our website - https://www.kee.pm/open-source/
+
+We're thankfully not the only Open Source password manager but we're pretty confident that we're the best option for anyone looking for a personal password manager so please give us a try and let us know what you think! We're always open to feedback and if you come across any problems, you can let us know on our community forum where we and the rest of the Kee Vault community are best placed to assist. https://forum.kee.pm
