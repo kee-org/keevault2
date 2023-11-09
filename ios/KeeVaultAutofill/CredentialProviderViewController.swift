@@ -4,6 +4,8 @@ import Punycode
 import Foundation
 import LocalAuthentication
 import KdbxSwift
+import Logging
+import Puppy
 
 class CredentialProviderViewController: ASCredentialProviderViewController {
     
@@ -22,6 +24,11 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     var key: ByteArray?
     var keyStatus: OSStatus?
     let iOSBugWorkaroundAuthenticationDelay = 0.25
+    var initialised = false
+    
+    var logFormat = LogFormatter()
+    var oslog: OSLogger?
+    var puppy: Puppy?
     
     override func present(_ viewControllerToPresent: UIViewController,
                             animated flag: Bool,
@@ -31,12 +38,56 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
       }
 
     override func viewDidLoad() {
+        
+        // This appears to be the earliest point in the autofill lifecycle and it may be
+        // called on a re-used or newly instantiated instance of this view controller
+        if (!initialised) {
+            oslog = OSLogger("com.keevault.keevault.oslog", logFormat: logFormat)
+            puppy = Puppy()
+            LoggingSystem.bootstrap {
+                var handler = MyPuppyLogHandler(label: $0, puppy: self.puppy!)
+                handler.logLevel = .trace
+                return handler
+            }
+            initialised = true
+        }
+        
         mainController.selectionDelegate = self
         mainController.domainParser = self.domainParser
         sharedGroupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as? String
         sharedDefaults = UserDefaults(suiteName: sharedGroupName)
         mainController.sharedDefaults = sharedDefaults
+        
+        //TODO:f: maybe observe user change in case that helps with sign-out / registration workflow?
+        //sharedDefaults?.addObserver(<#T##observer: NSObject##NSObject#>, forKeyPath: <#T##String#>, context: <#T##UnsafeMutableRawPointer?#>)
+        //  UserDefaults.standard.addObserver(self, forKeyPath: "myKey", options: NSKeyValueObservingOptions.new, context: nil)
+        
         userId = getUserIdFromSharedSettings()
+        let debugEnabled = getDebugEnabledFromSharedSettings()
+        
+        // May be some more efficient way of inspecting current loggers?
+        puppy?.removeAll()
+        puppy!.add(oslog!)
+        var fileOutputEnabled = false
+        if (debugEnabled) {
+            let documentsDirectory = FileManager().containerURL(forSecurityApplicationGroupIdentifier: sharedGroupName!)
+            let fileURL = documentsDirectory!.appendingPathComponent("logs/autofill-log.txt").absoluteURL
+            let rotationConfig = RotationConfig(suffixExtension: .numbering,
+                                                maxFileSize: 3 * 1024 * 1024,
+                                                maxArchivedFilesCount: 10)
+            do {
+                let fileRotation = try FileRotationLogger("com.keevault.keevault.filerotation",
+                                        logFormat: logFormat,
+                                        fileURL: fileURL,
+                                          rotationConfig: rotationConfig)
+                puppy!.add(fileRotation)
+                fileOutputEnabled = true
+            } catch {
+                print("Failed to enable file logging")
+            }
+        }
+        Logger.reloadConfig()
+        Logger.appLog.info("Logger started", metadata: ["public:debugEnabled": "\(debugEnabled)", "public:fileOutputEnabled": "\(fileOutputEnabled)", "userId": "\(userId ?? "not set")"])
     }
     
     /*
@@ -53,9 +104,9 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
         // Not all apps have a serviceIdentifier!
         
         DispatchQueue.main.asyncAfter(deadline: .now() + iOSBugWorkaroundAuthenticationDelay) { [self] in
-            
             (key, keyStatus) = getKeyForUser(userId: userId)
             if key == nil {
+                Logger.appLog.error("User key not found or expired", metadata: ["public:keyStatus": "\(keyStatus ?? 0)", "userId": "\(userId ?? "not set")"])
                 var message = "Your access key needs to be refreshed before you can AutoFill Kee Vault entries. Click OK and then sign in to the main Kee Vault app. You can then use AutoFill until your chosen expiry time is next reached."
                 message += keyStatus != nil ? " Technical error code: \(String(describing: keyStatus))" : ""
                 mainController.initWithAuthError(message: message)
@@ -88,11 +139,12 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
                     seachDomains.append(si.identifier)
                 }
             }
-            
+            Logger.appLog.debug("service identifiers parsed")
             let dbFileManager = DatabaseFileManager(status: Set<DatabaseFile.StatusFlag>(), preTransformedKeyMaterial: key!, userId: userId!, sharedGroupName: sharedGroupName!, sharedDefaults: sharedDefaults!)
             let dbFile = dbFileManager.loadFromFile()
             let db = dbFile.database
             var entries: [Entry] = []
+            Logger.appLog.debug("preparing data for main VC")
             db.root?.collectAllEntries(to: &entries)
             mainController.searchDomains = seachDomains
             mainController.entries = entries
@@ -103,6 +155,10 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     
     private func getUserIdFromSharedSettings() -> String? {
         return sharedDefaults?.string(forKey: "userId")
+    }
+    
+    private func getDebugEnabledFromSharedSettings() -> Bool {
+        return sharedDefaults?.bool(forKey: "debugEnabled") ?? false
     }
     
     // userId will be nil if user has disabled biometrics (e.g. during integration testing)

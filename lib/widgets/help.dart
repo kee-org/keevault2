@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:keevault/widgets/bottom.dart';
-import 'package:logger_flutter/logger_flutter.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../config/app.dart';
+import '../config/routes.dart';
 import '../generated/l10n.dart';
 
 import 'coloured_safe_area_widget.dart';
@@ -116,7 +117,12 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: OutlinedButton(
-                        onPressed: () async => await LogConsole.open(context), child: Text('Show log console')),
+                      onPressed: () async => await AppConfig.router.navigateTo(
+                        AppConfig.navigatorKey.currentContext!,
+                        Routes.logger,
+                      ),
+                      child: Text('Share / view logs'),
+                    ),
                   ),
                 ],
               ),

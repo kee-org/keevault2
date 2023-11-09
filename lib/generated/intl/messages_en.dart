@@ -437,7 +437,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "openInBrowser":
             MessageLookupByLibrary.simpleMessage("Open in browser"),
         "openLogConsole":
-            MessageLookupByLibrary.simpleMessage("Open log console"),
+            MessageLookupByLibrary.simpleMessage("Share/view logs"),
         "openSettings": MessageLookupByLibrary.simpleMessage("Open settings"),
         "openUrl": MessageLookupByLibrary.simpleMessage("URL"),
         "openWebApp": MessageLookupByLibrary.simpleMessage(

@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:keevault/logging/log_console.dart';
 import 'package:keevault/widgets/account_create.dart';
 import 'package:keevault/widgets/change_subscription.dart';
 import 'package:keevault/widgets/help.dart';
@@ -39,6 +40,10 @@ var passwordPresetManagerHandler = Handler(handlerFunc: (BuildContext? context, 
 
 var helpHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
   return const HelpWidget();
+});
+
+var loggerHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+  return LogConsole();
 });
 
 var changePasswordHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {

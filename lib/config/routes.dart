@@ -11,6 +11,7 @@ class Routes {
   static String importExport = '/import_export';
   static String settings = '/settings';
   static String help = '/help';
+  static String logger = '/logger';
   static String changePassword = '/change_password';
   static String changeEmailPrefs = '/change_email_prefs';
   static String changeSubscription = '/change_subscription';
@@ -28,6 +29,7 @@ class Routes {
     router.define(settings, handler: settingsHandler);
     router.define(passwordPresetManager, handler: passwordPresetManagerHandler);
     router.define(help, handler: helpHandler);
+    router.define(logger, handler: loggerHandler);
     router.define(changePassword, handler: changePasswordHandler);
     router.define(changeEmailPrefs, handler: changeEmailPrefsHandler);
     router.define(changeSubscription, handler: changeSubscriptionHandler);

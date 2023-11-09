@@ -183,7 +183,7 @@
   "rememberVaultPassword": "Remember your Vault password?",
   "biometricsStoreDescription": "Access Kee Vault faster by protecting your password with biometrics or your device {PINname}",
   "hexadecimal": "Hexadecimal",
-  "openLogConsole": "Open log console",
+  "openLogConsole": "Share/view logs",
   "autofilling": "Autofilling",
   "permissionReasonAttachFile": "attach a file",
   "permissionReasonScanBarcodes": "quickly scan QR codes (barcodes)",
