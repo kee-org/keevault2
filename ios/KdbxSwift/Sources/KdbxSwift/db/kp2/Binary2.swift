@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class Binary2: Eraseable {
     public typealias ID = Int

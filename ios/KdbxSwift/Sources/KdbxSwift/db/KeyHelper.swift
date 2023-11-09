@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class KeyHelper {
     public static let compositeKeyLength = 32

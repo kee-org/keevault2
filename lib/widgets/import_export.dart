@@ -345,7 +345,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         duration: Duration(seconds: 3),
       ));
     } on Exception catch (e, st) {
-      l.e('Export failed: $e', st);
+      l.e('Export failed', error: e, stackTrace: st);
       if (e is PlatformException) {
         if (e.code == 'read_external_storage_denied' && context.mounted) {
           alertUserToPermissionsProblem(context, 'export');
@@ -401,7 +401,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         duration: Duration(seconds: 3),
       ));
     } on Exception catch (e, st) {
-      l.e('Export failed: $e', st);
+      l.e('Export failed', error: e, stackTrace: st);
       if (e is PlatformException) {
         if (e.code == 'read_external_storage_denied' && context.mounted) {
           alertUserToPermissionsProblem(context, 'export');

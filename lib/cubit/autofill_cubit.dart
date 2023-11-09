@@ -40,7 +40,6 @@ class AutofillCubit extends Cubit<AutofillState> {
     bool autofillRequested = await AutofillService().fillRequestedAutomatic;
     bool autofillForceInteractive = await AutofillService().fillRequestedInteractive;
     final androidMetadata = await AutofillService().autofillMetadata;
-    l.d('androidMetadata $androidMetadata');
     bool saveRequested = androidMetadata?.saveInfo != null;
 
     if (!autofillRequested && !autofillForceInteractive && !saveRequested) {

@@ -15,7 +15,7 @@ import './extension_methods.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 void main() async {
-  Logger.level = Level.verbose;
+  Logger.level = Level.trace;
   recordLibraryLogs();
   l.i('Initialized logger');
 
@@ -41,14 +41,14 @@ void main() async {
     },
     (dynamic error, StackTrace stackTrace) {
       if (error is KeeLoginFailedMITMException) {
-        l.wtf('MITM attack detected!', error, stackTrace);
+        l.f('MITM attack detected!', error: error, stackTrace: stackTrace);
         navigatorKey.currentState?.overlay?.context.let((context) {
           var message =
               'Sign in failed because the response we received from the server indicates that it may be compromised. The most likely explanation is that someone near you or at your internet service provider is attempting to interfere with the secure connection and connect you to a malicious server (A Miscreant In The Middle attack). Find a different internet connection immediately, shut down the Kee Vault app and then try again. If it keeps happening, your local device may be compromised. The security of your Kee Vault remains intact so you need not panic. More information about the error is available at https://forum.kee.pm/';
           try {
             message = S.of(context).serverMITMWarning;
           } catch (e, stackTrace) {
-            l.w('Error while localising error message', e, stackTrace);
+            l.w('Error while localising error message', error: e, stackTrace: stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, message);
           MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'error', name: 'mitm'));
@@ -57,13 +57,13 @@ void main() async {
           error.message.startsWith('Scaffold.geometryOf() must only be accessed during the paint phase.')) {
         l.w("Known Flutter bug ignored: 'Scaffold.geometryOf() must only be accessed during the paint phase.' This is known to be caused by tap interactions while the animations package is actively animating from an entrylistitem to an entry for editing. Other potential causes should be investigated if this is unlikely to have been the cause in this specific situation.");
       } else {
-        l.wtf('Unhandled error in app.', error, stackTrace);
+        l.f('Unhandled error in app.', error: error, stackTrace: stackTrace);
         navigatorKey.currentState?.overlay?.context.let((context) {
           var message = 'Unexpected error: $error';
           try {
             message = S.of(context).unexpected_error('$error');
           } catch (e, stackTrace) {
-            l.w('Error while localising error message', e, stackTrace);
+            l.w('Error while localising error message', error: e, stackTrace: stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, '$message : $stackTrace');
           MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'error', name: 'wtf'));

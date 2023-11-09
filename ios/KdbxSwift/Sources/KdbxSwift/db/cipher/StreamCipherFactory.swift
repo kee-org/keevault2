@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 internal enum ProtectedStreamAlgorithm: UInt32 {
     case Null      = 0

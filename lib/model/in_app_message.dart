@@ -183,32 +183,32 @@ class InAppMessage {
 
   bool isSuppressed(AccountCubit accountCubit, bool autofillUnavailableOrEnabled, InteractionBasic interactionState) {
     if (suppressForRegisteredUser && accountCubit.currentUserIfKnown == null) {
-      l.v('Suppressed because user is signed in');
+      l.t('Suppressed because user is signed in');
       return true;
     }
     if (suppressWhenAutofillEnabled && autofillUnavailableOrEnabled) {
-      l.v('Suppressed because autofill is already enabled or unavailable');
+      l.t('Suppressed because autofill is already enabled or unavailable');
       return true;
     }
     final now = DateTime.now().toUtc();
     if (suppressUntilTime.isAfter(now)) {
-      l.v('Suppressed because $suppressUntilTime is after now');
+      l.t('Suppressed because $suppressUntilTime is after now');
       return true;
     }
     if (interactionState.anyDatabaseSavedCount < suppressUntilDatabaseSavedCount) {
-      l.v('Suppressed because anyDatabaseSavedCount (${interactionState.anyDatabaseSavedCount}) is too low');
+      l.t('Suppressed because anyDatabaseSavedCount (${interactionState.anyDatabaseSavedCount}) is too low');
       return true;
     }
     if (interactionState.anyEntrySavedCount < suppressUntilEntriesSavedCount) {
-      l.v('Suppressed because anyEntrySavedCount (${interactionState.anyEntrySavedCount}) is too low');
+      l.t('Suppressed because anyEntrySavedCount (${interactionState.anyEntrySavedCount}) is too low');
       return true;
     }
     if (interactionState.installedBefore.add(suppressUntilDurationAfterInstall).isAfter(now)) {
-      l.v('Suppressed because installedBefore is too recent');
+      l.t('Suppressed because installedBefore is too recent');
       return true;
     }
     if (lastDisplayed.add(maximumRedisplayFrequency).isAfter(now)) {
-      l.v('Suppressed because lastDisplayed is too recent');
+      l.t('Suppressed because lastDisplayed is too recent');
       return true;
     }
     return false;

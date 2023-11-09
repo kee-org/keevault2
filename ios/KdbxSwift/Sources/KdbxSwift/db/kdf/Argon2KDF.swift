@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 class AbstractArgon2KDF {
     public static let saltParam        = "S" 

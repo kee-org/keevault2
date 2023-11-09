@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class Group2: Group {
     public var isExpanded: Bool
@@ -209,7 +209,7 @@ public class Group2: Group {
                 self.add(entry: entry)
                 Logger.mainLog.trace("Entry loaded OK")
             default:
-                Logger.mainLog.error("Unexpected XML tag in Group: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Group", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Group/*")
             }
         }
@@ -225,11 +225,11 @@ public class Group2: Group {
         timeParser: Database2XMLTimeParser
     ) throws -> Date {
         if (value == nil || value!.isEmpty) && fallbackToEpoch {
-            Logger.mainLog.warning("\(tag) is empty, will use 1970-01-01 instead")
+            Logger.mainLog.warning("tag is empty, will use 1970-01-01 instead", metadata: ["name": "\(tag)"])
             return Date(timeIntervalSince1970: 0.0)
         }
         guard let time = timeParser.xmlStringToDate(value) else {
-            Logger.mainLog.error("Cannot parse \(tag) as Date")
+            Logger.mainLog.error("Cannot parse tag as Date", metadata: ["name": "\(tag)"])
             throw Xml2.ParsingError.malformedValue(
                 tag: tag,
                 value: value)
@@ -278,7 +278,7 @@ public class Group2: Group {
                     fallbackToEpoch: true,
                     timeParser: timeParser)
             default:
-                Logger.mainLog.error("Unexpected XML tag in Group/Times: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Group/Times", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Group/Times/*")
             }
         }

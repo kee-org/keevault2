@@ -548,7 +548,7 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
         _errorMessage = null;
       });
     } on FormatException catch (e, stackTrace) {
-      l.e('Error while decoding otpauth url.', e, stackTrace);
+      l.e('Error while decoding otpauth url.', error: e, stackTrace: stackTrace);
       setState(() {
         _currentOtp = '';
         _errorMessage = 'Error generating token $e';

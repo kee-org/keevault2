@@ -96,7 +96,7 @@ class JWT {
       final signature = Signature(base64Url.decode(base64Url.normalize(sigParts[2])));
       isValid = verifier.verify(Uint8List.fromList(data), signature);
     } catch (e, stacktrace) {
-      l.e('Cryptography error during JWT verification', e, stacktrace);
+      l.e('Cryptography error during JWT verification', error: e, stackTrace: stacktrace);
       throw KeeInvalidJWTException();
     }
 

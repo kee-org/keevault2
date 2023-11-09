@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class ByteArray: Eraseable, Cloneable, Codable, CustomDebugStringConvertible {
 

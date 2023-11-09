@@ -83,7 +83,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
 
   Future<void> autofillMergeIfRequired({required bool onlyIfAttemptAlreadyDue}) async {
     if (KeeVaultPlatform.isIOS) {
-      l.v('checking if autofill merge required. $onlyIfAttemptAlreadyDue');
+      l.t('checking if autofill merge required. $onlyIfAttemptAlreadyDue');
       final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
       await BlocProvider.of<VaultCubit>(context).autofillMerge(user, onlyIfAttemptAlreadyDue: onlyIfAttemptAlreadyDue);
     }

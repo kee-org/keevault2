@@ -16,6 +16,10 @@
 		8B253A1628BE694600AA6762 /* CredentialProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B253A1528BE694600AA6762 /* CredentialProviderViewController.swift */; };
 		8B253A1928BE694600AA6762 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B253A1728BE694600AA6762 /* MainInterface.storyboard */; };
 		8B253A1E28BE694600AA6762 /* KeeVaultAutofill.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8B253A1228BE694600AA6762 /* KeeVaultAutofill.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B2842E72AF7017A00C8D2D6 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2842E62AF7017A00C8D2D6 /* Logger.swift */; };
+		8B2842EE2AF9172300C8D2D6 /* Puppy in Frameworks */ = {isa = PBXBuildFile; productRef = 8B2842ED2AF9172300C8D2D6 /* Puppy */; };
+		8B2842F12AF9173200C8D2D6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 8B2842F02AF9173200C8D2D6 /* Logging */; };
+		8B2842F32AF9503900C8D2D6 /* MyPuppyLogHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2842F22AF9503900C8D2D6 /* MyPuppyLogHandler.swift */; };
 		8B594C4528D76F38004B10F0 /* KeeVaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B594C4428D76F38004B10F0 /* KeeVaultViewController.swift */; };
 		8B594C4728D7AB8A004B10F0 /* NewEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B594C4628D7AB8A004B10F0 /* NewEntryViewController.swift */; };
 		8B94D3AB2902BC9300667FDA /* KdbxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8B94D3AA2902BC9300667FDA /* KdbxSwift */; };
@@ -102,6 +106,8 @@
 		8B253A1B28BE694600AA6762 /* KeeVaultAutofill.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeeVaultAutofill.entitlements; sourceTree = "<group>"; };
 		8B253A2428BF6E0100AA6762 /* Debug-autofill.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Debug-autofill.xcconfig"; path = "Flutter/Debug-autofill.xcconfig"; sourceTree = "<group>"; };
 		8B253A2528BF6E0100AA6762 /* Release-autofill.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Release-autofill.xcconfig"; path = "Flutter/Release-autofill.xcconfig"; sourceTree = "<group>"; };
+		8B2842E62AF7017A00C8D2D6 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		8B2842F22AF9503900C8D2D6 /* MyPuppyLogHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPuppyLogHandler.swift; sourceTree = "<group>"; };
 		8B594C4428D76F38004B10F0 /* KeeVaultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeeVaultViewController.swift; sourceTree = "<group>"; };
 		8B594C4628D7AB8A004B10F0 /* NewEntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewEntryViewController.swift; sourceTree = "<group>"; };
 		8B94D3AD291CF93D00667FDA /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -132,8 +138,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B2842F12AF9173200C8D2D6 /* Logging in Frameworks */,
 				8B253A1328BE694600AA6762 /* AuthenticationServices.framework in Frameworks */,
 				8BB2225828F5B39C00693094 /* DomainParser in Frameworks */,
+				8B2842EE2AF9172300C8D2D6 /* Puppy in Frameworks */,
 				8BB2225B28F6F27A00693094 /* Punnycode in Frameworks */,
 				8B94D3AB2902BC9300667FDA /* KdbxSwift in Frameworks */,
 			);
@@ -163,6 +171,7 @@
 		8B253A1428BE694600AA6762 /* KeeVaultAutofill */ = {
 			isa = PBXGroup;
 			children = (
+				8B2842E62AF7017A00C8D2D6 /* Logger.swift */,
 				8B253A1528BE694600AA6762 /* CredentialProviderViewController.swift */,
 				8B94D3AF291D4A0A00667FDA /* KeychainError.swift */,
 				8B94D3AD291CF93D00667FDA /* Extensions.swift */,
@@ -177,6 +186,7 @@
 				8B253A1B28BE694600AA6762 /* KeeVaultAutofill.entitlements */,
 				8BB2225228DB542900693094 /* KeeVaultKeychainEntry.swift */,
 				8BB2225428DC81F100693094 /* SpinnerViewController.swift */,
+				8B2842F22AF9503900C8D2D6 /* MyPuppyLogHandler.swift */,
 			);
 			path = KeeVaultAutofill;
 			sourceTree = "<group>";
@@ -288,6 +298,8 @@
 				8BB2225728F5B39C00693094 /* DomainParser */,
 				8BB2225A28F6F27A00693094 /* Punnycode */,
 				8B94D3AA2902BC9300667FDA /* KdbxSwift */,
+				8B2842ED2AF9172300C8D2D6 /* Puppy */,
+				8B2842F02AF9173200C8D2D6 /* Logging */,
 			);
 			productName = KeeVaultAutofill;
 			productReference = 8B253A1228BE694600AA6762 /* KeeVaultAutofill.appex */;
@@ -323,11 +335,11 @@
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
+				8B253A2328BE694600AA6762 /* Embed App Extensions */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				FF23F4DC409BF04CA9EF8E1D /* [CP] Embed Pods Frameworks */,
-				8B253A2328BE694600AA6762 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -374,6 +386,8 @@
 			packageReferences = (
 				8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */,
 				8BB2225928F6F27A00693094 /* XCRemoteSwiftPackageReference "PunycodeSwift" */,
+				8B2842EC2AF9172300C8D2D6 /* XCRemoteSwiftPackageReference "Puppy" */,
+				8B2842EF2AF9173200C8D2D6 /* XCRemoteSwiftPackageReference "swift-log" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -575,9 +589,11 @@
 				8B594C4728D7AB8A004B10F0 /* NewEntryViewController.swift in Sources */,
 				8BB2225328DB542900693094 /* KeeVaultKeychainEntry.swift in Sources */,
 				8B94D3B0291D4A0A00667FDA /* KeychainError.swift in Sources */,
+				8B2842E72AF7017A00C8D2D6 /* Logger.swift in Sources */,
 				8BB2225528DC81F100693094 /* SpinnerViewController.swift in Sources */,
 				8B594C4528D76F38004B10F0 /* KeeVaultViewController.swift in Sources */,
 				8B94D3AE291CF93D00667FDA /* Extensions.swift in Sources */,
+				8B2842F32AF9503900C8D2D6 /* MyPuppyLogHandler.swift in Sources */,
 				8B94D3B4291D4D2300667FDA /* PriorityCategory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1149,6 +1165,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8B2842EC2AF9172300C8D2D6 /* XCRemoteSwiftPackageReference "Puppy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sushichop/Puppy";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.7.0;
+			};
+		};
+		8B2842EF2AF9173200C8D2D6 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.3;
+			};
+		};
 		8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Dashlane/SwiftDomainParser.git";
@@ -1168,6 +1200,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B2842ED2AF9172300C8D2D6 /* Puppy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B2842EC2AF9172300C8D2D6 /* XCRemoteSwiftPackageReference "Puppy" */;
+			productName = Puppy;
+		};
+		8B2842F02AF9173200C8D2D6 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B2842EF2AF9173200C8D2D6 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
 		8B94D3AA2902BC9300667FDA /* KdbxSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = KdbxSwift;

@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class DatabaseFileManager {
     public enum Error {
@@ -68,7 +68,7 @@ public class DatabaseFileManager {
                 Logger.mainLog.debug("Loaded main KDBX")
                 
             } catch {
-                Logger.mainLog.error("Failed to read current KDBX file [message: \(error.localizedDescription, privacy: .public)]")
+                Logger.mainLog.error("Failed to read current KDBX file", metadata: ["public:message": "\(error.localizedDescription)"])
                 Logger.fatalError("couldn't read KDBX file")
             }
         }
@@ -107,7 +107,7 @@ public class DatabaseFileManager {
             let fileData = try targetDatabase.save()
             try fileData.write(to: kdbxAutofillURL, options: .atomic)
         } catch {
-            Logger.mainLog.error("Failed to write autofill KDBX file [message: \(error.localizedDescription, privacy: .public)]")
+            Logger.mainLog.error("Failed to write autofill KDBX file", metadata: ["public:message": "\(error.localizedDescription)"])
         }
     }
 }

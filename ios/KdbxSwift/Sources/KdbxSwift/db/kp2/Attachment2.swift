@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class Attachment2: Attachment {
     public var id: Int
@@ -56,7 +56,7 @@ public class Attachment2: Attachment {
                     )
                 }
             default:
-                Logger.mainLog.error("Unexpected XML tag in Entry/Binary: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/Binary", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/Binary/*")
             }
         }

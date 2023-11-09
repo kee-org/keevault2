@@ -64,6 +64,31 @@ import Flutter
                 }
                 defaults.set(userId, forKey: "userId")
                 result(true)
+            case "setDebugEnabled":
+                guard let args = call.arguments as? Dictionary<String, Any> else {
+                    result(FlutterError.init(code: "bad args", message: nil, details: nil))
+                    break
+                  }
+                guard let debugEnabled = args["debugEnabled"] as? Bool else {
+                    result(FlutterError.init(code: "missing debugEnabled argument", message: nil, details: nil))
+                    break
+                }
+                let groupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as! String
+                guard let defaults = UserDefaults(suiteName: groupName) else {
+                    result(FlutterError.init(code: "missing shared user defaults group", message: nil, details: nil))
+                    break
+                }
+                defaults.set(debugEnabled, forKey: "debugEnabled")
+                result(true)
+            case "getDebugEnabled":
+                let groupName = Bundle.main.infoDictionary!["KeeVaultSharedDefaultGroupName"] as! String
+                guard let defaults = UserDefaults(suiteName: groupName) else {
+                    result(FlutterError.init(code: "missing shared user defaults group", message: nil, details: nil))
+                    break
+                }
+                let de = defaults.bool(forKey: "debugEnabled")
+                result(de)
+                
             default:
                 result(FlutterMethodNotImplemented)
             }

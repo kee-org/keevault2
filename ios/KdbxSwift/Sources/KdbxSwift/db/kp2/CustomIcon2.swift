@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class CustomIcon2: Eraseable {
     public private(set) var uuid: UUID
@@ -73,7 +73,7 @@ public class CustomIcon2: Eraseable {
             case Xml2.lastModificationTime:
                 xmlLastModificationTime = timeParser.xmlStringToDate(tag.value)
             default:
-                Logger.mainLog.error("Unexpected XML tag in CustomIcon: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in CustomIcon", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "CustomIcon/*")
             }
         }

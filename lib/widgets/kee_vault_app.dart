@@ -106,7 +106,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    l.v('App State: $state');
+    l.t('App State: $state');
   }
 
   StreamSubscription? _receiveIntentSubscription;

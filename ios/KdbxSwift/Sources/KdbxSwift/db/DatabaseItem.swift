@@ -1,4 +1,4 @@
-import os.log
+import Logging
 
 open class DatabaseItem {
     public enum TouchMode {

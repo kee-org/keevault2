@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class DeletedObject2: Eraseable {
     private weak var database: Database2?
@@ -40,7 +40,7 @@ public class DeletedObject2: Eraseable {
                 }
                 self.deletionTime = deletionTime
             default:
-                Logger.mainLog.error("Unexpected XML tag in DeletedObject: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in DeletedObject", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(
                     actual: tag.name,
                     expected: "DeletedObject/*")
