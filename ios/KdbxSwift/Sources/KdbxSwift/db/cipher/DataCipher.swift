@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 protocol DataCipher: AnyObject {
     var uuid: UUID { get }

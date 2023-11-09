@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 final class Meta2: Eraseable {
     public static let generatorName = "Kee Vault 2" 
@@ -40,7 +40,7 @@ final class Meta2: Eraseable {
                 case Xml2.protectNotes:
                     isProtectNotes = Bool(string: tag.value)
                 default:
-                    Logger.mainLog.error("Unexpected XML tag in Meta/MemoryProtection: \(tag.name)")
+                    Logger.mainLog.error("Unexpected XML tag in Meta/MemoryProtection", metadata: ["name": "\(tag.name)"])
                     throw Xml2.ParsingError.unexpectedTag(
                         actual: tag.name,
                         expected: "Meta/MemoryProtection/*")
@@ -182,15 +182,15 @@ final class Meta2: Eraseable {
             switch tag.name {
             case Xml2.generator:
                 self.generator = tag.value ?? ""
-                Logger.mainLog.info("Database was last edited by: \(self.generator, privacy: .public)")
+                Logger.mainLog.info("Database was last edited by", metadata: ["public:generator": "\(self.generator)"])
             case Xml2.settingsChanged: 
                 guard formatVersion >= .v4 else {
-                    Logger.mainLog.error("Found \(tag.name, privacy: .public) tag in non-V4 database")
+                    Logger.mainLog.error("Found tag in non-V4 database", metadata: ["public:name": "\(tag.name)"])
                     throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: nil)
                 }
                 self.settingsChangedTime = timeParser.xmlStringToDate(tag.value) ?? Date.now
             case Xml2.headerHash:
-                    Logger.mainLog.warning("Found \(tag.name, privacy: .public) tag in non-V3 database. Ignoring")
+                    Logger.mainLog.warning("Found tag in non-V3 database. Ignoring", metadata: ["public:name": "\(tag.name)"])
                     continue
             case Xml2.databaseName:
                 self.databaseName = tag.value ?? ""
@@ -223,7 +223,7 @@ final class Meta2: Eraseable {
                 Logger.mainLog.trace("Memory protection loaded OK")
             case Xml2.customIcons:
                 try loadCustomIcons(xml: tag, timeParser: timeParser)
-                Logger.mainLog.trace("Custom icons loaded OK [count: \(self.customIcons.count, privacy: .public)]")
+                Logger.mainLog.trace("Custom icons loaded OK", metadata: ["public:count": "\(self.customIcons.count)"])
             case Xml2.recycleBinEnabled:
                 self.isRecycleBinEnabled = Bool(string: tag.value)
             case Xml2.recycleBinUUID:
@@ -245,7 +245,7 @@ final class Meta2: Eraseable {
                 self.lastTopVisibleGroupUUID = UUID(base64Encoded: tag.value) ?? UUID.ZERO
             case Xml2.binaries:
                 try loadBinaries(xml: tag, formatVersion: formatVersion, streamCipher: streamCipher)
-                Logger.mainLog.trace("Binaries loaded OK [count: \(self.database.binaries.count, privacy: .public)]")
+                Logger.mainLog.trace("Binaries loaded OK", metadata: ["public:count": "\(self.database.binaries.count)"])
             case Xml2.customData:
                 try customData.load(
                     xml: tag,
@@ -253,9 +253,9 @@ final class Meta2: Eraseable {
                     timeParser: timeParser,
                     xmlParentName: "Meta"
                 ) 
-                Logger.mainLog.trace("Custom data loaded OK [count: \(self.customData.count, privacy: .public)]")
+                Logger.mainLog.trace("Custom data loaded OK", metadata: ["public:count": "\(self.customData.count)"])
             default:
-                Logger.mainLog.error("Unexpected XML tag in Meta: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Meta", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Meta/*")
             }
         }
@@ -272,7 +272,7 @@ final class Meta2: Eraseable {
                 customIcons.append(icon)
                 Logger.mainLog.trace("Custom icon loaded OK")
             default:
-                Logger.mainLog.error("Unexpected XML tag in Meta/CustomIcons: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Meta/CustomIcons", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(
                     actual: tag.name,
                     expected: "Meta/CustomIcons/*")
@@ -287,7 +287,7 @@ final class Meta2: Eraseable {
     ) throws {
         assert(xml.name == Xml2.binaries)
             if let tag = xml.children.first {
-                Logger.mainLog.error("Unexpected XML content in V4 Meta/Binaries: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML content in V4 Meta/Binaries", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: nil)
             } else {
                 Logger.mainLog.warning("Found empty Meta/Binaries in a V4 database, ignoring.")

@@ -14,7 +14,7 @@ class FlutterArgon2 extends Argon2 {
   Future<Uint8List> argon2Async(Argon2Arguments args) async {
     final started = Stopwatch()..start();
     try {
-      l.v('Starting argon2');
+      l.t('Starting argon2');
       return await compute(FlutterArgon2._runArgon2, args);
     } finally {
       l.d('Finished argon2 in ${started.elapsedMilliseconds}ms');

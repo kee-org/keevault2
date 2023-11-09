@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 final class KDFParams: VarDict {
     public static let uuidParam = "$UUID"

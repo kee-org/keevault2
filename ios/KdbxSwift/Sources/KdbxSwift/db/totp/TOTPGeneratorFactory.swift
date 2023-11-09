@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class TOTPGeneratorFactory {
     
@@ -93,12 +93,12 @@ fileprivate class GAuthFormat: SingleFieldFormat {
             let seedData = base32DecodeToData(seedString),
             !seedData.isEmpty else
         {
-            Logger.mainLog.warning("OTP parameter cannot be parsed [parameter: \(seedParam)]")
+            Logger.mainLog.warning("OTP parameter cannot be parsed", metadata: ["parameter": "\(seedParam)"])
             return nil
         }
         
         guard let timeStep = Int(params[timeStepParam] ?? "\(defaultTimeStep)") else {
-            Logger.mainLog.warning("OTP parameter cannot be parsed [parameter: \(timeStepParam)]")
+            Logger.mainLog.warning("OTP parameter cannot be parsed", metadata: ["parameter": "\(timeStepParam)"])
             return nil
         }
         
@@ -112,14 +112,14 @@ fileprivate class GAuthFormat: SingleFieldFormat {
         var algorithm: TOTPHashAlgorithm?
         if let algorithmString = params[algorithmParam] {
             guard let _algorithm = TOTPHashAlgorithm.fromString(algorithmString) else {
-                Logger.mainLog.warning("OTP algorithm is not supported [algorithm: \(algorithmString, privacy: .public)]")
+                Logger.mainLog.warning("OTP algorithm is not supported", metadata: ["public:algorithm": "\(algorithmString)"])
                 return nil
             }
             algorithm = _algorithm
         }
         
         guard let length = Int(params[lengthParam] ?? "\(defaultLength)") else {
-            Logger.mainLog.warning("OTP parameter cannot be parsed [parameter: \(lengthParam)]")
+            Logger.mainLog.warning("OTP parameter cannot be parsed", metadata: ["parameter": "\(lengthParam)"])
             return nil
         }
         
@@ -159,33 +159,33 @@ fileprivate class KeeOtpFormat: SingleFieldFormat {
             let seedData = base32DecodeToData(seedString),
             !seedData.isEmpty else
         {
-            Logger.mainLog.warning("OTP parameter cannot be parsed [parameter: \(seedParam)]")
+            Logger.mainLog.warning("OTP parameter cannot be parsed", metadata: ["parameter": "\(seedParam)"])
             return nil
         }
         
         if let type = params[typeParam],
             type.caseInsensitiveCompare(supportedType) != .orderedSame
         {
-            Logger.mainLog.warning("OTP type is not suppoorted [type: \(type)]")
+            Logger.mainLog.warning("OTP type is not suppoorted", metadata: ["otptype": "\(type)"])
             return nil
         }
         
         var algorithm: TOTPHashAlgorithm?
         if let algorithmString = params[algorithmParam] {
             guard let _algorithm = TOTPHashAlgorithm.fromString(algorithmString) else {
-                Logger.mainLog.warning("OTP algorithm is not supported [algorithm: \(algorithmString)]")
+                Logger.mainLog.warning("OTP algorithm is not supported", metadata: ["algorithm": "\(algorithmString)"])
                 return nil
             }
             algorithm = _algorithm
         }
         
         guard let timeStep = Int(params[timeStepParam] ?? "\(defaultTimeStep)") else {
-            Logger.mainLog.warning("OTP parameter cannot be parsed [parameter: \(timeStepParam)]")
+            Logger.mainLog.warning("OTP parameter cannot be parsed", metadata: ["parameter": "\(timeStepParam)"])
             return nil
         }
         
         guard let length = Int(params[lengthParam] ?? "\(defaultLength)") else {
-            Logger.mainLog.warning("OTP parameter cannot be parsed [parameter: \(lengthParam)]")
+            Logger.mainLog.warning("OTP parameter cannot be parsed", metadata: ["parameter": "\(lengthParam)"])
             return nil
         }
         
@@ -211,9 +211,9 @@ fileprivate class SplitFieldFormat {
         let settingsString = settingsString ?? SplitFieldFormat.defaultSettingsValue
         let settings = settingsString.split(separator: ";")
         if settings.count > 2 {
-            Logger.mainLog.trace("Found redundant TOTP settings, ignoring [expected: 2, got: \(settings.count)]")
+            Logger.mainLog.trace("Found redundant TOTP settings, ignoring; expected 2", metadata: ["count": "\(settings.count)"])
         } else if settings.count < 2 {
-            Logger.mainLog.warning("Insufficient TOTP settings number [expected: 2, got: \(settings.count)]")
+            Logger.mainLog.warning("Insufficient TOTP settings number; expected 2", metadata: ["count": "\(settings.count)"])
             return nil
         }
         guard let timeStep = Int(settings[0]) else {
@@ -221,7 +221,7 @@ fileprivate class SplitFieldFormat {
             return nil
         }
         guard timeStep > 0 else {
-            Logger.mainLog.warning("Invalid TOTP time step value: \(timeStep)")
+            Logger.mainLog.warning("Invalid TOTP time step value", metadata: ["value": "\(timeStep)"])
             return nil
         }
         
@@ -235,7 +235,7 @@ fileprivate class SplitFieldFormat {
         } else if settings[1] == TOTPGeneratorSteam.typeSymbol {
             return TOTPGeneratorSteam(seed: seed, timeStep: timeStep)
         } else {
-            Logger.mainLog.warning("Unexpected TOTP size or type: '\(settings[1])'")
+            Logger.mainLog.warning("Unexpected TOTP size or type", metadata: ["value": "\(settings[1])"])
             return nil
         }
     }

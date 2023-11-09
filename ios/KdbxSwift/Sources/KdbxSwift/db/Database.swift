@@ -1,5 +1,6 @@
 import Foundation
-import os.log
+import Logging
+
 
 public struct SearchQuery {
     public let includeSubgroups: Bool

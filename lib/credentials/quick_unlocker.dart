@@ -61,7 +61,7 @@ class QuickUnlocker {
   // any existing user's ID and they used to default to emailHashed anyway, this will keep working.
   // Maybe one day we could/should rename the user parameter to complete the tidy-up.
   Future<QUStatus> initialiseForUser(String user, bool force) async {
-    l.v('initialiseForUser $user');
+    l.t('initialiseForUser $user');
     if (!force && _currentCreds != null && _currentUser != null && _currentUser == user) {
       return QUStatus.credsAvailable;
     }
@@ -132,7 +132,7 @@ class QuickUnlocker {
   }
 
   Future<String?> _read(BiometricStorageFile storage) async {
-    l.v('QU _read');
+    l.t('QU _read');
     try {
       final contents = await storage.read(
           promptInfo: PromptInfo(
@@ -158,7 +158,7 @@ $stackTrace''');
 // This is the only place we enable autofill for ios
 // maybe do it in more places? one day?
   Future<void> _write(BiometricStorageFile storage, String contents) async {
-    l.v('QU _write');
+    l.t('QU _write');
     try {
       await storage.write(contents,
           promptInfo: PromptInfo(
@@ -167,7 +167,7 @@ $stackTrace''');
                   title: S.current.rememberVaultPassword,
                   description: S.current.biometricsStoreDescription(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN'))));
       if (KeeVaultPlatform.isIOS) {
-        l.v('setUserId = $_currentUser');
+        l.t('setUserId = $_currentUser');
         await _autoFillMethodChannel.invokeMethod('setUserId', <String, dynamic>{
           'userId': _currentUser,
         });
@@ -218,7 +218,7 @@ $stackTrace''');
   }
 
   Future<void> saveQuickUnlockUserPassKey(String? userPassKey) async {
-    l.v('saveQuickUnlockUserPassKey start');
+    l.t('saveQuickUnlockUserPassKey start');
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
@@ -247,7 +247,7 @@ $stackTrace''');
   }
 
   Future<void> saveQuickUnlockFileCredentials(Credentials? creds, int expiryTime, String kdfCacheKey) async {
-    l.v('saveQuickUnlockFileCredentials start');
+    l.t('saveQuickUnlockFileCredentials start');
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;
@@ -293,7 +293,7 @@ $stackTrace''');
   }
 
   Future<void> saveBothSecrets(String userPassKey, Credentials creds, int expiryTime, String kdfCacheKey) async {
-    l.v('saveBothSecrets start');
+    l.t('saveBothSecrets start');
     if (!(Settings.getValue<bool>('biometrics-enabled') ?? true)) {
       l.d('Quick unlock disabled by user');
       return;

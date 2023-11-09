@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 protocol Database2XMLTimeFormatter {
     func dateToXMLString(_ date: Date) -> String
@@ -156,7 +156,7 @@ public class Database2: Database {
         Logger.mainLog.info("Loading KDBX database")
         do {
             try header.read(data: dbFileData) 
-            Logger.mainLog.debug("Header read OK [format: \(self.header.formatVersion, privacy: .public)]")
+            Logger.mainLog.debug("Header read OK", metadata: ["public:format": "\(self.header.formatVersion)"])
             importMasterKey(preTransformedKeyMaterial: preTransformedKeyMaterial, cipher: header.dataCipher)
             var decryptedData: ByteArray
             let dbWithoutHeader: ByteArray = dbFileData.suffix(from: header.size)
@@ -281,7 +281,7 @@ public class Database2: Database {
             blockIndex += 1
         }
         
-        Logger.mainLog.trace("Will decrypt \(allBlocksData.count) bytes")
+        Logger.mainLog.trace("Will decrypt bytes", metadata: ["count": "\(allBlocksData.count)"])
         
 #if DEBUG
         print("hmacKey plain: \(hmacKey.asHexString)")
@@ -296,7 +296,7 @@ public class Database2: Database {
             key: cipherKey,
             iv: header.initialVector
         ) 
-        Logger.mainLog.trace("Decrypted \(decryptedData.count) bytes")
+        Logger.mainLog.trace("Decrypted bytes", metadata: ["count": "\(decryptedData.count)"])
         
         return decryptedData
     }
@@ -313,11 +313,11 @@ public class Database2: Database {
             Logger.mainLog.debug("Parsing XML")
             let xmlDoc = try AEXMLDocument(xml: xmlData.asData, options: parsingOptions)
             if let xmlError = xmlDoc.error {
-                Logger.mainLog.error("Cannot parse XML: \(xmlError.localizedDescription)")
+                Logger.mainLog.error("Cannot parse XML", metadata: ["error": "\(xmlError.localizedDescription)"])
                 throw Xml2.ParsingError.xmlError(details: xmlError.localizedDescription)
             }
             guard xmlDoc.root.name == Xml2.keePassFile else {
-                Logger.mainLog.error("Not a KeePass XML document [xmlRoot: \(xmlDoc.root.name)]")
+                Logger.mainLog.error("Not a KeePass XML document", metadata: ["xmlRoot": "\(xmlDoc.root.name)"])
                 throw Xml2.ParsingError.notKeePassDocument
             }
             
@@ -354,13 +354,13 @@ public class Database2: Database {
             self.root = rootGroup
             Logger.mainLog.debug("XML content loaded OK")
         } catch let error as Header2.HeaderError {
-            Logger.mainLog.error("Header error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("Header error", metadata: ["reason": "\(error.localizedDescription)"])
             throw FormatError.parsingError(reason: error.localizedDescription)
         } catch let error as Xml2.ParsingError {
-            Logger.mainLog.error("XML parsing error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("XML parsing error", metadata: ["reason": "\(error.localizedDescription)"])
             throw FormatError.parsingError(reason: error.localizedDescription)
         } catch let error as AEXMLError {
-            Logger.mainLog.error("Raw XML parsing error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("Raw XML parsing error", metadata: ["reason": "\(error.localizedDescription)"])
             throw FormatError.parsingError(reason: error.localizedDescription)
         }
     }
@@ -559,7 +559,7 @@ public class Database2: Database {
         
         header.maybeUpdateFormatVersion()
         let formatVersion = header.formatVersion
-        Logger.mainLog.debug("Format version: \(formatVersion)")
+        Logger.mainLog.debug("Format version", metadata: ["version": "\(formatVersion)"])
         do {
             try header.randomizeSeeds() 
             Logger.mainLog.debug("Seeds randomized OK")
@@ -622,20 +622,20 @@ public class Database2: Database {
                 Logger.mainLog.trace("No compression required")
             }
             
-            Logger.mainLog.trace("Encrypting \(dataToEncrypt.count) bytes")
+            Logger.mainLog.trace("Encrypting bytes", metadata: ["count": "\(dataToEncrypt.count)"])
             let encData = try header.dataCipher.encrypt(
                 plainText: dataToEncrypt,
                 key: cipherKey,
                 iv: header.initialVector.clone())
-            Logger.mainLog.trace("Encrypted \(encData.count) bytes")
+            Logger.mainLog.trace("Encrypted bytes", metadata: ["count": "\(encData.count)"])
             
             try writeAsBlocksV4(to: outStream, data: encData) 
             Logger.mainLog.trace("Blocks written OK")
         } catch let error as Header2.HeaderError {
-            Logger.mainLog.error("Header error [message: \(error.localizedDescription)]")
+            Logger.mainLog.error("Header error", metadata: ["message": "\(error.localizedDescription)"])
             throw DatabaseError.saveError(reason: error.localizedDescription)
         } catch let error as GzipError {
-            Logger.mainLog.error("Gzip error [kind: \(String(describing: error.kind)), message: \(error.message)]")
+            Logger.mainLog.error("Gzip error", metadata: ["kind": "\(error.kind)", "message": "\(error.message)"])
             let errMsg = String.localizedStringWithFormat(
                 NSLocalizedString(
                     "[Database2/Saving/Error] Data compression error: %@",
@@ -645,7 +645,7 @@ public class Database2: Database {
                 error.localizedDescription)
             throw DatabaseError.saveError(reason: errMsg)
         } catch let error as CryptoError {
-            Logger.mainLog.error("Crypto error [reason: \(error.localizedDescription)]")
+            Logger.mainLog.error("Crypto error", metadata: ["reason": "\(error.localizedDescription)"])
             let errMsg = String.localizedStringWithFormat(
                 NSLocalizedString(
                     "[Database2/Saving/Error] Encryption error: %@",
@@ -663,7 +663,7 @@ public class Database2: Database {
         var blockStart: Int = 0
         var blockIndex: UInt64 = 0
         
-        Logger.mainLog.trace("\(data.count) bytes to write")
+        Logger.mainLog.trace("bytes to write", metadata: ["count": "\(data.count)"])
         while blockStart != data.count {
             let blockSize = min(defaultBlockSize, data.count - blockStart)
             let blockData = data[blockStart..<blockStart+blockSize]
@@ -807,7 +807,7 @@ public class Database2: Database {
                 let compressedData = try data.gzipped()
                 return Attachment2(name: name, isCompressed: true, data: compressedData)
             } catch {
-                Logger.mainLog.warning("Failed to compress attachment data [message: \(error.localizedDescription)]")
+                Logger.mainLog.warning("Failed to compress attachment data", metadata: ["message": "\(error.localizedDescription)"])
             }
         }
         
@@ -868,7 +868,7 @@ extension Database2: Database2XMLTimeParser {
             return formatAppropriateDate
         }
         if let altFormatDate = Date(iso8601string: trimmedString) {
-            Logger.mainLog.warning("Found ISO8601-formatted timestamp in \(self.header.formatVersion) DB.")
+            Logger.mainLog.warning("Found ISO8601-formatted timestamp in DB.", metadata: ["version": "\(self.header.formatVersion)"])
             return altFormatDate
         }
         return nil

@@ -1,4 +1,5 @@
 import UIKit
+import Logging
 
 protocol MyCellDelegate {
     func didTapEdit(data: KeeVaultAutofillEntry, category: PriorityCategory)
@@ -42,6 +43,7 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
+        Logger.appLog.debug("entry list view controller loaded")
     }
     
     // MARK: - Table view data source
@@ -150,6 +152,7 @@ class EntryListViewController: UITableViewController, UISearchBarDelegate, MyCel
     }
     
     func didTapEdit(data: KeeVaultAutofillEntry, category: PriorityCategory) {
+        Logger.appLog.debug("edit tapped")
         performSegue(withIdentifier: "editSegue", sender: [data, category])
     }
     

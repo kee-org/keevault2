@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class CustomData2: Eraseable {
     
@@ -71,7 +71,7 @@ public class CustomData2: Eraseable {
                 )
                 Logger.mainLog.trace("Item loaded OK")
             default:
-                Logger.mainLog.error("Unexpected XML tag in CustomData: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in CustomData", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(
                     actual: tag.name,
                     expected: xmlParentName + "/CustomData/*")
@@ -98,20 +98,20 @@ public class CustomData2: Eraseable {
             case Xml2.lastModificationTime:
                 optionalTimestamp = timeParser.xmlStringToDate(tag.value)
             default:
-                Logger.mainLog.error("Unexpected XML tag in CustomData/Item: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in CustomData/Item", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(
                     actual: tag.name,
                     expected: xmlParentName + "/CustomData/Item/*")
             }
         }
         guard let _key = key else {
-            Logger.mainLog.error("Missing \(xmlParentName)/CustomData/Item/Key")
+            Logger.mainLog.error("Missing parent/CustomData/Item/Key", metadata: ["parent": "\(xmlParentName)"])
             throw Xml2.ParsingError.malformedValue(
                 tag: xmlParentName + "/CustomData/Item/Key",
                 value: nil)
         }
         guard let _value = value else {
-            Logger.mainLog.error("Missing \(xmlParentName)/CustomData/Item/Value")
+            Logger.mainLog.error("Missing parent/CustomData/Item/Value", metadata: ["parent": "\(xmlParentName)"])
             throw Xml2.ParsingError.malformedValue(
                 tag: xmlParentName + "/CustomData/Item/Value",
                 value: nil)

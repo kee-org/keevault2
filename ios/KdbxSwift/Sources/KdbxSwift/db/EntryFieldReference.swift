@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class EntryFieldReference {
     public enum Status {
@@ -226,7 +226,7 @@ public class EntryFieldReference {
                 _uuid = UUID(uuidString: String(value)) 
             }
             guard let uuid = _uuid else {
-                Logger.mainLog.debug("Malformed UUID: \(value)")
+                Logger.mainLog.debug("Malformed UUID", metadata: ["value": "\(value)"])
                 return nil
             }
             result = entries.first(where: { $0.uuid == uuid })

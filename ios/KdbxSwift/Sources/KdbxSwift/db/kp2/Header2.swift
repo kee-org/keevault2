@@ -1,6 +1,6 @@
 import Foundation
 import CommonCrypto
-import os.log
+import Logging
 
 final class Header2: Eraseable {
     private static let signature1: UInt32 = 0x9AA2D903
@@ -301,11 +301,11 @@ final class Header2: Eraseable {
             if fileVersion == Header2.fileVersion4_1 {
                 formatVersion = .v4_1
             }
-            Logger.mainLog.trace("Database format: \(self.formatVersion)")
+            Logger.mainLog.trace("Database format", metadata: ["public:version": "\(self.formatVersion)"])
             return
         }
         
-        Logger.mainLog.error("Unsupported file version [version: \(fileVersion.asHexString, privacy: .public)]")
+        Logger.mainLog.error("Unsupported file version", metadata: ["public:version": "\(fileVersion.asHexString)"])
         throw HeaderError.unsupportedFileVersion(actualVersion: fileVersion.asHexString)
     }
     
@@ -334,7 +334,7 @@ final class Header2: Eraseable {
                 headerSize += MemoryLayout.size(ofValue: fSize) + fieldSize
             
             guard let fieldID: FieldID = FieldID(rawValue: rawFieldID) else {
-                Logger.mainLog.warning("Unknown field ID, skipping [fieldID: \(rawFieldID)]")
+                Logger.mainLog.warning("Unknown field ID, skipping", metadata: ["fieldID": "\(rawFieldID)"])
                 continue
             }
             
@@ -350,10 +350,10 @@ final class Header2: Eraseable {
 
             switch fieldID {
             case .end:
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("end field read OK", metadata: ["name": "\(fieldID.name)"])
                 break 
             case .comment:
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("comment read OK", metadata: ["name": "\(fieldID.name)"])
                 break
             case .cipherID:
                 guard let _cipherUUID = UUID(data: fieldValueData) else {
@@ -361,39 +361,39 @@ final class Header2: Eraseable {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let _dataCipher = DataCipherFactory.instance.createFor(uuid: _cipherUUID) else {
-                    Logger.mainLog.error("Unsupported cipher ID: \(fieldValueData.asHexString, privacy: .public)")
+                    Logger.mainLog.error("Unsupported cipher ID", metadata: ["public:value": "\(fieldValueData.asHexString)"])
                     throw HeaderError.unsupportedDataCipher(
                         uuidHexString: fieldValueData.asHexString)
                 }
                 self.dataCipher = _dataCipher
-                Logger.mainLog.trace("\(fieldID.name) read OK [name: \(self.dataCipher.name)]")
+                Logger.mainLog.trace("cipherID read OK", metadata: ["name": "\(fieldID.name)", "cipher": "\(self.dataCipher.name)"])
             case .compressionFlags:
                 guard let compressionFlags32 = UInt32(data: fieldValueData) else {
                     throw HeaderError.readingError
                 }
                 guard let compressionFlags8 = UInt8(exactly: compressionFlags32) else {
-                    Logger.mainLog.error("Unknown compression algorithm [compressionFlags32: \(compressionFlags32, privacy: .public)]")
+                    Logger.mainLog.error("Unknown compression algorithm", metadata: ["public:compressionFlags32": "\(compressionFlags32)"])
                     throw HeaderError.unknownCompressionAlgorithm
                 }
                 guard CompressionAlgorithm(rawValue: compressionFlags8) != nil else {
-                    Logger.mainLog.error("Unknown compression algorithm [compressionFlags8: \(compressionFlags8, privacy: .public)]")
+                    Logger.mainLog.error("Unknown compression algorithm", metadata: ["public:compressionFlags8": "\(compressionFlags8)"])
                     throw HeaderError.unknownCompressionAlgorithm
                 }
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("compressionFlags read OK", metadata: ["name": "\(fieldID.name)"])
             case .masterSeed:
                 guard fieldSize == SHA256_SIZE else {
-                    Logger.mainLog.error("Unexpected \(fieldID.name) field size [\(fieldSize) bytes]")
+                    Logger.mainLog.error("Unexpected masterSeed size", metadata: ["name": "\(fieldID.name)", "bytes": "\(fieldSize)"])
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("masterSeed read OK", metadata: ["name": "\(fieldID.name)"])
             
             case .encryptionIV:
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("encryptionIV read OK", metadata: ["name": "\(fieldID.name)"])
                 break
             
             case .kdfParameters: 
                 guard formatVersion >= .v4 else {
-                    Logger.mainLog.error("Found \(fieldID.name) in non-V4 header. Database corrupted?")
+                    Logger.mainLog.error("Found kdfParameters in non-V4 header. Database corrupted?", metadata: ["name": "\(fieldID.name)"])
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let kdfParams = KDFParams(data: fieldValueData) else {
@@ -402,10 +402,10 @@ final class Header2: Eraseable {
                 }
                 self.kdfParams = kdfParams
                 self.kdf = Argon2dKDF()
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("kdfParameters read OK", metadata: ["name": "\(fieldID.name)"])
             case .publicCustomData:
                 guard formatVersion >= .v4 else {
-                    Logger.mainLog.error("Found \(fieldID.name) in non-V4 header. Database corrupted?")
+                    Logger.mainLog.error("Found publicCustomData in non-V4 header. Database corrupted?", metadata: ["name": "\(fieldID.name)"])
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let publicCustomData = VarDict(data: fieldValueData) else {
@@ -413,7 +413,7 @@ final class Header2: Eraseable {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 self.publicCustomData = publicCustomData
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("publicCustomData read OK", metadata: ["name": "\(fieldID.name)"])
             default:
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
@@ -435,18 +435,18 @@ final class Header2: Eraseable {
                 [.cipherID, .compressionFlags, .masterSeed, .encryptionIV, .kdfParameters]
         for fieldID in importantFields {
             guard let fieldData = fields[fieldID] else {
-                Logger.mainLog.error("\(fieldID.name, privacy: .public) is missing")
+                Logger.mainLog.error("critical field is missing", metadata: ["public:name": "\(fieldID.name)"])
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
             if fieldData.isEmpty {
-                Logger.mainLog.error("\(fieldID.name, privacy: .public) is present, but empty")
+                Logger.mainLog.error("critical field is present, but empty", metadata: ["public:name": "\(fieldID.name)"])
                 throw HeaderError.corruptedField(fieldName: fieldID.name)
             }
         }
         Logger.mainLog.trace("All important fields are OK")
         
         guard initialVector.count == dataCipher.initialVectorSize else {
-            Logger.mainLog.error("Initial vector size is inappropritate for the cipher [size: \(self.initialVector.count, privacy: .public), cipher UUID: \(self.dataCipher.uuid, privacy: .public)]")
+            Logger.mainLog.error("Initial vector size is inappropriate for the cipher", metadata: ["public:size": "\(self.initialVector.count)", "public:UUID": "\(self.dataCipher.uuid)"])
             throw HeaderError.corruptedField(fieldName: FieldID.encryptionIV.name)
         }
     }
@@ -503,17 +503,17 @@ final class Header2: Eraseable {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 guard let protectedStreamAlgorithm = ProtectedStreamAlgorithm(rawValue: rawID) else {
-                    Logger.mainLog.error("Unrecognized protected stream algorithm [rawID: \(rawID, privacy: .public)]")
+                    Logger.mainLog.error("Unrecognized protected stream algorithm", metadata: ["public:rawID": "\(rawID)"])
                     throw HeaderError.unsupportedStreamCipher(id: rawID)
                 }
                 self.innerStreamAlgorithm = protectedStreamAlgorithm
-                Logger.mainLog.trace("\(fieldID.name) read OK [name: \(self.innerStreamAlgorithm.name, privacy: .public)]")
+                Logger.mainLog.trace("innerRandomStreamID read OK", metadata: ["public:name": "\(fieldID.name)", "public:innerStream": "\(self.innerStreamAlgorithm.name)"])
             case .innerRandomStreamKey:
                 guard fieldData.count > 0 else {
                     throw HeaderError.corruptedField(fieldName: fieldID.name)
                 }
                 self.protectedStreamKey = fieldData.clone()
-                Logger.mainLog.trace("\(fieldID.name) read OK")
+                Logger.mainLog.trace("innerRandomStreamKey read OK", metadata: ["name": "\(fieldID.name)"])
             case .binary:
                 let isProtected = (fieldData[0] & 0x01 != 0)
                 let newBinaryID = database.binaries.count
@@ -523,11 +523,11 @@ final class Header2: Eraseable {
                     isCompressed: false,
                     isProtected: isProtected) 
                 database.binaries[newBinaryID] = binary
-                Logger.mainLog.trace("\(fieldID.name, privacy: .public) read OK [size: \(fieldData.count) bytes]")
+                Logger.mainLog.trace("binary read OK", metadata: ["public:name": "\(fieldID.name)", "bytes": "\(fieldData.count)"])
             case .end:
                 initStreamCipher()
                 Logger.mainLog.trace("Stream cipher init OK")
-                Logger.mainLog.trace("Inner header read OK [size: \(size) bytes]")
+                Logger.mainLog.trace("Inner header read OK", metadata: ["bytes": "\(size)"])
                 return size
             }
         }
@@ -608,7 +608,7 @@ final class Header2: Eraseable {
                 do {
                     data = try binary.data.gunzipped() 
                 } catch {
-                    Logger.mainLog.error("Failed to uncompress attachment data [message: \(error.localizedDescription, privacy: .public)]")
+                    Logger.mainLog.error("Failed to uncompress attachment data", metadata: ["public:message": "\(error.localizedDescription)"])
                     throw HeaderError.binaryUncompressionError(reason: error.localizedDescription)
                 }
             } else {

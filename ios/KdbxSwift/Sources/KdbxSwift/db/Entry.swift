@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class EntryField: Eraseable {
     public static let title    = "Title"

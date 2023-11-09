@@ -268,7 +268,7 @@ class EntryViewModel {
           digits: data['size']?.toInt() ?? OtpAuth.DEFAULT_DIGITS,
         ).toUri().toString();
       } on FormatException catch (e, stackTrace) {
-        l.d('Error parsing data while normalising OTP value', e, stackTrace);
+        l.d('Error parsing data while normalising OTP value', error: e, stackTrace: stackTrace);
         rethrow;
       }
     }
@@ -283,10 +283,10 @@ class EntryViewModel {
       ).toUri().toString();
     } on FormatException catch (e, stackTrace) {
       // ignore format exception from base32 decoding.
-      l.w('Error decoding base32 secret', e, stackTrace);
+      l.w('Error decoding base32 secret', error: e, stackTrace: stackTrace);
       return null;
     } catch (e, stackTrace) {
-      l.w('Error while parsing OTP format', e, stackTrace);
+      l.w('Error while parsing OTP format', error: e, stackTrace: stackTrace);
       throw FormatException('Error parsing Tray OTP Format $e');
     }
   }

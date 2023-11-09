@@ -131,7 +131,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
         return PaymentService.instance.finishTransaction(item);
       } on Exception catch (e) {
         l.w('Exception while finishing the payment transaction. Ignoring but an app restart and/or a fresh sign-in or registration attempt may be required for everything to catch up. May also require a few minutes for server-side operations to complete.',
-            e);
+            error: e);
       }
     });
     if (retry) {

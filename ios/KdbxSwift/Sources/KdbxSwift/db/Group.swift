@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class Group: DatabaseItem, Eraseable {
     public static let defaultIconID = IconID.folder

@@ -25,7 +25,7 @@
 //  THE SOFTWARE.
 
 import Foundation
-import os.log
+import Logging
 
 // https://tools.ietf.org/html/rfc4648
 

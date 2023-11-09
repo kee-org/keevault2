@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 public class EntryField2: EntryField {
     
@@ -64,7 +64,7 @@ public class EntryField2: EntryField {
                     value = tag.value ?? ""
                 }
             default:
-                Logger.mainLog.error("Unexpected XML tag in Entry/String: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/String", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/String/*")
             }
         }
@@ -159,7 +159,7 @@ public class Entry2: Entry {
                 case Xml2.association:
                     try loadAssociation(xml: tag)
                 default:
-                    Logger.mainLog.error("Unexpected XML tag in Entry/AutoType: \(tag.name)")
+                    Logger.mainLog.error("Unexpected XML tag in Entry/AutoType", metadata: ["name": "\(tag.name)"])
                     throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/*")
                 }
             }
@@ -177,7 +177,7 @@ public class Entry2: Entry {
                 case Xml2.keystrokeSequence:
                     sequence = tag.value ?? ""
                 default:
-                    Logger.mainLog.error("Unexpected XML tag in Entry/AutoType/Association: \(tag.name)")
+                    Logger.mainLog.error("Unexpected XML tag in Entry/AutoType/Association", metadata: ["name": "\(tag.name)"])
                     throw Xml2.ParsingError.unexpectedTag(
                         actual: tag.name,
                         expected: "Entry/AutoType/Association/*")
@@ -468,7 +468,7 @@ public class Entry2: Entry {
                 ) 
                 Logger.mainLog.trace("Entry history loaded OK")
             default:
-                Logger.mainLog.error("Unexpected XML tag in Entry: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/*")
             }
         }
@@ -531,7 +531,7 @@ public class Entry2: Entry {
                 }
                 locationChangedTime = time
             default:
-                Logger.mainLog.error("Unexpected XML tag in Entry/Times: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/Times", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/Times/*")
             }
         }
@@ -572,7 +572,7 @@ public class Entry2: Entry {
                 history.append(histEntry)
                 Logger.mainLog.trace("Entry history item loaded OK")
             default:
-                Logger.mainLog.error("Unexpected XML tag in Entry/History: \(tag.name)")
+                Logger.mainLog.error("Unexpected XML tag in Entry/History", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Entry/History/*")
             }
         }

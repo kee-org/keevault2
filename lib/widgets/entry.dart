@@ -173,7 +173,7 @@ class EntryWidget extends StatelessWidget {
         l.d('Got totp secret with ${value.lengthInBytes} bytes.');
         return OtpAuth(secret: value);
       } catch (e, stackTrace) {
-        l.w('Invalid base32 code?', e, stackTrace);
+        l.w('Invalid base32 code?', error: e, stackTrace: stackTrace);
         return null;
       }
     }
@@ -237,12 +237,14 @@ class EntryWidget extends StatelessWidget {
         if (e.code == barcode.BarcodeScanner.cameraAccessDenied) {
           // We already tried to get the user to grant permission so if they really don't want to
           // by this point, they'll have to enter the code manually.
-          l.i('User denied camera permission.. Automatically continuing to manual code entry.', e);
+          l.i('User denied camera permission.. Automatically continuing to manual code entry.', error: e);
         } else {
-          l.e('Unknown PlatformException. Automatically continuing to manual code entry.', e, stackTrace);
+          l.e('Unknown PlatformException. Automatically continuing to manual code entry.',
+              error: e, stackTrace: stackTrace);
         }
       } catch (e, stackTrace) {
-        l.w('Error during barcode scanning. Automatically continuing to manual code entry.', e, stackTrace);
+        l.w('Error during barcode scanning. Automatically continuing to manual code entry.',
+            error: e, stackTrace: stackTrace);
       }
     }
 

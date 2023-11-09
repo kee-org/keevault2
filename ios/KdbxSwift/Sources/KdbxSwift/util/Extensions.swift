@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import Logging
 
 extension StringProtocol {
     func base64ToBase64url() -> String {
