@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:biometric_storage/biometric_storage.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -444,10 +446,15 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
     buildSignature: 'Unknown',
   );
 
+  // ignore: unused_field
+  BaseDeviceInfo? _deviceInfo;
+  AndroidDeviceInfo? _androidDeviceInfo;
+
   @override
   void initState() {
     super.initState();
     unawaited(_initPackageInfo());
+    unawaited(_initDeviceInfo());
   }
 
   Future<void> _initPackageInfo() async {
@@ -455,6 +462,18 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
     if (mounted) {
       setState(() {
         _packageInfo = info;
+      });
+    }
+  }
+
+  Future<void> _initDeviceInfo() async {
+    final deviceInfoPlugin = DeviceInfoPlugin();
+    final deviceInfo = await deviceInfoPlugin.deviceInfo;
+    final androidInfo = Platform.isAndroid ? await deviceInfoPlugin.androidInfo : null;
+    if (mounted) {
+      setState(() {
+        _deviceInfo = deviceInfo;
+        _androidDeviceInfo = androidInfo;
       });
     }
   }
@@ -510,6 +529,23 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
                 // user will have to toggle the switch a couple of times to
                 // resync and fix any broken behaviour.
                 await BlocProvider.of<AutofillCubit>(context).setSavingPreference(value);
+              },
+            ),
+          ),
+          Visibility(
+            visible: widget.isEnabled && KeeVaultPlatform.isAndroid && (_androidDeviceInfo?.version.sdkInt ?? 0) >= 31,
+            child: SwitchSettingsTile(
+              settingKey: 'autofillServiceEnableIMEIntegration',
+              title: 'Show in keyboard',
+              subtitle: 'experimental feature',
+              defaultValue: true,
+              onChange: (value) async {
+                // We assume the autofill preference's SharedPreferences feature
+                // is in sync to begin with and always specify what the user has
+                // requested from our own preference so in the worst case, the
+                // user will have to toggle the switch a couple of times to
+                // resync and fix any broken behaviour.
+                await BlocProvider.of<AutofillCubit>(context).setIMEIntegrationPreference(value);
               },
             ),
           ),
