@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keevault/logging/logger.dart';
-import 'package:logger_flutter/logger_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../config/app.dart';
+import '../config/routes.dart';
 import '../extension_methods.dart';
 import 'package:keevault/generated/l10n.dart';
 
@@ -68,9 +68,10 @@ class DialogUtils {
             actions: <Widget>[
               TextButton(
                 child: Text(S.of(context).openLogConsole),
-                onPressed: () async {
-                  await LogConsole.open(context);
-                },
+                onPressed: () async => await AppConfig.router.navigateTo(
+                  AppConfig.navigatorKey.currentContext!,
+                  Routes.logger,
+                ),
               ),
               TextButton(
                 child: Text(materialLoc.okButtonLabel),

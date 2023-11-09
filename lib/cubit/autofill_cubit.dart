@@ -89,6 +89,36 @@ class AutofillCubit extends Cubit<AutofillState> {
     await AutofillService().setPreferences(AutofillPreferences(
       enableDebug: prefs.enableDebug,
       enableSaving: value,
+      enableIMERequests: prefs.enableIMERequests,
+    ));
+  }
+
+  Future<void> setDebugEnabledPreference(value) async {
+    if (KeeVaultPlatform.isIOS) {
+      final iosAutofillEnableDebug =
+          await _autoFillMethodChannel.invokeMethod<bool>('setDebugEnabled', <String, dynamic>{
+                'debugEnabled': value,
+              }) ??
+              false;
+      if (!iosAutofillEnableDebug) {
+        l.e('Failed to set debug status for autofill service');
+      }
+    } else {
+      final prefs = await AutofillService().preferences;
+      await AutofillService().setPreferences(AutofillPreferences(
+        enableDebug: value,
+        enableSaving: prefs.enableSaving,
+        enableIMERequests: prefs.enableIMERequests,
+      ));
+    }
+  }
+
+  Future<void> setIMEIntegrationPreference(value) async {
+    final prefs = await AutofillService().preferences;
+    await AutofillService().setPreferences(AutofillPreferences(
+      enableDebug: prefs.enableDebug,
+      enableSaving: prefs.enableSaving,
+      enableIMERequests: value,
     ));
   }
 

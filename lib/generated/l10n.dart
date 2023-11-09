@@ -1890,10 +1890,10 @@ class S {
     );
   }
 
-  /// `Open log console`
+  /// `Share/view logs`
   String get openLogConsole {
     return Intl.message(
-      'Open log console',
+      'Share/view logs',
       name: 'openLogConsole',
       desc: '',
       args: [],
