@@ -60,6 +60,9 @@
         <meta-data
             android:name="com.keevault.flutter_autofill_service.match_header_drawable_name"
             android:value="ic_v_light_key_24dp" />
+        <meta-data
+            android:name="com.keevault.flutter_autofill_service.pinned_drawable_name"
+            android:value="ic_v_light_key_24dp" />
 
         <service
             android:name="com.keevault.flutter_autofill_service.FlutterAutofillService"
