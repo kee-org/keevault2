@@ -28,12 +28,10 @@ packages:
   argon2_ffi:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: "05facf3c9b1f445e14ba13c56151c49fa2b57b6d"
-      url: "https://github.com/kee-org/argon2_ffi.git"
-    source: git
-    version: "2.0.0"
+      path: "../argon2_ffi"
+      relative: true
+    source: path
+    version: "2.0.1"
   argon2_ffi_base:
     dependency: "direct main"
     description:
@@ -58,15 +56,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
-  barcode_scan2:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: main
-      resolved-ref: "57d0f6e689d0544714bdc4c19aec3ef7ed968c00"
-      url: "https://github.com/kee-org/barcode_scan2"
-    source: git
-    version: "4.2.1+1"
   base32:
     dependency: "direct main"
     description:
@@ -268,14 +257,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.0"
-  fixnum:
-    dependency: transitive
-    description:
-      name: fixnum
-      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   fluro:
     dependency: "direct main"
     description:
@@ -326,11 +307,10 @@ packages:
   flutter_inapp_purchase:
     dependency: "direct main"
     description:
-      name: flutter_inapp_purchase
-      sha256: "687aed5b7d813e20bfeb2ed1f3b4b7d335eba56d3d3f6d4721f084016f919d44"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.2"
+      path: "../flutter_inapp_purchase"
+      relative: true
+    source: path
+    version: "5.6.0+1"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -606,6 +586,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  mobile_scanner:
+    dependency: "direct main"
+    description:
+      name: mobile_scanner
+      sha256: cf978740676ba5b0c17399baf117984b31190bb7a6eaa43e51229ed46abc42ee
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.2"
   nested:
     dependency: transitive
     description:
@@ -782,14 +770,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.7.3"
-  protobuf:
-    dependency: transitive
-    description:
-      name: protobuf
-      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   provider:
     dependency: transitive
     description:
@@ -842,25 +822,25 @@ packages:
     dependency: "direct main"
     description:
       name: rate_my_app
-      sha256: fe210e9e6068095945f89fc2310a71b1cc2caae7f64fa65b83fc796badcb05e3
+      sha256: e448dc27f8e821824fe7f67c2dba22f67b18de08054efa746defd1cd1657d882
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.4"
+    version: "2.0.0"
   receive_intent:
     dependency: "direct main"
     description:
-      name: receive_intent
-      sha256: "84671fa21d7fdbe38c1a658f3b7656afd5e9852e99f25ce6ff80fd5f04cc8b53"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "483827ac1792cda6aa54d1268036811b71e24328"
+      resolved-ref: "483827ac1792cda6aa54d1268036811b71e24328"
+      url: "https://github.com/derrickgw/receive_intent"
+    source: git
     version: "0.2.4"
   sensitive_clipboard:
     dependency: "direct main"
     description:
-      name: sensitive_clipboard
-      sha256: f5b115bedd4350b7be6fad5f99824633f4f712abda3ffdbcc430c0cc5e107b46
-      url: "https://pub.dev"
-    source: hosted
+      path: "../sensitive_clipboard"
+      relative: true
+    source: path
     version: "1.0.0"
   share_plus:
     dependency: "direct main"
