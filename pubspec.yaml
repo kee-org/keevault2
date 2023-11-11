@@ -41,11 +41,11 @@ dependencies:
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
-      ref: master
+      ref: api34
   flutter_autofill_service:
     git:
       url: https://github.com/kee-org/flutter_autofill_service.git
-      ref: master
+      ref: api34
   bloc: ^8.1.2
   flutter_bloc: ^8.1.3
   fluro: ^2.0.5
@@ -109,8 +109,14 @@ dependencies:
   argon2_ffi_base: ^1.1.1
   uuid: ^3.0.7
   clock: ^1.1.1
-  flutter_inapp_purchase: 5.6.0
-  sensitive_clipboard: ^1.0.0
+  flutter_inapp_purchase: 
+    git:
+      url: https://github.com/kee-org/flutter_inapp_purchase
+      ref: api34
+  sensitive_clipboard: 
+    git:
+      url: https://github.com/kee-org/sensitive_clipboard
+      ref: api34
   rate_my_app: 2.0.0 # fix until at least > 2.0.0
   archive: ^3.4.6
   device_info_plus: ^9.1.0
@@ -127,16 +133,16 @@ dev_dependencies:
 dependency_overrides:
   # flutter_inapp_purchase declares incompatibility with this version and other deps declare
   # incompatibility with earlier versions. Seems to work fine if we just use the latest version.
-  http: 1.1.0
+  #http: 1.1.0
   collection: 1.18.0
-  sensitive_clipboard:
-    path: ../sensitive_clipboard/
-  flutter_inapp_purchase:
-    path: ../flutter_inapp_purchase/
-  flutter_autofill_service:
-    path: ../flutter_autofill_service/
-  argon2_ffi:
-    path: ../argon2_ffi/
+  # sensitive_clipboard:
+  #   path: ../sensitive_clipboard/
+  # flutter_inapp_purchase:
+  #   path: ../flutter_inapp_purchase/
+  # flutter_autofill_service:
+  #   path: ../flutter_autofill_service/
+  # argon2_ffi:
+  #   path: ../argon2_ffi/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
