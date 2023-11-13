@@ -28,9 +28,11 @@ packages:
   argon2_ffi:
     dependency: "direct main"
     description:
-      path: "../argon2_ffi"
-      relative: true
-    source: path
+      path: "."
+      ref: api34
+      resolved-ref: "86f3a356aa66c76798fc70ab595e12a404c6e6aa"
+      url: "https://github.com/kee-org/argon2_ffi.git"
+    source: git
     version: "2.0.1"
   argon2_ffi_base:
     dependency: "direct main"
@@ -307,9 +309,11 @@ packages:
   flutter_inapp_purchase:
     dependency: "direct main"
     description:
-      path: "../flutter_inapp_purchase"
-      relative: true
-    source: path
+      path: "."
+      ref: api34
+      resolved-ref: "12785f3866cb753104aa820f4060ef0a32561253"
+      url: "https://github.com/kee-org/flutter_inapp_purchase"
+    source: git
     version: "5.6.0+1"
   flutter_launcher_icons:
     dependency: "direct dev"
@@ -425,7 +429,7 @@ packages:
     source: hosted
     version: "0.15.4"
   http:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: http
       sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
@@ -838,9 +842,11 @@ packages:
   sensitive_clipboard:
     dependency: "direct main"
     description:
-      path: "../sensitive_clipboard"
-      relative: true
-    source: path
+      path: "."
+      ref: api34
+      resolved-ref: "4ae55ee4d8895aba399f3cc9cf8d7fdab8faa543"
+      url: "https://github.com/kee-org/sensitive_clipboard"
+    source: git
     version: "1.0.0"
   share_plus:
     dependency: "direct main"
