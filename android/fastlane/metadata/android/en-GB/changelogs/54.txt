@@ -1,0 +1,13 @@
+Android 8 and 9 no longer supported - you should upgrade Android for security.
+
+Autofill improvements:
+Some additional fields will match
+Now able to force autofill even from non-password fields (long-press on the field)
+See autofill matches in your Keyboard for Android 12+
+Pick another entry an unlimited number of times in Android 11+ (v11 keyboard mode only)
+
+Upgraded log console:
+Share (includes old copy feature)
+Delete (remove all logs)
+Option to enable Autofill logging
+Other UI improvements
