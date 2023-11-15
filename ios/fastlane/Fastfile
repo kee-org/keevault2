@@ -40,7 +40,7 @@ def ensure_temp_keychain(name, password)
 end
 
 before_all do
-  xcodes(version: "15.0", select_for_current_build_only: true)
+  xcversion(version: "15.0") 
 end
 
 platform :ios do
