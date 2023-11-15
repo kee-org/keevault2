@@ -44,6 +44,11 @@ jobs:
 
       - name: Run tests
         run: flutter test
+      
+      - name: Choose xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.0'
 
       - name: Build iOS App
         run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_NAME_SUFFIX='(b)' --dart-define KEEVAULT_ID_SUFFIX=.beta
