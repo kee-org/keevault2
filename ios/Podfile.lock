@@ -60,9 +60,9 @@ PODS:
     - Flutter
   - rate_my_app (1.1.4):
     - Flutter
-  - SDWebImage (5.14.2):
-    - SDWebImage/Core (= 5.14.2)
-  - SDWebImage/Core (5.14.2)
+  - SDWebImage (5.16.0):
+    - SDWebImage/Core (= 5.16.0)
+  - SDWebImage/Core (5.16.0)
   - sensitive_clipboard (0.0.1):
     - Flutter
   - share_plus (0.0.1):
@@ -70,8 +70,8 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - SwiftProtobuf (1.20.3)
-  - SwiftyGif (5.4.3)
+  - SwiftProtobuf (1.22.0)
+  - SwiftyGif (5.4.4)
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -156,14 +156,14 @@ SPEC CHECKSUMS:
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   rate_my_app: e249ec0751c276811746ff89558c23dc0da39f0c
-  SDWebImage: b9a731e1d6307f44ca703b3976d18c24ca561e84
+  SDWebImage: 2aea163b50bfcb569a2726b6a754c54a4506fcf6
   sensitive_clipboard: d4866e5d176581536c27bb1618642ee83adca986
   share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
-  SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
-  SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
+  SwiftProtobuf: 40bd808372cb8706108f22d28f8ab4a6b9bc6989
+  SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   url_launcher_ios: 68d46cc9766d0c41dbdc884310529557e3cd7a86
 
-PODFILE CHECKSUM: 0f9f002d1b656a9e3daaf89beca155cdf7f30114
+PODFILE CHECKSUM: 0658f7bb36458779f6da1691e33f9d925242f612
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.14.2

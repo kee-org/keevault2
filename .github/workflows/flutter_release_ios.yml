@@ -50,14 +50,14 @@ jobs:
         with:
           xcode-version: '15.0'
 
-      - name: Build iOS App
+      - name: Build iOS Flutter App
         run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_NAME_SUFFIX='(b)' --dart-define KEEVAULT_ID_SUFFIX=.beta
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7
-          bundler: 2.3.19
+          ruby-version: '3.0'
+          bundler: 2.4.19
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Release beta stage app to beta delivery platform
@@ -119,14 +119,14 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build iOS App
+      - name: Build iOS Flutter App
         run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX= --dart-define IAP_APPLE_APP_STORE=yes
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7
-          bundler: 2.3.19
+          ruby-version: '3.0'
+          bundler: 2.4.19
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Release prod stage app to appstore testflight

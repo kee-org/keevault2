@@ -113,5 +113,22 @@ jobs:
         with:
           xcode-version: '15.0'
 
-      - name: Build iOS App
+      - name: Build iOS Flutter App
         run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX= --dart-define IAP_APPLE_APP_STORE=yes
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler: 2.4.19
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Build iOS App bundle
+        env:
+          MATCH_GIT_BASIC_AUTHORIZATION: '${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+        run: |
+          cd ios
+          bundle exec fastlane beta_build_only
