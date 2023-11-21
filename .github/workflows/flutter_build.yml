@@ -74,6 +74,7 @@ jobs:
     name: Build ios prod
 
     runs-on: macos-13
+    permissions: write-all
 
     steps:
       - name: Checkout
