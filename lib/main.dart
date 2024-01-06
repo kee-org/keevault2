@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:keevault/config/platform.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/payment_service.dart';
 import 'package:keevault/widgets/dialog_utils.dart';
@@ -29,9 +30,11 @@ void main() async {
         url: 'https://matomo.kee.pm/js/',
         dispatchSettings: DispatchSettings.persistent(onLoad: DispatchSettings.whereNotOlderThan(Duration(days: 14))),
       );
-      // Responsibility to check initialisation completed is deferred to any
-      // Flutter views that actually want to use the IAP feature
-      unawaited(PaymentService.instance.initConnection());
+      if (!KeeVaultPlatform.isWeb) {
+        // Responsibility to check initialisation completed is deferred to any
+        // Flutter views that actually want to use the IAP feature
+        unawaited(PaymentService.instance.initConnection());
+      }
       WidgetsFlutterBinding.ensureInitialized();
       l.i('Initialized WidgetsFlutterBinding');
       var suffixList = await rootBundle.loadString('assets/public_suffix_list.dat');
