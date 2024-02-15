@@ -4,9 +4,9 @@ class LoadingSpinner extends StatelessWidget {
   final String tooltip;
 
   const LoadingSpinner({
-    Key? key,
+    super.key,
     required this.tooltip,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

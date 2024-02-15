@@ -21,13 +21,13 @@ import '../extension_methods.dart';
 
 class EntryField extends StatefulWidget {
   const EntryField({
-    Key? key,
+    super.key,
     required this.fieldType,
     required this.entry,
     required this.field,
     required this.onDelete,
     required this.onChangeIcon,
-  }) : super(key: key);
+  });
 
   final FieldType fieldType;
   final EditEntryViewModel entry;

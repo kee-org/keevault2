@@ -5,7 +5,7 @@ import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class LabelFilterWidget extends StatelessWidget {
-  const LabelFilterWidget({Key? key}) : super(key: key);
+  const LabelFilterWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

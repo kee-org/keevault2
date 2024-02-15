@@ -5,7 +5,7 @@ import 'dialog_utils.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class FreeUserTermsDialog extends StatelessWidget with DialogMixin<bool> {
-  const FreeUserTermsDialog({Key? key}) : super(key: key);
+  const FreeUserTermsDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

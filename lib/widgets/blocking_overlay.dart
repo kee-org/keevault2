@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 class BlockingOverlay extends StatefulWidget {
   const BlockingOverlay({
-    Key? key,
+    super.key,
     required this.child,
     this.delay = const Duration(milliseconds: 500),
     this.progressIndicator = const CircularProgressIndicator(),
-  }) : super(key: key);
+  });
 
   final Widget child;
   final Duration delay;

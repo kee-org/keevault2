@@ -15,14 +15,14 @@ class IconChooser extends StatefulWidget {
   static late Map<dynamic, dynamic> iconMap; // ick for Dart typing limitations!
 
   const IconChooser({
-    Key? key,
+    super.key,
     this.iconSize,
     this.backgroundColor,
     this.mainAxisSpacing,
     this.crossAxisSpacing,
     this.iconColor,
     required this.customIcons,
-  }) : super(key: key);
+  });
 
   @override
   State<IconChooser> createState() => _IconChooserState();

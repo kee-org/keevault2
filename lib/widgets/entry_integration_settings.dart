@@ -7,8 +7,8 @@ import '../generated/l10n.dart';
 
 class IntegrationSettingsWidget extends StatefulWidget {
   const IntegrationSettingsWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<IntegrationSettingsWidget> createState() => _IntegrationSettingsWidgetState();
@@ -151,7 +151,7 @@ class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
 
 class MatchAccuracyRadioWidget extends StatefulWidget {
   final MatchAccuracy minimumMatchAccuracy;
-  const MatchAccuracyRadioWidget({Key? key, required this.minimumMatchAccuracy}) : super(key: key);
+  const MatchAccuracyRadioWidget({super.key, required this.minimumMatchAccuracy});
 
   @override
   State<MatchAccuracyRadioWidget> createState() => _MatchAccuracyRadioWidgetState();

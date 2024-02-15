@@ -9,13 +9,12 @@ class EditableListWidget<T> extends StatefulWidget {
   final String hint;
 
   const EditableListWidget(
-      {Key? key,
+      {super.key,
       required this.items,
       required this.onAddFromString,
       required this.onRemove,
       required this.title,
-      required this.hint})
-      : super(key: key);
+      required this.hint});
 
   @override
   State<EditableListWidget<T>> createState() => _EditableListWidgetState<T>();

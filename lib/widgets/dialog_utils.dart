@@ -142,7 +142,7 @@ class ConfirmDialogParams {
 }
 
 class ConfirmDialog extends StatelessWidget with DialogMixin<bool> {
-  const ConfirmDialog({Key? key, required this.params}) : super(key: key);
+  const ConfirmDialog({super.key, required this.params});
   final ConfirmDialogParams params;
 
   @override
@@ -180,14 +180,14 @@ mixin DialogMixin<T> on Widget {
 
 class SimplePromptDialog extends StatefulWidget with DialogMixin<String> {
   const SimplePromptDialog({
-    Key? key,
+    super.key,
     this.title,
     this.labelText,
     this.initialValue = '',
     this.helperText,
     this.bodyText,
     this.icon,
-  }) : super(key: key);
+  });
   final String? title;
   final String? labelText;
   final String? helperText;

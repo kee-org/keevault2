@@ -48,14 +48,13 @@ class EntryWidget extends StatelessWidget {
   final Function(int index) deleteAt;
   final bool savingViaAutofill;
   const EntryWidget(
-      {Key? key,
+      {super.key,
       required this.endEditing,
       this.onDelete,
       required this.allCustomIcons,
       required this.revertTo,
       required this.deleteAt,
-      required this.savingViaAutofill})
-      : super(key: key);
+      required this.savingViaAutofill});
 
   void changeIcon(BuildContext context, EntryColor? color) async {
     final cubit = BlocProvider.of<EntryCubit>(context);
@@ -660,7 +659,7 @@ class EntryWidget extends StatelessWidget {
 
 class StringEntryFieldEditor extends StatelessWidget {
   const StringEntryFieldEditor({
-    Key? key,
+    super.key,
     required this.onChange,
     required this.controller,
     required this.formFieldKey,
@@ -668,7 +667,7 @@ class StringEntryFieldEditor extends StatelessWidget {
     this.fieldKey,
     required this.delegate,
     required this.field,
-  }) : super(key: key);
+  });
 
   final Key formFieldKey;
   final FocusNode focusNode;
@@ -744,10 +743,10 @@ enum FieldType { string, otp, checkbox }
 
 class ObscuredEntryFieldEditor extends StatelessWidget {
   const ObscuredEntryFieldEditor({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.field,
-  }) : super(key: key);
+  });
 
   final VoidCallback onPressed;
   final FieldViewModel field;

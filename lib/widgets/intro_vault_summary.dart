@@ -6,9 +6,9 @@ import 'package:keevault/generated/l10n.dart';
 
 class IntroVaultSummaryWidget extends StatefulWidget {
   const IntroVaultSummaryWidget({
-    Key? key,
+    super.key,
     required this.theme,
-  }) : super(key: key);
+  });
 
   final ThemeData theme;
 

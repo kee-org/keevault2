@@ -7,7 +7,7 @@ import 'package:keevault/cubit/vault_cubit.dart';
 
 //TODO:f: Find a way to reduce duplication with group_tree.dart
 class GroupMoveTreeWidget extends StatelessWidget {
-  const GroupMoveTreeWidget({Key? key, required this.initialSelectedUuid, required this.title}) : super(key: key);
+  const GroupMoveTreeWidget({super.key, required this.initialSelectedUuid, required this.title});
 
   final String initialSelectedUuid;
   final String title;
@@ -44,7 +44,7 @@ class GroupMoveTreeWidget extends StatelessWidget {
 
 //TODO:f: Find a way to reduce duplication with group_tree.dart
 class EntryMoveTreeWidget extends StatelessWidget {
-  const EntryMoveTreeWidget({Key? key, required this.title}) : super(key: key);
+  const EntryMoveTreeWidget({super.key, required this.title});
 
   final String title;
 
@@ -92,10 +92,10 @@ abstract class MoveTreeListWidget extends StatefulWidget {
   final List<Node<String>> nodes;
   final String title;
   const MoveTreeListWidget({
-    Key? key,
+    super.key,
     required this.nodes,
     required this.title,
-  }) : super(key: key);
+  });
 }
 
 abstract class _MoveTreeListWidgetState<T extends MoveTreeListWidget> extends State<T> {
@@ -155,10 +155,10 @@ class GroupMoveTreeListWidget extends MoveTreeListWidget {
   final String initialSelectedUuid;
   const GroupMoveTreeListWidget({
     required this.initialSelectedUuid,
-    Key? key,
-    required List<Node<String>> nodes,
-    required String title,
-  }) : super(key: key, nodes: nodes, title: title);
+    super.key,
+    required super.nodes,
+    required super.title,
+  });
 
   @override
   State<GroupMoveTreeListWidget> createState() => _GroupMoveTreeListWidgetState();
@@ -197,10 +197,10 @@ class _GroupMoveTreeListWidgetState extends _MoveTreeListWidgetState<GroupMoveTr
 
 class EntryMoveTreeListWidget extends MoveTreeListWidget {
   const EntryMoveTreeListWidget({
-    Key? key,
-    required List<Node<String>> nodes,
-    required String title,
-  }) : super(key: key, nodes: nodes, title: title);
+    super.key,
+    required super.nodes,
+    required super.title,
+  });
 
   @override
   State<EntryMoveTreeListWidget> createState() => _EntryMoveTreeListWidgetState();

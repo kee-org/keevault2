@@ -160,7 +160,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
       }
     }
     final newList = [
-      ...currentState.profileSettings.disabled.where((profile) => profile != name).toList(),
+      ...currentState.profileSettings.disabled.where((profile) => profile != name),
       if (!enabled) name,
     ];
 

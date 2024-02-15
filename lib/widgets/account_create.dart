@@ -38,7 +38,7 @@ class IapDetails {
 }
 
 class AccountCreateWidget extends StatefulWidget {
-  const AccountCreateWidget({Key? key, this.emailAddress}) : super(key: key);
+  const AccountCreateWidget({super.key, this.emailAddress});
 
   final String? emailAddress;
 

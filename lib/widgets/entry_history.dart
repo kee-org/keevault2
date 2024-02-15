@@ -19,10 +19,10 @@ class EntryHistoryWidget extends StatelessWidget {
   final Function(int index) deleteAt;
 
   const EntryHistoryWidget({
-    Key? key,
+    super.key,
     required this.revertTo,
     required this.deleteAt,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -107,11 +107,11 @@ class EntryHistoryItem extends StatelessWidget {
   final Function() delete;
   final EntryViewModel entry;
   const EntryHistoryItem({
-    Key? key,
+    super.key,
     required this.revert,
     required this.entry,
     required this.delete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -246,10 +246,10 @@ class EntryHistoryItem extends StatelessWidget {
 
 class EntryHistoryField extends StatelessWidget {
   const EntryHistoryField({
-    Key? key,
+    super.key,
     required this.fieldType,
     required this.field,
-  }) : super(key: key);
+  });
 
   final FieldType fieldType;
   final FieldViewModel field;
@@ -265,7 +265,7 @@ class EntryHistoryField extends StatelessWidget {
 }
 
 class EntryHistoryFieldOtp extends StatelessWidget {
-  const EntryHistoryFieldOtp({Key? key, required this.field}) : super(key: key);
+  const EntryHistoryFieldOtp({super.key, required this.field});
 
   final FieldViewModel field;
 
@@ -282,7 +282,7 @@ class EntryHistoryFieldOtp extends StatelessWidget {
 }
 
 class EntryHistoryFieldBoolean extends StatelessWidget {
-  const EntryHistoryFieldBoolean({Key? key, required this.field}) : super(key: key);
+  const EntryHistoryFieldBoolean({super.key, required this.field});
 
   final FieldViewModel field;
 
@@ -298,7 +298,7 @@ class EntryHistoryFieldBoolean extends StatelessWidget {
 }
 
 class EntryHistoryFieldText extends StatefulWidget {
-  const EntryHistoryFieldText({Key? key, required this.field}) : super(key: key);
+  const EntryHistoryFieldText({super.key, required this.field});
   final FieldViewModel field;
 
   @override
@@ -465,9 +465,9 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
 class IntegrationSettingsHistoryWidget extends StatefulWidget {
   final EntryViewModel entry;
   const IntegrationSettingsHistoryWidget({
-    Key? key,
+    super.key,
     required this.entry,
-  }) : super(key: key);
+  });
 
   @override
   State<IntegrationSettingsHistoryWidget> createState() => _IntegrationSettingsHistoryWidgetState();

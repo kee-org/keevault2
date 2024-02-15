@@ -19,7 +19,7 @@ import 'vault_password_credentials.dart';
 import '../generated/l10n.dart';
 
 class VaultLoaderWidget extends StatefulWidget {
-  const VaultLoaderWidget({Key? key}) : super(key: key);
+  const VaultLoaderWidget({super.key});
 
   @override
   VaultLoaderState createState() => VaultLoaderState();

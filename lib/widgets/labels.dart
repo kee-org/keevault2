@@ -8,7 +8,7 @@ import '../generated/l10n.dart';
 class LabelsWidget extends StatefulWidget {
   final List<Tag> otherKnownTags;
   final List<Tag> tags;
-  const LabelsWidget({Key? key, required this.otherKnownTags, required this.tags}) : super(key: key);
+  const LabelsWidget({super.key, required this.otherKnownTags, required this.tags});
 
   @override
   State<LabelsWidget> createState() => _LabelsWidgetState();

@@ -8,7 +8,7 @@ import 'coloured_safe_area_widget.dart';
 import 'dialog_utils.dart';
 
 class ChangeEmailPrefsWidget extends StatefulWidget {
-  const ChangeEmailPrefsWidget({Key? key}) : super(key: key);
+  const ChangeEmailPrefsWidget({super.key});
 
   @override
   State<ChangeEmailPrefsWidget> createState() => _ChangeEmailPrefsWidgetState();

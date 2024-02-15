@@ -8,11 +8,11 @@ typedef SubmitCallback = Future<void> Function(String string);
 
 class VaultAccountCredentialsWidget extends StatefulWidget {
   const VaultAccountCredentialsWidget({
-    Key? key,
+    super.key,
     required this.onSignInRequest,
     required this.onLocalOnlyRequested,
     required this.onRegisterRequest,
-  }) : super(key: key);
+  });
 
   final SubmitCallback onSignInRequest;
   final void Function() onLocalOnlyRequested;

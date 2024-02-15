@@ -39,7 +39,7 @@ import 'in_app_messenger.dart';
 class KeeVaultApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
-  const KeeVaultApp({Key? key, required this.navigatorKey}) : super(key: key);
+  const KeeVaultApp({super.key, required this.navigatorKey});
   @override
   State createState() {
     //TODO:f: Perhaps there is some other place we can assign the AppConfig state
@@ -132,6 +132,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   ThemeData getThemeData(bool isDark, MaterialColor palette) {
     final theme = isDark
         ? ThemeData.from(
+            useMaterial3: false,
             colorScheme: ColorScheme.fromSwatch(
               primarySwatch: palette,
               brightness: Brightness.dark,
@@ -144,6 +145,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
             ),
           )
         : ThemeData.from(
+            useMaterial3: false,
             colorScheme: ColorScheme.fromSwatch(
               primarySwatch: palette,
               brightness: Brightness.light,

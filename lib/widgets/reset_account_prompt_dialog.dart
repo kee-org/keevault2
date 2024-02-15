@@ -12,9 +12,9 @@ import 'package:matomo_tracker/matomo_tracker.dart';
 
 class ResetAccountPromptDialog extends StatefulWidget with DialogMixin<bool> {
   const ResetAccountPromptDialog({
-    Key? key,
+    super.key,
     required this.emailAddress,
-  }) : super(key: key);
+  });
 
   final String emailAddress;
 

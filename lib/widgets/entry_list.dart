@@ -25,8 +25,8 @@ import 'dialog_utils.dart';
 
 class EntryListWidget extends StatelessWidget {
   const EntryListWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +82,8 @@ class EntryListWidget extends StatelessWidget {
 
 class EntryListHeaderWidget extends StatelessWidget {
   const EntryListHeaderWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -150,9 +150,9 @@ class EntryListHeaderWidget extends StatelessWidget {
 class EntryListItemWidget extends StatelessWidget {
   final String uuid;
   const EntryListItemWidget({
-    Key? key,
+    super.key,
     required this.uuid,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

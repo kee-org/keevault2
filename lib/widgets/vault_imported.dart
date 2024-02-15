@@ -8,7 +8,7 @@ import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
 
 class VaultImportedWidget extends StatelessWidget {
-  const VaultImportedWidget({Key? key}) : super(key: key);
+  const VaultImportedWidget({super.key});
 
   _loadVault(LocalVaultFile vault, BuildContext context) async {
     final accountCubit = BlocProvider.of<AccountCubit>(context);

@@ -11,8 +11,8 @@ import 'in_app_messenger.dart';
 
 class VaultDrawerWidget extends StatelessWidget {
   const VaultDrawerWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

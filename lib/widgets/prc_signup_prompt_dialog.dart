@@ -10,8 +10,8 @@ import 'package:keevault/logging/logger.dart';
 
 class PRCSignupPromptDialog extends StatefulWidget with DialogMixin<bool> {
   const PRCSignupPromptDialog({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<PRCSignupPromptDialog> createState() => _PRCSignupPromptDialogState();

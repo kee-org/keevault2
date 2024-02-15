@@ -14,8 +14,8 @@ import 'dialog_utils.dart';
 
 class HelpWidget extends StatefulWidget {
   const HelpWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<HelpWidget> createState() => _HelpWidgetState();
