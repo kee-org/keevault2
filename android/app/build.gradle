@@ -80,8 +80,17 @@ def nameSuffix = stages[dartEnvironmentVariables.KEEVAULT_STAGE].nameSuffix + ch
 def symbolLevel = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].symbolLevel
 def chosenSigningConfig = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].signingConfig
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
-    compileSdk 33
+    compileSdk 34
+
+    compileOptions {
+        sourceCompatibility = 17
+        targetCompatibility = 17
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'

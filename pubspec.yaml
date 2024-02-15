@@ -35,7 +35,7 @@ dependencies:
       url: https://github.com/kee-org/biometric_storage.git
       ref: keevault
 
-  package_info_plus: ^4.2.0
+  package_info_plus: ^5.0.1
   shared_preferences: ^2.2.2
   flutter_settings_screens: 0.3.3-null-safety+2
   argon2_ffi:
@@ -86,28 +86,27 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
-  matomo_tracker: ^4.1.1
+  matomo_tracker:
+    git:
+      url: git@github.com:Floating-Dartists/matomo-tracker.git
+      ref: main
   file_picker: ^6.0.0
   zxcvbn: ^1.0.0
   flutter_rating_bar: ^4.0.1
   mime: ^1.0.4
   share_plus: ^7.2.1
-  path: 1.8.3 #flutter sdk always lags behind so upgrade this only when needed
+  path: ^1.8.3 #flutter sdk always lags behind so upgrade this only when needed
   permission_handler: ^11.0.1
   flutter_file_dialog: ^3.0.2
   base32: ^2.1.3
-  mobile_scanner:
   flutter_speed_dial: ^7.0.0
-  receive_intent: 
-    git:
-      url: https://github.com/derrickgw/receive_intent
-      ref: 483827ac1792cda6aa54d1268036811b71e24328
+  receive_intent: ^0.2.5
   platform: ^3.1.3
   email_validator: ^2.1.17
   convert: ^3.1.1
   meta: ^1.9.1
   argon2_ffi_base: ^1.1.1
-  uuid: ^3.0.7
+  uuid: ^4.3.3
   clock: ^1.1.1
   flutter_inapp_purchase: 
     git:
@@ -120,12 +119,17 @@ dependencies:
   rate_my_app: 2.0.0 # fix until at least > 2.0.0
   archive: ^3.4.6
   device_info_plus: ^9.1.0
+  # barcode_scan2: ^4.3.0
+  barcode_scan2:
+    git:
+      url: https://github.com/kee-org/barcode_scan2
+      ref: main
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.13.1"
-  flutter_lints: ^2.0.3
+  flutter_lints: ^3.0.1
   dependency_validator: ^3.2.3
   flutter_native_splash: ^2.3.5
   #patrol: ^2.2.3
@@ -134,7 +138,7 @@ dependency_overrides:
   # flutter_inapp_purchase declares incompatibility with this version and other deps declare
   # incompatibility with earlier versions. Seems to work fine if we just use the latest version.
   #http: 1.1.0
-  collection: 1.18.0
+  # collection: 1.18.0
   # sensitive_clipboard:
   #   path: ../sensitive_clipboard/
   # flutter_inapp_purchase:

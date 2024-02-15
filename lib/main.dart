@@ -25,7 +25,7 @@ void main() async {
     () async {
       await Settings.init(cacheProvider: SharePreferenceCache());
       await MatomoTracker.instance.initialize(
-        siteId: 7,
+        siteId: '7',
         url: 'https://matomo.kee.pm/js/',
         dispatchSettings: DispatchSettings.persistent(onLoad: DispatchSettings.whereNotOlderThan(Duration(days: 14))),
       );
