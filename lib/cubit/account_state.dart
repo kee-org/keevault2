@@ -19,7 +19,7 @@ class AccountChosen extends AccountState {
 }
 
 class AccountIdentifying extends AccountChosen {
-  const AccountIdentifying(User user) : super(user);
+  const AccountIdentifying(super.user);
 }
 
 // Being Identified means either the remote service was unavailable or it accepted the email address (which
@@ -28,58 +28,58 @@ class AccountIdentifying extends AccountChosen {
 // not be treated as authenticated or authorised in any way whatsoever.
 class AccountIdentified extends AccountChosen {
   final bool causedByInteraction;
-  const AccountIdentified(User user, this.causedByInteraction) : super(user);
+  const AccountIdentified(super.user, this.causedByInteraction);
 }
 
 class AccountAuthenticating extends AccountChosen {
-  const AccountAuthenticating(User user) : super(user);
+  const AccountAuthenticating(super.user);
 }
 
 class AccountCreateRequested extends AccountChosen {
-  const AccountCreateRequested(User user) : super(user);
+  const AccountCreateRequested(super.user);
 }
 
 class AccountCreating extends AccountChosen {
-  const AccountCreating(User user) : super(user);
+  const AccountCreating(super.user);
 }
 
 class AccountAuthenticated extends AccountChosen {
-  const AccountAuthenticated(User user) : super(user);
+  const AccountAuthenticated(super.user);
 }
 
 class AccountAuthenticationBypassed extends AccountChosen {
-  const AccountAuthenticationBypassed(User user) : super(user);
+  const AccountAuthenticationBypassed(super.user);
 }
 
 class AccountExpired extends AccountAuthenticated {
   final bool trialAvailable;
-  const AccountExpired(User user, this.trialAvailable) : super(user);
+  const AccountExpired(super.user, this.trialAvailable);
 }
 
 class AccountEmailNotVerified extends AccountAuthenticated {
-  const AccountEmailNotVerified(User user) : super(user);
+  const AccountEmailNotVerified(super.user);
 }
 
 class AccountTrialRestartStarted extends AccountExpired {
-  const AccountTrialRestartStarted(User user, bool trialAvailable) : super(user, trialAvailable);
+  const AccountTrialRestartStarted(super.user, super.trialAvailable);
 }
 
 class AccountTrialRestartFinished extends AccountExpired {
   final bool success;
-  const AccountTrialRestartFinished(User user, bool trialAvailable, this.success) : super(user, trialAvailable);
+  const AccountTrialRestartFinished(super.user, super.trialAvailable, this.success);
 }
 
 class AccountSubscribing extends AccountAuthenticated {
-  const AccountSubscribing(User user) : super(user);
+  const AccountSubscribing(super.user);
 }
 
 class AccountSubscribed extends AccountAuthenticated {
-  const AccountSubscribed(User user) : super(user);
+  const AccountSubscribed(super.user);
 }
 
 class AccountSubscribeError extends AccountAuthenticated {
   final String message;
-  const AccountSubscribeError(User user, this.message) : super(user);
+  const AccountSubscribeError(super.user, this.message);
 }
 
 class AccountError extends AccountState {}

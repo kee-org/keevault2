@@ -24,9 +24,9 @@ class AutofillRequested extends AutofillModeActive {
 }
 
 class AutofillSaving extends AutofillModeActive {
-  AutofillSaving(AutofillMetadata androidMetadata) : super(androidMetadata);
+  AutofillSaving(super.androidMetadata);
 }
 
 class AutofillSaved extends AutofillModeActive {
-  AutofillSaved(AutofillMetadata androidMetadata) : super(androidMetadata);
+  AutofillSaved(super.androidMetadata);
 }
