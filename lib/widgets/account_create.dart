@@ -795,7 +795,36 @@ class AccountCreateWrapperWidget extends StatelessWidget {
         appBar: AppBar(
           title: Text(mainTitle),
         ),
-        body: WillPopScope(
+        body: PopScope(
+          canPop: skipBackCheck,
+          onPopInvoked: (bool didPop) async {
+            if (didPop) {
+              return;
+            }
+            final vc = BlocProvider.of<VaultCubit>(context);
+            final ac = BlocProvider.of<AccountCubit>(context);
+            final NavigatorState navigator = Navigator.of(context);
+            final result = await showDialog(
+                routeSettings: RouteSettings(),
+                context: context,
+                builder: (context) => AlertDialog(
+                        title: Text('Cancel registration?'),
+                        content: Text(
+                            'If you are part way through the account registration process, we cannot be sure whether your registration has completed or not, nor whether your Subscription provider has activated your subscription already. In that case, you may need to take additional actions to complete registration later or tidy up afterwards.'),
+                        actions: <Widget>[
+                          OutlinedButton(
+                              child: Text('Cancel registration'.toUpperCase()),
+                              onPressed: () => Navigator.of(context).pop(true)),
+                          OutlinedButton(
+                              child: Text('Continue registering'.toUpperCase()),
+                              onPressed: () => Navigator.of(context).pop(false)),
+                        ]));
+            if (result) {
+              // sign out so user can see initial signin/register page again.
+              await ac.forgetUser(vc.signout);
+              navigator.pop();
+            }
+          },
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -806,32 +835,6 @@ class AccountCreateWrapperWidget extends StatelessWidget {
               ),
             ),
           ),
-          onWillPop: () async {
-            final vc = BlocProvider.of<VaultCubit>(context);
-            final ac = BlocProvider.of<AccountCubit>(context);
-            final result = skipBackCheck ||
-                await showDialog(
-                    routeSettings: RouteSettings(),
-                    context: context,
-                    builder: (context) => AlertDialog(
-                            title: Text('Cancel registration?'),
-                            content: Text(
-                                'If you are part way through the account registration process, we cannot be sure whether your registration has completed or not, nor whether your Subscription provider has activated your subscription already. In that case, you may need to take additional actions to complete registration later or tidy up afterwards.'),
-                            actions: <Widget>[
-                              OutlinedButton(
-                                  child: Text('Cancel registration'.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(true)),
-                              OutlinedButton(
-                                  child: Text('Continue registering'.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(false)),
-                            ]));
-            if (result) {
-              // sign out so user can see initial signin/register page again.
-              await ac.forgetUser(vc.signout);
-              return true;
-            }
-            return false;
-          },
         ),
       ),
     );

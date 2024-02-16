@@ -342,7 +342,28 @@ class EntryWidget extends StatelessWidget {
                           )
                         ],
                       ),
-                body: WillPopScope(
+                body: PopScope(
+                  canPop: !entry.isDirty,
+                  onPopInvoked: (bool didPop) async {
+                    if (didPop) {
+                      return;
+                    }
+                    final result = await showDialog(
+                        routeSettings: RouteSettings(),
+                        context: context,
+                        builder: (context) =>
+                            AlertDialog(title: Text(str.keep_your_changes_question), actions: <Widget>[
+                              OutlinedButton(
+                                  child: Text(str.keep.toUpperCase()),
+                                  onPressed: () => Navigator.of(context).pop(true)),
+                              OutlinedButton(
+                                  child: Text(str.discard.toUpperCase()),
+                                  onPressed: () => Navigator.of(context).pop(false)),
+                            ]));
+                    if (result != null) {
+                      endEditing(result);
+                    }
+                  },
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -550,27 +571,6 @@ class EntryWidget extends StatelessWidget {
                           )),
                     ],
                   ),
-                  onWillPop: () async {
-                    if (!entry.isDirty) {
-                      return true;
-                    }
-                    final result = await showDialog(
-                        routeSettings: RouteSettings(),
-                        context: context,
-                        builder: (context) =>
-                            AlertDialog(title: Text(str.keep_your_changes_question), actions: <Widget>[
-                              OutlinedButton(
-                                  child: Text(str.keep.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(true)),
-                              OutlinedButton(
-                                  child: Text(str.discard.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(false)),
-                            ]));
-                    if (result != null) {
-                      endEditing(result);
-                    }
-                    return false;
-                  },
                 ),
                 extendBody: true,
                 floatingActionButton: SpeedDial(

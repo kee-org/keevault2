@@ -187,8 +187,8 @@ class EntryListItemWidget extends StatelessWidget {
                       unawaited(showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (context) => WillPopScope(
-                          onWillPop: () async => false,
+                        builder: (context) => PopScope(
+                          canPop: false,
                           child: Center(
                               child: SizedBox(width: 48, height: 48, child: LoadingSpinner(tooltip: str.autofilling))),
                         ),
