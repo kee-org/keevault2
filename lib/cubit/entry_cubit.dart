@@ -104,7 +104,7 @@ class EntryCubit extends Cubit<EntryState> {
     final uniqueName = findUniqueFieldName(newList, field.fieldKey!);
     field = uniqueName == field.fieldKey!
         ? field
-        : field.copyWith(browserModel: field.browserModel!.copyWith(displayName: uniqueName));
+        : field.copyWith(browserModel: field.browserModel!.copyWith(name: uniqueName));
     newList.add(field);
     final updated = entry.copyWith(fields: newList, isDirty: true);
     emit(EntryLoaded(updated));
@@ -148,7 +148,7 @@ class EntryCubit extends Cubit<EntryState> {
         return;
       }
     } else {
-      fieldIndex = entry.fields.indexWhere((f) => f.browserModel?.displayName == oldBrowserDisplayName);
+      fieldIndex = entry.fields.indexWhere((f) => f.browserModel?.name == oldBrowserDisplayName);
       if (fieldIndex == -1) {
         l.e('Field missing: $oldBrowserDisplayName (Json)');
         return;
@@ -159,7 +159,7 @@ class EntryCubit extends Cubit<EntryState> {
 
     final updatedFieldName = findUniqueFieldName(newList, newName);
     final updatedField = currentField.fieldStorage == FieldStorage.JSON
-        ? currentField.copyWith(browserModel: currentField.browserModel!.copyWith(displayName: updatedFieldName))
+        ? currentField.copyWith(browserModel: currentField.browserModel!.copyWith(name: updatedFieldName))
         : currentField.copyWith(
             key: KdbxKey(updatedFieldName),
             name: updatedFieldName,
@@ -182,7 +182,7 @@ class EntryCubit extends Cubit<EntryState> {
     TextCapitalization? textCapitalization,
     IconData? icon,
     bool? showIfEmpty,
-    BrowserFieldModel? browserModel,
+    Field? browserModel,
     StringValue? value,
     String? newCustomFieldName,
   }) {
@@ -198,7 +198,7 @@ class EntryCubit extends Cubit<EntryState> {
         return;
       }
     } else {
-      fieldIndex = entry.fields.indexWhere((f) => f.browserModel?.displayName == oldBrowserDisplayName);
+      fieldIndex = entry.fields.indexWhere((f) => f.browserModel?.name == oldBrowserDisplayName);
       if (fieldIndex == -1) {
         l.e('Field missing: $oldBrowserDisplayName (Json)');
         return;

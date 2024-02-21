@@ -1,7 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:kdbx/kdbx.dart';
+import 'package:kdbx/kdbx.dart' hide FieldType;
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/model/entry.dart';
@@ -504,7 +505,8 @@ class _IntegrationSettingsHistoryWidgetState extends State<IntegrationSettingsHi
                         child: ListTile(
                           title: Text(str.showEntryInBrowsersAndApps),
                           leading: Switch(
-                            value: !widget.entry.browserSettings.hide,
+                            value: !widget.entry.browserSettings.matcherConfigs
+                                .any((mc) => mc.matcherType == EntryMatcherType.Hide),
                             onChanged: null,
                           ),
                         ),
@@ -531,7 +533,11 @@ class _IntegrationSettingsHistoryWidgetState extends State<IntegrationSettingsHi
                       Expanded(
                         child: Text(str.minURLMatchAccuracy),
                       ),
-                      Text(widget.entry.browserSettings.minimumMatchAccuracy.name),
+                      Text((widget.entry.browserSettings.matcherConfigs
+                                  .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
+                                  ?.urlMatchMethod ??
+                              MatchAccuracy.Domain)
+                          .name),
                     ],
                   ),
                   Divider(

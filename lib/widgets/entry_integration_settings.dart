@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
@@ -55,11 +56,19 @@ class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
                           child: ListTile(
                             title: Text(str.showEntryInBrowsersAndApps),
                             leading: Switch(
-                              value: !entry.browserSettings.hide,
-                              onChanged: (bool? value) {
-                                if (value != null) {
+                              value: !entry.browserSettings.matcherConfigs
+                                  .any((mc) => mc.matcherType == EntryMatcherType.Hide),
+                              onChanged: (bool? show) {
+                                if (show != null) {
                                   final cubit = BlocProvider.of<EntryCubit>(context);
-                                  cubit.update(browserSettings: entry.browserSettings.copyWith(hide: !value));
+                                  final newSettings = entry.browserSettings.copyWith();
+                                  newSettings.matcherConfigs
+                                      .removeWhere((element) => element.matcherType == EntryMatcherType.Hide);
+                                  if (!show) {
+                                    newSettings.matcherConfigs
+                                        .add(EntryMatcherConfig(matcherType: EntryMatcherType.Hide));
+                                  }
+                                  cubit.update(browserSettings: newSettings);
                                 }
                               },
                             ),
@@ -109,7 +118,10 @@ class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
                       children: <Widget>[
                         Expanded(
                             child: MatchAccuracyRadioWidget(
-                          minimumMatchAccuracy: entry.browserSettings.minimumMatchAccuracy,
+                          minimumMatchAccuracy: entry.browserSettings.matcherConfigs
+                                  .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
+                                  ?.urlMatchMethod ??
+                              MatchAccuracy.Domain,
                         )),
                       ],
                     ),
@@ -161,8 +173,10 @@ class _MatchAccuracyRadioWidgetState extends State<MatchAccuracyRadioWidget> wit
   void onChanged(MatchAccuracy? value) {
     if (value != null) {
       final cubit = BlocProvider.of<EntryCubit>(context);
-      cubit.update(
-          browserSettings: (cubit.state as EntryLoaded).entry.browserSettings.copyWith(minimumMatchAccuracy: value));
+      final newSettings = (cubit.state as EntryLoaded).entry.browserSettings.copyWith();
+      newSettings.matcherConfigs.removeWhere((element) => element.matcherType == EntryMatcherType.Url);
+      newSettings.matcherConfigs.add(EntryMatcherConfig.forDefaultUrlMatchBehaviour(value));
+      cubit.update(browserSettings: newSettings);
     }
   }
 

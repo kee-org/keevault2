@@ -210,7 +210,7 @@ class AutofillCubit extends Cubit<AutofillState> {
   List<KdbxEntry> _findMatchesByPackageName(AutofillMetadata androidMetadata, KdbxFile current) {
     final matches = <KdbxEntry>[];
     matches.addAll(current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) =>
-        !entry.browserSettings.hide &&
+        !entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide) &&
         entry.androidPackageNames.any((pn) => androidMetadata.packageNames.contains(pn))));
     return matches;
   }
@@ -240,11 +240,15 @@ class AutofillCubit extends Cubit<AutofillState> {
         (val) => val.name == current.body.meta.browserSettings.matchedURLAccuracyOverrides[registrableDomain]);
 
     matches.addAll(current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) {
-      if (entry.browserSettings.hide) {
+      if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
         return false;
       }
       bool isAMatch = false;
-      var minimumMatchAccuracy = matchAccuracyDomainOverride ?? entry.browserSettings.minimumMatchAccuracy;
+      var minimumMatchAccuracy = matchAccuracyDomainOverride ??
+          entry.browserSettings.matcherConfigs
+              .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
+              ?.urlMatchMethod ??
+          MatchAccuracy.Domain;
 
       final matchPatterns = entry.browserSettings.includeUrls.toList();
       final primaryUrlString = entry.getString(KdbxKeyCommon.URL)?.getText();

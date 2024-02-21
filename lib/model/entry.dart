@@ -100,8 +100,8 @@ class EntryViewModel {
     final androidPackageNames = entry.androidPackageNames;
     final binaryMapEntries = entry.binaryEntries.toList();
 
-    final userBrowserField = settings.fields.firstWhereOrNull((field) => field.displayName == 'KeePass username');
-    final passBrowserField = settings.fields.firstWhereOrNull((field) => field.displayName == 'KeePass password');
+    final userBrowserField = settings.fields?.firstWhereOrNull((field) => field.valuePath == 'UserName');
+    final passBrowserField = settings.fields?.firstWhereOrNull((field) => field.valuePath == 'Password');
 
     final fields = entry.stringEntries
         .where((me) => !['KPRPC JSON', 'TOTP Seed', 'TOTP Settings', 'OTPAuth'].contains(me.key.key))
@@ -154,16 +154,16 @@ class EntryViewModel {
     // from older versions of Kee Vault or other KDBX generators.
     // Since we can't see a situation where there are duplicates within the JSON
     // settings field list, we can keep the deduplication algorithm simple.
-    fields.addAll(settings.fields
-        .where((field) => field.displayName != 'KeePass username' && field.displayName != 'KeePass password')
-        .map((field) {
-      if (fields.any((f) => f.fieldKey == field.displayName)) {
-        l.w('Duplicated field key found: ${field.displayName}. Will force deduplication.');
-        field = field.copyWith(
-            displayName: '${field.displayName} - deduplicated at ${DateTime.now().millisecondsSinceEpoch}');
-      }
-      return FieldViewModel.fromCustomAndBrowser(null, null, field);
-    }).where((vm) => vm.localisedCommonName.isNotEmpty));
+    fields.addAll(
+        settings.fields?.where((field) => field.valuePath != 'UserName' && field.valuePath != 'Password').map((field) {
+              if (fields.any((f) => f.fieldKey == field.name)) {
+                l.w('Duplicated field key found: ${field.name}. Will force deduplication.');
+                field =
+                    field.copyWith(name: '${field.name} - deduplicated at ${DateTime.now().millisecondsSinceEpoch}');
+              }
+              return FieldViewModel.fromCustomAndBrowser(null, null, field);
+            }).where((vm) => vm.localisedCommonName.isNotEmpty) ??
+            []);
 
     final fixedSortIndexes = [
       KdbxKeyCommon.TITLE,
@@ -399,8 +399,8 @@ class EditEntryViewModel extends EntryViewModel {
     const customIcon = null;
     const color = null;
     const uuid = null;
-    BrowserEntrySettings settings =
-        BrowserEntrySettings(minimumMatchAccuracy: group.file!.body.meta.browserSettings.defaultMatchAccuracy);
+    BrowserEntrySettings settings = BrowserEntrySettings.fromMap(null,
+        minimumMatchAccuracy: group.file!.body.meta.browserSettings.defaultMatchAccuracy);
     final tags = <Tag>[];
     final created = DateTime.now();
     final modified = created;
@@ -430,7 +430,7 @@ class EditEntryViewModel extends EntryViewModel {
 
   commit(KdbxEntry entry) {
     final Map<KdbxKey, StringValue> newFields = {};
-    final List<BrowserFieldModel> jsonFields = [];
+    final List<Field> jsonFields = [];
 
     for (var f in fields) {
       // returns a tuple of a kdbxstring keyvalue and a string of JSON for potential addition to KPRPCJSON kdbxstring

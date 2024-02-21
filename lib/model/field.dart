@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:kdbx/kdbx.dart';
+import 'package:kdbx/kdbx.dart' as kdbx show FieldType;
+import 'package:kdbx/kdbx.dart' hide FieldType;
 import 'package:tuple/tuple.dart';
 import '../generated/l10n.dart';
 import '../extension_methods.dart';
@@ -16,7 +18,7 @@ class FieldViewModel {
   TextCapitalization textCapitalization = TextCapitalization.none;
   IconData? icon;
   bool showIfEmpty = false;
-  BrowserFieldModel? browserModel;
+  Field? browserModel;
 
   StringValue value;
 
@@ -44,7 +46,7 @@ class FieldViewModel {
     this._name, //TODO:f: What is this actually for? Seems we set it to the same as localisedCommonName and then never use the value. We have the key for normal field ID purposes and have no need for localising user's own data if the name or fieldId of the browserModel is used. For new browserModel field entries, can't we use the localisedCommonName anyway (maybe via _getBrowserFieldDisplayName instead of _name?)
   );
 
-  factory FieldViewModel.fromCustomAndBrowser(KdbxKey? key, StringValue? value, BrowserFieldModel? browserModel) {
+  factory FieldViewModel.fromCustomAndBrowser(KdbxKey? key, StringValue? value, Field? browserModel) {
     if (key == null && value == null && browserModel == null) {
       throw Exception('No field can be created when there is no data');
     }
@@ -109,14 +111,24 @@ class FieldViewModel {
 
     if (key == null && browserModel != null) {
       // We might come across old bad data so make every effort to select a new displayName for such fields. Ultimately, we'll have to ignore and eventually delete any fields that contain no useful data.
-      localisedCommonName = browserModel.displayName?.nullIfBlank() ??
-          browserModel.name?.nullIfBlank() ??
-          browserModel.fieldId?.nullIfBlank() ??
-          (browserModel.type == FormFieldType.CHECKBOX || browserModel.value?.nullIfBlank() == null ? '' : '[no name]');
-      fieldValue = browserModel.type == FormFieldType.PASSWORD
+      localisedCommonName = browserModel.name?.nullIfBlank() ??
+          browserModel.matcherConfigs
+              ?.firstWhereOrNull((mc) => mc.matcherType == FieldMatcherType.Custom)
+              ?.customMatcher
+              ?.names
+              .firstOrNull
+              ?.nullIfBlank() ??
+          browserModel.matcherConfigs
+              ?.firstWhereOrNull((mc) => mc.matcherType == FieldMatcherType.Custom)
+              ?.customMatcher
+              ?.ids
+              .firstOrNull
+              ?.nullIfBlank() ??
+          (browserModel.type == kdbx.FieldType.Toggle || browserModel.value?.nullIfBlank() == null ? '' : '[no name]');
+      fieldValue = browserModel.type == kdbx.FieldType.Password
           ? ProtectedValue.fromString(browserModel.value ?? '')
           : PlainValue(browserModel.value ?? '');
-      protect = browserModel.type == FormFieldType.PASSWORD;
+      protect = browserModel.type == kdbx.FieldType.Password;
     } else {
       localisedCommonName = key!.key;
     }
@@ -126,13 +138,13 @@ class FieldViewModel {
   }
 
   bool get isDirty => _isDirty;
-  String? get name => browserModel?.displayName ?? _name ?? localisedCommonName;
-  String? get fieldKey => key?.key ?? browserModel?.displayName;
+  String? get name => browserModel?.name ?? _name ?? localisedCommonName;
+  String? get fieldKey => key?.key ?? browserModel?.name;
 
   String get textValue => value.getText();
 
   bool get isTotp => fieldStorage == FieldStorage.CUSTOM && ['otp', 'OTPAuth', 'TOTP Seed'].contains(key!.key);
-  bool get isCheckbox => browserModel?.type == FormFieldType.CHECKBOX;
+  bool get isCheckbox => browserModel?.type == kdbx.FieldType.Toggle;
 
   bool get isStandard =>
       fieldStorage != FieldStorage.JSON &&
@@ -146,7 +158,7 @@ class FieldViewModel {
   bool get protectionChangeable => !isStandard && !isTotp;
   bool get keyChangeable => !isTotp && !showIfEmpty;
 
-  Tuple2<MapEntry<KdbxKey, StringValue>?, BrowserFieldModel?> commit() {
+  Tuple2<MapEntry<KdbxKey, StringValue>?, Field?> commit() {
     final customField = key != null ? MapEntry<KdbxKey, StringValue>(key!, value) : null;
     return Tuple2(customField, browserModel);
   }
@@ -210,7 +222,7 @@ class FieldViewModel {
     TextCapitalization? textCapitalization,
     IconData? icon,
     bool? showIfEmpty,
-    BrowserFieldModel? browserModel,
+    Field? browserModel,
     StringValue? value,
     String? name,
   }) {

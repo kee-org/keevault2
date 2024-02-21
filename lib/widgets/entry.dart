@@ -153,8 +153,8 @@ class EntryWidget extends StatelessWidget {
       final field = FieldViewModel.fromCustomAndBrowser(
           null,
           null,
-          BrowserFieldModel(
-            displayName: key,
+          Field(
+            name: key,
             value: '',
           ));
       cubit.addField(field);

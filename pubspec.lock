@@ -529,11 +529,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "77820dc8e1dbc4c237e768519af78a8e3acb0ff7"
+      ref: configv2
+      resolved-ref: b24b601a9a47005690c145511acde1e771fef7b9
       url: "https://github.com/kee-org/kdbx.dart.git"
     source: git
-    version: "0.6.0+0"
+    version: "0.6.0+2"
   lints:
     dependency: transitive
     description:

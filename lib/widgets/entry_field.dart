@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:base32/base32.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kdbx/kdbx.dart';
+import 'package:kdbx/kdbx.dart' as kdbx show FieldType;
+import 'package:kdbx/kdbx.dart' hide FieldType;
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
@@ -74,7 +75,7 @@ class _SwitchEntryFieldState extends _EntryFieldState {
                 value: _checked,
                 onChanged: (bool? value) {
                   final cubit = BlocProvider.of<EntryCubit>(context);
-                  cubit.updateField(null, widget.field.browserModel!.displayName,
+                  cubit.updateField(null, widget.field.browserModel!.name,
                       value: value! ? PlainValue('KEEFOX_CHECKED_FLAG_TRUE') : PlainValue('KEEFOX_CHECKED_FLAG_FALSE'),
                       browserModel: widget.field.browserModel!
                           .copyWith(value: value ? 'KEEFOX_CHECKED_FLAG_TRUE' : 'KEEFOX_CHECKED_FLAG_FALSE'));
@@ -110,7 +111,7 @@ class _SwitchEntryFieldState extends _EntryFieldState {
           initialValue: widget.field.name,
         ).show(context);
         if (newName != null) {
-          cubit.renameField(widget.field.key, widget.field.browserModel?.displayName, newName);
+          cubit.renameField(widget.field.key, widget.field.browserModel?.name, newName);
         }
         break;
       case EntryAction.delete:
@@ -270,7 +271,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
             initialValue: widget.field.name,
           ).show(context);
           if (newName != null) {
-            cubit.renameField(widget.field.key, widget.field.browserModel?.displayName, newName);
+            cubit.renameField(widget.field.key, widget.field.browserModel?.name, newName);
           }
         }
         break;
@@ -283,10 +284,10 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
             if (widget.field.fieldStorage == FieldStorage.JSON) {
               cubit.updateField(
                 null,
-                widget.field.browserModel!.displayName,
+                widget.field.browserModel!.name,
                 value: PlainValue(widget.field.textValue),
                 browserModel:
-                    widget.field.browserModel!.copyWith(type: FormFieldType.TEXT, value: widget.field.textValue),
+                    widget.field.browserModel!.copyWith(type: kdbx.FieldType.Text, value: widget.field.textValue),
                 protect: false,
               );
             } else {
@@ -302,10 +303,10 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
             if (widget.field.fieldStorage == FieldStorage.JSON) {
               cubit.updateField(
                 null,
-                widget.field.browserModel!.displayName,
+                widget.field.browserModel!.name,
                 value: ProtectedValue.fromString(widget.field.textValue),
                 browserModel:
-                    widget.field.browserModel!.copyWith(type: FormFieldType.PASSWORD, value: widget.field.textValue),
+                    widget.field.browserModel!.copyWith(type: kdbx.FieldType.Password, value: widget.field.textValue),
                 protect: true,
               );
             } else {
@@ -468,7 +469,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
           }
           cubit.updateField(
             null,
-            widget.field.browserModel!.displayName,
+            widget.field.browserModel!.name,
             value: newValue,
             browserModel: widget.field.browserModel!.copyWith(value: value),
           );
