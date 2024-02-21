@@ -61,13 +61,13 @@ class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
                               onChanged: (bool? show) {
                                 if (show != null) {
                                   final cubit = BlocProvider.of<EntryCubit>(context);
-                                  final newSettings = entry.browserSettings.copyWith();
-                                  newSettings.matcherConfigs
-                                      .removeWhere((element) => element.matcherType == EntryMatcherType.Hide);
+                                  final newList = entry.browserSettings.matcherConfigs
+                                      .where((mc) => mc.matcherType != EntryMatcherType.Hide)
+                                      .toList();
                                   if (!show) {
-                                    newSettings.matcherConfigs
-                                        .add(EntryMatcherConfig(matcherType: EntryMatcherType.Hide));
+                                    newList.add(EntryMatcherConfig(matcherType: EntryMatcherType.Hide));
                                   }
+                                  final newSettings = entry.browserSettings.copyWith(matcherConfigs: newList);
                                   cubit.update(browserSettings: newSettings);
                                 }
                               },
@@ -173,9 +173,11 @@ class _MatchAccuracyRadioWidgetState extends State<MatchAccuracyRadioWidget> wit
   void onChanged(MatchAccuracy? value) {
     if (value != null) {
       final cubit = BlocProvider.of<EntryCubit>(context);
-      final newSettings = (cubit.state as EntryLoaded).entry.browserSettings.copyWith();
-      newSettings.matcherConfigs.removeWhere((element) => element.matcherType == EntryMatcherType.Url);
-      newSettings.matcherConfigs.add(EntryMatcherConfig.forDefaultUrlMatchBehaviour(value));
+      final entry = (cubit.state as EntryLoaded).entry;
+      final newList =
+          entry.browserSettings.matcherConfigs.where((mc) => mc.matcherType != EntryMatcherType.Url).toList();
+      newList.add(EntryMatcherConfig.forDefaultUrlMatchBehaviour(value));
+      final newSettings = entry.browserSettings.copyWith(matcherConfigs: newList);
       cubit.update(browserSettings: newSettings);
     }
   }

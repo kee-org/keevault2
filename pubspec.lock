@@ -530,10 +530,10 @@ packages:
     description:
       path: "."
       ref: configv2
-      resolved-ref: b24b601a9a47005690c145511acde1e771fef7b9
+      resolved-ref: a28d62a423cc70a05f8325147b2ea102ffad29a4
       url: "https://github.com/kee-org/kdbx.dart.git"
     source: git
-    version: "0.6.0+2"
+    version: "0.6.0+3"
   lints:
     dependency: transitive
     description:
