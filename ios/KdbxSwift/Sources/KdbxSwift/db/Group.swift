@@ -228,6 +228,7 @@ public class Group: DatabaseItem, Eraseable {
     
     public func collectAllEntries(to entries: inout Array<Entry>) {
         for group in self.groups {
+            guard !group.isDeleted else { continue }
             group.collectAllEntries(to: &entries)
         }
         entries.append(contentsOf: self.entries)
