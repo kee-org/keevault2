@@ -224,21 +224,26 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
     
     fileprivate func mashNewUrlIntoJSON(_ entryJson: String, _ propertyName: String, _ url: String) -> String {
         let range = entryJson.range(of: #""\#(propertyName)"\:\[([^\]]*)\]"#, options: .regularExpression)
+//        print(range)
+        if (range != nil) {
         var newJson = entryJson.replacingOccurrences(of: "[]", with: "[\"\(url)\"]", options: .init(), range: range)
         if (newJson.count == entryJson.count) {
             // may already have an altURL
             newJson = entryJson.replacingOccurrences(of: "]", with: ",\"\(url)\"]", options: .init(), range: range)
         }
-        if (newJson.count == entryJson.count) {
-            // may be a null property
-            let rangeNull = entryJson.range(of: #""\#(propertyName)"\:null"#, options: .regularExpression)
-            newJson = entryJson.replacingOccurrences(of: "null", with: "[\"\(url)\"]", options: .init(), range: rangeNull)
+        return newJson
         }
-        if (newJson.count == entryJson.count) {
+        // may be a null property
+            let rangeNull = entryJson.range(of: #""\#(propertyName)"\:null"#, options: .regularExpression)
+        if (rangeNull != nil) {
+var             newJson = entryJson.replacingOccurrences(of: "null", with: "[\"\(url)\"]", options: .init(), range: rangeNull)
+        return newJson
+        }
             // no altURLs at all
+            var newJson = entryJson
             let idx = newJson.index(newJson.endIndex, offsetBy: -1)
             newJson.insert(contentsOf: ",\"\(propertyName)\":[\"\(url)\"]", at: idx)
-        }
+        
         return newJson
     }
     
