@@ -62,6 +62,14 @@ extension KdbxFileKDF on KdbxFile {
     final argon2Args = createArgon2Args(credentials.getHash(), KdfType.Argon2d, header.readKdfParameters);
     return await KeeVaultKdfCache().argon2ArgumentsKey(argon2Args);
   }
+
+  bool ensureLatestVersion() {
+    if (header.version < KdbxVersion.V4_1) {
+      upgrade(4, 1);
+      return true;
+    }
+    return false;
+  }
 }
 
 extension KdbxEntryColor on KdbxEntry {

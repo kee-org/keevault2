@@ -98,6 +98,6 @@ class StrengthAssessedCredentials {
       KdfField.memory.item(argon2Params.memory),
       KdfField.version.item(argon2Params.version),
     ]);
-    return KdbxHeader.createV4()..writeKdfParameters(kdfParameters);
+    return KdbxHeader.createV4_1()..writeKdfParameters(kdfParameters);
   }
 }
