@@ -11,7 +11,7 @@ public class CustomData2: Eraseable {
         public var value: String
         public var lastModificationTime: Date? 
         
-        init(value: String, lastModificationTime: Date?) {
+        public init(value: String, lastModificationTime: Date?) {
             self.value = value
             self.lastModificationTime = lastModificationTime
         }
@@ -96,7 +96,7 @@ public class CustomData2: Eraseable {
             case Xml2.value:
                 value = tag.value ?? ""
             case Xml2.lastModificationTime:
-                optionalTimestamp = timeParser.xmlStringToDate(tag.value)
+                optionalTimestamp = (xmlParentName != "Group" && xmlParentName != "Entry") ? timeParser.xmlStringToDate(tag.value) : nil
             default:
                 Logger.mainLog.error("Unexpected XML tag in CustomData/Item", metadata: ["name": "\(tag.name)"])
                 throw Xml2.ParsingError.unexpectedTag(

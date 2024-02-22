@@ -596,8 +596,8 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "1cf19f0ed3fc1f0e3b88da341a0ef82ab26de16b"
-      url: "git@github.com:Floating-Dartists/matomo-tracker.git"
+      resolved-ref: "32e4e8ade8a4f3f9a0deb7cf2a27387919b77eb9"
+      url: "https://github.com/Floating-Dartists/matomo-tracker.git"
     source: git
     version: "4.1.1"
   meta:

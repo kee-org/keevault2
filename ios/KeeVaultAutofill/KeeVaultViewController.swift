@@ -49,7 +49,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         
         if let urlString = self.searchDomains?.first {
             if let url = urlFromString(urlString) {
-                addUrlToEntry(entry, url.absoluteString)
+                addUrlToEntry(entry as! Entry2, url.absoluteString)
             }
         }
         
@@ -73,7 +73,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         if (newUrl) {
             if let urlString = self.searchDomains?.first {
                 if let url = urlFromString(urlString) {
-                    addUrlToEntry(entry, url.absoluteString)
+                    addUrlToEntry(entry as! Entry2, url.absoluteString)
                 }
             }
         }
@@ -222,17 +222,44 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         return (0, firstHostname)
     }
     
-    fileprivate func addUrlToEntry(_ entry: Entry, _ url: String) {
+    fileprivate func mashNewUrlIntoJSON(_ entryJson: String, _ propertyName: String, _ url: String) -> String {
+        let range = entryJson.range(of: #""\#(propertyName)"\:\[([^\]]*)\]"#, options: .regularExpression)
+        var newJson = entryJson.replacingOccurrences(of: "[]", with: "[\"\(url)\"]", options: .init(), range: range)
+        if (newJson.count == entryJson.count) {
+            // may already have an altURL
+            newJson = entryJson.replacingOccurrences(of: "]", with: ",\"\(url)\"]", options: .init(), range: range)
+        }
+        if (newJson.count == entryJson.count) {
+            // may be a null property
+            let rangeNull = entryJson.range(of: #""\#(propertyName)"\:null"#, options: .regularExpression)
+            newJson = entryJson.replacingOccurrences(of: "null", with: "[\"\(url)\"]", options: .init(), range: rangeNull)
+        }
+        if (newJson.count == entryJson.count) {
+            // no altURLs at all
+            let idx = newJson.index(newJson.endIndex, offsetBy: -1)
+            newJson.insert(contentsOf: ",\"\(propertyName)\":[\"\(url)\"]", at: idx)
+        }
+        return newJson
+    }
+    
+    fileprivate func addUrlToEntry(_ entry: Entry2, _ url: String) {
         if (entry.rawURL.isEmpty) {
             entry.rawURL = url
         } else {
-            let entryJson = entry.getField("KPRPC JSON")?.value ?? "{\"version\":1,\"priority\":0,\"hide\":false,\"hTTPRealm\":\"\",\"formFieldList\":[],\"alwaysAutoFill\":false,\"alwaysAutoSubmit\":false,\"neverAutoFill\":false,\"neverAutoSubmit\":false,\"blockDomainOnlyMatch\":false,\"blockHostnameOnlyMatch\":false,\"altURLs\":[],\"regExURLs\":[],\"blockedURLs\":[],\"regExBlockedURLs\":[]}"
-            let range = entryJson.range(of: #""altURLs"\:\[([^\]]*)\]"#, options: .regularExpression)
-            var newJson = entryJson.replacingOccurrences(of: "[]", with: "[\"\(url)\"]", options: .init(), range: range)
-            if (newJson.count == entryJson.count) {
-                newJson = entryJson.replacingOccurrences(of: "]", with: ",\"\(url)\"]", options: .init(), range: range)
+            // We can write new entry configuration to V2 location but can't assume that every entry
+            // has already been migrated from V1 and don't want to handle the migration in the
+            // AutoFill extension so we also edit V1 if we find it there.
+            
+            if let entryJson = entry.getField("KPRPC JSON")?.value {
+                let newJson = mashNewUrlIntoJSON(entryJson, "altURLs", url)
+                entry.setField(name: "KPRPC JSON", value: newJson, isProtected: true)
             }
-            entry.setField(name: "KPRPC JSON", value: newJson, isProtected: true)
+            
+            let entryJsonV2 = entry.customData["KPRPC JSON"]?.value ?? #"{"version":2,"authenticationMethods":["password"],"matcherConfigs":[{"matcherType":"Url"}],"fields":[{"page":1,"valuePath":"UserName","uuid":"\#(UUID())","type":"Text","matcherConfigs":[{"matcherType":"UsernameDefaultHeuristic"}]},{"page":1,"valuePath":"Password","uuid":"\#(UUID())","type":"Password","matcherConfigs":[{"matcherType":"PasswordDefaultHeuristic"}]}]}"#
+        
+            let newJson = mashNewUrlIntoJSON(entryJsonV2, "altUrls", url)
+            let dataItem = CustomData2.Item(value: String(describing: newJson), lastModificationTime: nil)
+            entry.customData["KPRPC JSON"] = dataItem
         }
     }
     
@@ -240,7 +267,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         guard let db = entry.database else {
             fatalError("Invalid entry found while saving new URL")
         }
-        addUrlToEntry(entry, url)
+        addUrlToEntry(entry as! Entry2, url)
         entry.setModified()
         dbFileManager.saveToFile(db: db)
         

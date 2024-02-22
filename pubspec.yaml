@@ -88,7 +88,7 @@ dependencies:
     sdk: flutter
   matomo_tracker:
     git:
-      url: git@github.com:Floating-Dartists/matomo-tracker.git
+      url: https://github.com/Floating-Dartists/matomo-tracker.git
       ref: main
   file_picker: ^6.0.0
   zxcvbn: ^1.0.0

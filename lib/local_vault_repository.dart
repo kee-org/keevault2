@@ -332,6 +332,16 @@ class LocalVaultRepository {
       //something that a background service might be able to achieve if Apple
       //and Google are able to offer a suitable API.
       final kdbxToMergeInto = (await vault.files.pending) ?? vault.files.current;
+
+      // may have just downloaded an old version or an old autofill kdbx might have been
+      // left over from an autofill operation in progress before user updated to this version of Kee Vault 2
+      if (kdbxToMergeInto.header.version < KdbxVersion.V4_1) {
+        //TODO: date formats need to be left as is if already in v4 format
+        //TODO: upgrade as part of file load operations
+        //TODO: ios ignore entries in trash
+        //TODO: ios find out why edited bbc entry fails to open for editing... corrupt settings?
+        kdbxToMergeInto.upgrade(4, 1);
+      }
       kdbxToMergeInto.merge(autofill.files.current);
       final kdbxData = await kdbxFormat().save(kdbxToMergeInto);
 
