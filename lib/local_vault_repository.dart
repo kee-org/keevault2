@@ -333,14 +333,6 @@ class LocalVaultRepository {
       //and Google are able to offer a suitable API.
       final kdbxToMergeInto = (await vault.files.pending) ?? vault.files.current;
 
-      //TODO: date formats need to be left as is if already in v4 format (only affects imports for KV1 and KV2 since we're already on v4 but need to check every one since old import operations may have left some user's databases in an inconsistent format) - done for v2. v1 needs verifying. already works in v1.
-
-      //TODO: upgrade as part of file load operations - done for v2; done as part of every save in KV1 so already good.
-
-      //TODO: ios ignore entries in trash
-      //TODO: ios find out why edited bbc entry fails to open for editing... corrupt settings?
-      //TODO: ios above fixed? Delete all and re-import
-
       kdbxToMergeInto.merge(autofill.files.current);
       final kdbxData = await kdbxFormat().save(kdbxToMergeInto);
 
