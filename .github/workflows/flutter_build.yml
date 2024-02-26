@@ -132,4 +132,4 @@ jobs:
           TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
         run: |
           cd ios
-          bundle exec fastlane beta_build_only
+          bundle exec fastlane prod_build_only
