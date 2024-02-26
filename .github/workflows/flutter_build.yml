@@ -120,8 +120,8 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
-          bundler: 2.4.19
+          ruby-version: '3.3'
+          bundler: 2.5.6
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Build iOS App bundle
