@@ -7,6 +7,11 @@ import KdbxSwift
 import Logging
 import Puppy
 
+var initialised = false
+var logFormat = LogFormatter()
+var oslog: OSLogger?
+var puppy: Puppy?
+
 class CredentialProviderViewController: ASCredentialProviderViewController {
     
     var embeddedNavigationController: UINavigationController {
@@ -24,11 +29,6 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     var key: ByteArray?
     var keyStatus: OSStatus?
     let iOSBugWorkaroundAuthenticationDelay = 0.25
-    var initialised = false
-    
-    var logFormat = LogFormatter()
-    var oslog: OSLogger?
-    var puppy: Puppy?
     
     override func present(_ viewControllerToPresent: UIViewController,
                             animated flag: Bool,
@@ -40,12 +40,12 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
     override func viewDidLoad() {
         
         // This appears to be the earliest point in the autofill lifecycle and it may be
-        // called on a re-used or newly instantiated instance of this view controller
+        // called on a re-used or newly instantiated instance of this view controller (although allegedly the documentation about it being potentially reused is wrong since iOS version 3)
         if (!initialised) {
             oslog = OSLogger("com.keevault.keevault.oslog", logFormat: logFormat)
             puppy = Puppy()
             LoggingSystem.bootstrap {
-                var handler = MyPuppyLogHandler(label: $0, puppy: self.puppy!)
+                var handler = MyPuppyLogHandler(label: $0, puppy: puppy!)
                 handler.logLevel = .trace
                 return handler
             }
@@ -146,6 +146,15 @@ class CredentialProviderViewController: ASCredentialProviderViewController {
             var entries: [Entry] = []
             Logger.appLog.debug("preparing data for main VC")
             db.root?.collectAllEntries(to: &entries)
+            entries = entries.filter({
+                if let entryJson = ($0 as! Entry2).customData["KPRPC JSON"] {
+                    return !entryJson.value.contains(#"{"matcherType":"Hide"}"#)
+                } else if let entryJson = $0.getField("KPRPC JSON") {
+                    return !entryJson.value.contains(#""hide": true"#)
+                } else {
+                    return true
+                }
+            });
             mainController.searchDomains = seachDomains
             mainController.entries = entries
             mainController.dbFileManager = dbFileManager

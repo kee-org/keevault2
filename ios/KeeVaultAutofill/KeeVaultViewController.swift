@@ -133,7 +133,7 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         for index in entries!.indices {
             let entry = entries![index]
             
-            let (priority, server) = calculatePriority(entry: entry, searchDomains: searchDomains)
+            let (priority, server) = calculatePriority(entry: entry as! Entry2, searchDomains: searchDomains)
             if (priority == -1)
             {
                 // invalid or hidden entry
@@ -177,10 +177,18 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
         return url
     }
     
-    private func calculatePriority (entry: Entry, searchDomains: [String]) -> (Int, String) {
+    private func calculatePriority (entry: Entry2, searchDomains: [String]) -> (Int, String) {
         var URLs = [urlFromString(entry.rawURL)].compactMap() { $0 }
-        if let entryJson = entry.getField("KPRPC JSON") {
+        if let entryJson = entry.customData["KPRPC JSON"] {
             let kprpcsubset = try? JSONDecoder().decode(KPRPCSubset.self, from: Data(entryJson.value.utf8))
+            let altUrls = kprpcsubset?.altUrls
+            altUrls?.forEach() {
+                if let url = urlFromString($0) {
+                    URLs.append(url)
+                }
+            }
+        } else if let entryJson = entry.getField("KPRPC JSON") {
+            let kprpcsubset = try? JSONDecoder().decode(KPRPCSubsetV1.self, from: Data(entryJson.value.utf8))
             let altUrls = kprpcsubset?.altURLs
             altUrls?.forEach() {
                 if let url = urlFromString($0) {
@@ -313,10 +321,18 @@ protocol AddOrEditEntryDelegate: AnyObject {
     func update(title: String, username: String, password: String, newUrl: Bool, entryIndex: Int)
 }
 
-struct KPRPCSubset: Codable {
+struct KPRPCSubsetV1: Codable {
     let altURLs: [String]
     
     enum CodingKeys: String, CodingKey {
         case altURLs
+    }
+}
+
+struct KPRPCSubset: Codable {
+    let altUrls: [String]
+    
+    enum CodingKeys: String, CodingKey {
+        case altUrls
     }
 }
