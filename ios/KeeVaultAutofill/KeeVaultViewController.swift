@@ -232,26 +232,28 @@ class KeeVaultViewController: UIViewController, AddOrEditEntryDelegate {
     
     fileprivate func mashNewUrlIntoJSON(_ entryJson: String, _ propertyName: String, _ url: String) -> String {
         let range = entryJson.range(of: #""\#(propertyName)"\:\[([^\]]*)\]"#, options: .regularExpression)
-//        print(range)
+
         if (range != nil) {
-        var newJson = entryJson.replacingOccurrences(of: "[]", with: "[\"\(url)\"]", options: .init(), range: range)
-        if (newJson.count == entryJson.count) {
-            // may already have an altURL
-            newJson = entryJson.replacingOccurrences(of: "]", with: ",\"\(url)\"]", options: .init(), range: range)
+            var newJson = entryJson.replacingOccurrences(of: "[]", with: "[\"\(url)\"]", options: .init(), range: range)
+            if (newJson.count == entryJson.count) {
+                // may already have an altURL
+                newJson = entryJson.replacingOccurrences(of: "]", with: ",\"\(url)\"]", options: .init(), range: range)
+            }
+            return newJson
         }
-        return newJson
-        }
+
         // may be a null property
-            let rangeNull = entryJson.range(of: #""\#(propertyName)"\:null"#, options: .regularExpression)
+        let rangeNull = entryJson.range(of: #""\#(propertyName)"\:null"#, options: .regularExpression)
         if (rangeNull != nil) {
-var             newJson = entryJson.replacingOccurrences(of: "null", with: "[\"\(url)\"]", options: .init(), range: rangeNull)
-        return newJson
+            var newJson = entryJson.replacingOccurrences(of: "null", with: "[\"\(url)\"]", options: .init(), range: rangeNull)
+            return newJson
         }
-            // no altURLs at all
-            var newJson = entryJson
-            let idx = newJson.index(newJson.endIndex, offsetBy: -1)
-            newJson.insert(contentsOf: ",\"\(propertyName)\":[\"\(url)\"]", at: idx)
-        
+
+        // no altURLs at all
+        var newJson = entryJson
+        let idx = newJson.index(newJson.endIndex, offsetBy: -1)
+        newJson.insert(contentsOf: ",\"\(propertyName)\":[\"\(url)\"]", at: idx)
+    
         return newJson
     }
     
@@ -268,7 +270,7 @@ var             newJson = entryJson.replacingOccurrences(of: "null", with: "[\"\
                 entry.setField(name: "KPRPC JSON", value: newJson, isProtected: true)
             }
             
-            let entryJsonV2 = entry.customData["KPRPC JSON"]?.value ?? #"{"version":2,"authenticationMethods":["password"],"matcherConfigs":[{"matcherType":"Url"}],"fields":[{"page":1,"valuePath":"UserName","uuid":"\#(UUID())","type":"Text","matcherConfigs":[{"matcherType":"UsernameDefaultHeuristic"}]},{"page":1,"valuePath":"Password","uuid":"\#(UUID())","type":"Password","matcherConfigs":[{"matcherType":"PasswordDefaultHeuristic"}]}]}"#
+            let entryJsonV2 = entry.customData["KPRPC JSON"]?.value ?? #"{"version":2,"authenticationMethods":["password"],"matcherConfigs":[{"matcherType":"Url"}],"fields":[{"page":1,"valuePath":"UserName","uuid":"\#(UUID().base64EncodedString())","type":"Text","matcherConfigs":[{"matcherType":"UsernameDefaultHeuristic"}]},{"page":1,"valuePath":"Password","uuid":"\#(UUID().base64EncodedString())","type":"Password","matcherConfigs":[{"matcherType":"PasswordDefaultHeuristic"}]}]}"#
         
             let newJson = mashNewUrlIntoJSON(entryJsonV2, "altUrls", url)
             let dataItem = CustomData2.Item(value: String(describing: newJson), lastModificationTime: nil)

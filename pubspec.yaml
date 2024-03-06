@@ -135,18 +135,8 @@ dev_dependencies:
   #patrol: ^2.2.3
 
 dependency_overrides:
-  # flutter_inapp_purchase declares incompatibility with this version and other deps declare
-  # incompatibility with earlier versions. Seems to work fine if we just use the latest version.
-  #http: 1.1.0
-  # collection: 1.18.0
-  # sensitive_clipboard:
-  #   path: ../sensitive_clipboard/
-  # flutter_inapp_purchase:
-  #   path: ../flutter_inapp_purchase/
   # flutter_autofill_service:
   #   path: ../flutter_autofill_service/
-  # argon2_ffi:
-  #   path: ../argon2_ffi/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
