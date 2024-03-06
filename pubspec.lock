@@ -37,8 +37,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: api34
-      resolved-ref: "86f3a356aa66c76798fc70ab595e12a404c6e6aa"
+      ref: master
+      resolved-ref: d256c1930bd32f0e0aafa273e6610a20d90cbf1a
       url: "https://github.com/kee-org/argon2_ffi.git"
     source: git
     version: "2.0.1"
@@ -301,8 +301,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: api34
-      resolved-ref: "6fd75d9fff7952b6df5c5791c42cb8bab5cd9a8f"
+      ref: master
+      resolved-ref: "8d742765ddda32c113d630c35577c02feb3df102"
       url: "https://github.com/kee-org/flutter_autofill_service.git"
     source: git
     version: "0.18.1"
@@ -335,8 +335,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: api34
-      resolved-ref: "12785f3866cb753104aa820f4060ef0a32561253"
+      ref: main
+      resolved-ref: e443da8e778b67567a73de2419ddf6a50536c5e4
       url: "https://github.com/kee-org/flutter_inapp_purchase"
     source: git
     version: "5.6.0+1"
@@ -529,8 +529,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: configv2
-      resolved-ref: f8b5408e8dd965afd8dcd06b867cda1fc7ec9935
+      ref: master
+      resolved-ref: "16a7e20ebb7f8d5180c8baf408431353ee5e8a8a"
       url: "https://github.com/kee-org/kdbx.dart.git"
     source: git
     version: "0.6.0+4"
@@ -876,8 +876,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: api34
-      resolved-ref: "4ae55ee4d8895aba399f3cc9cf8d7fdab8faa543"
+      ref: master
+      resolved-ref: "7b4543cce4af670140ea19c67bfae67dbdd890db"
       url: "https://github.com/kee-org/sensitive_clipboard"
     source: git
     version: "1.0.0"

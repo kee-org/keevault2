@@ -9,8 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:kdbx/kdbx.dart';
-//TODO: consider retaining this package if it gets fixed for API 34 by the time
-// Google have fixed the emulator crashes that block development for Android 14
 import 'package:barcode_scan2/barcode_scan2.dart' as barcode;
 import 'package:base32/base32.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';

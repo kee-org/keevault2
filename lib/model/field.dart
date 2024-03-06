@@ -110,8 +110,10 @@ class FieldViewModel {
     }
 
     if (key == null && browserModel != null) {
-      // We might come across old bad data so make every effort to select a new displayName for such fields. Ultimately, we'll have to ignore and eventually delete any fields that contain no useful data.
+      // We might come across old bad data so make every effort to select a new displayName for such
+      // fields. Ultimately, we'll have to ignore and eventually delete any fields that contain no useful data.
       localisedCommonName = browserModel.name?.nullIfBlank() ??
+          browserModel.uuid?.nullIfBlank() ??
           browserModel.matcherConfigs
               ?.firstWhereOrNull((mc) => mc.matcherType == FieldMatcherType.Custom)
               ?.customMatcher

@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.2.1+55
+version: 2.3.0+55
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -28,7 +28,7 @@ dependencies:
   kdbx:
     git:
       url: https://github.com/kee-org/kdbx.dart.git
-      ref: configv2
+      ref: master
   path_provider: ^2.1.1
   biometric_storage:
     git:
@@ -41,11 +41,11 @@ dependencies:
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
-      ref: api34
+      ref: master
   flutter_autofill_service:
     git:
       url: https://github.com/kee-org/flutter_autofill_service.git
-      ref: api34
+      ref: master
   bloc: ^8.1.2
   flutter_bloc: ^8.1.3
   fluro: ^2.0.5
@@ -111,11 +111,11 @@ dependencies:
   flutter_inapp_purchase: 
     git:
       url: https://github.com/kee-org/flutter_inapp_purchase
-      ref: api34
+      ref: main
   sensitive_clipboard: 
     git:
       url: https://github.com/kee-org/sensitive_clipboard
-      ref: api34
+      ref: master
   rate_my_app: 2.0.0 # fix until at least > 2.0.0
   archive: ^3.4.6
   device_info_plus: ^9.1.0
