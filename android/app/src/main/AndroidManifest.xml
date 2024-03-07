@@ -8,6 +8,8 @@
         <!-- There's an Android bug that causes biometric authentication crashes 
         if backups are not enabled but we don't actually want to enable them.
         Thus we turn them on but ensure only empty entities are included. -->
+        <!-- FlutterFragmentActivity prevents use of predictive back in Android 14+
+        https://github.com/flutter/engine/pull/44865 -->
 
         <activity
             android:name=".MainActivity"

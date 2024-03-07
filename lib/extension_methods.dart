@@ -129,13 +129,15 @@ extension DioHelperHandleException on DioException {
       return;
     } else {
       // Something happened in setting up or sending the request that triggered an Error
-      if (type == DioExceptionType.connectionTimeout) {
+      if (type == DioExceptionType.connectionTimeout || type == DioExceptionType.connectionError) {
         throw KeeServerUnreachableException();
       }
       if (type == DioExceptionType.receiveTimeout || type == DioExceptionType.sendTimeout) {
         throw KeeServerTimeoutException();
       }
-      if (type == DioExceptionType.unknown) {
+      if (type == DioExceptionType.badCertificate ||
+          type == DioExceptionType.cancel ||
+          type == DioExceptionType.unknown) {
         throw KeeServerUnreachableException();
       }
       throw KeeUnexpectedException('[$context] DioException with no response', this, s);
