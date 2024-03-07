@@ -22,7 +22,7 @@ import '../permissions.dart';
 import 'coloured_safe_area_widget.dart';
 
 class ImportExportWidget extends StatefulWidget {
-  const ImportExportWidget({Key? key}) : super(key: key);
+  const ImportExportWidget({super.key});
 
   @override
   State<ImportExportWidget> createState() => _ImportExportWidgetState();

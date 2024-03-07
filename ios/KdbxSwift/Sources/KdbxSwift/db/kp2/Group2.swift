@@ -83,7 +83,7 @@ public class Group2: Group {
         targetGroup2.customData = customData.clone()
     }
     
-    override public func createEntry(detached: Bool = false) -> Entry {
+    override public func createEntry(detached: Bool = false) -> Entry2 {
         let newEntry = Entry2(database: database)
         newEntry.uuid = UUID()
         newEntry.isDeleted = self.isDeleted

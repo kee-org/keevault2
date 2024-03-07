@@ -4,10 +4,10 @@ import 'package:keevault/colors.dart';
 
 class ColorChooser extends StatelessWidget {
   const ColorChooser({
-    Key? key,
+    super.key,
     required this.onChangeColor,
     this.currentColor,
-  }) : super(key: key);
+  });
 
   final Function onChangeColor;
   final EntryColor? currentColor;

@@ -1,5 +1,6 @@
 import 'package:argon2_ffi_base/argon2_ffi_base.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/extension_methods.dart';
 
 import 'package:keevault/locked_vault_file.dart';
 
@@ -32,11 +33,14 @@ class VaultFileVersions {
 
   Future<KdbxFile> unlock(LockedVaultFile locked) async {
     final kdbx = await VaultFile._kdbxFormat().read(locked.kdbxBytes, locked.credentials!);
+    kdbx.ensureLatestVersion();
     return kdbx;
   }
 
   Future<List<KdbxFile>> unlockTwice(LockedVaultFile locked) async {
     final kdbxList = await VaultFile._kdbxFormat().readTwice(locked.kdbxBytes, locked.credentials!);
+    kdbxList[0].ensureLatestVersion();
+    kdbxList[1].ensureLatestVersion();
     return kdbxList;
   }
 
@@ -64,7 +68,9 @@ class VaultFileVersions {
     );
   }
 
-//  remoteMergeTarget and current are identical at this time because user has just supplied a new password through the UI so can't have any outstanding modifications in the current vault file. There must also be no pending files.
+//  remoteMergeTarget and current are identical at this time because user has just
+// supplied a new password through the UI so can't have any outstanding modifications
+// in the current vault file. There must also be no pending files.
   Future<VaultFileVersions> copyWithNewCredentials(Credentials credentials) async {
     // final unlockedFiles = await unlockTwice(this.remoteMergeTargetLocked!);
     // final unlockedCurrent = unlockedFiles[0];
@@ -129,6 +135,7 @@ class RemoteVaultFile extends VaultFile {
 
   static Future<RemoteVaultFile> unlock(LockedVaultFile lockedKdbx) async {
     final kdbx = await VaultFile._kdbxFormat().read(lockedKdbx.kdbxBytes, lockedKdbx.credentials!);
+    kdbx.ensureLatestVersion();
     return RemoteVaultFile(
       kdbx,
       DateTime.now(),
@@ -147,6 +154,7 @@ class DemoVaultFile extends VaultFile {
 
   static Future<DemoVaultFile> unlock(LockedVaultFile lockedKdbx) async {
     final kdbx = await VaultFile._kdbxFormat().read(lockedKdbx.kdbxBytes, lockedKdbx.credentials!);
+    kdbx.ensureLatestVersion();
     return DemoVaultFile(
       kdbx,
       DateTime.now(),
@@ -174,12 +182,25 @@ class LocalVaultFile extends VaultFile {
   static Future<LocalVaultFile> unlock(LockedVaultFile lockedKdbx, {bool importOnly = false}) async {
     KdbxFile current;
     KdbxFile? remoteMergeTarget;
+    bool versionWasUpdated = false;
     if (importOnly) {
       current = await VaultFile._kdbxFormat().read(lockedKdbx.kdbxBytes, lockedKdbx.credentials!);
+      if (current.ensureLatestVersion()) {
+        versionWasUpdated = true;
+      }
     } else {
       final files = await VaultFile._kdbxFormat().readTwice(lockedKdbx.kdbxBytes, lockedKdbx.credentials!);
+      if (files[0].ensureLatestVersion()) {
+        versionWasUpdated = true;
+      }
+      files[1].ensureLatestVersion();
       current = files[0];
       remoteMergeTarget = files[1];
+    }
+    if (versionWasUpdated) {
+      // just in case the lockedKdbx is uploaded, exported, etc. we will do a
+      // full save and use the upgraded bytes instead
+      lockedKdbx = lockedKdbx.copyWith(kdbxBytes: await current.save());
     }
     return LocalVaultFile(
       VaultFileVersions(

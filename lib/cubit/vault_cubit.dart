@@ -678,6 +678,10 @@ class VaultCubit extends Cubit<VaultState> {
         return;
       }
     } else {
+      if (s is VaultImported || s is VaultImportingCredentialsRequired) {
+        l.d('refresh called during an import. Will not refresh now.');
+        return;
+      }
       throw Exception('Vault not loaded when refresh called');
     }
   }

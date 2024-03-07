@@ -15,9 +15,9 @@ S _str = S();
 class PasswordPresetManagerWidget extends StatefulWidget {
   final Function? apply;
   const PasswordPresetManagerWidget({
-    Key? key,
+    super.key,
     this.apply,
-  }) : super(key: key);
+  });
 
   @override
   State<PasswordPresetManagerWidget> createState() => _PasswordPresetManagerWidgetState();

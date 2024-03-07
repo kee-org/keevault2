@@ -14,8 +14,7 @@ class KeeException implements Exception {
 }
 
 class KeeUnexpectedException extends KeeException {
-  KeeUnexpectedException(String cause, [dynamic exception, StackTrace? stackTrace])
-      : super(cause, exception, stackTrace);
+  KeeUnexpectedException(String super.cause, [super.exception, super.stackTrace]);
 }
 
 class KeeServiceTransportException extends KeeException {

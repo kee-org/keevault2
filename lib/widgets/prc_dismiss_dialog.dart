@@ -3,7 +3,7 @@ import 'dialog_utils.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class BannerDismissDialog extends StatelessWidget with DialogMixin<int> {
-  const BannerDismissDialog({Key? key}) : super(key: key);
+  const BannerDismissDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -10,13 +10,13 @@ typedef BiometricCallback = Future<bool> Function();
 
 class VaultPasswordCredentialsWidget extends StatefulWidget {
   const VaultPasswordCredentialsWidget({
-    Key? key,
+    super.key,
     required this.reason,
     required this.onSubmit,
     this.forceBiometric,
     required this.showError,
     this.quStatus = QUStatus.unknown,
-  }) : super(key: key);
+  });
 
   final String reason;
   final bool showError;

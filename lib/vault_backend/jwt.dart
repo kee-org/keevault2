@@ -13,7 +13,7 @@ class VerificationResult {
 
 class ClientVerificationResult extends VerificationResult {
   Claim claim;
-  ClientVerificationResult({required String audience, required this.claim}) : super(audience: audience);
+  ClientVerificationResult({required super.audience, required this.claim});
 }
 
 class JWT {

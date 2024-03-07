@@ -28,8 +28,8 @@ import 'dialog_utils.dart';
 
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<SettingsWidget> createState() => _SettingsWidgetState();
@@ -317,7 +317,7 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
 
 class BiometricSettingWidget extends StatefulWidget {
   final bool isEnabledOnDevice;
-  const BiometricSettingWidget({Key? key, required this.isEnabledOnDevice}) : super(key: key);
+  const BiometricSettingWidget({super.key, required this.isEnabledOnDevice});
 
   @override
   State<BiometricSettingWidget> createState() => _BiometricSettingWidgetState();
@@ -428,10 +428,10 @@ class AutofillStatusWidget extends StatefulWidget {
   final bool isEnabled;
   final bool isDeviceQuickUnlockEnabled;
   const AutofillStatusWidget({
-    Key? key,
+    super.key,
     required this.isEnabled,
     required this.isDeviceQuickUnlockEnabled,
-  }) : super(key: key);
+  });
 
   @override
   State<AutofillStatusWidget> createState() => _AutofillStatusWidgetState();

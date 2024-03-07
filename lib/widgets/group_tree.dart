@@ -18,7 +18,7 @@ enum GroupTreeMode {
 class GroupTreeWidget extends StatelessWidget {
   final GroupTreeMode treeMode;
 
-  const GroupTreeWidget({Key? key, required this.treeMode}) : super(key: key);
+  const GroupTreeWidget({super.key, required this.treeMode});
 
   @override
   Widget build(BuildContext context) {
@@ -153,10 +153,10 @@ class GroupTreeListWidget extends StatefulWidget {
   final List<Node<GroupData>> nodes;
   final String selectedGroupUuid;
   const GroupTreeListWidget({
-    Key? key,
+    super.key,
     required this.nodes,
     required this.selectedGroupUuid,
-  }) : super(key: key);
+  });
   @override
   State<GroupTreeListWidget> createState() => _GroupTreeListWidgetState();
 }

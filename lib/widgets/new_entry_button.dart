@@ -16,7 +16,7 @@ import 'entry.dart';
 class NewEntryButton extends StatelessWidget {
   final KdbxFile currentFile;
 
-  const NewEntryButton({Key? key, required this.currentFile}) : super(key: key);
+  const NewEntryButton({super.key, required this.currentFile});
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);

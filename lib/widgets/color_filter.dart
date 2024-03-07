@@ -6,7 +6,7 @@ import 'package:keevault/generated/l10n.dart';
 import '../colors.dart';
 
 class ColorFilterWidget extends StatelessWidget {
-  const ColorFilterWidget({Key? key}) : super(key: key);
+  const ColorFilterWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

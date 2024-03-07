@@ -332,6 +332,7 @@ class LocalVaultRepository {
       //something that a background service might be able to achieve if Apple
       //and Google are able to offer a suitable API.
       final kdbxToMergeInto = (await vault.files.pending) ?? vault.files.current;
+
       kdbxToMergeInto.merge(autofill.files.current);
       final kdbxData = await kdbxFormat().save(kdbxToMergeInto);
 

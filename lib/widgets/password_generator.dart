@@ -18,9 +18,9 @@ S _str = S();
 class PasswordGeneratorWidget extends StatefulWidget {
   final Function? apply;
   const PasswordGeneratorWidget({
-    Key? key,
+    super.key,
     this.apply,
-  }) : super(key: key);
+  });
 
   @override
   State<PasswordGeneratorWidget> createState() => _PasswordGeneratorWidgetState();

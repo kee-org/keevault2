@@ -10,7 +10,7 @@ import '../cubit/vault_cubit.dart';
 import 'coloured_safe_area_widget.dart';
 
 class RootWidget extends StatefulWidget {
-  const RootWidget({Key? key}) : super(key: key);
+  const RootWidget({super.key});
 
   @override
   RootWidgetState createState() => RootWidgetState();

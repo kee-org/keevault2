@@ -17,7 +17,7 @@ import 'vault_password_credentials.dart';
 import '../generated/l10n.dart';
 
 class AccountWrapperWidget extends StatefulWidget {
-  const AccountWrapperWidget({Key? key}) : super(key: key);
+  const AccountWrapperWidget({super.key});
 
   @override
   AccountWrapperState createState() => AccountWrapperState();

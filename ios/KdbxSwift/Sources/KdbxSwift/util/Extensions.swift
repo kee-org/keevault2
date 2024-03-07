@@ -169,7 +169,7 @@ extension UUID {
         self.init(uuidString: nsuuid.uuidString)
     }
     
-    internal func base64EncodedString() -> String {
+    public func base64EncodedString() -> String {
         var bytes = [UInt8](repeating: 0, count: 16)
         (self as NSUUID).getBytes(&bytes)
         return Data(bytes).base64EncodedString()

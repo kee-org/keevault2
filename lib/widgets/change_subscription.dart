@@ -9,7 +9,7 @@ import 'coloured_safe_area_widget.dart';
 import 'dialog_utils.dart';
 
 class ChangeSubscriptionWidget extends StatefulWidget {
-  const ChangeSubscriptionWidget({Key? key}) : super(key: key);
+  const ChangeSubscriptionWidget({super.key});
 
   @override
   State<ChangeSubscriptionWidget> createState() => _ChangeSubscriptionWidgetState();

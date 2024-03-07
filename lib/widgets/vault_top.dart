@@ -8,9 +8,8 @@ import '../generated/l10n.dart';
 
 class _BackdropTitle extends StatelessWidget {
   const _BackdropTitle({
-    Key? key,
     required Listenable listenable,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

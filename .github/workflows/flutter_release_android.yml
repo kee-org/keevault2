@@ -6,25 +6,25 @@ on:
 
 jobs:
   setupAndTestAndroid:
-    name: Build and release Google play to beta channel
-    if: ${{ !contains (github.event.release.tag_name, '_' ) || endsWith( github.event.release.tag_name, '_android' ) }}
+    name: Build and release to Testfairy and maybe Google play beta channel
+    if: ${{ !contains (github.event.release.tag_name, '_' ) || endsWith( github.event.release.tag_name, '_android' )  || endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          distribution: 'adopt' # 'temurin' is apparently the new version of this but only adopt is listed as installed on github runners so need to test changing later
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '17'
           cache: 'gradle'
           check-latest: false
 
       - name: Load Flutter config
-        uses: kuhnroyal/flutter-fvm-config-action@v1
+        uses: kuhnroyal/flutter-fvm-config-action@v2
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -37,7 +37,7 @@ jobs:
         run: flutter --version
 
       - name: Cache pub dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.PUB_CACHE }}
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
@@ -80,8 +80,8 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           working-directory: ./android
-          ruby-version: 3.1
-          bundler: 2.3.19
+          ruby-version: 3.3
+          bundler: 2.5.6
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Release beta stage app to beta delivery platform
@@ -91,14 +91,20 @@ jobs:
           cd android
           bundle exec fastlane beta_stage
 
-      - name: Build Android App Bundle
-        env:
-          KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
-        run: flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play --dart-define IAP_GOOGLE_PLAY=yes
+      - name: CI sanity test
+        if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
+        run: echo "insane"
 
-      - name: Release to Google Play (beta)
-        env:
-          KEEVAULT_ANDROID_PLAY_API_KEY_JSON: ${{ secrets.KEEVAULT_ANDROID_PLAY_API_KEY_JSON }}
-        run: |
-          cd android
-          bundle exec fastlane beta
+      # - name: Build Android App Bundle
+      #   if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
+      #   env:
+      #     KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
+      #   run: flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play --dart-define IAP_GOOGLE_PLAY=yes
+
+      # - name: Release to Google Play (beta)
+      #   if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
+      #   env:
+      #     KEEVAULT_ANDROID_PLAY_API_KEY_JSON: ${{ secrets.KEEVAULT_ANDROID_PLAY_API_KEY_JSON }}
+      #   run: |
+      #     cd android
+      #     bundle exec fastlane beta

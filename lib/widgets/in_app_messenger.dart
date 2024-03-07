@@ -17,11 +17,11 @@ enum InAppMessageTrigger { entryChanged, entryUnchanged, vaultSaved }
 
 class InAppMessengerWidget extends InheritedWidget {
   const InAppMessengerWidget({
-    Key? key,
+    super.key,
     required this.appSettingsState,
-    required Widget child,
+    required super.child,
     required this.navigatorKey,
-  }) : super(key: key, child: child);
+  });
 
   final AppSettingsState appSettingsState;
   final GlobalKey<NavigatorState> navigatorKey;

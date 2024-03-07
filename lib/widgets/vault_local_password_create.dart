@@ -8,10 +8,10 @@ typedef SubmitCallback = Future<void> Function(String string);
 
 class VaultLocalOnlyCreateWidget extends StatefulWidget {
   const VaultLocalOnlyCreateWidget({
-    Key? key,
+    super.key,
     required this.onSubmit,
     required this.showError,
-  }) : super(key: key);
+  });
 
   final bool showError;
   final SubmitCallback onSubmit;

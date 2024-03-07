@@ -62,6 +62,14 @@ extension KdbxFileKDF on KdbxFile {
     final argon2Args = createArgon2Args(credentials.getHash(), KdfType.Argon2d, header.readKdfParameters);
     return await KeeVaultKdfCache().argon2ArgumentsKey(argon2Args);
   }
+
+  bool ensureLatestVersion() {
+    if (header.version < KdbxVersion.V4_1) {
+      upgrade(4, 1);
+      return true;
+    }
+    return false;
+  }
 }
 
 extension KdbxEntryColor on KdbxEntry {
@@ -121,13 +129,15 @@ extension DioHelperHandleException on DioException {
       return;
     } else {
       // Something happened in setting up or sending the request that triggered an Error
-      if (type == DioExceptionType.connectionTimeout) {
+      if (type == DioExceptionType.connectionTimeout || type == DioExceptionType.connectionError) {
         throw KeeServerUnreachableException();
       }
       if (type == DioExceptionType.receiveTimeout || type == DioExceptionType.sendTimeout) {
         throw KeeServerTimeoutException();
       }
-      if (type == DioExceptionType.unknown) {
+      if (type == DioExceptionType.badCertificate ||
+          type == DioExceptionType.cancel ||
+          type == DioExceptionType.unknown) {
         throw KeeServerUnreachableException();
       }
       throw KeeUnexpectedException('[$context] DioException with no response', this, s);

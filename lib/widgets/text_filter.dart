@@ -4,7 +4,7 @@ import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class TextFilterWidget extends StatelessWidget {
-  const TextFilterWidget({Key? key}) : super(key: key);
+  const TextFilterWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

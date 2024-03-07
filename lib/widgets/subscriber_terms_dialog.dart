@@ -5,7 +5,7 @@ import 'dialog_utils.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class SubscriberTermsDialog extends StatelessWidget with DialogMixin<bool> {
-  const SubscriberTermsDialog({Key? key}) : super(key: key);
+  const SubscriberTermsDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

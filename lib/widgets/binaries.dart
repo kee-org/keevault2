@@ -170,11 +170,11 @@ enum AttachmentFormat {
 
 class BinaryCardWidget extends StatelessWidget {
   const BinaryCardWidget({
-    Key? key,
+    super.key,
     required this.entry,
     required this.attachment,
     required this.readOnly,
-  }) : super(key: key);
+  });
 
   final EntryViewModel entry;
   final MapEntry<KdbxKey, KdbxBinary> attachment;

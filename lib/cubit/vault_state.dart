@@ -21,21 +21,21 @@ class VaultDownloadCredentialsRequired extends VaultState {
 
 // Refresh can only be started when state is Loaded
 class VaultRefreshing extends VaultLoaded {
-  const VaultRefreshing(LocalVaultFile vault) : super(vault);
+  const VaultRefreshing(super.vault);
 }
 
 class VaultUpdatingLocalFromRemote extends VaultRefreshing {
-  const VaultUpdatingLocalFromRemote(LocalVaultFile vault) : super(vault);
+  const VaultUpdatingLocalFromRemote(super.vault);
 }
 
 class VaultUpdatingLocalFromAutofill extends VaultRefreshing {
-  const VaultUpdatingLocalFromAutofill(LocalVaultFile vault) : super(vault);
+  const VaultUpdatingLocalFromAutofill(super.vault);
 }
 
 class VaultRefreshCredentialsRequired extends VaultLoaded {
   final String reason;
   final bool causedByInteraction;
-  const VaultRefreshCredentialsRequired(LocalVaultFile vault, this.reason, this.causedByInteraction) : super(vault);
+  const VaultRefreshCredentialsRequired(super.vault, this.reason, this.causedByInteraction);
 }
 
 class VaultCreating extends VaultState {
@@ -90,21 +90,20 @@ class VaultError extends VaultState {
 class VaultBackgroundError extends VaultLoaded {
   final String message;
   final bool toast;
-  const VaultBackgroundError(LocalVaultFile vault, this.message, this.toast) : super(vault);
+  const VaultBackgroundError(super.vault, this.message, this.toast);
 }
 
 class VaultSaving extends VaultLoaded {
   final bool locally;
   final bool remotely;
-  const VaultSaving(LocalVaultFile vault, this.locally, this.remotely) : super(vault);
+  const VaultSaving(super.vault, this.locally, this.remotely);
 }
 
 class VaultReconcilingUpload extends VaultSaving {
-  const VaultReconcilingUpload(LocalVaultFile vault, bool locally, bool remotely) : super(vault, locally, remotely);
+  const VaultReconcilingUpload(super.vault, super.locally, super.remotely);
 }
 
 class VaultUploadCredentialsRequired extends VaultReconcilingUpload {
   final bool causedByInteraction;
-  const VaultUploadCredentialsRequired(LocalVaultFile vault, bool locally, bool remotely, this.causedByInteraction)
-      : super(vault, locally, remotely);
+  const VaultUploadCredentialsRequired(super.vault, super.locally, super.remotely, this.causedByInteraction);
 }

@@ -19,8 +19,8 @@ import 'vault_drawer.dart';
 
 class BottomDrawerWidget extends StatelessWidget {
   const BottomDrawerWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +100,11 @@ bool autofillSimpleUIMode(AutofillState autoFillState) {
 
 class AccountDrawerWidget extends StatelessWidget {
   const AccountDrawerWidget({
-    Key? key,
+    super.key,
     required this.emailAddress,
     required this.user,
     required this.str,
-  }) : super(key: key);
+  });
 
   final String emailAddress;
   final User? user;
@@ -191,8 +191,8 @@ class BottomBarWidget extends StatelessWidget {
   const BottomBarWidget(
     this._toggleBottomDrawerVisibility, {
     this.centreButton,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -268,8 +268,8 @@ class BottomBarWidget extends StatelessWidget {
 
 class VaultStatusIconWidget extends StatelessWidget {
   const VaultStatusIconWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -326,10 +326,10 @@ class SaveButtonWidget extends StatefulWidget {
   final bool visible;
 
   const SaveButtonWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.visible,
-  }) : super(key: key);
+  });
 
   @override
   State<SaveButtonWidget> createState() => _SaveButtonWidgetState();
@@ -357,7 +357,7 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
 }
 
 class SaveInProgressIndicatorWidget extends StatefulWidget {
-  const SaveInProgressIndicatorWidget({Key? key}) : super(key: key);
+  const SaveInProgressIndicatorWidget({super.key});
 
   @override
   State<SaveInProgressIndicatorWidget> createState() => _SaveInProgressIndicatorWidgetState();

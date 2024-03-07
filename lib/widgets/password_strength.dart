@@ -18,7 +18,7 @@ Widget renderPasswordStrength(double strength, double size) {
 
 class PasswordStrengthWidget extends StatelessWidget {
   final String testValue;
-  const PasswordStrengthWidget({Key? key, required this.testValue}) : super(key: key);
+  const PasswordStrengthWidget({super.key, required this.testValue});
 
   @override
   Widget build(BuildContext context) {

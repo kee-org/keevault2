@@ -14,8 +14,8 @@ enum Category {
 
 class EntryFilters extends StatelessWidget {
   const EntryFilters({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

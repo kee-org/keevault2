@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
@@ -7,8 +8,8 @@ import '../generated/l10n.dart';
 
 class IntegrationSettingsWidget extends StatefulWidget {
   const IntegrationSettingsWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<IntegrationSettingsWidget> createState() => _IntegrationSettingsWidgetState();
@@ -55,11 +56,19 @@ class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
                           child: ListTile(
                             title: Text(str.showEntryInBrowsersAndApps),
                             leading: Switch(
-                              value: !entry.browserSettings.hide,
-                              onChanged: (bool? value) {
-                                if (value != null) {
+                              value: !entry.browserSettings.matcherConfigs
+                                  .any((mc) => mc.matcherType == EntryMatcherType.Hide),
+                              onChanged: (bool? show) {
+                                if (show != null) {
                                   final cubit = BlocProvider.of<EntryCubit>(context);
-                                  cubit.update(browserSettings: entry.browserSettings.copyWith(hide: !value));
+                                  final newList = entry.browserSettings.matcherConfigs
+                                      .where((mc) => mc.matcherType != EntryMatcherType.Hide)
+                                      .toList();
+                                  if (!show) {
+                                    newList.add(EntryMatcherConfig(matcherType: EntryMatcherType.Hide));
+                                  }
+                                  final newSettings = entry.browserSettings.copyWith(matcherConfigs: newList);
+                                  cubit.update(browserSettings: newSettings);
                                 }
                               },
                             ),
@@ -109,7 +118,10 @@ class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
                       children: <Widget>[
                         Expanded(
                             child: MatchAccuracyRadioWidget(
-                          minimumMatchAccuracy: entry.browserSettings.minimumMatchAccuracy,
+                          minimumMatchAccuracy: entry.browserSettings.matcherConfigs
+                                  .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
+                                  ?.urlMatchMethod ??
+                              MatchAccuracy.Domain,
                         )),
                       ],
                     ),
@@ -151,7 +163,7 @@ class _IntegrationSettingsWidgetState extends State<IntegrationSettingsWidget> {
 
 class MatchAccuracyRadioWidget extends StatefulWidget {
   final MatchAccuracy minimumMatchAccuracy;
-  const MatchAccuracyRadioWidget({Key? key, required this.minimumMatchAccuracy}) : super(key: key);
+  const MatchAccuracyRadioWidget({super.key, required this.minimumMatchAccuracy});
 
   @override
   State<MatchAccuracyRadioWidget> createState() => _MatchAccuracyRadioWidgetState();
@@ -161,8 +173,12 @@ class _MatchAccuracyRadioWidgetState extends State<MatchAccuracyRadioWidget> wit
   void onChanged(MatchAccuracy? value) {
     if (value != null) {
       final cubit = BlocProvider.of<EntryCubit>(context);
-      cubit.update(
-          browserSettings: (cubit.state as EntryLoaded).entry.browserSettings.copyWith(minimumMatchAccuracy: value));
+      final entry = (cubit.state as EntryLoaded).entry;
+      final newList =
+          entry.browserSettings.matcherConfigs.where((mc) => mc.matcherType != EntryMatcherType.Url).toList();
+      newList.add(EntryMatcherConfig.forDefaultUrlMatchBehaviour(value));
+      final newSettings = entry.browserSettings.copyWith(matcherConfigs: newList);
+      cubit.update(browserSettings: newSettings);
     }
   }
 

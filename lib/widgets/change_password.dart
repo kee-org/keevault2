@@ -8,7 +8,7 @@ import '../widgets/password_strength.dart';
 import 'coloured_safe_area_widget.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
-  const ChangePasswordWidget({Key? key}) : super(key: key);
+  const ChangePasswordWidget({super.key});
 
   @override
   State<ChangePasswordWidget> createState() => _ChangePasswordWidgetState();

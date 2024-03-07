@@ -1181,8 +1181,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Dashlane/SwiftDomainParser.git";
 			requirement = {
-				kind = exactVersion;
-				version = 1.1.0;
+				kind = revision;
+				revision = 03bc756e7798e2510c4b60a069529e6714b40b4a;
 			};
 		};
 		8BB2225928F6F27A00693094 /* XCRemoteSwiftPackageReference "PunycodeSwift" */ = {

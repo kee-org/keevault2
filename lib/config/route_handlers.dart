@@ -12,10 +12,10 @@ import 'package:keevault/widgets/vault.dart';
 import '../widgets/blocking_overlay.dart';
 import '../widgets/change_email_prefs.dart';
 import '../widgets/change_password.dart';
-import '../widgets/root.dart';
+import '../widgets/root.dart' as kv_root;
 
 var rootHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-  return const RootWidget();
+  return const kv_root.RootWidget();
 });
 
 var vaultHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {

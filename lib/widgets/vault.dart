@@ -28,8 +28,8 @@ import 'vault_top.dart';
 
 class VaultWidget extends StatefulWidget {
   const VaultWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<VaultWidget> createState() => _VaultWidgetState();
@@ -196,10 +196,9 @@ const double _kFlingVelocity = 2.0;
 
 class _FrontLayer extends StatelessWidget {
   const _FrontLayer({
-    Key? key,
     this.onTap,
     required this.child,
-  }) : super(key: key);
+  });
 
   final VoidCallback? onTap;
   final Widget child;
@@ -291,11 +290,11 @@ class Backdrop extends StatefulWidget {
   final Widget frontTitle;
 
   const Backdrop({
-    Key? key,
+    super.key,
     required this.frontLayer,
     required this.backLayer,
     required this.frontTitle,
-  }) : super(key: key);
+  });
 
   @override
   State<Backdrop> createState() => _BackdropState();

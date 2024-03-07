@@ -258,7 +258,7 @@ public class Entry2: Entry {
             return Bool(string: property.value)
         }
         set {
-            let dataItem = CustomData2.Item(value: String(describing: newValue), lastModificationTime: .now)
+            let dataItem = CustomData2.Item(value: String(describing: newValue), lastModificationTime: nil)
             customData[Xml2.ThirdParty.browserHideEntry] = dataItem
         }
     }
