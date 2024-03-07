@@ -32,8 +32,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Dashlane/SwiftDomainParser.git",
       "state" : {
-        "revision" : "ac1df3211011ad44c20457412eeb45beb318f847",
-        "version" : "1.1.0"
+        "revision" : "03bc756e7798e2510c4b60a069529e6714b40b4a"
       }
     }
   ],
