@@ -251,8 +251,10 @@ class VaultCubit extends Cubit<VaultState> {
         // This can happen if the remote file has new credentials. We'll have to try again with different user supplied passwords for the local and remote files.
         emit(VaultRemoteFileCredentialsRequired(localFile, false));
         return;
-      } on Exception {
-        emitError("Kee Vault startup failed. Couldn't apply a pending change to your local vault.",
+      } on Exception catch (e, stack) {
+        l.e("Kee Vault startup failed. Couldn't apply a pending change to your local vault: $e \n\n stack: $stack");
+        emitError(
+            "Kee Vault startup failed. Sorry, we couldn't apply a pending change to your local vault for some unexpected reason. Please navigate to the Help menu item and then Share your application logs with us so that we can discuss and advise what to do next. If you have your Kee Vault on other devices, we recommend disconnecting them from the internet and exporting your vault to a KDBX file now, especially if you do not have a recent backup. We are likely to be able to restore all or most of your data but this may take a significant amount of time so the sooner you contact us to explain the details of what may have triggered the problem and share the error logs with us, the sooner we'll get you back up and running.",
             forceNotLoaded: true);
         return;
       }
@@ -671,9 +673,10 @@ class VaultCubit extends Cubit<VaultState> {
         // etag during the next refresh or upload operation, we will re-download the update
         // and perform a merge. This should be a NOOP but is inefficient.
         handleRefreshAuthError(s.vault);
-      } on Exception {
+      } on Exception catch (e, stack) {
+        l.e("Kee Vault failed to apply a change to your local vault for some unexpected reason or hardware fault. Please Share these application logs with us so that we can discuss and advise what to do next. If you have your Kee Vault on other devices, we recommend disconnecting them from the internet and exporting your vault to a KDBX file now, especially if you do not have a recent backup. We are likely to be able to restore all or most of your data but this may take a significant amount of time so the sooner you contact us to explain the details of what may have triggered the problem and share the error logs with us, the sooner we'll get you back up and running. Background refresh error: $e \n\n stack: $stack");
         emitError(
-            'Background refresh error. Check your device has enough storage space. Otherwise, this may indicate a faulty operating system or hardware.',
+            'Background refresh error. Check your device has enough storage space. Otherwise, this may indicate a faulty operating system or hardware. Export your Vault now just in case. Then inspect extra error information in the Menu > Help > Logs.',
             toast: true);
         return;
       }
