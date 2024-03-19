@@ -262,6 +262,14 @@ class VaultCubit extends Cubit<VaultState> {
     l.d('vault cubit started');
   }
 
+  Future<bool> hasPendingUpdateFile(User user) async {
+    return await _localVaultRepo.hasStagedUpdate(user);
+  }
+
+  Future<void> deletePendingUpdateFile(User user) async {
+    return await _localVaultRepo.removeStagedUpdate(user);
+  }
+
   Future<void> emitVaultLoaded(LocalVaultFile vault, User? user,
       {bool immediateRemoteRefresh = true, required bool safe}) async {
     if (user?.subscriptionStatus == AccountSubscriptionStatus.expired ||

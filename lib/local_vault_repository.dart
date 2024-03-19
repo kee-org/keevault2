@@ -240,6 +240,28 @@ class LocalVaultRepository {
     );
   }
 
+  Future<void> removeStagedUpdate(User user) async {
+    final directory = await getStorageDirectory();
+    final stagedFile = File('${directory.path}/${user.idB64url}/staged.kdbx');
+    try {
+      await stagedFile.delete();
+    } on Exception {
+      // can fail if OS/hardware failure has caused the file to be already deleted but that's OK
+    }
+  }
+
+  Future<bool> hasStagedUpdate(User user) async {
+    final directory = await getStorageDirectory();
+    final stagedFile = File('${directory.path}/${user.idB64url}/staged.kdbx');
+    try {
+      final exists = await stagedFile.exists();
+      return exists;
+    } on Exception {
+      // maybe can fail but that's OK, just assume does not exist since are unlikely to be able to do anything with it anyway
+    }
+    return false;
+  }
+
   remove(User user) async {
     final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.idB64url}/current.kdbx');
