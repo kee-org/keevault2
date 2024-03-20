@@ -40,8 +40,12 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
 
   Future<void> _refresh() async {
     final user = BlocProvider.of<AccountCubit>(context).currentUserIfKnown;
+    if (user == null) {
+      return;
+    }
     final AutofillState autofillState = BlocProvider.of<AutofillCubit>(context).state;
-    if (autofillState is AutofillModeActive || user == null) {
+    if (autofillState is AutofillModeActive) {
+      l.t('Skip refresh due to state: ${autofillState.runtimeType}');
       return;
     }
     await BlocProvider.of<VaultCubit>(context).refresh(user);

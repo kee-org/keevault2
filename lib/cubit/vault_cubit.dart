@@ -279,6 +279,8 @@ class VaultCubit extends Cubit<VaultState> {
     final rootGroup = vault.files.current.body.rootGroup;
     initAutofillPersistentQueue(rootGroup.uuid.uuidUrlSafe);
     if (isAutofilling()) {
+      // Make sure that any previous autofill operations have their adjustments
+      // applied before we present the entry list or entry saving interface to the user.
       await _persistentQueueAfAssociations?.ready;
       final pendingItems = (await _persistentQueueAfAssociations?.toList());
       if (pendingItems != null) {
@@ -1272,6 +1274,7 @@ class VaultCubit extends Cubit<VaultState> {
   KdbxEntry createEntry({
     required KdbxGroup group,
   }) {
+    l.t('VaultCubit.createEntry');
     final destinationGroup = group;
     final entry = KdbxEntry.create(currentVaultFile!.files.current, destinationGroup);
     destinationGroup.addEntry(entry);

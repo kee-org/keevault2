@@ -66,6 +66,7 @@ class AutofillCubit extends Cubit<AutofillState> {
   }
 
   Future<void> finishSaving() async {
+    l.t('Autofillcubit.finishSaving');
     if (state is AutofillSaving || state is AutofillSaved) {
       emit(AutofillSaved((state as AutofillModeActive).androidMetadata));
       await AutofillService().onSaveComplete();

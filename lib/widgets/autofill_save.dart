@@ -9,6 +9,7 @@ import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/widgets/loading_spinner.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import '../logging/logger.dart';
 import 'coloured_safe_area_widget.dart';
 import 'entry.dart';
 
@@ -28,6 +29,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
   KdbxEntry? newEntry;
   @override
   void initState() {
+    l.t('_AutofillSaveWidgetState.initState');
     super.initState();
     final autofillState = BlocProvider.of<AutofillCubit>(context).state as AutofillModeActive;
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
@@ -39,6 +41,10 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
     final password = autofillState.androidMetadata.saveInfo!.password;
     //TODO:f: expose value of save compat mode to Entry widget:
     //final isCompatMode = autofillState.androidMetadata.saveInfo!.isCompatMode;
+
+    // We'll get duplicate entries if multiple instances of this widget are built.
+    // Should move the business logic to somewhere else if possible and have this
+    // widget just show whatever new entry has been supplied to it (e.g. by the cubit).
     setState(() {
       newEntry = vaultCubit.createEntry(group: vault.files.current.body.rootGroup);
     });

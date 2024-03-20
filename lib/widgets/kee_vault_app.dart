@@ -235,7 +235,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                         RemoteVaultRepository(userService, storageService),
                         LocalVaultRepository(quickUnlocker),
                         entryCubit,
-                        autofillCubit.isAutofilling,
+                        () => autofillCubit.isAutofilling() || autofillCubit.isAutofillSaving(),
                         generatorProfilesCubit,
                         accountCubit,
                       )),

@@ -15,11 +15,13 @@ class EntryCubit extends Cubit<EntryState> {
   EntryCubit() : super(EntryInitial());
 
   void startEditing(KdbxEntry entry, {bool startDirty = false}) {
+    l.t('EntryCubit.startEditing');
     final newEntry = EditEntryViewModel.fromKdbxEntry(entry).let((it) => startDirty ? it.copyWith(isDirty: true) : it);
     emit(EntryLoaded(newEntry));
   }
 
   void endEditing(KdbxEntry? entry) {
+    l.t('EntryCubit.endEditing');
     if (entry != null) {
       (state as EntryLoaded).entry.commit(entry);
     }
