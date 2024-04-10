@@ -1,0 +1,8 @@
+!!! Upgrade Kee Vault 1 (web app) on all your devices first.
+!!! Then update all Kee Vault 2 (mobile app) devices at the same time.
+
+See https://forum.kee.pm/t/upcoming-compatibility-changes/4475
+
+* Fix bug where duplicate entries could be saved from AutoFill
+* Additional minor bug fixes and improvements
+* Improved performance from an updated Flutter version

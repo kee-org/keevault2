@@ -91,20 +91,16 @@ jobs:
           cd android
           bundle exec fastlane beta_stage
 
-      - name: CI sanity test
+      - name: Build Android App Bundle
         if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
-        run: echo "insane"
+        env:
+          KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
+        run: flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play --dart-define IAP_GOOGLE_PLAY=yes
 
-      # - name: Build Android App Bundle
-      #   if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
-      #   env:
-      #     KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
-      #   run: flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play --dart-define IAP_GOOGLE_PLAY=yes
-
-      # - name: Release to Google Play (beta)
-      #   if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
-      #   env:
-      #     KEEVAULT_ANDROID_PLAY_API_KEY_JSON: ${{ secrets.KEEVAULT_ANDROID_PLAY_API_KEY_JSON }}
-      #   run: |
-      #     cd android
-      #     bundle exec fastlane beta
+      - name: Release to Google Play (beta)
+        if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
+        env:
+          KEEVAULT_ANDROID_PLAY_API_KEY_JSON: ${{ secrets.KEEVAULT_ANDROID_PLAY_API_KEY_JSON }}
+        run: |
+          cd android
+          bundle exec fastlane beta
