@@ -37,7 +37,10 @@ dependencies:
 
   package_info_plus: ^8.0.0
   shared_preferences: ^2.2.3
-  flutter_settings_screens: 0.3.4
+  flutter_settings_screens:
+    git:
+      url: https://github.com/Juggler98/flutter_settings_screens.git
+      ref: 52ac240b7ae0cf48b723818ee233565fd562bc13 # 0.3.4 is incompatible with MD2
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
