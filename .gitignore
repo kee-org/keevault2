@@ -31,7 +31,6 @@
 .pub/
 /build/
 .gradle/
-.fvm/flutter_sdk
 integration_test/test_bundle.dart
 
 # Web related
@@ -57,3 +56,6 @@ ios/Flutter/KeeVault-generated.xcconfig
 ios/fastlane/report.xml
 ios/Runner.app.dSYM.zip
 ios/Runner.ipa
+
+# FVM Version Cache
+.fvm/

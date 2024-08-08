@@ -123,7 +123,7 @@ class AccountDrawerWidget extends StatelessWidget {
               (EnvironmentConfig.iapAppleAppStore && KeeVaultPlatform.isIOS);
           final theme = Theme.of(context);
           final headerColor =
-              theme.brightness == Brightness.light ? theme.colorScheme.primary : theme.colorScheme.onBackground;
+              theme.brightness == Brightness.light ? theme.colorScheme.primary : theme.colorScheme.onSurface;
           final accountActionSection = (user?.email != null)
               ? ExpansionTile(
                   initiallyExpanded: state is! VaultLoaded,

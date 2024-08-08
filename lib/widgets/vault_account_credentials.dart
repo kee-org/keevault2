@@ -121,7 +121,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                         child: Container(
                           padding: EdgeInsets.zero,
                           margin: EdgeInsets.zero,
-                          color: theme.colorScheme.background,
+                          color: theme.colorScheme.surface,
                           child: ConstrainedBox(
                             constraints: BoxConstraints(maxHeight: 150),
                             child: Column(

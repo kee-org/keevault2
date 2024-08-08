@@ -84,7 +84,7 @@ class _IconChooserState extends State<IconChooser> {
       actions: [
         TextButton(
           style: ButtonStyle(
-            padding: MaterialStateProperty.resolveWith(
+            padding: WidgetStateProperty.resolveWith(
               (states) => const EdgeInsets.symmetric(horizontal: 20),
             ),
           ),

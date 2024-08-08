@@ -23,48 +23,48 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  logger: 2.0.2+1
+  logger: 2.3.0
   logging: ^1.2.0
   kdbx:
     git:
       url: https://github.com/kee-org/kdbx.dart.git
       ref: master
-  path_provider: ^2.1.1
+  path_provider: ^2.1.3
   biometric_storage:
     git:
       url: https://github.com/kee-org/biometric_storage.git
       ref: keevault
 
-  package_info_plus: ^5.0.1
-  shared_preferences: ^2.2.2
-  flutter_settings_screens: 0.3.3-null-safety+2
+  package_info_plus: ^8.0.0
+  shared_preferences: ^2.2.3
+  flutter_settings_screens: 0.3.4
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
-      ref: master
+      ref: api34
   flutter_autofill_service:
     git:
       url: https://github.com/kee-org/flutter_autofill_service.git
       ref: master
-  bloc: ^8.1.2
-  flutter_bloc: ^8.1.3
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.6
   fluro: ^2.0.5
-  dio: ^5.3.3
+  dio: ^5.5.0
   crypto_keys: ^0.3.0+1
-  pointycastle: ^3.7.3
+  pointycastle: ^3.9.1
   srp:
     git:
       url: https://github.com/kee-org/srp.dart.git
       ref: master
   animate_icons: ^2.0.0
-  animations: ^2.0.8
-  font_awesome_flutter: ^10.6.0
+  animations: ^2.0.11
+  font_awesome_flutter: ^10.7.0
   public_suffix: ^3.0.0
-  url_launcher: ^6.2.1
+  url_launcher: ^6.3.0
   otp: ^3.1.4
   tuple: ^2.0.2
-  collection: ^1.17.2
-  jiffy: ^6.2.1
+  collection: ^1.18.0
+  jiffy: ^6.3.1
   # characters: ^1.2.0
   flutter_treeview:
     git:
@@ -77,7 +77,7 @@ dependencies:
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.8
 
   flutter_persistent_queue:
     git:
@@ -86,27 +86,24 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
-  matomo_tracker:
-    git:
-      url: https://github.com/Floating-Dartists/matomo-tracker.git
-      ref: main
-  file_picker: ^6.0.0
+  matomo_tracker: ^5.0.0
+  file_picker: ^8.0.6
   zxcvbn: ^1.0.0
   flutter_rating_bar: ^4.0.1
-  mime: ^1.0.4
-  share_plus: ^7.2.1
-  path: ^1.8.3 #flutter sdk always lags behind so upgrade this only when needed
-  permission_handler: ^11.0.1
+  mime: ^1.0.5
+  share_plus: ^10.0.0
+  path: ^1.9.0 #flutter sdk always lags behind so upgrade this only when needed
+  permission_handler: ^11.3.1
   flutter_file_dialog: ^3.0.2
   base32: ^2.1.3
   flutter_speed_dial: ^7.0.0
   receive_intent: ^0.2.5
-  platform: ^3.1.3
-  email_validator: ^2.1.17
+  platform: ^3.1.5
+  email_validator: ^3.0.0
   convert: ^3.1.1
-  meta: ^1.9.1
+  meta: ^1.12.0
   argon2_ffi_base: ^1.1.1
-  uuid: ^4.3.3
+  uuid: ^4.4.0
   clock: ^1.1.1
   flutter_inapp_purchase: 
     git:
@@ -116,10 +113,14 @@ dependencies:
     git:
       url: https://github.com/kee-org/sensitive_clipboard
       ref: master
-  rate_my_app: 2.0.0 # fix until at least > 2.0.0
-  archive: ^3.4.6
-  device_info_plus: ^9.1.0
-  # barcode_scan2: ^4.3.0
+  #rate_my_app: ^2.2.0
+  rate_my_app: 
+    git:
+      url: https://github.com/kee-org/RateMyApp
+      ref: api34
+  archive: ^3.6.1
+  device_info_plus: ^10.1.1
+  # barcode_scan2: ^4.3.3
   barcode_scan2:
     git:
       url: https://github.com/kee-org/barcode_scan2
@@ -129,14 +130,20 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.13.1"
-  flutter_lints: ^3.0.1
+  flutter_lints: ^3.0.2
   dependency_validator: ^3.2.3
-  flutter_native_splash: ^2.3.5
+  flutter_native_splash: ^2.4.1
   #patrol: ^2.2.3
 
 dependency_overrides:
   # flutter_autofill_service:
   #   path: ../flutter_autofill_service/
+  # barcode_scan2:
+  #   path: ../barcode_scan2/
+  # rate_my_app:
+  #   path: ../RateMyApp/
+  # share_plus:
+  #   path: ../plus_plugins/packages/share_plus/share_plus/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

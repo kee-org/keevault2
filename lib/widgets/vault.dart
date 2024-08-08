@@ -45,6 +45,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
     }
     final AutofillState autofillState = BlocProvider.of<AutofillCubit>(context).state;
     if (autofillState is AutofillModeActive) {
+      //TODO: Maybe proceed if AutofillSaved? Or clear that state after applifecyclestate resumes? Until then, ...................
       l.t('Skip refresh due to state: ${autofillState.runtimeType}');
       return;
     }
