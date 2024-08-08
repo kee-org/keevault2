@@ -261,71 +261,63 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
         // only used by [_OtpEntryFieldState]
         throw UnsupportedError('Field does not support this action.');
       case EntryAction.rename:
-        // Think this is a use_build_context_synchronously false positive at least
-        // as of Dart 3.1 but a quick sanity check here does minimal harm
-        if (context.mounted) {
-          final cubit = BlocProvider.of<EntryCubit>(context);
-          final newName = await SimplePromptDialog(
-            title: str.renamingField,
-            labelText: str.renameFieldEnterNewName,
-            initialValue: widget.field.name,
-          ).show(context);
-          if (newName != null) {
-            cubit.renameField(widget.field.key, widget.field.browserModel?.name, newName);
-          }
+        final cubit = BlocProvider.of<EntryCubit>(context);
+        final newName = await SimplePromptDialog(
+          title: str.renamingField,
+          labelText: str.renameFieldEnterNewName,
+          initialValue: widget.field.name,
+        ).show(context);
+        if (newName != null) {
+          cubit.renameField(widget.field.key, widget.field.browserModel?.name, newName);
         }
         break;
       case EntryAction.protect:
-        // Think this is a use_build_context_synchronously false positive at least
-        // as of Dart 3.1 but a quick sanity check here does minimal harm
-        if (context.mounted) {
-          if (_isProtected) {
-            final cubit = BlocProvider.of<EntryCubit>(context);
-            if (widget.field.fieldStorage == FieldStorage.JSON) {
-              cubit.updateField(
-                null,
-                widget.field.browserModel!.name,
-                value: PlainValue(widget.field.textValue),
-                browserModel:
-                    widget.field.browserModel!.copyWith(type: kdbx.FieldType.Text, value: widget.field.textValue),
-                protect: false,
-              );
-            } else {
-              cubit.updateField(
-                widget.field.key,
-                null,
-                value: PlainValue(widget.field.textValue),
-                protect: false,
-              );
-            }
+        if (_isProtected) {
+          final cubit = BlocProvider.of<EntryCubit>(context);
+          if (widget.field.fieldStorage == FieldStorage.JSON) {
+            cubit.updateField(
+              null,
+              widget.field.browserModel!.name,
+              value: PlainValue(widget.field.textValue),
+              browserModel:
+                  widget.field.browserModel!.copyWith(type: kdbx.FieldType.Text, value: widget.field.textValue),
+              protect: false,
+            );
           } else {
-            final cubit = BlocProvider.of<EntryCubit>(context);
-            if (widget.field.fieldStorage == FieldStorage.JSON) {
-              cubit.updateField(
-                null,
-                widget.field.browserModel!.name,
-                value: ProtectedValue.fromString(widget.field.textValue),
-                browserModel:
-                    widget.field.browserModel!.copyWith(type: kdbx.FieldType.Password, value: widget.field.textValue),
-                protect: true,
-              );
-            } else {
-              cubit.updateField(
-                widget.field.key,
-                null,
-                value: ProtectedValue.fromString(widget.field.textValue),
-                protect: true,
-              );
-            }
+            cubit.updateField(
+              widget.field.key,
+              null,
+              value: PlainValue(widget.field.textValue),
+              protect: false,
+            );
           }
-          setState(() {
-            if (_isProtected) {
-              _isValueObscured = false;
-            } else if (widget.field.textValue.isNotEmpty) {
-              _isValueObscured = true;
-            }
-          });
+        } else {
+          final cubit = BlocProvider.of<EntryCubit>(context);
+          if (widget.field.fieldStorage == FieldStorage.JSON) {
+            cubit.updateField(
+              null,
+              widget.field.browserModel!.name,
+              value: ProtectedValue.fromString(widget.field.textValue),
+              browserModel:
+                  widget.field.browserModel!.copyWith(type: kdbx.FieldType.Password, value: widget.field.textValue),
+              protect: true,
+            );
+          } else {
+            cubit.updateField(
+              widget.field.key,
+              null,
+              value: ProtectedValue.fromString(widget.field.textValue),
+              protect: true,
+            );
+          }
         }
+        setState(() {
+          if (_isProtected) {
+            _isValueObscured = false;
+          } else if (widget.field.textValue.isNotEmpty) {
+            _isValueObscured = true;
+          }
+        });
         break;
       case EntryAction.delete:
         widget.onDelete();

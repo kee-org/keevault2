@@ -712,7 +712,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
       try {
         blockingOverlay.hide();
       } on Exception {
-        if (context.mounted) {
+        if (mounted) {
           BlockingOverlay.of(context).hide();
         }
       }
@@ -735,7 +735,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
       try {
         blockingOverlay.hide();
       } on Exception {
-        if (context.mounted) {
+        if (mounted) {
           BlockingOverlay.of(context).hide();
         }
       }

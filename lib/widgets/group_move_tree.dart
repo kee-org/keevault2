@@ -126,7 +126,7 @@ abstract class _MoveTreeListWidgetState<T extends MoveTreeListWidget> extends St
               parentLabelOverflow: TextOverflow.ellipsis,
             );
             return Container(
-              color: theme.colorScheme.background,
+              color: theme.colorScheme.surface,
               child: SafeArea(
                 minimum: const EdgeInsets.all(8.0),
                 child: Column(
