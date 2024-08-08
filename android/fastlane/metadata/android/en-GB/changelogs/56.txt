@@ -1,0 +1,3 @@
+* Improved style of Autofill pinned button on some keyboards
+* Additional minor bug fixes and improvements
+* Improved performance from an updated Flutter version
