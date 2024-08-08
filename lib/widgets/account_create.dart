@@ -797,7 +797,7 @@ class AccountCreateWrapperWidget extends StatelessWidget {
         ),
         body: PopScope(
           canPop: skipBackCheck,
-          onPopInvoked: (bool didPop) async {
+          onPopInvokedWithResult: (bool didPop, Object? result) async {
             if (didPop) {
               return;
             }
