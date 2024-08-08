@@ -342,7 +342,7 @@ class EntryWidget extends StatelessWidget {
                       ),
                 body: PopScope(
                   canPop: !entry.isDirty,
-                  onPopInvoked: (bool didPop) async {
+                  onPopInvokedWithResult: (bool didPop, Object? result) async {
                     if (didPop) {
                       return;
                     }

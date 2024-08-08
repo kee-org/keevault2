@@ -120,6 +120,10 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
         l.e('Nav context unexpectedly missing. Autofill navigation is likely to fail in strange ways.');
         return;
       }
+      if (!navContext.mounted) {
+        l.e('Nav context unexpectedly unmounted. Autofill navigation is likely to fail in strange ways.');
+        return;
+      }
       final mode = intent?.extra?['autofill_mode'];
       if (mode?.startsWith('/autofill') ?? false) {
         BlocProvider.of<AutofillCubit>(navContext).refresh();

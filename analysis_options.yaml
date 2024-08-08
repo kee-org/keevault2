@@ -36,6 +36,7 @@ analyzer:
   errors:
     todo: ignore
     prefer_const_constructors: ignore # until an automated fix can resolve hundreds of issues
+    deprecated_member_use: ignore # until upgrade to MD3 components, colours, etc.
   exclude:
     - lib/generated/**
     - lib/phonetic.dart
