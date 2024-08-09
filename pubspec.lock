@@ -921,10 +921,11 @@ packages:
   receive_intent:
     dependency: "direct main"
     description:
-      name: receive_intent
-      sha256: "59afac5bcac8a0c6fc5067d03b4daeb260399cc8485256d6fe40a26640512cda"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "13c662cbfb3a8f67984a8ffae1baf4e0f9e79aef"
+      url: "https://github.com/kee-org/receive_intent"
+    source: git
     version: "0.2.5"
   sensitive_clipboard:
     dependency: "direct main"
