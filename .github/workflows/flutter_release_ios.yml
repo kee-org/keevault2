@@ -57,7 +57,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
-          bundler: 2.5.6
+          bundler: 2.5.17
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Release beta stage app to beta delivery platform
@@ -131,7 +131,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
-          bundler: 2.5.6
+          bundler: 2.5.17
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Release prod stage app to appstore testflight
