@@ -56,6 +56,11 @@ class UserRepository {
     return user;
   }
 
+  Future<void> changeEmailAddress(User user, String newEmailAddress, String newEmailHashed, String newPassKey) async {
+    await userService.changeEmailAddress(user, newEmailAddress, newEmailHashed, newPassKey);
+    return;
+  }
+
   Future<bool> associate(User user, int subscriptionSource, String validationData) async {
     return await subscriptionService.associate(user, subscriptionSource, validationData);
   }

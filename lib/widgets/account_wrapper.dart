@@ -7,6 +7,7 @@ import '../cubit/account_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/vault_cubit.dart';
+import 'account_email_change.dart';
 import 'account_email_not_verified.dart';
 import 'account_expired.dart';
 import 'loading_spinner.dart';
@@ -31,12 +32,13 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
       final user = await accountCubit.finishSignin(password);
 
       if ((accountCubit.state is AccountAuthenticated &&
+              accountCubit.state is! AccountEmailChangeRequested &&
               accountCubit.state is! AccountEmailNotVerified &&
               accountCubit.state is! AccountExpired) ||
           accountCubit.state is AccountAuthenticationBypassed) {
         // No point going through the startup process if the user has just ended up
         // back in Accountidentified state due to an incorrect password or their
-        // account is expired or unverified
+        // account is expired, unverified or going through an email address change.
         await vaultCubit.startup(user, password);
       }
     } else {
@@ -120,6 +122,9 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
             return LoadingSpinner(tooltip: str.authenticating);
           } else if (state is AccountExpired) {
             return AccountExpiredWidget(trialAvailable: state.trialAvailable);
+          } else if (state is AccountEmailChangeRequested) {
+            // Success, failure and cancel all will sign out user, remove QuickUnlock data, and thus bump them back to the sign-in page for fresh authentication.
+            return AccountEmailChangeWidget();
           } else if (state is AccountEmailNotVerified) {
             return AccountEmailNotVerifiedWidget();
           } else if (state is AccountChosen || state is AccountLocalOnly) {

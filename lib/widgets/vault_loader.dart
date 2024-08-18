@@ -41,6 +41,7 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
     final latestState = accountCubit.state;
 
     if ((latestState is AccountAuthenticated &&
+            latestState is! AccountEmailChangeRequested &&
             latestState is! AccountEmailNotVerified &&
             latestState is! AccountExpired) ||
         latestState is AccountAuthenticationBypassed) {

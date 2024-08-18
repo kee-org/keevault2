@@ -8,16 +8,26 @@ import '../vault_backend/exceptions.dart';
 
 typedef SubmitCallback = Future<void> Function(String string);
 
-class AccountEmailNotVerifiedWidget extends StatefulWidget {
-  const AccountEmailNotVerifiedWidget({
+class AccountEmailChangeWidget extends StatefulWidget {
+  const AccountEmailChangeWidget({
     super.key,
   });
 
   @override
-  State<AccountEmailNotVerifiedWidget> createState() => _AccountEmailNotVerifiedWidgetState();
+  State<AccountEmailChangeWidget> createState() => _AccountEmailChangeWidgetState();
 }
+// Very rare technical failures outside of our control could leave you unable to sign-in to your account. We therefore recommend that you export your Vault to a "kdbx" file before proceding.
+// You will be signed out immediately and will have to reverify your new email address before signing in again.
 
-class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedWidget> {
+// above only relevant for when signed in to vault.
+
+//Your password will remain the same throughout the process. If you want to change that too, we recommend waiting at least an hour before doing so.
+// Enter your current password and new email address:::
+
+// Dialog: Please double-check this is your new email address. Typos or auto-correct mistakes can be very difficult and slow to recover from.
+// Cancel / Change to displayed address
+
+class _AccountEmailChangeWidgetState extends State<AccountEmailChangeWidget> {
   Future<void> resendEmail() async {
     setState(() {
       disableResending = true;
@@ -87,11 +97,6 @@ class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedW
         });
       }
     }
-  }
-
-  Future<void> startEmailChange() async {
-    final accountCubit = BlocProvider.of<AccountCubit>(context);
-    await accountCubit.startEmailChange();
   }
 
   bool disableResending = true;
@@ -184,7 +189,7 @@ class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedW
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
-                'No longer have access to your email address?',
+                str.wrongAddress,
                 textAlign: TextAlign.center,
               ),
             ),

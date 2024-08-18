@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:convert/convert.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/vault_backend/login_parameters.dart';
@@ -105,7 +107,8 @@ class UserService {
   Future<User> createAccount(User user, int marketingEmailStatus, int subscriptionSource) async {
     final hexSalt = generateSalt();
     user.salt = hex2base64(hexSalt);
-    final privateKey = derivePrivateKey(hexSalt, user.id!, user.passKey!);
+    //TODO: Verify that changing from user.id to user.emailHashed has expected effect (nothing since we just defaulted the id to emailHashed anyway and the server will tell us the final random user ID after registration succeeds)
+    final privateKey = derivePrivateKey(hexSalt, user.emailHashed!, user.passKey!);
     final verifier = deriveVerifier(privateKey);
     final response = await _service.postRequest<String>('register', {
       'emailHashed': user.emailHashed,
@@ -200,6 +203,31 @@ class UserService {
       return false;
     }
     return true;
+  }
+
+  // We make no changes to the User model since we will sign the user out and ask them to
+  // sign in again, partly so that we can ensure they have verified their new email address.
+  Future<void> changeEmailAddress(User user, String newEmailAddress, String newEmailHashed, String newPassKey) async {
+    final newHexSalt = generateSalt();
+    final newSalt = hex2base64(newHexSalt);
+    final newPrivateKey = derivePrivateKey(newHexSalt, newEmailHashed, newPassKey);
+    final newVerifier = deriveVerifier(newPrivateKey);
+
+    final oldPrivateKey = derivePrivateKey(user.salt!, user.emailHashed!, user.passKey!);
+    final oldVerifier = deriveVerifier(oldPrivateKey);
+    final oldVerifierHashed = await hashBytes(Uint8List.fromList(hex.decode(oldVerifier)));
+
+    await _service.postRequest<String>(
+        'changeEmailAddress',
+        {
+          'emailHashed': newEmailHashed,
+          'verifier': hex2base64(newVerifier),
+          'salt': newSalt,
+          'email': newEmailAddress,
+          'oldVerifierHashed': oldVerifierHashed,
+        },
+        user.tokens!.identity);
+    return;
   }
 
   Future<void> _parseJWTs(User user, List<String> jwts, {bool notifyListeners = false}) async {

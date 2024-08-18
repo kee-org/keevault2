@@ -60,6 +60,11 @@ class AccountEmailNotVerified extends AccountAuthenticated {
   const AccountEmailNotVerified(super.user);
 }
 
+class AccountEmailChangeRequested extends AccountAuthenticated {
+  final String? error;
+  const AccountEmailChangeRequested(super.user, this.error);
+}
+
 class AccountTrialRestartStarted extends AccountExpired {
   const AccountTrialRestartStarted(super.user, super.trialAvailable);
 }
