@@ -6,6 +6,7 @@ import 'package:keevault/locked_vault_file.dart';
 
 import 'kdbx_argon2_ffi.dart';
 import 'kdf_cache.dart';
+import 'password_strength.dart';
 
 class VaultFileVersions {
   // Current unlocked kdbx must always be available
@@ -71,21 +72,19 @@ class VaultFileVersions {
 //  remoteMergeTarget and current are identical at this time because user has just
 // supplied a new password through the UI so can't have any outstanding modifications
 // in the current vault file. There must also be no pending files.
-  Future<VaultFileVersions> copyWithNewCredentials(Credentials credentials) async {
-    // final unlockedFiles = await unlockTwice(this.remoteMergeTargetLocked!);
-    // final unlockedCurrent = unlockedFiles[0];
-    //unlockedCurrent.overwriteCredentials(credentials, DateTime.now());
+  Future<VaultFileVersions> copyWithNewCredentials(StrengthAssessedCredentials credentialsWithStrength) async {
     final unlockedFile = await unlock(remoteMergeTargetLocked);
-    unlockedFile.changeCredentials(credentials);
-    // final unlockedMergeTarget = unlockedFiles[1];
-    // unlockedMergeTarget.changeCredentials(credentials);
+    unlockedFile
+      ..changeCredentials(credentialsWithStrength.credentials)
+      ..header.writeKdfParameters(credentialsWithStrength.createNewKdfParameters());
     final kdbxData = await unlockedFile.save();
     return VaultFileVersions(
-        current: _current,
+        current: unlockedFile,
         pending: null,
         pendingLocked: null,
         remoteMergeTarget: null,
-        remoteMergeTargetLocked: LockedVaultFile(kdbxData, DateTime.now(), credentials, null, null));
+        remoteMergeTargetLocked:
+            LockedVaultFile(kdbxData, DateTime.now(), credentialsWithStrength.credentials, null, null));
   }
 
   @override

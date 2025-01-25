@@ -35,7 +35,8 @@ class VaultUpdatingLocalFromAutofill extends VaultRefreshing {
 class VaultRefreshCredentialsRequired extends VaultLoaded {
   final String reason;
   final bool causedByInteraction;
-  const VaultRefreshCredentialsRequired(super.vault, this.reason, this.causedByInteraction);
+  final PasswordMismatchRecoverySituation recovery;
+  const VaultRefreshCredentialsRequired(super.vault, this.reason, this.causedByInteraction, this.recovery);
 }
 
 class VaultCreating extends VaultState {
@@ -105,5 +106,12 @@ class VaultReconcilingUpload extends VaultSaving {
 
 class VaultUploadCredentialsRequired extends VaultReconcilingUpload {
   final bool causedByInteraction;
-  const VaultUploadCredentialsRequired(super.vault, super.locally, super.remotely, this.causedByInteraction);
+  final PasswordMismatchRecoverySituation recovery;
+  const VaultUploadCredentialsRequired(
+      super.vault, super.locally, super.remotely, this.causedByInteraction, this.recovery);
+}
+
+class VaultChangingPassword extends VaultLoaded {
+  final String? error;
+  const VaultChangingPassword(super.vault, this.error);
 }

@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:convert/convert.dart';
+import 'package:kdbx/kdbx.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/vault_backend/login_parameters.dart';
@@ -38,8 +41,7 @@ class UserService {
     return user;
   }
 
-  // Actually can't ever be false - just throws instead
-  Future<bool> loginFinish(User user, {List<int>? hashedMasterKey, required bool notifyListeners}) async {
+  Future<void> loginFinish(User user, {List<int>? hashedMasterKey, required bool notifyListeners}) async {
     if (user.loginParameters == null) throw KeeMaybeOfflineException();
     if (user.emailHashed?.isEmpty ?? true) throw KeeInvalidStateException();
     if (user.salt?.isEmpty ?? true) throw KeeInvalidStateException();
@@ -77,7 +79,7 @@ class UserService {
     user.verificationStatus = srp2.verificationStatus;
 
     await _finishIosIapTransaction(user);
-    return true;
+    return;
   }
 
   Future<void> _finishIosIapTransaction(User user) async {
@@ -105,7 +107,7 @@ class UserService {
   Future<User> createAccount(User user, int marketingEmailStatus, int subscriptionSource) async {
     final hexSalt = generateSalt();
     user.salt = hex2base64(hexSalt);
-    final privateKey = derivePrivateKey(hexSalt, user.id!, user.passKey!);
+    final privateKey = derivePrivateKey(hexSalt, user.emailHashed!, user.passKey!);
     final verifier = deriveVerifier(privateKey);
     final response = await _service.postRequest<String>('register', {
       'emailHashed': user.emailHashed,
@@ -153,9 +155,9 @@ class UserService {
             user.emailHashed!.isNotEmpty &&
             user.passKey!.isNotEmpty) {
           await loginStart(user);
-          final loginResult = await loginFinish(user, notifyListeners: notifyListeners);
+          await loginFinish(user, notifyListeners: notifyListeners);
           // Unlike with the refresh operation above, user.verificationStatus is updated as part of the loginFinish function
-          if (loginResult && user.tokens != null) {
+          if (user.tokens != null) {
             return user.tokens!;
           } else {
             throw KeeLoginRequiredException();
@@ -200,6 +202,62 @@ class UserService {
       return false;
     }
     return true;
+  }
+
+  // We make no changes to the User model since we will sign the user out and ask them to
+  // sign in again, partly so that we can ensure they have verified their new email address.
+  Future<void> changeEmailAddress(
+      User user, String newEmailAddress, String newEmailHashed, ProtectedValue password) async {
+    final key = password.hash;
+    final oldPassKey = await derivePassKey(user.email!, key);
+    final newPassKey = await derivePassKey(newEmailAddress, key);
+
+    if (user.passKey != oldPassKey) {
+      throw FormatException('Password does not match');
+    }
+
+    final newHexSalt = generateSalt();
+    final newSalt = hex2base64(newHexSalt);
+    final newPrivateKey = derivePrivateKey(newHexSalt, newEmailHashed, newPassKey);
+    final newVerifier = deriveVerifier(newPrivateKey);
+
+    final oldPrivateKey = derivePrivateKey(base642hex(user.salt!), user.emailHashed!, oldPassKey);
+    final oldVerifier = deriveVerifier(oldPrivateKey);
+    final oldVerifierHashed = await hashBytes(Uint8List.fromList(hex.decode(oldVerifier)));
+
+    await _service.postRequest<String>(
+        'changeEmailAddress',
+        {
+          'emailHashed': newEmailHashed,
+          'verifier': hex2base64(newVerifier),
+          'salt': newSalt,
+          'email': newEmailAddress,
+          'oldVerifierHashed': oldVerifierHashed,
+        },
+        user.tokens!.identity);
+    return;
+  }
+
+  Future<void> changePasswordStart(User user, String newPassKey) async {
+    final newPrivateKey = derivePrivateKey(base642hex(user.salt!), user.emailHashed!, newPassKey);
+    final newVerifier = deriveVerifier(newPrivateKey);
+
+    await _service.postRequest<String>(
+        'changePasswordStart',
+        {
+          'verifier': hex2base64(newVerifier),
+        },
+        user.tokens!.identity);
+    return;
+  }
+
+  Future<void> changePasswordFinish(User user, String newPassKey) async {
+    final response = await _service.postRequest<String>('changePasswordFinish', {}, user.tokens!.identity);
+    user.passKey = newPassKey;
+
+    final jwts = List<String>.from(json.decode(response.data!)['JWTs']);
+    await _parseJWTs(user, jwts);
+    return;
   }
 
   Future<void> _parseJWTs(User user, List<String> jwts, {bool notifyListeners = false}) async {

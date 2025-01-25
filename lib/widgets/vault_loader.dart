@@ -41,6 +41,7 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
     final latestState = accountCubit.state;
 
     if ((latestState is AccountAuthenticated &&
+            latestState is! AccountEmailChangeRequested &&
             latestState is! AccountEmailNotVerified &&
             latestState is! AccountExpired) ||
         latestState is AccountAuthenticationBypassed) {
@@ -152,7 +153,14 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
       }
       return LoadingSpinner(tooltip: 'Unknown app state: ${state.toString()}');
     }, listener: (context, state) async {
-      if (state is VaultLoaded) {
+      // Once the state becomes VaultLoaded we want to redirect to the main vault widget
+      // (and thus clear the loading spinner that is rendering in this widget). This
+      // can take a moment to complete and in the mean time we will typically have
+      // changed state to VaultRefreshing and thus entered this listener function a
+      // second time. To prevent wasted effort and duplicated metrics being recorded,
+      // we take no action when in VaultRefreshing state. Perhaps we should have
+      // exceptions for other states too but I'm yet to find any real-world need.
+      if (state is VaultLoaded && state is! VaultRefreshing) {
         final AutofillState autofillState = BlocProvider.of<AutofillCubit>(context).state;
         final filterContext = BlocProvider.of<FilterCubit>(context);
         final interactionContext = BlocProvider.of<InteractionCubit>(context);

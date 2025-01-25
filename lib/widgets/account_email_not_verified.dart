@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/cubit/account_cubit.dart';
+import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';
 import '../vault_backend/exceptions.dart';
 
@@ -87,6 +88,12 @@ class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedW
         });
       }
     }
+  }
+
+  void startEmailChange() {
+    final accountCubit = BlocProvider.of<AccountCubit>(context);
+    accountCubit.startEmailChange();
+    BlocProvider.of<VaultCubit>(context).signout();
   }
 
   bool disableResending = true;
@@ -174,7 +181,31 @@ class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedW
                         strokeWidth: 3,
                       ),
                     )
-                  : Text('Continue signing in'),
+                  : Text(str.continueSigningIn),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                str.noLongerHaveAccessToUnverifiedEmail,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: disableRefreshing
+                  ? null
+                  : () {
+                      startEmailChange();
+                    },
+              child: refreshing
+                  ? Container(
+                      width: 24,
+                      height: 24,
+                      padding: const EdgeInsets.all(2.0),
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : Text(str.changeEmail),
             ),
           ]),
         );

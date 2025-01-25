@@ -56,6 +56,28 @@ class UserRepository {
     return user;
   }
 
+  Future<void> changeEmailAddress(
+      User user, String newEmailAddress, String newEmailHashed, ProtectedValue password) async {
+    await userService.changeEmailAddress(user, newEmailAddress, newEmailHashed, password);
+    return;
+  }
+
+  Future<void> changePasswordStart(User user, String newPassKey) async {
+    if (user.emailHashed == null) throw KeeInvalidStateException();
+    if (user.email?.isEmpty ?? true) throw KeeInvalidStateException();
+    if (newPassKey.isEmpty) throw KeeInvalidStateException();
+    await userService.changePasswordStart(user, newPassKey);
+    return;
+  }
+
+  Future<void> changePasswordFinish(User user, String newPassKey) async {
+    if (user.emailHashed == null) throw KeeInvalidStateException();
+    if (user.email?.isEmpty ?? true) throw KeeInvalidStateException();
+    if (newPassKey.isEmpty) throw KeeInvalidStateException();
+    await userService.changePasswordFinish(user, newPassKey);
+    return;
+  }
+
   Future<bool> associate(User user, int subscriptionSource, String validationData) async {
     return await subscriptionService.associate(user, subscriptionSource, validationData);
   }

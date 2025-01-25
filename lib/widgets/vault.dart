@@ -10,6 +10,7 @@ import 'package:keevault/cubit/account_cubit.dart';
 import 'package:keevault/cubit/app_settings_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
+import 'package:keevault/password_mismatch_recovery_situation.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/widgets/vault_password_credentials.dart';
 
@@ -54,14 +55,20 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
 
   Future<void> _refreshAuthenticate(String password) async {
     final user = BlocProvider.of<AccountCubit>(context).currentUser;
-    await BlocProvider.of<VaultCubit>(context).refresh(user, overridePassword: password);
+    final VaultState vaultState = BlocProvider.of<VaultCubit>(context).state;
+    PasswordMismatchRecoverySituation recovery = PasswordMismatchRecoverySituation.none;
+    if (vaultState is VaultRefreshCredentialsRequired) {
+      recovery = vaultState.recovery;
+    }
+    await BlocProvider.of<VaultCubit>(context).refresh(user, overridePasswordRemote: password, recovery: recovery);
   }
 
   Future<void> _uploadAuthenticate(String password) async {
     final user = BlocProvider.of<AccountCubit>(context).currentUser;
     final VaultState vaultState = BlocProvider.of<VaultCubit>(context).state;
     if (vaultState is VaultUploadCredentialsRequired) {
-      await BlocProvider.of<VaultCubit>(context).upload(user, vaultState.vault, overridePassword: password);
+      await BlocProvider.of<VaultCubit>(context)
+          .upload(user, vaultState.vault, overridePasswordRemote: password, recovery: vaultState.recovery);
     }
   }
 

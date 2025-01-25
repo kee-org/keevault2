@@ -38,7 +38,7 @@
   "autofillRequiresQU": " You need to add a Passcode, FaceId or TouchId to your device too!",
   "enableAutofill": "Enable Autofill",
   "enableAutofillIosInstructions": "1. Please switch to your device's Settings app and load the \"Passwords\" section.\n\n2. Click on \"AutoFill passwords\".\n\n3. Ensure the switch at the top is enabled.\n\n4. Deselect Keychain (or other selected items) and then select \"{appName}\".\n\nThen switch back to this Kee Vault App and click \"OK\" to confirm that you are finished.\n\nFinally, double check that the status information in the Kee Vault Settings page now says that AutoFill is enabled.\n\nApologies that we can't make this easier - Apple won't allow us to help you in this situation.",
-  "useWebAppForOtherSettings": "You can change your account password and some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault.",
+  "useWebAppForOtherSettings": "You can change some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault.",
   "openWebApp": "Open Kee Vault in your browser",
   "manageAccountSettingsDetail": "Edit your subscription, payment details or email contact preferences from the Kee Vault Account website.",
   "deviceAutoFill": "Device AutoFill",
@@ -377,5 +377,23 @@
   "resendVerification": "Resend the verification link",
   "signInAgainWhenVerified": "When your email address is successfully verified you can click the button below to continue your sign-in.",
   "expiredWhileSignedIn": "Your subscription has just expired. Please click \"Sign out\" from the main menu below, then sign-in and follow the instructions. Your data is still available at the moment so don't panic.",
-  "openInBrowser": "Open in browser"
+  "openInBrowser": "Open in browser",
+  "continueSigningIn": "Continue signing in",
+  "noLongerHaveAccessToUnverifiedEmail": "No longer have access to your email address?",
+  "changeEmail": "Change email address",
+  "changeEmailInfo1": "Your email address has a crucial role in the advanced security protections Kee Vault offers. Changing it securely is a far more complex task than for most of the places you might wish to change it. We are happy to finally offer this feature to you but please read the information carefully and don't proceed when you are in a rush.",
+  "changeEmailInfo2": "Your new email address will:",
+  "changeEmailInfo2a": "become your new sign-in ID",
+  "changeEmailInfo2b": "need to be verified to confirm it belongs to you",
+  "changeEmailInfo3": "We recommend that you:",
+  "changeEmailInfo3a": "1) Click the Cancel button below, sign in to Kee Vault again, Export your Vault to a KDBX file and store it somewhere safe as a backup.",
+  "changeEmailInfo3b": "2) Double check you enter the correct email address - you will need to type it exactly to sign in to your account in a moment.",
+  "changeEmailInfo3c": "3) Copy/paste what you have entered in the email address box and store somewhere like a note on your phone.",
+  "changeEmailInfo4": "If you make a mistake, you should be able to regain access to your Vault but in some cases you may need to create a new Kee Vault subscription and import from your previously exported KDBX file - this can result in additional hassle and costs since your old subscription would not be refundable.",
+  "changeEmailInfo5": "Your password will remain the same throughout the process. If you want to change that too, we first recommend signing in on multiple devices using your new email address and waiting at least an hour.",
+  "changeEmailConfirmCheckbox": "I have read the above warnings, mitigated the risks and wish to continue",
+  "currentEmailAddress": "Current email address",
+  "newEmailAddress": "New email address",
+  "emailChanged": "Email address changed"
+
 }

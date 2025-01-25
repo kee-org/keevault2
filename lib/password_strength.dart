@@ -88,9 +88,9 @@ class StrengthAssessedCredentials {
       : strength = fuzzyStrength(password.getText(), emailAddrParts),
         credentials = Credentials(password);
 
-  KdbxHeader createNewKdbxHeader() {
+  VarDictionary createNewKdfParameters() {
     final argon2Params = Argon2Params.forStrength(strength);
-    final kdfParameters = VarDictionary([
+    return VarDictionary([
       KdfField.uuid.item(KeyEncrypterKdf.kdfUuidForType(KdfType.Argon2d).toBytes()),
       KdfField.salt.item(ByteUtils.randomBytes(argon2Params.saltLength)),
       KdfField.parallelism.item(argon2Params.parallelism),
@@ -98,6 +98,9 @@ class StrengthAssessedCredentials {
       KdfField.memory.item(argon2Params.memory),
       KdfField.version.item(argon2Params.version),
     ]);
-    return KdbxHeader.createV4_1()..writeKdfParameters(kdfParameters);
+  }
+
+  KdbxHeader createNewKdbxHeader() {
+    return KdbxHeader.createV4_1()..writeKdfParameters(createNewKdfParameters());
   }
 }

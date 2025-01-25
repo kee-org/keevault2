@@ -68,6 +68,14 @@ String hex2base64(String input) {
   return base64.encode(hex.decode(input));
 }
 
+T? tryCast<T>(dynamic value) {
+  try {
+    return (value as T);
+  } on TypeError catch (_) {
+    return null;
+  }
+}
+
 const EMAIL_AUTH_SALT = '4e1cc573ed8cd48a19beb6ec6729be6c7a19c91a40c6483be3c9d671b5fbae9a';
 const PASS_AUTH_SALT = 'a90b6364315150a39a60d324bfafe6f4444deb15bee194a6d34726c31493dacc';
 const STRETCH_SALT = '509d04a4c27ea9947335e7aa45aabe4fcc2222c87daf0f0520712cefb000124a';

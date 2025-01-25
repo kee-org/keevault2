@@ -57,6 +57,16 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
     }
   }
 
+  void changePassword() async {
+    if (BlocProvider.of<VaultCubit>(context).beginChangePasswordIfPossible()) {
+      await AppConfig.router.navigateTo(
+        context,
+        Routes.changePassword,
+        transition: TransitionType.inFromRight,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
@@ -102,6 +112,13 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
             ));
           }
 
+          accessChildren.add(
+            SimpleSettingsTile(
+              title: str.changePassword,
+              subtitle: str.changePasswordDetail,
+              onTap: changePassword,
+            ),
+          );
           accessChildren.add(SettingsContainer(
             children: [
               Column(children: [
@@ -125,7 +142,6 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
             ],
           ));
 
-          // In future we can add a "Change email address" feature here too
           accountChildren.add(
             SimpleSettingsTile(
               title: str.changeEmailPrefs,
@@ -134,6 +150,15 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                 Routes.changeEmailPrefs,
                 transition: TransitionType.inFromRight,
               ),
+            ),
+          );
+
+          accountChildren.add(
+            SimpleSettingsTile(
+              title: str.changeEmail,
+              onTap: () {
+                BlocProvider.of<VaultCubit>(context).startEmailChange();
+              },
             ),
           );
           accountChildren.add(
@@ -175,11 +200,7 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
           SimpleSettingsTile(
             title: str.changePassword,
             subtitle: str.changePasswordDetail,
-            onTap: () async => await AppConfig.router.navigateTo(
-              context,
-              Routes.changePassword,
-              transition: TransitionType.inFromRight,
-            ),
+            onTap: changePassword,
           ),
         );
       }

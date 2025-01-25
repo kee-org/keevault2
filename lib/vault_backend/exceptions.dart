@@ -99,3 +99,7 @@ class KeeInvalidClaimIssuerException extends KeeException {}
 class KeeSubscriptionExpiredException extends KeeException {}
 
 class KeeAccountUnverifiedException extends KeeException {}
+
+class VaultPasswordChangeException extends KeeException {
+  VaultPasswordChangeException(super.cause);
+}

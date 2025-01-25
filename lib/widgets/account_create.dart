@@ -677,11 +677,6 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     return false;
   }
 
-  Future<void> changePassword(String password) async {
-    final vaultCubit = BlocProvider.of<VaultCubit>(context);
-    await vaultCubit.changeFreeUserPassword(password);
-  }
-
   subscribeUser(User user) async {
     final accountCubit = BlocProvider.of<AccountCubit>(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
