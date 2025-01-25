@@ -72,7 +72,7 @@ dependencies:
   flutter_treeview:
     git:
       url: https://github.com/kee-org/flutter_treeview.git
-      ref: 41356d7a7887cae938f4913f4534e7217387ec0b
+      ref: 2d8b123b1a0404c93434b46e4a3e29fe7621c65d
   flutter_chips_input:
     git:
       url: https://github.com/kee-org/flutter_chips_input.git
