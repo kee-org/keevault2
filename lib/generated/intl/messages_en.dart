@@ -139,6 +139,30 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelExportOrImport": m3,
         "changeCancelSubscription": MessageLookupByLibrary.simpleMessage(
             "Change or Cancel Subscription"),
+        "changeEmail":
+            MessageLookupByLibrary.simpleMessage("Change email address"),
+        "changeEmailConfirmCheckbox": MessageLookupByLibrary.simpleMessage(
+            "I have read the above warnings, mitigated the risks and wish to continue"),
+        "changeEmailInfo1": MessageLookupByLibrary.simpleMessage(
+            "Your email address has a crucial role in the advanced security protections Kee Vault offers. Changing it securely is a far more complex task than for most of the places you might wish to change it. We are happy to finally offer this feature to you but please read the information carefully and don\'t proceed when you are in a rush."),
+        "changeEmailInfo2": MessageLookupByLibrary.simpleMessage(
+            "Your new email address will:"),
+        "changeEmailInfo2a":
+            MessageLookupByLibrary.simpleMessage("become your new sign-in ID"),
+        "changeEmailInfo2b": MessageLookupByLibrary.simpleMessage(
+            "need to be verified to confirm it belongs to you"),
+        "changeEmailInfo3":
+            MessageLookupByLibrary.simpleMessage("We recommend that you:"),
+        "changeEmailInfo3a": MessageLookupByLibrary.simpleMessage(
+            "1) Click the Cancel button below, sign in to Kee Vault again, Export your Vault to a KDBX file and store it somewhere safe as a backup."),
+        "changeEmailInfo3b": MessageLookupByLibrary.simpleMessage(
+            "2) Double check you enter the correct email address - you will need to type it exactly to sign in to your account in a moment."),
+        "changeEmailInfo3c": MessageLookupByLibrary.simpleMessage(
+            "3) Copy/paste what you have entered in the email address box and store somewhere like a note on your phone."),
+        "changeEmailInfo4": MessageLookupByLibrary.simpleMessage(
+            "If you make a mistake, you should be able to regain access to your Vault but in some cases you may need to create a new Kee Vault subscription and import from your previously exported KDBX file - this can result in additional hassle and costs since your old subscription would not be refundable."),
+        "changeEmailInfo5": MessageLookupByLibrary.simpleMessage(
+            "Your password will remain the same throughout the process. If you want to change that too, we first recommend signing in on multiple devices using your new email address and waiting at least an hour."),
         "changeEmailPrefs":
             MessageLookupByLibrary.simpleMessage("Change email preferences"),
         "changePassword":
@@ -161,6 +185,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Colours allow you to categorise your entries in a more simplistic and visual way than Groups or Labels."),
         "confirmItsYou": MessageLookupByLibrary.simpleMessage(
             "To access your passwords please confirm it\'s you"),
+        "continueSigningIn":
+            MessageLookupByLibrary.simpleMessage("Continue signing in"),
         "copySecret": MessageLookupByLibrary.simpleMessage("Copy Secret"),
         "createNewEntry":
             MessageLookupByLibrary.simpleMessage("Create new entry"),
@@ -175,6 +201,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Create secure password"),
         "createVault": MessageLookupByLibrary.simpleMessage("Create my Vault"),
         "creating": MessageLookupByLibrary.simpleMessage("Creating"),
+        "currentEmailAddress":
+            MessageLookupByLibrary.simpleMessage("Current email address"),
         "currentPassword":
             MessageLookupByLibrary.simpleMessage("Current Password"),
         "currentPasswordNotCorrect": MessageLookupByLibrary.simpleMessage(
@@ -217,6 +245,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "done": MessageLookupByLibrary.simpleMessage("Done"),
         "downloading": MessageLookupByLibrary.simpleMessage("Downloading"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "emailChanged":
+            MessageLookupByLibrary.simpleMessage("Email address changed"),
         "emailValidationFail": MessageLookupByLibrary.simpleMessage(
             "Not a valid email address. Please try again."),
         "emailVerification":
@@ -419,6 +449,8 @@ class MessageLookup extends MessageLookupByLibrary {
                 "The URL must match the hostname (domain and subdomains) and port."),
         "move": MessageLookupByLibrary.simpleMessage("Move"),
         "name": MessageLookupByLibrary.simpleMessage("name"),
+        "newEmailAddress":
+            MessageLookupByLibrary.simpleMessage("New email address"),
         "newGroup": MessageLookupByLibrary.simpleMessage("New Group"),
         "newPassword": MessageLookupByLibrary.simpleMessage("New password"),
         "newPasswordRepeat": MessageLookupByLibrary.simpleMessage(
@@ -427,6 +459,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "newUser": MessageLookupByLibrary.simpleMessage("New User"),
         "noEntriesCreateNewInstruction": MessageLookupByLibrary.simpleMessage(
             "You have no password entries yet. Create one using the + button below. If you have passwords already stored in the standard KDBX (KeePass) format you can import them."),
+        "noLongerHaveAccessToUnverifiedEmail":
+            MessageLookupByLibrary.simpleMessage(
+                "No longer have access to your email address?"),
         "notSignedIn": MessageLookupByLibrary.simpleMessage("Not signed in"),
         "notes": MessageLookupByLibrary.simpleMessage("Notes"),
         "occasionalNotifications": MessageLookupByLibrary.simpleMessage(
@@ -637,7 +672,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "urlOpenFailed": MessageLookupByLibrary.simpleMessage(
             "Your device stopped us opening that resource"),
         "useWebAppForOtherSettings": MessageLookupByLibrary.simpleMessage(
-            "You can change your account password and some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault."),
+            "You can change some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault."),
         "user": MessageLookupByLibrary.simpleMessage("user"),
         "userEmail": MessageLookupByLibrary.simpleMessage("User/Email"),
         "vaultStatusActionNeeded":

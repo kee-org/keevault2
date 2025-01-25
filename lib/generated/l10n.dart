@@ -440,10 +440,10 @@ class S {
     );
   }
 
-  /// `You can change your account password and some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault.`
+  /// `You can change some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault.`
   String get useWebAppForOtherSettings {
     return Intl.message(
-      'You can change your account password and some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault.',
+      'You can change some additional settings from the Kee Vault web app by using your web browser to sign in to Kee Vault.',
       name: 'useWebAppForOtherSettings',
       desc: '',
       args: [],
@@ -3835,6 +3835,176 @@ class S {
     return Intl.message(
       'Open in browser',
       name: 'openInBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue signing in`
+  String get continueSigningIn {
+    return Intl.message(
+      'Continue signing in',
+      name: 'continueSigningIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No longer have access to your email address?`
+  String get noLongerHaveAccessToUnverifiedEmail {
+    return Intl.message(
+      'No longer have access to your email address?',
+      name: 'noLongerHaveAccessToUnverifiedEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change email address`
+  String get changeEmail {
+    return Intl.message(
+      'Change email address',
+      name: 'changeEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your email address has a crucial role in the advanced security protections Kee Vault offers. Changing it securely is a far more complex task than for most of the places you might wish to change it. We are happy to finally offer this feature to you but please read the information carefully and don't proceed when you are in a rush.`
+  String get changeEmailInfo1 {
+    return Intl.message(
+      'Your email address has a crucial role in the advanced security protections Kee Vault offers. Changing it securely is a far more complex task than for most of the places you might wish to change it. We are happy to finally offer this feature to you but please read the information carefully and don\'t proceed when you are in a rush.',
+      name: 'changeEmailInfo1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your new email address will:`
+  String get changeEmailInfo2 {
+    return Intl.message(
+      'Your new email address will:',
+      name: 'changeEmailInfo2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `become your new sign-in ID`
+  String get changeEmailInfo2a {
+    return Intl.message(
+      'become your new sign-in ID',
+      name: 'changeEmailInfo2a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `need to be verified to confirm it belongs to you`
+  String get changeEmailInfo2b {
+    return Intl.message(
+      'need to be verified to confirm it belongs to you',
+      name: 'changeEmailInfo2b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We recommend that you:`
+  String get changeEmailInfo3 {
+    return Intl.message(
+      'We recommend that you:',
+      name: 'changeEmailInfo3',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1) Click the Cancel button below, sign in to Kee Vault again, Export your Vault to a KDBX file and store it somewhere safe as a backup.`
+  String get changeEmailInfo3a {
+    return Intl.message(
+      '1) Click the Cancel button below, sign in to Kee Vault again, Export your Vault to a KDBX file and store it somewhere safe as a backup.',
+      name: 'changeEmailInfo3a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `2) Double check you enter the correct email address - you will need to type it exactly to sign in to your account in a moment.`
+  String get changeEmailInfo3b {
+    return Intl.message(
+      '2) Double check you enter the correct email address - you will need to type it exactly to sign in to your account in a moment.',
+      name: 'changeEmailInfo3b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `3) Copy/paste what you have entered in the email address box and store somewhere like a note on your phone.`
+  String get changeEmailInfo3c {
+    return Intl.message(
+      '3) Copy/paste what you have entered in the email address box and store somewhere like a note on your phone.',
+      name: 'changeEmailInfo3c',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `If you make a mistake, you should be able to regain access to your Vault but in some cases you may need to create a new Kee Vault subscription and import from your previously exported KDBX file - this can result in additional hassle and costs since your old subscription would not be refundable.`
+  String get changeEmailInfo4 {
+    return Intl.message(
+      'If you make a mistake, you should be able to regain access to your Vault but in some cases you may need to create a new Kee Vault subscription and import from your previously exported KDBX file - this can result in additional hassle and costs since your old subscription would not be refundable.',
+      name: 'changeEmailInfo4',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your password will remain the same throughout the process. If you want to change that too, we first recommend signing in on multiple devices using your new email address and waiting at least an hour.`
+  String get changeEmailInfo5 {
+    return Intl.message(
+      'Your password will remain the same throughout the process. If you want to change that too, we first recommend signing in on multiple devices using your new email address and waiting at least an hour.',
+      name: 'changeEmailInfo5',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I have read the above warnings, mitigated the risks and wish to continue`
+  String get changeEmailConfirmCheckbox {
+    return Intl.message(
+      'I have read the above warnings, mitigated the risks and wish to continue',
+      name: 'changeEmailConfirmCheckbox',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current email address`
+  String get currentEmailAddress {
+    return Intl.message(
+      'Current email address',
+      name: 'currentEmailAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New email address`
+  String get newEmailAddress {
+    return Intl.message(
+      'New email address',
+      name: 'newEmailAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email address changed`
+  String get emailChanged {
+    return Intl.message(
+      'Email address changed',
+      name: 'emailChanged',
       desc: '',
       args: [],
     );

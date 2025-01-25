@@ -36,7 +36,8 @@ class RootWidgetState extends State<RootWidget> {
     await BlocProvider.of<AutofillCubit>(context).refresh();
     await accountCubit.startup();
     final AccountState state = accountCubit.state;
-    if (state is AccountChosen) {
+    //TODO:f: need more exceptions like for email verification etc?
+    if (state is AccountChosen && state is! AccountEmailChangeRequested) {
       await vaultCubit.startup(state.user, null);
     } else if (state is AccountLocalOnly) {
       await vaultCubit.startupFreeMode(null);
