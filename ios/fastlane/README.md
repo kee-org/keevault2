@@ -13,6 +13,17 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
+### prod_build_only
+
+```sh
+[bundle exec] fastlane prod_build_only
+```
+
+Build a new production package but do nothing with it
+
+----
+
+
 ## iOS
 
 ### ios iapdevcert
@@ -62,6 +73,14 @@ Push a new prod build to testflight
 ```
 
 Push a new beta build to local device
+
+### ios beta_build_only
+
+```sh
+[bundle exec] fastlane ios beta_build_only
+```
+
+Build a new beta package but do nothing with it
 
 ----
 

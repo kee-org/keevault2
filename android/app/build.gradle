@@ -82,7 +82,7 @@ kotlin {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     compileOptions {
         sourceCompatibility = 17
@@ -115,7 +115,7 @@ android {
         applicationId "com.keevault.keevault"
         applicationIdSuffix idSuffix
         minSdkVersion 29
-        targetSdk 34
+        targetSdk 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         resValue "string", "app_name", "Kee Vault" + nameSuffix
