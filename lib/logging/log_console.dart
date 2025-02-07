@@ -424,7 +424,7 @@ class LogConsoleState extends State<LogConsole> {
     for (var file in files) {
       var filename = path.relative(file.path, from: directory.path);
       final fileStream = InputFileStream(file.path);
-      final af = ArchiveFile.stream(filename, file.lengthSync(), fileStream);
+      final af = ArchiveFile.stream(filename, fileStream);
       af.lastModTime = dates[file.path]!.millisecondsSinceEpoch ~/ 1000;
       archiveFiles.add(af);
     }
