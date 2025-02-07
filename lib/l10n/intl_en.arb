@@ -394,6 +394,6 @@
   "changeEmailConfirmCheckbox": "I have read the above warnings, mitigated the risks and wish to continue",
   "currentEmailAddress": "Current email address",
   "newEmailAddress": "New email address",
-  "emailChanged": "Email address changed"
-
+  "emailChanged": "Email address changed",
+  "changePasswordWarning": "You may lose data if you are signed in on any other devices now. Please cancel (press back) and then sign out of all other devices, including the Kee Vault 1 web app. Then wait a minute and start this process again."
 }

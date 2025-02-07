@@ -39,6 +39,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
     final theme = Theme.of(context);
     return BlocBuilder<VaultCubit, VaultState>(
       builder: (context, state) {
+        final accountCubit = BlocProvider.of<AccountCubit>(context);
         return ColouredSafeArea(
           child: Scaffold(
             key: widget.key,
@@ -61,6 +62,11 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                             style: theme.textTheme.titleLarge,
                           ),
                         ),
+                        if (accountCubit.currentUserIfIdKnown != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(str.changePasswordWarning),
+                          ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(str.enterOldPassword),
