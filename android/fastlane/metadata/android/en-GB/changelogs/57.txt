@@ -1,0 +1,2 @@
+* Kee Vault subscribers can now change their password or email address from within this app
+* Updated Flutter and other dependencies
