@@ -104,10 +104,10 @@ dependencies:
   flutter_file_dialog: ^3.0.2
   base32: ^2.1.3
   flutter_speed_dial: ^7.0.0
-  receive_intent: #^0.2.5
-    git:
-      url: https://github.com/kee-org/receive_intent
-      ref: master
+  receive_intent: ^0.2.7
+    # git:
+    #   url: https://github.com/MoovBuilder983/receive_intent
+    #   ref: master
   platform: ^3.1.5
   email_validator: ^3.0.0
   convert: ^3.1.1
