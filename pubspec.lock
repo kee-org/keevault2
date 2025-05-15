@@ -93,12 +93,11 @@ packages:
   barcode_scan2:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: "167eef78310ccb12507aa5dae41cd74fa2371cd1"
-      url: "https://github.com/kee-org/barcode_scan2"
-    source: git
-    version: "4.3.3"
+      name: barcode_scan2
+      sha256: "0f3eb7c0a0c80a0f65d3fa88737544fdb6d27127a4fad566e980e626f3fb76e1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.1"
   base32:
     dependency: "direct main"
     description:
@@ -374,12 +373,11 @@ packages:
   flutter_inapp_purchase:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: e443da8e778b67567a73de2419ddf6a50536c5e4
-      url: "https://github.com/kee-org/flutter_inapp_purchase"
-    source: git
-    version: "5.6.0+1"
+      name: flutter_inapp_purchase
+      sha256: "748757271506a3cc7745aa501019c7ce8051d8738b8a36aee12a617d8e9df8d3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.6.2"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:

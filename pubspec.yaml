@@ -115,10 +115,10 @@ dependencies:
   argon2_ffi_base: ^1.1.1
   uuid: ^4.5.1
   clock: ^1.1.1
-  flutter_inapp_purchase: 
-    git:
-      url: https://github.com/kee-org/flutter_inapp_purchase
-      ref: main
+  flutter_inapp_purchase: ^5.6.2
+    # git:
+    #   url: https://github.com/kee-org/flutter_inapp_purchase
+    #   ref: main
   sensitive_clipboard: 
     git:
       url: https://github.com/kee-org/sensitive_clipboard
@@ -130,11 +130,11 @@ dependencies:
       ref: api34
   archive: ^4.0.2
   device_info_plus: ^11.2.2
-  # barcode_scan2: ^4.3.3
-  barcode_scan2:
-    git:
-      url: https://github.com/kee-org/barcode_scan2
-      ref: main
+  barcode_scan2: ^4.5.1
+  # barcode_scan2:
+  #   git:
+  #     url: https://github.com/kee-org/barcode_scan2
+  #     ref: main
 
 dev_dependencies:
   flutter_test:
