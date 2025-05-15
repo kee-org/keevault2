@@ -146,8 +146,8 @@ dev_dependencies:
   #patrol: ^2.2.3
 
 dependency_overrides:
-  kdbx:
-    path: ../kdbx.dart/
+  # kdbx:
+  #   path: ../kdbx.dart/
   # flutter_autofill_service:
   #   path: ../flutter_autofill_service/
   # barcode_scan2:

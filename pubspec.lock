@@ -551,9 +551,11 @@ packages:
   kdbx:
     dependency: "direct main"
     description:
-      path: "../kdbx.dart"
-      relative: true
-    source: path
+      path: "."
+      ref: master
+      resolved-ref: f6e42d8962894d6bad0c4ae80a93c1619a7613cf
+      url: "https://github.com/kee-org/kdbx.dart.git"
+    source: git
     version: "0.6.1"
   leak_tracker:
     dependency: transitive
