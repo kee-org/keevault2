@@ -57,7 +57,7 @@
     "*.dll",
     "**/*.dll"
   ],
-  "dart.flutterSdkPath": ".fvm/versions/3.27.3",
+  "dart.flutterSdkPath": ".fvm/versions/3.29.3",
   "search.exclude": {
     "**/.fvm": true
   },

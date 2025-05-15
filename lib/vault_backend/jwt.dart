@@ -1,8 +1,7 @@
 import 'dart:convert' show base64Url, json, utf8;
-import 'dart:typed_data';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as jwt;
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:keevault/logging/logger.dart';
-import 'package:crypto_keys/crypto_keys.dart';
 import 'claim.dart';
 import 'remote_service.dart';
 
@@ -41,13 +40,13 @@ class JWT {
     try {
       claim = Claim.fromJson(json.decode(claimJSON));
       if (claim.aud != 'client') {
+        // We'll just echo all other tokens back to the server at suitable points
+        // and it's up to the server to validate them.
         return VerificationResult(audience: claim.aud);
       }
     } catch (e) {
       throw KeeInvalidClaimException();
     }
-
-    final data = utf8.encode('${sigParts[0]}.${sigParts[1]}');
 
     // Untrusted source might tell us which key to use but they can't actually pick the
     // key material so we only have to defend against cross-stage server-side breaches
@@ -56,7 +55,7 @@ class JWT {
         (expectedStage == Stage.prod && claim.iss != 'idProd')) {
       throw KeeInvalidClaimIssuerException();
     }
-/* spell-checker: disable */
+    /* spell-checker: disable */
     Map<String, String> jwk;
     switch (claim.iss) {
       case 'idProd':
@@ -86,25 +85,22 @@ class JWT {
       default:
         throw KeeInvalidClaimIssuerException();
     }
-/* spell-checker: enable */
+    /* spell-checker: enable */
 
-    var isValid = false;
     try {
-      final keyPair = KeyPair.fromJwk(jwk);
-      final key = keyPair.publicKey;
-      final verifier = key!.createVerifier(algorithms.signing.ecdsa.sha256);
-      final signature = Signature(base64Url.decode(base64Url.normalize(sigParts[2])));
-      isValid = verifier.verify(Uint8List.fromList(data), signature);
+      final keyPair = jwt.JWTKey.fromJWK(jwk);
+      // If this does not throw an exception then we know the signature is valid
+      final _ = jwt.JWT.verify(sig, keyPair);
+      return ClientVerificationResult(claim: claim, audience: claim.aud);
+    } on jwt.JWTExpiredException {
+      l.w('JWT expired. Token should therefore be ignored.');
+      return ClientVerificationResult(claim: claim, audience: claim.aud);
+    } on jwt.JWTException catch (ex) {
+      l.e('Failed to verify JWT', error: ex.message); // e.g. invalid signature
+      throw KeeInvalidJWTException();
     } catch (e, stacktrace) {
-      l.e('Cryptography error during JWT verification', error: e, stackTrace: stacktrace);
+      l.e('General cryptography error during JWT verification', error: e, stackTrace: stacktrace);
       throw KeeInvalidJWTException();
     }
-
-    if (!isValid) {
-      l.e('JWT signature did not verify');
-      throw KeeInvalidJWTException();
-    }
-
-    return ClientVerificationResult(claim: claim, audience: claim.aud);
   }
 }
