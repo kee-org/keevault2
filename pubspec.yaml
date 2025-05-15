@@ -45,10 +45,10 @@ dependencies:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
       ref: api34
-  flutter_autofill_service:
-    git:
-      url: https://github.com/kee-org/flutter_autofill_service.git
-      ref: master
+  flutter_autofill_service: ^0.20.0
+    # git:
+    #   url: https://github.com/kee-org/flutter_autofill_service.git
+    #   ref: master
   bloc: ^9.0.0
   flutter_bloc: ^9.0.0
   fluro: ^2.0.5
