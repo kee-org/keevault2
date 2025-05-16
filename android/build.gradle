@@ -7,6 +7,12 @@ allprojects {
 
 rootProject.buildDir = '../build'
 subprojects {
+    afterEvaluate {
+        android {
+            compileSdkVersion 35
+        }
+    }
+
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')
 }
