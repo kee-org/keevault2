@@ -69,9 +69,9 @@ class VaultFileVersions {
     );
   }
 
-//  remoteMergeTarget and current are identical at this time because user has just
-// supplied a new password through the UI so can't have any outstanding modifications
-// in the current vault file. There must also be no pending files.
+  //  remoteMergeTarget and current are identical at this time because user has just
+  // supplied a new password through the UI so can't have any outstanding modifications
+  // in the current vault file. There must also be no pending files.
   Future<VaultFileVersions> copyWithNewCredentials(StrengthAssessedCredentials credentialsWithStrength) async {
     final unlockedFile = await unlock(remoteMergeTargetLocked);
     unlockedFile
@@ -79,12 +79,18 @@ class VaultFileVersions {
       ..header.writeKdfParameters(credentialsWithStrength.createNewKdfParameters());
     final kdbxData = await unlockedFile.save();
     return VaultFileVersions(
-        current: unlockedFile,
-        pending: null,
-        pendingLocked: null,
-        remoteMergeTarget: null,
-        remoteMergeTargetLocked:
-            LockedVaultFile(kdbxData, DateTime.now(), credentialsWithStrength.credentials, null, null));
+      current: unlockedFile,
+      pending: null,
+      pendingLocked: null,
+      remoteMergeTarget: null,
+      remoteMergeTargetLocked: LockedVaultFile(
+        kdbxData,
+        DateTime.now(),
+        credentialsWithStrength.credentials,
+        null,
+        null,
+      ),
+    );
   }
 
   @override
@@ -130,7 +136,7 @@ abstract class VaultFile {
 class RemoteVaultFile extends VaultFile {
   final KdbxFile kdbx;
   RemoteVaultFile(this.kdbx, DateTime lastOpenedAt, DateTime persistedAt, String uuid, String? etag, String? versionId)
-      : super(lastOpenedAt, persistedAt, uuid, etag, versionId);
+    : super(lastOpenedAt, persistedAt, uuid, etag, versionId);
 
   static Future<RemoteVaultFile> unlock(LockedVaultFile lockedKdbx) async {
     final kdbx = await VaultFile._kdbxFormat().read(lockedKdbx.kdbxBytes, lockedKdbx.credentials!);
@@ -149,7 +155,7 @@ class RemoteVaultFile extends VaultFile {
 class DemoVaultFile extends VaultFile {
   final KdbxFile kdbx;
   DemoVaultFile(this.kdbx, DateTime lastOpenedAt, DateTime persistedAt, String uuid, String? etag, String? versionId)
-      : super(lastOpenedAt, persistedAt, uuid, etag, versionId);
+    : super(lastOpenedAt, persistedAt, uuid, etag, versionId);
 
   static Future<DemoVaultFile> unlock(LockedVaultFile lockedKdbx) async {
     final kdbx = await VaultFile._kdbxFormat().read(lockedKdbx.kdbxBytes, lockedKdbx.credentials!);
@@ -167,14 +173,8 @@ class DemoVaultFile extends VaultFile {
 
 class LocalVaultFile extends VaultFile {
   VaultFileVersions files;
-  LocalVaultFile(
-    this.files,
-    DateTime lastOpenedAt,
-    DateTime persistedAt,
-    String uuid,
-    String? etag,
-    String? versionId,
-  ) : super(lastOpenedAt, persistedAt, uuid, etag, versionId);
+  LocalVaultFile(this.files, DateTime lastOpenedAt, DateTime persistedAt, String uuid, String? etag, String? versionId)
+    : super(lastOpenedAt, persistedAt, uuid, etag, versionId);
 
   bool get hasPendingChanges => files.hasPendingChanges;
 
@@ -202,11 +202,7 @@ class LocalVaultFile extends VaultFile {
       lockedKdbx = lockedKdbx.copyWith(kdbxBytes: await current.save());
     }
     return LocalVaultFile(
-      VaultFileVersions(
-        current: current,
-        remoteMergeTarget: remoteMergeTarget,
-        remoteMergeTargetLocked: lockedKdbx,
-      ),
+      VaultFileVersions(current: current, remoteMergeTarget: remoteMergeTarget, remoteMergeTargetLocked: lockedKdbx),
       DateTime.now(),
       lockedKdbx.persistedAt,
       current.body.rootGroup.uuid.uuid,

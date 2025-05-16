@@ -42,9 +42,10 @@ class EntryField extends StatefulWidget {
   @override
   // Ignoring because I can't work out why this can be a problem
   // ignore: no_logic_in_create_state
-  State<EntryField> createState() => fieldType == FieldType.otp
-      ? _OtpEntryFieldState()
-      : fieldType == FieldType.checkbox
+  State<EntryField> createState() =>
+      fieldType == FieldType.otp
+          ? _OtpEntryFieldState()
+          : fieldType == FieldType.checkbox
           ? _SwitchEntryFieldState()
           : _EntryTextFieldState();
 }
@@ -75,10 +76,14 @@ class _SwitchEntryFieldState extends _EntryFieldState {
                 value: _checked,
                 onChanged: (bool? value) {
                   final cubit = BlocProvider.of<EntryCubit>(context);
-                  cubit.updateField(null, widget.field.browserModel!.name,
-                      value: value! ? PlainValue('KEEFOX_CHECKED_FLAG_TRUE') : PlainValue('KEEFOX_CHECKED_FLAG_FALSE'),
-                      browserModel: widget.field.browserModel!
-                          .copyWith(value: value ? 'KEEFOX_CHECKED_FLAG_TRUE' : 'KEEFOX_CHECKED_FLAG_FALSE'));
+                  cubit.updateField(
+                    null,
+                    widget.field.browserModel!.name,
+                    value: value! ? PlainValue('KEEFOX_CHECKED_FLAG_TRUE') : PlainValue('KEEFOX_CHECKED_FLAG_FALSE'),
+                    browserModel: widget.field.browserModel!.copyWith(
+                      value: value ? 'KEEFOX_CHECKED_FLAG_TRUE' : 'KEEFOX_CHECKED_FLAG_FALSE',
+                    ),
+                  );
                   _checked = value;
                 },
               ),
@@ -130,17 +135,11 @@ class _SwitchEntryFieldState extends _EntryFieldState {
       mutableMenuItems.addAll([
         PopupMenuItem(
           value: EntryAction.rename,
-          child: ListTile(
-            leading: const Icon(Icons.edit),
-            title: Text(str.tagRename),
-          ),
+          child: ListTile(leading: const Icon(Icons.edit), title: Text(str.tagRename)),
         ),
         PopupMenuItem(
           value: EntryAction.delete,
-          child: ListTile(
-            leading: const Icon(Icons.delete),
-            title: Text(str.detDelEntry),
-          ),
+          child: ListTile(leading: const Icon(Icons.delete), title: Text(str.detDelEntry)),
         ),
       ]);
     }
@@ -199,20 +198,12 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.content_copy),
-                const SizedBox(height: 4),
-                Text(str.alertCopy),
-              ],
+              children: <Widget>[const Icon(Icons.content_copy), const SizedBox(height: 4), Text(str.alertCopy)],
             ),
             Spacer(),
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.content_copy),
-                const SizedBox(height: 4),
-                Text(str.alertCopy),
-              ],
+              children: <Widget>[const Icon(Icons.content_copy), const SizedBox(height: 4), Text(str.alertCopy)],
             ),
           ],
         ),
@@ -225,9 +216,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: <Widget>[
-            Expanded(
-              child: _buildEntryFieldEditor(),
-            ),
+            Expanded(child: _buildEntryFieldEditor()),
             Container(
               width: 48,
               height: 48,
@@ -279,17 +268,14 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
               null,
               widget.field.browserModel!.name,
               value: PlainValue(widget.field.textValue),
-              browserModel:
-                  widget.field.browserModel!.copyWith(type: kdbx.FieldType.Text, value: widget.field.textValue),
+              browserModel: widget.field.browserModel!.copyWith(
+                type: kdbx.FieldType.Text,
+                value: widget.field.textValue,
+              ),
               protect: false,
             );
           } else {
-            cubit.updateField(
-              widget.field.key,
-              null,
-              value: PlainValue(widget.field.textValue),
-              protect: false,
-            );
+            cubit.updateField(widget.field.key, null, value: PlainValue(widget.field.textValue), protect: false);
           }
         } else {
           final cubit = BlocProvider.of<EntryCubit>(context);
@@ -298,8 +284,10 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
               null,
               widget.field.browserModel!.name,
               value: ProtectedValue.fromString(widget.field.textValue),
-              browserModel:
-                  widget.field.browserModel!.copyWith(type: kdbx.FieldType.Password, value: widget.field.textValue),
+              browserModel: widget.field.browserModel!.copyWith(
+                type: kdbx.FieldType.Password,
+                value: widget.field.textValue,
+              ),
               protect: true,
             );
           } else {
@@ -338,60 +326,55 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
     final immutableMenuItems = <PopupMenuEntry<EntryAction>>[
       PopupMenuItem(
         value: EntryAction.copy,
-        child: ListTile(
-          leading: const Icon(Icons.content_copy),
-          title: Text(str.alertCopy),
-        ),
+        child: ListTile(leading: const Icon(Icons.content_copy), title: Text(str.alertCopy)),
       ),
     ];
     final mutableMenuItems = <PopupMenuEntry<EntryAction>>[];
 
     if (widget.field.name == KdbxKeyCommon.KEY_TITLE) {
-      mutableMenuItems.add(PopupMenuItem(
-        value: EntryAction.changeIcon,
-        child: ListTile(
-          leading: const Icon(Icons.check_box_outline_blank_rounded),
-          title: Text(str.detSetIcon),
+      mutableMenuItems.add(
+        PopupMenuItem(
+          value: EntryAction.changeIcon,
+          child: ListTile(leading: const Icon(Icons.check_box_outline_blank_rounded), title: Text(str.detSetIcon)),
         ),
-      ));
+      );
     }
 
     if (widget.field.name == KdbxKeyCommon.KEY_URL && widget.field.textValue.isNotEmpty) {
-      mutableMenuItems.add(PopupMenuItem(
-        value: EntryAction.openInBrowser,
-        child: ListTile(
-          leading: const Icon(Icons.open_in_new),
-          title: Text(str.openInBrowser),
+      mutableMenuItems.add(
+        PopupMenuItem(
+          value: EntryAction.openInBrowser,
+          child: ListTile(leading: const Icon(Icons.open_in_new), title: Text(str.openInBrowser)),
         ),
-      ));
+      );
     }
 
     if (widget.field.protectionChangeable) {
-      mutableMenuItems.add(PopupMenuItem(
-        value: EntryAction.protect,
-        child: ListTile(
-          leading: Icon(_isProtected ? Icons.no_encryption : Icons.enhanced_encryption),
-          title: Text(_isProtected ? str.unprotectField : str.protectField),
+      mutableMenuItems.add(
+        PopupMenuItem(
+          value: EntryAction.protect,
+          child: ListTile(
+            leading: Icon(_isProtected ? Icons.no_encryption : Icons.enhanced_encryption),
+            title: Text(_isProtected ? str.unprotectField : str.protectField),
+          ),
         ),
-      ));
+      );
     }
     if (widget.field.keyChangeable) {
-      mutableMenuItems.add(PopupMenuItem(
-        value: EntryAction.rename,
-        child: ListTile(
-          leading: const Icon(Icons.edit),
-          title: Text(str.tagRename),
+      mutableMenuItems.add(
+        PopupMenuItem(
+          value: EntryAction.rename,
+          child: ListTile(leading: const Icon(Icons.edit), title: Text(str.tagRename)),
         ),
-      ));
+      );
     }
     if (widget.field.keyChangeable || widget.field.isTotp) {
-      mutableMenuItems.add(PopupMenuItem(
-        value: EntryAction.delete,
-        child: ListTile(
-          leading: const Icon(Icons.delete),
-          title: Text(str.detDelEntry),
+      mutableMenuItems.add(
+        PopupMenuItem(
+          value: EntryAction.delete,
+          child: ListTile(leading: const Icon(Icons.delete), title: Text(str.detDelEntry)),
         ),
-      ));
+      );
     }
 
     if (mutableMenuItems.length > 1) {
@@ -411,22 +394,20 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
     final isSensitive = widget.field.value is ProtectedValue || widget.field.protect == true;
     final userNotified = await KeeClipboard.set(widget.field.textValue, isSensitive);
     if (!userNotified) {
-      sm.showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(str.detFieldCopied),
-          ],
+      sm.showSnackBar(
+        SnackBar(
+          content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.detFieldCopied)]),
+          duration: Duration(seconds: 3),
         ),
-        duration: Duration(seconds: 3),
-      ));
+      );
     }
     return true;
   }
 
-  Widget _buildEntryFieldEditor() => _isValueObscured && widget.field.textValue.isEmpty == false
-      ? _buildObscuredEntryFieldEditor()
-      : _buildStringEntryFieldEditor();
+  Widget _buildEntryFieldEditor() =>
+      _isValueObscured && widget.field.textValue.isEmpty == false
+          ? _buildObscuredEntryFieldEditor()
+          : _buildStringEntryFieldEditor();
 
   Widget _buildObscuredEntryFieldEditor() {
     return ObscuredEntryFieldEditor(
@@ -448,9 +429,10 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
   Widget _buildStringEntryFieldEditor() {
     return StringEntryFieldEditor(
       onChange: (value) {
-        final StringValue? newValue = value == null
-            ? null
-            : _isProtected
+        final StringValue? newValue =
+            value == null
+                ? null
+                : _isProtected
                 ? ProtectedValue.fromString(value)
                 : PlainValue(value);
         final cubit = BlocProvider.of<EntryCubit>(context);
@@ -470,11 +452,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
             // Flutter can call onChange when no changes have occurred!
             return;
           }
-          cubit.updateField(
-            widget.field.key,
-            null,
-            value: newValue,
-          );
+          cubit.updateField(widget.field.key, null, value: newValue);
         }
       },
       fieldKey: widget.field.key,
@@ -574,27 +552,21 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
     final str = S.of(context);
     final userNotified = await KeeClipboard.set(_currentOtp, true);
     if (!userNotified) {
-      sm.showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(str.detFieldCopied),
-          ],
+      sm.showSnackBar(
+        SnackBar(
+          content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.detFieldCopied)]),
+          duration: Duration(seconds: 3),
         ),
-        duration: Duration(seconds: 3),
-      ));
+      );
     }
     return true;
   }
 
   @override
-  Widget _buildEntryFieldEditor() => _errorMessage != null
-      ? Text('$_errorMessage')
-      : OtpFieldEntryEditor(
-          period: _period,
-          elapsed: _elapsed,
-          otpCode: _currentOtp,
-        );
+  Widget _buildEntryFieldEditor() =>
+      _errorMessage != null
+          ? Text('$_errorMessage')
+          : OtpFieldEntryEditor(period: _period, elapsed: _elapsed, otpCode: _currentOtp);
 
   @override
   Future<void> _handleMenuEntrySelected(BuildContext context, EntryAction entryAction) async {
@@ -604,15 +576,12 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
       final str = S.of(context);
       final userNotified = await KeeClipboard.set(widget.field.textValue, true);
       if (!userNotified) {
-        sm.showSnackBar(SnackBar(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(str.detFieldCopied),
-            ],
+        sm.showSnackBar(
+          SnackBar(
+            content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.detFieldCopied)]),
+            duration: Duration(seconds: 3),
           ),
-          duration: Duration(seconds: 3),
-        ));
+        );
       }
       return;
     }
@@ -624,20 +593,17 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
     final str = S.of(context);
     return super
         ._buildMenuEntries(context)
-        .where((item) =>
-            item is PopupMenuItem &&
-            const [
-              EntryAction.delete,
-              EntryAction.copy,
-            ].contains((item as PopupMenuItem).value))
+        .where(
+          (item) =>
+              item is PopupMenuItem &&
+              const [EntryAction.delete, EntryAction.copy].contains((item as PopupMenuItem).value),
+        )
         .followedBy([
-      PopupMenuItem(
-        value: EntryAction.copyRawData,
-        child: ListTile(
-          leading: Icon(Icons.code),
-          title: Text(str.copySecret),
-        ),
-      )
-    ]).toList();
+          PopupMenuItem(
+            value: EntryAction.copyRawData,
+            child: ListTile(leading: Icon(Icons.code), title: Text(str.copySecret)),
+          ),
+        ])
+        .toList();
   }
 }

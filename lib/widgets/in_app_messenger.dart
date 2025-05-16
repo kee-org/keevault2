@@ -54,7 +54,10 @@ class InAppMessengerWidget extends InheritedWidget {
       final accountCubit = BlocProvider.of<AccountCubit>(context);
       final autofillState = BlocProvider.of<AutofillCubit>(context).state;
       if (!iam.isSuppressed(
-          accountCubit, (autofillState is! AutofillAvailable || autofillState.enabled), interactionState)) {
+        accountCubit,
+        (autofillState is! AutofillAvailable || autofillState.enabled),
+        interactionState,
+      )) {
         ScaffoldMessenger.of(context)
           ..removeCurrentMaterialBanner()
           ..showMaterialBanner(_buildMaterialBanner(iamName, context));
@@ -105,7 +108,8 @@ class InAppMessengerWidget extends InheritedWidget {
             final waitForDays = await BannerDismissDialog().show(context) ?? -1;
             l.d('Will wait for $waitForDays days until reshowing this message');
             await appSettings.iamEmailSignupSuppressUntil(
-                waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)));
+              waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)),
+            );
             sm.hideCurrentMaterialBanner();
           },
           child: Text(str.alertNo.toUpperCase()),
@@ -121,18 +125,9 @@ class InAppMessengerWidget extends InheritedWidget {
       forceActionsBelow: true,
       content: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(str.makeMoreChangesOrSave1),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(str.makeMoreChangesOrSave2),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(str.makeMoreChangesOrSave3),
-          ),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.makeMoreChangesOrSave1)),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.makeMoreChangesOrSave2)),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.makeMoreChangesOrSave3)),
         ],
       ),
       actions: <Widget>[
@@ -174,7 +169,8 @@ class InAppMessengerWidget extends InheritedWidget {
             final waitForDays = await BannerDismissDialog().show(context) ?? -1;
             l.d('Will wait for $waitForDays days until reshowing this message');
             await appSettings.iamAutofillDisabledSuppressUntil(
-                waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)));
+              waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)),
+            );
             sm.hideCurrentMaterialBanner();
           },
           child: Text(str.alertNo.toUpperCase()),
@@ -191,14 +187,8 @@ class InAppMessengerWidget extends InheritedWidget {
       forceActionsBelow: true,
       content: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(str.bannerMsgSaving1),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(str.bannerMsgSaving2),
-          ),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.bannerMsgSaving1)),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.bannerMsgSaving2)),
         ],
       ),
       actions: <Widget>[

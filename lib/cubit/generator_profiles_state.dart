@@ -24,6 +24,5 @@ class GeneratorProfilesEnabled extends GeneratorProfilesState {
 
 class GeneratorProfilesCreating extends GeneratorProfilesEnabled {
   final PasswordGeneratorProfile newProfile;
-  GeneratorProfilesCreating(
-      super.profileSettings, super.current, this.newProfile);
+  GeneratorProfilesCreating(super.profileSettings, super.current, this.newProfile);
 }

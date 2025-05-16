@@ -1,13 +1,6 @@
 part of 'sort_cubit.dart';
 
-enum SortMode {
-  titleAsc,
-  titleDesc,
-  modifiedAsc,
-  modifiedDesc,
-  createdAsc,
-  createdDesc,
-}
+enum SortMode { titleAsc, titleDesc, modifiedAsc, modifiedDesc, createdAsc, createdDesc }
 
 @immutable
 abstract class SortState {}
@@ -33,11 +26,13 @@ class SortedState extends SortState {
         return (KdbxEntry a, KdbxEntry b) => (b.getString(KdbxKeyCommon.TITLE)?.getText().toLowerCase() ?? '')
             .compareTo((a.getString(KdbxKeyCommon.TITLE)?.getText().toLowerCase() ?? ''));
       case SortMode.modifiedAsc:
-        return (KdbxEntry a, KdbxEntry b) => (a.times.lastModificationTime.get() ?? DateTime.now())
-            .compareTo(b.times.lastModificationTime.get() ?? DateTime.now());
+        return (KdbxEntry a, KdbxEntry b) => (a.times.lastModificationTime.get() ?? DateTime.now()).compareTo(
+          b.times.lastModificationTime.get() ?? DateTime.now(),
+        );
       case SortMode.modifiedDesc:
-        return (KdbxEntry a, KdbxEntry b) => (b.times.lastModificationTime.get() ?? DateTime.now())
-            .compareTo(a.times.lastModificationTime.get() ?? DateTime.now());
+        return (KdbxEntry a, KdbxEntry b) => (b.times.lastModificationTime.get() ?? DateTime.now()).compareTo(
+          a.times.lastModificationTime.get() ?? DateTime.now(),
+        );
       case SortMode.createdAsc:
         return (KdbxEntry a, KdbxEntry b) =>
             (a.times.creationTime.get() ?? DateTime.now()).compareTo(b.times.creationTime.get() ?? DateTime.now());

@@ -9,12 +9,12 @@ class SRP1 {
   List<String> kms;
 
   SRP1.fromJson(Map<String, dynamic> data)
-      : costFactor = data['costFactor'],
-        costTarget = data['costTarget'],
-        B = data['B'],
-        authId = data['authId'],
-        salt = data['salt'],
-        kms = List<String>.from(data['kms']);
+    : costFactor = data['costFactor'],
+      costTarget = data['costTarget'],
+      B = data['B'],
+      authId = data['authId'],
+      salt = data['salt'],
+      kms = List<String>.from(data['kms']);
 }
 
 class SRP2 {
@@ -25,8 +25,8 @@ class SRP2 {
   AccountVerificationStatus verificationStatus;
 
   SRP2.fromJson(Map<String, dynamic> data)
-      : proof = data['proof'],
-        authId = data['authId'],
-        verificationStatus = AccountVerificationStatus.values[data['verificationStatus']],
-        JWTs = List<String>.from(data['JWTs']);
+    : proof = data['proof'],
+      authId = data['authId'],
+      verificationStatus = AccountVerificationStatus.values[data['verificationStatus']],
+      JWTs = List<String>.from(data['JWTs']);
 }

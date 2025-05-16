@@ -7,17 +7,10 @@ class URLlist {
   String dl;
   String st;
 
-  URLlist.fromJson(Map<String, dynamic> data)
-      : ul = data['ul'],
-        dl = data['dl'],
-        st = data['st'];
+  URLlist.fromJson(Map<String, dynamic> data) : ul = data['ul'], dl = data['dl'], st = data['st'];
 
   Map<String, dynamic> toMap() {
-    return {
-      'ul': ul,
-      'dl': dl,
-      'st': st,
-    };
+    return {'ul': ul, 'dl': dl, 'st': st};
   }
 }
 
@@ -30,14 +23,15 @@ class StorageItem {
   URLlist? urls;
   String? name;
 
-  StorageItem(
-      {required this.userId,
-      this.id,
-      this.location,
-      this.name,
-      required this.schemaVersion,
-      required this.type,
-      this.urls});
+  StorageItem({
+    required this.userId,
+    this.id,
+    this.location,
+    this.name,
+    required this.schemaVersion,
+    required this.type,
+    this.urls,
+  });
 
   static StorageItem fromUserId(String userId) {
     return StorageItem(userId: userId, schemaVersion: 1, type: StorageType.keeS3);
@@ -48,13 +42,13 @@ class StorageItem {
   }
 
   StorageItem.fromJson(Map<String, dynamic> data)
-      : id = data['id'],
-        name = data['name'],
-        location = data['location'],
-        type = data['type'],
-        userId = data['emailHashed'],
-        schemaVersion = data['schemaVersion'],
-        urls = URLlist.fromJson(data['urls']);
+    : id = data['id'],
+      name = data['name'],
+      location = data['location'],
+      type = data['type'],
+      userId = data['emailHashed'],
+      schemaVersion = data['schemaVersion'],
+      urls = URLlist.fromJson(data['urls']);
 
   Map<String, dynamic> toMap() {
     return {

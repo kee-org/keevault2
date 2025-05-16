@@ -14,10 +14,10 @@ import 'field.dart';
 
 class EntryListItemViewModel {
   EntryListItemViewModel(this.entry)
-      : label = entry.label,
-        labelComparable = entry.label.toLowerCase(),
-        groupNames = _createGroupNames(entry.parent),
-        color = entry.color;
+    : label = entry.label,
+      labelComparable = entry.label.toLowerCase(),
+      groupNames = _createGroupNames(entry.parent),
+      color = entry.color;
 
   final KdbxEntry entry;
   KeeVaultURL? _keeVaultUrl;
@@ -30,7 +30,7 @@ class EntryListItemViewModel {
   final List<String> groupNames;
   final EntryColor? color;
 
-//TODO:f Look for KeeFormField text items if no username exists
+  //TODO:f Look for KeeFormField text items if no username exists
   get usernameCustom => entry.getString(KdbxKeyCommon.USER_NAME)?.getText().trim() ?? '';
   get username => usernameCustom;
 
@@ -39,17 +39,12 @@ class EntryListItemViewModel {
 
   Widget getIcon(double size, bool isDark) {
     return entry.customIcon != null
-        ? Image.memory(
-            entry.customIcon!.data,
-            width: size,
-            height: size,
-            fit: BoxFit.contain,
-          )
+        ? Image.memory(entry.customIcon!.data, width: size, height: size, fit: BoxFit.contain)
         : Icon(
-            PredefinedIcons.iconFor(entry.icon.get()!),
-            color: isDark ? entryColorsContrast[color] : entryColors[color],
-            size: size,
-          );
+          PredefinedIcons.iconFor(entry.icon.get()!),
+          color: isDark ? entryColorsContrast[color] : entryColors[color],
+          size: size,
+        );
   }
 }
 
@@ -103,22 +98,26 @@ class EntryViewModel {
     final userBrowserField = settings.fields?.firstWhereOrNull((field) => field.valuePath == 'UserName');
     final passBrowserField = settings.fields?.firstWhereOrNull((field) => field.valuePath == 'Password');
 
-    final fields = entry.stringEntries
-        .where((me) => !['KPRPC JSON', 'TOTP Seed', 'TOTP Settings', 'OTPAuth'].contains(me.key.key))
-        .map((me) {
-          if (me.key == KdbxKeyCommon.USER_NAME) {
-            return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), userBrowserField);
-          } else if (me.key == KdbxKeyCommon.PASSWORD) {
-            return FieldViewModel.fromCustomAndBrowser(
-                me.key, me.value ?? ProtectedValue.fromString(''), passBrowserField);
-          } else {
-            // Any other Kdbx string field does not have any browser config
-            // (at least until we add first class support for OTPs)
-            return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), null);
-          }
-        })
-        .where((vm) => vm.localisedCommonName.isNotEmpty)
-        .toList();
+    final fields =
+        entry.stringEntries
+            .where((me) => !['KPRPC JSON', 'TOTP Seed', 'TOTP Settings', 'OTPAuth'].contains(me.key.key))
+            .map((me) {
+              if (me.key == KdbxKeyCommon.USER_NAME) {
+                return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), userBrowserField);
+              } else if (me.key == KdbxKeyCommon.PASSWORD) {
+                return FieldViewModel.fromCustomAndBrowser(
+                  me.key,
+                  me.value ?? ProtectedValue.fromString(''),
+                  passBrowserField,
+                );
+              } else {
+                // Any other Kdbx string field does not have any browser config
+                // (at least until we add first class support for OTPs)
+                return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), null);
+              }
+            })
+            .where((vm) => vm.localisedCommonName.isNotEmpty)
+            .toList();
 
     for (var key in [
       KdbxKeyCommon.TITLE,
@@ -155,15 +154,20 @@ class EntryViewModel {
     // Since we can't see a situation where there are duplicates within the JSON
     // settings field list, we can keep the deduplication algorithm simple.
     fields.addAll(
-        settings.fields?.where((field) => field.valuePath != 'UserName' && field.valuePath != 'Password').map((field) {
-              if (fields.any((f) => f.fieldKey == field.name)) {
-                l.w('Duplicated field key found: ${field.name}. Will force deduplication.');
-                field =
-                    field.copyWith(name: '${field.name} - deduplicated at ${DateTime.now().millisecondsSinceEpoch}');
-              }
-              return FieldViewModel.fromCustomAndBrowser(null, null, field);
-            }).where((vm) => vm.localisedCommonName.isNotEmpty) ??
-            []);
+      settings.fields
+              ?.where((field) => field.valuePath != 'UserName' && field.valuePath != 'Password')
+              .map((field) {
+                if (fields.any((f) => f.fieldKey == field.name)) {
+                  l.w('Duplicated field key found: ${field.name}. Will force deduplication.');
+                  field = field.copyWith(
+                    name: '${field.name} - deduplicated at ${DateTime.now().millisecondsSinceEpoch}',
+                  );
+                }
+                return FieldViewModel.fromCustomAndBrowser(null, null, field);
+              })
+              .where((vm) => vm.localisedCommonName.isNotEmpty) ??
+          [],
+    );
 
     final fixedSortIndexes = [
       KdbxKeyCommon.TITLE,
@@ -232,17 +236,12 @@ class EntryViewModel {
 
   Widget getIcon(double size, bool isDark) {
     return customIcon != null
-        ? Image.memory(
-            customIcon!.data,
-            width: size,
-            height: size,
-            fit: BoxFit.contain,
-          )
+        ? Image.memory(customIcon!.data, width: size, height: size, fit: BoxFit.contain)
         : Icon(
-            PredefinedIcons.iconFor(icon),
-            color: isDark ? entryColorsContrast[color] : entryColors[color],
-            size: size,
-          );
+          PredefinedIcons.iconFor(icon),
+          color: isDark ? entryColorsContrast[color] : entryColors[color],
+          size: size,
+        );
   }
 
   static String? _addBase32Padding(String? base32data) {
@@ -379,19 +378,19 @@ class EditEntryViewModel extends EntryViewModel {
     List<MapEntry<KdbxKey, KdbxBinary>> binaryMapEntries,
     this.history,
   ) : super(
-          customIcon,
-          icon,
-          uuid,
-          fields,
-          label,
-          color,
-          browserSettings,
-          tags,
-          createdTime,
-          modifiedTime,
-          androidPackageNames,
-          binaryMapEntries,
-        );
+        customIcon,
+        icon,
+        uuid,
+        fields,
+        label,
+        color,
+        browserSettings,
+        tags,
+        createdTime,
+        modifiedTime,
+        androidPackageNames,
+        binaryMapEntries,
+      );
 
   factory EditEntryViewModel.create(KdbxGroup group) {
     const label = '';
@@ -399,8 +398,10 @@ class EditEntryViewModel extends EntryViewModel {
     const customIcon = null;
     const color = null;
     const uuid = null;
-    BrowserEntrySettings settings = BrowserEntrySettings.fromMap(null,
-        minimumMatchAccuracy: group.file!.body.meta.browserSettings.defaultMatchAccuracy);
+    BrowserEntrySettings settings = BrowserEntrySettings.fromMap(
+      null,
+      minimumMatchAccuracy: group.file!.body.meta.browserSettings.defaultMatchAccuracy,
+    );
     final tags = <Tag>[];
     final created = DateTime.now();
     final modified = created;
@@ -414,8 +415,23 @@ class EditEntryViewModel extends EntryViewModel {
       FieldViewModel.fromCustomAndBrowser(KdbxKeyCommon.NOTES, PlainValue(''), null),
     ];
 
-    return EditEntryViewModel(customIcon, icon, uuid, fields, true, group, label, color, settings, tags, created,
-        modified, androidPackageNames, [], []);
+    return EditEntryViewModel(
+      customIcon,
+      icon,
+      uuid,
+      fields,
+      true,
+      group,
+      label,
+      color,
+      settings,
+      tags,
+      created,
+      modified,
+      androidPackageNames,
+      [],
+      [],
+    );
   }
   factory EditEntryViewModel.fromKdbxEntry(KdbxEntry entry) {
     final vm = EntryViewModel._kdbxEntryToViewModel(entry);
@@ -538,16 +554,9 @@ class EditEntryViewModel extends EntryViewModel {
     );
   }
 
-  MapEntry<KdbxKey, KdbxBinary> createBinaryForCopy({
-    required String name,
-    required Uint8List bytes,
-  }) {
+  MapEntry<KdbxKey, KdbxBinary> createBinaryForCopy({required String name, required Uint8List bytes}) {
     final key = _uniqueBinaryName(path.basename(name));
-    final binary = KdbxBinary(
-      isInline: false,
-      isProtected: false,
-      value: bytes,
-    );
+    final binary = KdbxBinary(isInline: false, isProtected: false, value: bytes);
     return MapEntry(key, binary);
   }
 }

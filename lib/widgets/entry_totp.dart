@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class OtpFieldEntryEditor extends StatelessWidget {
-  const OtpFieldEntryEditor({
-    super.key,
-    required this.otpCode,
-    required this.elapsed,
-    required this.period,
-  });
+  const OtpFieldEntryEditor({super.key, required this.otpCode, required this.elapsed, required this.period});
 
   final String otpCode;
   final int elapsed;

@@ -56,17 +56,14 @@ class LocalVaultRepository {
       return null;
     }
     if (kdbxData.isEmpty) return null;
-    return LockedVaultFile(
-      kdbxData,
-      persistedDate,
-      null,
-      null,
-      null,
-    );
+    return LockedVaultFile(kdbxData, persistedDate, null, null, null);
   }
 
-  Future<LocalVaultFile?> _loadLocalFile(Future<CredentialLookupResult> Function() getCredentials, String fileName,
-      [DateTime? ifNewerThan]) async {
+  Future<LocalVaultFile?> _loadLocalFile(
+    Future<CredentialLookupResult> Function() getCredentials,
+    String fileName, [
+    DateTime? ifNewerThan,
+  ]) async {
     final file = await _loadFile(fileName, ifNewerThan);
     if (file == null) {
       return null;
@@ -78,8 +75,11 @@ class LocalVaultRepository {
     return await LocalVaultFile.unlock(file.copyWith(credentials: credsLookupResult.credentials));
   }
 
-  Future<RemoteVaultFile?> _loadRemoteFile(Future<CredentialLookupResult> Function() getCredentials, String fileName,
-      [DateTime? ifNewerThan]) async {
+  Future<RemoteVaultFile?> _loadRemoteFile(
+    Future<CredentialLookupResult> Function() getCredentials,
+    String fileName, [
+    DateTime? ifNewerThan,
+  ]) async {
     final file = await _loadFile(fileName, ifNewerThan);
     if (file == null) {
       return null;
@@ -132,23 +132,14 @@ class LocalVaultRepository {
     // await qu.saveQuickUnlockFileCredentials(credentials,
     //     DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await kdbx.kdfCacheKey);
 
-    final lockedKdbx = LockedVaultFile(
-      saved,
-      persistedDate,
-      credentials,
-      null,
-      null,
-    );
+    final lockedKdbx = LockedVaultFile(saved, persistedDate, credentials, null, null);
     // Potentially could use the output of create() above instead of unlocking again but
     // this extra work does also act as a sanity check to fail early if something has
     // gone wrong with the credentials or initial KDBX storage so the one-off performance
     // gain is probably not worth even thinking about in any more detail.
     final loadedKdbx = await kdbxFormat().read(saved, credentials);
     return LocalVaultFile(
-      VaultFileVersions(
-        current: loadedKdbx,
-        remoteMergeTargetLocked: lockedKdbx,
-      ),
+      VaultFileVersions(current: loadedKdbx, remoteMergeTargetLocked: lockedKdbx),
       DateTime.now(),
       lockedKdbx.persistedAt,
       loadedKdbx.body.rootGroup.uuid.uuid,
@@ -175,8 +166,11 @@ class LocalVaultRepository {
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
-    await qu.saveQuickUnlockFileCredentials(credentials,
-        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await file.kdfCacheKey);
+    await qu.saveQuickUnlockFileCredentials(
+      credentials,
+      DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+      await file.kdfCacheKey,
+    );
   }
 
   Future<VaultFileVersions> merge(User user, LocalVaultFile local, RemoteVaultFile remote) async {
@@ -195,7 +189,9 @@ class LocalVaultRepository {
       kdbxData = await kdbxFormat().save(firstKdbx);
     } on KdbxUnsupportedException catch (e) {
       final backupFilename = '${directory.path}/${user.idB64url}/backup-${DateTime.now().millisecondsSinceEpoch}.kdbx';
-      l.w('Merge from remote failed! Most likely this is due to the user resetting their account on another device and then signing in to this device AND they reset their password to the same as it was before. We will create a backup file at $backupFilename just in case manual recovery becomes critical. Detailed reason: ${e.hint}');
+      l.w(
+        'Merge from remote failed! Most likely this is due to the user resetting their account on another device and then signing in to this device AND they reset their password to the same as it was before. We will create a backup file at $backupFilename just in case manual recovery becomes critical. Detailed reason: ${e.hint}',
+      );
       await file.copy(backupFilename);
       finalKdbx = secondKdbx;
       kdbxData = await kdbxFormat().save(secondKdbx);
@@ -231,13 +227,12 @@ class LocalVaultRepository {
   }
 
   Future<RemoteVaultFile?> loadStagedUpdate(
-      User user, Future<CredentialLookupResult> Function() getCredentials, DateTime ifNewerThan) async {
+    User user,
+    Future<CredentialLookupResult> Function() getCredentials,
+    DateTime ifNewerThan,
+  ) async {
     final directory = await getStorageDirectory();
-    return await _loadRemoteFile(
-      getCredentials,
-      '${directory.path}/${user.idB64url}/staged.kdbx',
-      ifNewerThan,
-    );
+    return await _loadRemoteFile(getCredentials, '${directory.path}/${user.idB64url}/staged.kdbx', ifNewerThan);
   }
 
   Future<void> removeStagedUpdate(User user) async {
@@ -291,32 +286,34 @@ class LocalVaultRepository {
   }
 
   Future<KdbxFile> beforeSave(
-      KdbxFile file, Future<KdbxFile> Function(KdbxFile vaultFile) applyAndConsumePendingAutofillAssociations) async {
+    KdbxFile file,
+    Future<KdbxFile> Function(KdbxFile vaultFile) applyAndConsumePendingAutofillAssociations,
+  ) async {
     final fileWithAutofill = await applyAndConsumePendingAutofillAssociations(file);
     fileWithAutofill.body.meta.keeVaultSettings = SyncedAppSettings.export(fileWithAutofill.body.meta.keeVaultSettings);
     return fileWithAutofill;
   }
 
-  Future<LocalVaultFile> save(User? user, LocalVaultFile vault,
-      Future<KdbxFile> Function(KdbxFile vaultFile) applyAndConsumePendingAutofillAssociations) async {
+  Future<LocalVaultFile> save(
+    User? user,
+    LocalVaultFile vault,
+    Future<KdbxFile> Function(KdbxFile vaultFile) applyAndConsumePendingAutofillAssociations,
+  ) async {
     final directory = await getStorageDirectory();
     final userFolder = user?.idB64url ?? 'local_user';
     final file = File('${directory.path}/$userFolder/current.kdbx');
     (await vault.files.pending)?.merge(vault.files.current);
     final kdbxToSave = await beforeSave(
-        (await vault.files.pending) ?? vault.files.current, applyAndConsumePendingAutofillAssociations);
+      (await vault.files.pending) ?? vault.files.current,
+      applyAndConsumePendingAutofillAssociations,
+    );
     final kdbxData = await kdbxFormat().save(kdbxToSave);
     await file.writeAsBytes(kdbxData, flush: true);
     final persistedTime = DateTime.now();
     final files = VaultFileVersions(
-        current: kdbxToSave,
-        remoteMergeTargetLocked: LockedVaultFile(
-          kdbxData,
-          persistedTime,
-          kdbxToSave.credentials,
-          null,
-          null,
-        ));
+      current: kdbxToSave,
+      remoteMergeTargetLocked: LockedVaultFile(kdbxData, persistedTime, kdbxToSave.credentials, null, null),
+    );
     return LocalVaultFile(files, persistedTime, persistedTime, vault.uuid, null, null);
   }
 
@@ -336,13 +333,7 @@ class LocalVaultRepository {
     try {
       final autofillData = await fileAutofill.readAsBytes();
       if (autofillData.isEmpty) return null;
-      final autofillLocked = LockedVaultFile(
-        autofillData,
-        DateTime.now(),
-        creds,
-        null,
-        null,
-      );
+      final autofillLocked = LockedVaultFile(autofillData, DateTime.now(), creds, null, null);
       final autofill = await LocalVaultFile.unlock(autofillLocked);
 
       // pending may be valid and latest data if user has recently downloaded new
@@ -361,14 +352,9 @@ class LocalVaultRepository {
       await fileNameCurrent.writeAsBytes(kdbxData, flush: true);
       final persistedTime = DateTime.now();
       final files = VaultFileVersions(
-          current: kdbxToMergeInto,
-          remoteMergeTargetLocked: LockedVaultFile(
-            kdbxData,
-            persistedTime,
-            kdbxToMergeInto.credentials,
-            null,
-            null,
-          ));
+        current: kdbxToMergeInto,
+        remoteMergeTargetLocked: LockedVaultFile(kdbxData, persistedTime, kdbxToMergeInto.credentials, null, null),
+      );
       return LocalVaultFile(files, persistedTime, persistedTime, vault.uuid, null, null);
     } finally {
       // delete the autofill data no matter what, otherwise we'll be stuck in

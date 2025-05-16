@@ -9,9 +9,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:keevault/logging/logger.dart';
 
 class PRCSignupPromptDialog extends StatefulWidget with DialogMixin<bool> {
-  const PRCSignupPromptDialog({
-    super.key,
-  });
+  const PRCSignupPromptDialog({super.key});
 
   @override
   State<PRCSignupPromptDialog> createState() => _PRCSignupPromptDialogState();
@@ -137,17 +135,18 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
       actions: <Widget>[
         TextButton(
           onPressed: loading ? null : signup,
-          child: loading
-              ? Container(
-                  width: 24,
-                  height: 24,
-                  padding: const EdgeInsets.all(2.0),
-                  child: const CircularProgressIndicator(
-                    //color: Colors.white,
-                    strokeWidth: 3,
-                  ),
-                )
-              : Text(str.prcRegistrationSignUpButton.toUpperCase()),
+          child:
+              loading
+                  ? Container(
+                    width: 24,
+                    height: 24,
+                    padding: const EdgeInsets.all(2.0),
+                    child: const CircularProgressIndicator(
+                      //color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                  )
+                  : Text(str.prcRegistrationSignUpButton.toUpperCase()),
         ),
       ],
     );

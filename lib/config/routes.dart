@@ -18,10 +18,12 @@ class Routes {
   static String createAccount = '/create_account/:email';
 
   static void configureRoutes(FluroRouter router) {
-    router.notFoundHandler = Handler(handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-      l.e('ROUTE WAS NOT FOUND!');
-      return const Text('Fatal application error. Route not found. Tell us about this because it will never happen.');
-    });
+    router.notFoundHandler = Handler(
+      handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+        l.e('ROUTE WAS NOT FOUND!');
+        return const Text('Fatal application error. Route not found. Tell us about this because it will never happen.');
+      },
+    );
     router.define(root, handler: rootHandler);
     router.define(vault, handler: vaultHandler);
     router.define(passwordGenerator, handler: passwordGeneratorHandler);

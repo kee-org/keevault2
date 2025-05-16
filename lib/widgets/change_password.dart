@@ -54,184 +54,186 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                     key: _formKey,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Text(
-                            str.changePasswordDetail,
-                            style: theme.textTheme.titleLarge,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: Text(str.changePasswordDetail, style: theme.textTheme.titleLarge),
                           ),
-                        ),
-                        if (accountCubit.currentUserIfIdKnown != null)
+                          if (accountCubit.currentUserIfIdKnown != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(str.changePasswordWarning),
+                            ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(str.changePasswordWarning),
+                            child: Text(str.enterOldPassword),
                           ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(str.enterOldPassword),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 12, 0, 32),
-                          child: TextFormField(
-                            controller: _currentPassword,
-                            obscureText: password1Obscured,
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: str.currentPassword,
-                              errorText: null,
-                              suffixIcon: IconButton(
-                                icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
-                                onPressed: () {
-                                  setState(() {
-                                    password1Obscured = !password1Obscured;
-                                  });
-                                },
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 12, 0, 32),
+                            child: TextFormField(
+                              controller: _currentPassword,
+                              obscureText: password1Obscured,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: str.currentPassword,
+                                errorText: null,
+                                suffixIcon: IconButton(
+                                  icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
+                                  onPressed: () {
+                                    setState(() {
+                                      password1Obscured = !password1Obscured;
+                                    });
+                                  },
+                                ),
+                                suffixIconColor:
+                                    theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                               ),
-                              suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                              validator: (value) {
+                                if (value?.isEmpty ?? false) {
+                                  return str.this_field_required;
+                                }
+                                if (!checkCurrentPassword(value)) {
+                                  return str.currentPasswordNotCorrect;
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.visiblePassword,
                             ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? false) {
-                                return str.this_field_required;
-                              }
-                              if (!checkCurrentPassword(value)) {
-                                return str.currentPasswordNotCorrect;
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.visiblePassword,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Text(str.registrationBlurb1),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextFormField(
-                            controller: _password,
-                            obscureText: password2Obscured,
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: str.newPassword,
-                              errorText: null,
-                              suffixIcon: IconButton(
-                                icon: Icon(password2Obscured ? Icons.visibility : Icons.visibility_off),
-                                onPressed: () {
-                                  setState(() {
-                                    password2Obscured = !password2Obscured;
-                                  });
-                                },
+                          Padding(padding: const EdgeInsets.only(bottom: 16.0), child: Text(str.registrationBlurb1)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: TextFormField(
+                              controller: _password,
+                              obscureText: password2Obscured,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: str.newPassword,
+                                errorText: null,
+                                suffixIcon: IconButton(
+                                  icon: Icon(password2Obscured ? Icons.visibility : Icons.visibility_off),
+                                  onPressed: () {
+                                    setState(() {
+                                      password2Obscured = !password2Obscured;
+                                    });
+                                  },
+                                ),
+                                suffixIconColor:
+                                    theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                               ),
-                              suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                              validator: (value) {
+                                if (value?.isEmpty ?? false) {
+                                  return str.this_field_required;
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.visiblePassword,
                             ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? false) {
-                                return str.this_field_required;
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.visiblePassword,
                           ),
-                        ),
-                        ValueListenableBuilder(
+                          ValueListenableBuilder(
                             valueListenable: _password,
                             builder: (context, TextEditingValue content, child) {
-                              return PasswordStrengthWidget(
-                                testValue: content.text,
-                              );
-                            }),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextFormField(
-                            controller: _confirmPassword,
-                            obscureText: password3Obscured,
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: str.newPasswordRepeat,
-                              suffixIcon: IconButton(
-                                icon: Icon(password3Obscured ? Icons.visibility : Icons.visibility_off),
-                                onPressed: () {
-                                  setState(() {
-                                    password3Obscured = !password3Obscured;
-                                  });
-                                },
-                              ),
-                              suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
-                            ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? false) {
-                                return str.this_field_required;
-                              }
-                              if (value != _password.text) {
-                                return str.setFilePassNotMatch;
-                              }
-                              return null;
+                              return PasswordStrengthWidget(testValue: content.text);
                             },
-                            onSaved: (String? value) {
-                              submittedValue = value;
-                            },
-                            keyboardType: TextInputType.visiblePassword,
                           ),
-                        ),
-                        Visibility(
-                          visible: state is VaultChangingPassword && state.error != null,
-                          child: Padding(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: TextFormField(
+                              controller: _confirmPassword,
+                              obscureText: password3Obscured,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: str.newPasswordRepeat,
+                                suffixIcon: IconButton(
+                                  icon: Icon(password3Obscured ? Icons.visibility : Icons.visibility_off),
+                                  onPressed: () {
+                                    setState(() {
+                                      password3Obscured = !password3Obscured;
+                                    });
+                                  },
+                                ),
+                                suffixIconColor:
+                                    theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                              ),
+                              validator: (value) {
+                                if (value?.isEmpty ?? false) {
+                                  return str.this_field_required;
+                                }
+                                if (value != _password.text) {
+                                  return str.setFilePassNotMatch;
+                                }
+                                return null;
+                              },
+                              onSaved: (String? value) {
+                                submittedValue = value;
+                              },
+                              keyboardType: TextInputType.visiblePassword,
+                            ),
+                          ),
+                          Visibility(
+                            visible: state is VaultChangingPassword && state.error != null,
+                            child: Padding(
                               padding: const EdgeInsets.only(bottom: 16.0),
                               child: Text(
                                 tryCast<VaultChangingPassword>(state)?.error ?? '',
                                 style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.error),
-                              )),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: ElevatedButton(
-                            onPressed: saving
-                                ? null
-                                : () async {
-                                    final navigator = Navigator.of(context);
-                                    final sm = ScaffoldMessenger.of(context);
-                                    if (_formKey.currentState!.validate()) {
-                                      setState(() {
-                                        saving = true;
-                                      });
-                                      _formKey.currentState!.save();
-                                      try {
-                                        await changePassword(submittedValue!);
-                                        setState(() {
-                                          saving = false;
-                                        });
-                                        sm.showSnackBar(SnackBar(
-                                          content: Text(str.passwordChanged),
-                                          duration: Duration(seconds: 8),
-                                        ));
-                                        navigator.pop();
-                                      } finally {
-                                        setState(() {
-                                          saving = false;
-                                        });
-                                      }
-                                    }
-                                  },
-                            child: saving
-                                ? Container(
-                                    width: 24,
-                                    height: 24,
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: const CircularProgressIndicator(
-                                      strokeWidth: 3,
-                                    ),
-                                  )
-                                : Text(str.changePassword),
+                              ),
+                            ),
                           ),
-                        ),
-                      ]),
+                          Align(
+                            alignment: Alignment.center,
+                            child: ElevatedButton(
+                              onPressed:
+                                  saving
+                                      ? null
+                                      : () async {
+                                        final navigator = Navigator.of(context);
+                                        final sm = ScaffoldMessenger.of(context);
+                                        if (_formKey.currentState!.validate()) {
+                                          setState(() {
+                                            saving = true;
+                                          });
+                                          _formKey.currentState!.save();
+                                          try {
+                                            await changePassword(submittedValue!);
+                                            setState(() {
+                                              saving = false;
+                                            });
+                                            sm.showSnackBar(
+                                              SnackBar(
+                                                content: Text(str.passwordChanged),
+                                                duration: Duration(seconds: 8),
+                                              ),
+                                            );
+                                            navigator.pop();
+                                          } finally {
+                                            setState(() {
+                                              saving = false;
+                                            });
+                                          }
+                                        }
+                                      },
+                              child:
+                                  saving
+                                      ? Container(
+                                        width: 24,
+                                        height: 24,
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: const CircularProgressIndicator(strokeWidth: 3),
+                                      )
+                                      : Text(str.changePassword),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

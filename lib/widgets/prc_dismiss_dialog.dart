@@ -17,10 +17,7 @@ class BannerDismissDialog extends StatelessWidget with DialogMixin<int> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.bannerReminderDelayRemindMe),
-            ),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.bannerReminderDelayRemindMe)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextButton(

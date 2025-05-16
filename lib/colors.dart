@@ -3,14 +3,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 // ignore: implementation_imports
 import 'package:kdbx/src/kdbx_xml.dart' show KdbxColor;
 
-enum EntryColor {
-  red,
-  orange,
-  yellow,
-  green,
-  blue,
-  violet,
-}
+enum EntryColor { red, orange, yellow, green, blue, violet }
 
 EntryColor? entryColorFromHex(String? hex) {
   if (hex == null) {

@@ -87,15 +87,15 @@ class InAppMessage {
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(
-                  DateTime.fromMillisecondsSinceEpoch(0),
-                  Duration(days: 1),
-                  Duration(days: 3),
-                  DateTime.now().toUtc(),
-                  7,
-                  3,
-                  true,
-                  false,
-                );
+                DateTime.fromMillisecondsSinceEpoch(0),
+                Duration(days: 1),
+                Duration(days: 3),
+                DateTime.now().toUtc(),
+                7,
+                3,
+                true,
+                false,
+              );
         }
       case 'iamMakeMoreChangesOrSave':
         {
@@ -103,15 +103,15 @@ class InAppMessage {
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(
-                  DateTime.fromMillisecondsSinceEpoch(0),
-                  Duration(hours: 1),
-                  Duration(seconds: 1),
-                  DateTime.now().toUtc(),
-                  0,
-                  0,
-                  false,
-                  false,
-                );
+                DateTime.fromMillisecondsSinceEpoch(0),
+                Duration(hours: 1),
+                Duration(seconds: 1),
+                DateTime.now().toUtc(),
+                0,
+                0,
+                false,
+                false,
+              );
         }
       case 'iamSavingVault':
         {
@@ -119,15 +119,15 @@ class InAppMessage {
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(
-                  DateTime.fromMillisecondsSinceEpoch(0),
-                  Duration(hours: 1),
-                  Duration(minutes: 1),
-                  DateTime.now().toUtc(),
-                  1,
-                  2,
-                  false,
-                  false,
-                );
+                DateTime.fromMillisecondsSinceEpoch(0),
+                Duration(hours: 1),
+                Duration(minutes: 1),
+                DateTime.now().toUtc(),
+                1,
+                2,
+                false,
+                false,
+              );
         }
       case 'iamAutofillDisabled':
         {
@@ -135,15 +135,15 @@ class InAppMessage {
           return storedSetting.isNotEmpty
               ? InAppMessage.fromJson(storedSetting)
               : InAppMessage(
-                  DateTime.fromMillisecondsSinceEpoch(0),
-                  Duration(days: 1),
-                  Duration(minutes: 1),
-                  DateTime.now().toUtc(),
-                  1,
-                  1,
-                  false,
-                  true,
-                );
+                DateTime.fromMillisecondsSinceEpoch(0),
+                Duration(days: 1),
+                Duration(minutes: 1),
+                DateTime.now().toUtc(),
+                1,
+                1,
+                false,
+                true,
+              );
         }
     }
     throw Exception('Unknown InAppMessage key: $settingKey');

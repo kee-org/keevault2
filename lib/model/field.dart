@@ -24,9 +24,10 @@ class FieldViewModel {
 
   String? _name;
 
-  FieldStorage get fieldStorage => key != null && browserModel != null
-      ? FieldStorage.BOTH
-      : key != null
+  FieldStorage get fieldStorage =>
+      key != null && browserModel != null
+          ? FieldStorage.BOTH
+          : key != null
           ? FieldStorage.CUSTOM
           : FieldStorage.JSON;
 
@@ -112,7 +113,8 @@ class FieldViewModel {
     if (key == null && browserModel != null) {
       // We might come across old bad data so make every effort to select a new displayName for such
       // fields. Ultimately, we'll have to ignore and eventually delete any fields that contain no useful data.
-      localisedCommonName = browserModel.name?.nullIfBlank() ??
+      localisedCommonName =
+          browserModel.name?.nullIfBlank() ??
           browserModel.uuid?.nullIfBlank() ??
           browserModel.matcherConfigs
               ?.firstWhereOrNull((mc) => mc.matcherType == FieldMatcherType.Custom)
@@ -127,16 +129,30 @@ class FieldViewModel {
               .firstOrNull
               ?.nullIfBlank() ??
           (browserModel.type == kdbx.FieldType.Toggle || browserModel.value?.nullIfBlank() == null ? '' : '[no name]');
-      fieldValue = browserModel.type == kdbx.FieldType.Password
-          ? ProtectedValue.fromString(browserModel.value ?? '')
-          : PlainValue(browserModel.value ?? '');
+      fieldValue =
+          browserModel.type == kdbx.FieldType.Password
+              ? ProtectedValue.fromString(browserModel.value ?? '')
+              : PlainValue(browserModel.value ?? '');
       protect = browserModel.type == kdbx.FieldType.Password;
     } else {
       localisedCommonName = key!.key;
     }
 
-    return FieldViewModel(false, key, localisedCommonName, protect, keyboardType, autocorrect, enableSuggestions,
-        textCapitalization, icon, showIfEmpty, browserModel, fieldValue, localisedCommonName);
+    return FieldViewModel(
+      false,
+      key,
+      localisedCommonName,
+      protect,
+      keyboardType,
+      autocorrect,
+      enableSuggestions,
+      textCapitalization,
+      icon,
+      showIfEmpty,
+      browserModel,
+      fieldValue,
+      localisedCommonName,
+    );
   }
 
   bool get isDirty => _isDirty;
@@ -155,7 +171,7 @@ class FieldViewModel {
         KdbxKeyCommon.KEY_USER_NAME,
         KdbxKeyCommon.KEY_NOTES,
         KdbxKeyCommon.KEY_TITLE,
-        KdbxKeyCommon.KEY_URL
+        KdbxKeyCommon.KEY_URL,
       ].contains(key!.key);
   bool get protectionChangeable => !isStandard && !isTotp;
   bool get keyChangeable => !isTotp && !showIfEmpty;
@@ -165,7 +181,7 @@ class FieldViewModel {
     return Tuple2(customField, browserModel);
   }
 
-//TODO:f If necessary, call this as part of creating a new browserModel when user first enables browser integration on the field (or creates a new field full stop if we will always default to enabling browser integration)
+  //TODO:f If necessary, call this as part of creating a new browserModel when user first enables browser integration on the field (or creates a new field full stop if we will always default to enabling browser integration)
   // ignore: unused_element
   _getBrowserFieldDisplayName() {
     if (key == KdbxKeyCommon.PASSWORD) {

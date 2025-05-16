@@ -19,24 +19,25 @@ class DialogUtils {
   }) {
     final materialLoc = MaterialLocalizations.of(context);
     return showDialog<dynamic>(
-        context: context,
-        routeSettings: RouteSettings(name: routeName + routeAppend),
-        builder: (context) {
-          return AlertDialog(
-            scrollable: true,
-            title: title == null ? null : Text(title),
-            content: Text(content),
-            actions: <Widget>[
-              ...?moreActions,
-              TextButton(
-                child: Text(materialLoc.okButtonLabel),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
+      context: context,
+      routeSettings: RouteSettings(name: routeName + routeAppend),
+      builder: (context) {
+        return AlertDialog(
+          scrollable: true,
+          title: title == null ? null : Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            ...?moreActions,
+            TextButton(
+              child: Text(materialLoc.okButtonLabel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   static Future<dynamic> showErrorDialog(
@@ -47,41 +48,35 @@ class DialogUtils {
   }) async {
     final materialLoc = MaterialLocalizations.of(context);
     return showDialog<dynamic>(
-        context: context,
-        routeSettings: RouteSettings(name: '/dialog/alert/error${routeAppend?.prepend('/') ?? ''}'),
-        builder: (context) {
-          return AlertDialog(
-            scrollable: true,
-            title: title == null ? null : Text(title),
-            content: SingleChildScrollView(
-                child: Column(
+      context: context,
+      routeSettings: RouteSettings(name: '/dialog/alert/error${routeAppend?.prepend('/') ?? ''}'),
+      builder: (context) {
+        return AlertDialog(
+          scrollable: true,
+          title: title == null ? null : Text(title),
+          content: SingleChildScrollView(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Center(
-                    child: Text(content),
-                  ),
-                ),
-              ],
-            )),
-            actions: <Widget>[
-              TextButton(
-                child: Text(S.of(context).openLogConsole),
-                onPressed: () async => await AppConfig.router.navigateTo(
-                  AppConfig.navigatorKey.currentContext!,
-                  Routes.logger,
-                ),
-              ),
-              TextButton(
-                child: Text(materialLoc.okButtonLabel),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
+              children: [Flexible(child: Center(child: Text(content)))],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(S.of(context).openLogConsole),
+              onPressed:
+                  () async => await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.logger),
+            ),
+            TextButton(
+              child: Text(materialLoc.okButtonLabel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   static Future<bool> openUrl(String url) async {
@@ -94,19 +89,15 @@ class DialogUtils {
     if (!result) {
       final context = AppConfig.navigatorKey.currentContext;
       if (context != null && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(S.of(context).urlOpenFailed),
-          duration: Duration(seconds: 4),
-        ));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(S.of(context).urlOpenFailed), duration: Duration(seconds: 4)));
       }
     }
     return result;
   }
 
-  static Future<bool> showConfirmDialog({
-    required BuildContext context,
-    required ConfirmDialogParams params,
-  }) async {
+  static Future<bool> showConfirmDialog({required BuildContext context, required ConfirmDialogParams params}) async {
     return (await showDialog<bool>(
           context: context,
           routeSettings: const RouteSettings(name: '/dialog/confirm'),
@@ -152,14 +143,8 @@ class ConfirmDialog extends StatelessWidget with DialogMixin<bool> {
       title: params.title != null ? Text(params.title!) : null,
       content: Text(params.content),
       actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(params.negativeButtonText),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(params.positiveButtonText),
-        ),
+        TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(params.negativeButtonText)),
+        TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(params.positiveButtonText)),
       ],
     );
   }
@@ -171,11 +156,8 @@ class ConfirmDialog extends StatelessWidget with DialogMixin<bool> {
 mixin DialogMixin<T> on Widget {
   String get name;
 
-  Future<T?> show(BuildContext context) => showDialog<T>(
-        context: context,
-        routeSettings: RouteSettings(name: name),
-        builder: (context) => this,
-      );
+  Future<T?> show(BuildContext context) =>
+      showDialog<T>(context: context, routeSettings: RouteSettings(name: name), builder: (context) => this);
 }
 
 class SimplePromptDialog extends StatefulWidget with DialogMixin<String> {
@@ -240,12 +222,7 @@ class _SimplePromptDialogState extends State<SimplePromptDialog> with WidgetsBin
           children: <Widget>[
             Visibility(
               visible: widget.bodyText?.isNotEmpty ?? false,
-              child: Flexible(
-                child: Text(
-                  widget.bodyText ?? '',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
+              child: Flexible(child: Text(widget.bodyText ?? '', style: theme.textTheme.bodyMedium)),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 24.0),

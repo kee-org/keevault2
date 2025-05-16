@@ -13,20 +13,25 @@ class ExpiringCachedCredentials {
   String kdbxKdfCacheKey;
 
   ExpiringCachedCredentials(
-      this.kdbxBase64Hash, this.kdbxKdfCacheKey, this.kdbxKdfResultBase64, this.userPassKey, this.expiry);
+    this.kdbxBase64Hash,
+    this.kdbxKdfCacheKey,
+    this.kdbxKdfResultBase64,
+    this.userPassKey,
+    this.expiry,
+  );
 
   ExpiringCachedCredentials.fromJson(Map<String, dynamic> data)
-      : kdbxBase64Hash = data['kdbxBase64Hash'],
-        kdbxKdfCacheKey = data['kdbxKdfCacheKey'],
-        kdbxKdfResultBase64 = data['kdbxKdfResultBase64'],
-        userPassKey = data['userPassKey'],
-        expiry = data['expiry'];
+    : kdbxBase64Hash = data['kdbxBase64Hash'],
+      kdbxKdfCacheKey = data['kdbxKdfCacheKey'],
+      kdbxKdfResultBase64 = data['kdbxKdfResultBase64'],
+      userPassKey = data['userPassKey'],
+      expiry = data['expiry'];
 
   Map<String, dynamic> toJson() => {
-        'kdbxBase64Hash': kdbxBase64Hash,
-        'kdbxKdfCacheKey': kdbxKdfCacheKey,
-        'kdbxKdfResultBase64': kdbxKdfResultBase64,
-        'userPassKey': userPassKey,
-        'expiry': expiry,
-      };
+    'kdbxBase64Hash': kdbxBase64Hash,
+    'kdbxKdfCacheKey': kdbxKdfCacheKey,
+    'kdbxKdfResultBase64': kdbxKdfResultBase64,
+    'userPassKey': userPassKey,
+    'expiry': expiry,
+  };
 }

@@ -45,24 +45,27 @@ class EntryWidget extends StatelessWidget {
   final Function(int index) revertTo;
   final Function(int index) deleteAt;
   final bool savingViaAutofill;
-  const EntryWidget(
-      {super.key,
-      required this.endEditing,
-      this.onDelete,
-      required this.allCustomIcons,
-      required this.revertTo,
-      required this.deleteAt,
-      required this.savingViaAutofill});
+  const EntryWidget({
+    super.key,
+    required this.endEditing,
+    this.onDelete,
+    required this.allCustomIcons,
+    required this.revertTo,
+    required this.deleteAt,
+    required this.savingViaAutofill,
+  });
 
   void changeIcon(BuildContext context, EntryColor? color) async {
     final cubit = BlocProvider.of<EntryCubit>(context);
     final iconPicked = await showDialog(
       barrierDismissible: true,
       context: context,
-      builder: (BuildContext context) => IconChooser(
-        customIcons: allCustomIcons,
-        iconColor: Theme.of(context).brightness == Brightness.dark ? entryColorsContrast[color] : entryColors[color],
-      ),
+      builder:
+          (BuildContext context) => IconChooser(
+            customIcons: allCustomIcons,
+            iconColor:
+                Theme.of(context).brightness == Brightness.dark ? entryColorsContrast[color] : entryColors[color],
+          ),
     );
     if (iconPicked != null) {
       cubit.changeIcon(iconPicked is KdbxIcon ? iconPicked : null, iconPicked is KdbxCustomIcon ? iconPicked : null);
@@ -77,10 +80,7 @@ class EntryWidget extends StatelessWidget {
   Future<void> _attachFile(BuildContext context) async {
     final str = S.of(context);
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        withData: true,
-      );
+      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any, withData: true);
       final cleanupFuture = FilePicker.platform.clearTemporaryFiles();
 
       final bytes = result?.files.firstOrNull?.bytes;
@@ -115,46 +115,28 @@ class EntryWidget extends StatelessWidget {
     final cubit = BlocProvider.of<EntryCubit>(context);
 
     if (bytes.lengthInBytes > 250 * 1024) {
-      await DialogUtils.showErrorDialog(
-        context,
-        str.vaultStatusError,
-        str.entryAttachmentSizeError,
-      );
+      await DialogUtils.showErrorDialog(context, str.vaultStatusError, str.entryAttachmentSizeError);
       return;
     }
 
     if (bytes.lengthInBytes > 20 * 1024) {
       if (!await DialogUtils.showConfirmDialog(
         context: context,
-        params: ConfirmDialogParams(
-          content: str.entryAttachmentSizeWarning,
-        ),
+        params: ConfirmDialogParams(content: str.entryAttachmentSizeWarning),
       )) {
         return;
       }
     }
 
-    cubit.attachFile(
-      fileName: fileName,
-      bytes: bytes,
-    );
+    cubit.attachFile(fileName: fileName, bytes: bytes);
   }
 
   Future<void> _selectCustomKey(BuildContext context) async {
     final str = S.of(context);
     final cubit = BlocProvider.of<EntryCubit>(context);
-    final key = await SimplePromptDialog(
-      title: str.detNetField,
-      labelText: str.fieldName,
-    ).show(context);
+    final key = await SimplePromptDialog(title: str.detNetField, labelText: str.fieldName).show(context);
     if (key != null && key.isNotEmpty) {
-      final field = FieldViewModel.fromCustomAndBrowser(
-          null,
-          null,
-          Field(
-            name: key,
-            value: '',
-          ));
+      final field = FieldViewModel.fromCustomAndBrowser(null, null, Field(name: key, value: ''));
       cubit.addField(field);
       //TODO:f focus keyboard on new field - maybe with an onNextAnimationFrame type of callback or maybe a bloclistener to inspect the old and new state
     }
@@ -200,13 +182,14 @@ class EntryWidget extends StatelessWidget {
             if (!context.mounted) break;
             if (result == null) {
               final tryAgain = await DialogUtils.showConfirmDialog(
-                  context: context,
-                  params: ConfirmDialogParams(
-                    title: str.detOtpQrWrong,
-                    content: str.detOtpQrWrongBody,
-                    positiveButtonText: str.tryAgain,
-                    negativeButtonText: str.detSetupOtpManualButton,
-                  ));
+                context: context,
+                params: ConfirmDialogParams(
+                  title: str.detOtpQrWrong,
+                  content: str.detOtpQrWrongBody,
+                  positiveButtonText: str.tryAgain,
+                  negativeButtonText: str.detSetupOtpManualButton,
+                ),
+              );
               if (!tryAgain) {
                 tryManualCodeEntryNext = true;
               }
@@ -217,13 +200,14 @@ class EntryWidget extends StatelessWidget {
           if (barcodeResult.type == barcode.ResultType.Error) {
             if (!context.mounted) break;
             final tryAgain = await DialogUtils.showConfirmDialog(
-                context: context,
-                params: ConfirmDialogParams(
-                  title: str.detOtpQrError,
-                  content: str.detOtpQrErrorBody,
-                  positiveButtonText: str.tryAgain,
-                  negativeButtonText: str.detSetupOtpManualButton,
-                ));
+              context: context,
+              params: ConfirmDialogParams(
+                title: str.detOtpQrError,
+                content: str.detOtpQrErrorBody,
+                positiveButtonText: str.tryAgain,
+                negativeButtonText: str.detSetupOtpManualButton,
+              ),
+            );
             if (!tryAgain) {
               tryManualCodeEntryNext = true;
             }
@@ -238,23 +222,29 @@ class EntryWidget extends StatelessWidget {
           // by this point, they'll have to enter the code manually.
           l.i('User denied camera permission.. Automatically continuing to manual code entry.', error: e);
         } else {
-          l.e('Unknown PlatformException. Automatically continuing to manual code entry.',
-              error: e, stackTrace: stackTrace);
+          l.e(
+            'Unknown PlatformException. Automatically continuing to manual code entry.',
+            error: e,
+            stackTrace: stackTrace,
+          );
         }
       } catch (e, stackTrace) {
-        l.w('Error during barcode scanning. Automatically continuing to manual code entry.',
-            error: e, stackTrace: stackTrace);
+        l.w(
+          'Error during barcode scanning. Automatically continuing to manual code entry.',
+          error: e,
+          stackTrace: stackTrace,
+        );
       }
     }
 
     while (true) {
       if (!context.mounted) return null;
       final totpCode = await SimplePromptDialog(
-              title: str.otpManualTitle,
-              bodyText: str.otpExplainer1,
-              labelText: str.otpCodeLabel,
-              icon: Icon(Icons.lock_clock))
-          .show(context);
+        title: str.otpManualTitle,
+        bodyText: str.otpExplainer1,
+        labelText: str.otpCodeLabel,
+        icon: Icon(Icons.lock_clock),
+      ).show(context);
       if (totpCode == null) {
         return null;
       }
@@ -277,174 +267,192 @@ class EntryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final str = S.of(context);
     final theme = Theme.of(context);
-    return BlocBuilder<EntryCubit, EntryState>(builder: (context, state) {
-      if (state is! EntryLoaded) return Container();
-      final EditEntryViewModel entry = state.entry;
-      return BlocBuilder<VaultCubit, VaultState>(
-        builder: (context, state) {
-          final loadedState = state;
-          if (loadedState is VaultLoaded) {
-            return ColouredSafeArea(
-              child: Scaffold(
-                key: key,
-                appBar: savingViaAutofill
-                    ? AppBar(
-                        title: Image(
-                          image: AssetImage('assets/vault.png'),
-                          excludeFromSemantics: true,
-                          height: 32,
-                          color: Colors.white,
-                        ),
-                        centerTitle: true,
-                        toolbarHeight: 48,
-                        leading: IconButton(
-                            iconSize: 24,
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: () async => await SystemNavigator.pop()),
-                      )
-                    : AppBar(
-                        actions: [
-                          Visibility(
-                            visible: onDelete != null,
-                            child: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  onDelete!();
-                                }),
-                          ),
-                          OpenContainer<bool>(
-                            key: ValueKey('history view icon container'),
-                            tappable: false,
-                            closedShape: RoundedRectangleBorder(),
-                            closedElevation: 0,
-                            closedColor: Colors.transparent,
-                            transitionType: ContainerTransitionType.fade,
-                            transitionDuration: const Duration(milliseconds: 300),
-                            openBuilder: (context, close) {
-                              return EntryHistoryWidget(
-                                key: ValueKey('history view'),
-                                revertTo: revertTo,
-                                deleteAt: deleteAt,
-                              );
-                            },
-                            closedBuilder: (context, open) {
-                              return Visibility(
-                                visible: entry.history.isNotEmpty,
-                                child: IconButton(
-                                    icon: Icon(Icons.history),
-                                    onPressed: () {
-                                      open();
-                                    }),
-                              );
-                            },
+    return BlocBuilder<EntryCubit, EntryState>(
+      builder: (context, state) {
+        if (state is! EntryLoaded) return Container();
+        final EditEntryViewModel entry = state.entry;
+        return BlocBuilder<VaultCubit, VaultState>(
+          builder: (context, state) {
+            final loadedState = state;
+            if (loadedState is VaultLoaded) {
+              return ColouredSafeArea(
+                child: Scaffold(
+                  key: key,
+                  appBar:
+                      savingViaAutofill
+                          ? AppBar(
+                            title: Image(
+                              image: AssetImage('assets/vault.png'),
+                              excludeFromSemantics: true,
+                              height: 32,
+                              color: Colors.white,
+                            ),
+                            centerTitle: true,
+                            toolbarHeight: 48,
+                            leading: IconButton(
+                              iconSize: 24,
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: () async => await SystemNavigator.pop(),
+                            ),
                           )
-                        ],
-                      ),
-                body: PopScope(
-                  canPop: !entry.isDirty,
-                  onPopInvokedWithResult: (bool didPop, Object? result) async {
-                    if (didPop) {
-                      return;
-                    }
-                    final result = await showDialog(
+                          : AppBar(
+                            actions: [
+                              Visibility(
+                                visible: onDelete != null,
+                                child: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    onDelete!();
+                                  },
+                                ),
+                              ),
+                              OpenContainer<bool>(
+                                key: ValueKey('history view icon container'),
+                                tappable: false,
+                                closedShape: RoundedRectangleBorder(),
+                                closedElevation: 0,
+                                closedColor: Colors.transparent,
+                                transitionType: ContainerTransitionType.fade,
+                                transitionDuration: const Duration(milliseconds: 300),
+                                openBuilder: (context, close) {
+                                  return EntryHistoryWidget(
+                                    key: ValueKey('history view'),
+                                    revertTo: revertTo,
+                                    deleteAt: deleteAt,
+                                  );
+                                },
+                                closedBuilder: (context, open) {
+                                  return Visibility(
+                                    visible: entry.history.isNotEmpty,
+                                    child: IconButton(
+                                      icon: Icon(Icons.history),
+                                      onPressed: () {
+                                        open();
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                  body: PopScope(
+                    canPop: !entry.isDirty,
+                    onPopInvokedWithResult: (bool didPop, Object? result) async {
+                      if (didPop) {
+                        return;
+                      }
+                      final result = await showDialog(
                         routeSettings: RouteSettings(),
                         context: context,
-                        builder: (context) =>
-                            AlertDialog(title: Text(str.keep_your_changes_question), actions: <Widget>[
-                              OutlinedButton(
+                        builder:
+                            (context) => AlertDialog(
+                              title: Text(str.keep_your_changes_question),
+                              actions: <Widget>[
+                                OutlinedButton(
                                   child: Text(str.keep.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(true)),
-                              OutlinedButton(
+                                  onPressed: () => Navigator.of(context).pop(true),
+                                ),
+                                OutlinedButton(
                                   child: Text(str.discard.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(false)),
-                            ]));
-                    if (result != null) {
-                      endEditing(result);
-                    }
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: SafeArea(
-                              top: false,
-                              left: false,
-                              child: Column(
-                                children: <Widget>[
-                                  //TODO:f: mention that Android failed to supply accurate password data if isCompatMode true
-                                  !savingViaAutofill
-                                      ? const SizedBox(height: 8)
-                                      : Row(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                ),
+                              ],
+                            ),
+                      );
+                      if (result != null) {
+                        endEditing(result);
+                      }
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              child: SafeArea(
+                                top: false,
+                                left: false,
+                                child: Column(
+                                  children: <Widget>[
+                                    //TODO:f: mention that Android failed to supply accurate password data if isCompatMode true
+                                    !savingViaAutofill
+                                        ? const SizedBox(height: 8)
+                                        : Row(
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             Expanded(
-                                                child: Padding(
-                                              padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
-                                              child: Text(
-                                                str.autofillNewEntryMakeChangesThenDone,
-                                                style: theme.textTheme.bodyLarge,
+                                              child: Padding(
+                                                padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
+                                                child: Text(
+                                                  str.autofillNewEntryMakeChangesThenDone,
+                                                  style: theme.textTheme.bodyLarge,
+                                                ),
                                               ),
-                                            ))
+                                            ),
                                           ],
                                         ),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      const SizedBox(width: 16),
-                                      GestureDetector(
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        const SizedBox(width: 16),
+                                        GestureDetector(
                                           onTap: () {
                                             changeIcon(context, entry.color);
                                           },
-                                          child: entry.getIcon(48, Theme.of(context).brightness == Brightness.dark)),
-                                      const SizedBox(width: 4),
-                                      Expanded(
-                                        child: entry.fields
-                                            .take(1)
-                                            .map(
-                                              (f) => EntryField(
-                                                fieldType: FieldType.string,
-                                                key: ValueKey(f.fieldKey ?? 'first field of a corrupt entry'),
-                                                entry: entry,
-                                                field: f,
-                                                onDelete: () => {},
-                                                onChangeIcon: () => changeIcon(context, entry.color),
-                                              ),
-                                            )
-                                            .first,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  ...entry.fields.skip(1).map(
-                                    (f) {
-                                      final key = f.fieldKey;
-                                      if (key == null) {
-                                        l.e('field key is unknown. Failed field configuration: ${f.browserModel?.toJson()}');
-                                        return Text(str.openError + str.errorCorruptField);
-                                      }
-                                      return EntryField(
-                                        fieldType: f.isTotp
-                                            ? FieldType.otp
-                                            : f.isCheckbox
-                                                ? FieldType.checkbox
-                                                : FieldType.string,
-                                        key: ValueKey(key),
-                                        entry: entry,
-                                        field: f,
-                                        onDelete: () {
-                                          final cubit = BlocProvider.of<EntryCubit>(context);
-                                          cubit.removeField(f);
-                                        },
-                                        onChangeIcon: () => {},
-                                      );
-                                    },
-                                  ).expand((el) => [el, const SizedBox(height: 8)]),
-                                  ...entry.binaryMapEntries.isEmpty
-                                      ? []
-                                      : entry.binaryMapEntries.map((e) {
+                                          child: entry.getIcon(48, Theme.of(context).brightness == Brightness.dark),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child:
+                                              entry.fields
+                                                  .take(1)
+                                                  .map(
+                                                    (f) => EntryField(
+                                                      fieldType: FieldType.string,
+                                                      key: ValueKey(f.fieldKey ?? 'first field of a corrupt entry'),
+                                                      entry: entry,
+                                                      field: f,
+                                                      onDelete: () => {},
+                                                      onChangeIcon: () => changeIcon(context, entry.color),
+                                                    ),
+                                                  )
+                                                  .first,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    ...entry.fields
+                                        .skip(1)
+                                        .map((f) {
+                                          final key = f.fieldKey;
+                                          if (key == null) {
+                                            l.e(
+                                              'field key is unknown. Failed field configuration: ${f.browserModel?.toJson()}',
+                                            );
+                                            return Text(str.openError + str.errorCorruptField);
+                                          }
+                                          return EntryField(
+                                            fieldType:
+                                                f.isTotp
+                                                    ? FieldType.otp
+                                                    : f.isCheckbox
+                                                    ? FieldType.checkbox
+                                                    : FieldType.string,
+                                            key: ValueKey(key),
+                                            entry: entry,
+                                            field: f,
+                                            onDelete: () {
+                                              final cubit = BlocProvider.of<EntryCubit>(context);
+                                              cubit.removeField(f);
+                                            },
+                                            onChangeIcon: () => {},
+                                          );
+                                        })
+                                        .expand((el) => [el, const SizedBox(height: 8)]),
+                                    ...entry.binaryMapEntries.isEmpty
+                                        ? []
+                                        : entry.binaryMapEntries.map((e) {
                                           return BinaryCardWidget(
                                             key: ValueKey('${e.key.key}-${e.value.valueHashCode}'),
                                             entry: entry,
@@ -452,206 +460,199 @@ class EntryWidget extends StatelessWidget {
                                             readOnly: false,
                                           );
                                         }),
-                                  Divider(
-                                    indent: 16,
-                                    endIndent: 16,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                        child: Text(str.detGroup),
-                                      ),
-                                      Expanded(
-                                        child: Tooltip(
-                                          message: entry.groupNames.join(' » '),
-                                          child: Text(entry.groupNames.last),
+                                    Divider(indent: 16, endIndent: 16),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                          child: Text(str.detGroup),
                                         ),
-                                      ),
-                                      OpenContainer<bool>(
-                                        key: ValueKey('move entry to new group screen'),
-                                        tappable: false,
-                                        closedShape: RoundedRectangleBorder(),
-                                        closedElevation: 0,
-                                        closedColor: Colors.transparent,
-                                        transitionType: ContainerTransitionType.fade,
-                                        transitionDuration: const Duration(milliseconds: 300),
-                                        openBuilder: (context, close) {
-                                          return EntryMoveTreeWidget(title: str.chooseNewParentGroupForEntry);
-                                        },
-                                        closedBuilder: (context, open) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(left: 12.0, right: 16.0),
-                                            child: OutlinedButton.icon(
-                                              label: Text(str.move),
-                                              icon: const Icon(Icons.drive_file_move),
-                                              onPressed: () => open(),
-                                            ),
-                                          );
-                                        },
-                                      )
-                                    ],
-                                  ),
-                                  LabelsWidget(
-                                    tags: entry.tags,
-                                    otherKnownTags: loadedState.vault.files.current.tags
-                                        .map((t) => Tag(t, true))
-                                        .where((t) => !entry.tags.any((et) => et.lowercase == t.lowercase))
-                                        .toList(),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                        child: Text(str.color),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0),
-                                        child: ColorChooser(
+                                        Expanded(
+                                          child: Tooltip(
+                                            message: entry.groupNames.join(' » '),
+                                            child: Text(entry.groupNames.last),
+                                          ),
+                                        ),
+                                        OpenContainer<bool>(
+                                          key: ValueKey('move entry to new group screen'),
+                                          tappable: false,
+                                          closedShape: RoundedRectangleBorder(),
+                                          closedElevation: 0,
+                                          closedColor: Colors.transparent,
+                                          transitionType: ContainerTransitionType.fade,
+                                          transitionDuration: const Duration(milliseconds: 300),
+                                          openBuilder: (context, close) {
+                                            return EntryMoveTreeWidget(title: str.chooseNewParentGroupForEntry);
+                                          },
+                                          closedBuilder: (context, open) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(left: 12.0, right: 16.0),
+                                              child: OutlinedButton.icon(
+                                                label: Text(str.move),
+                                                icon: const Icon(Icons.drive_file_move),
+                                                onPressed: () => open(),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    LabelsWidget(
+                                      tags: entry.tags,
+                                      otherKnownTags:
+                                          loadedState.vault.files.current.tags
+                                              .map((t) => Tag(t, true))
+                                              .where((t) => !entry.tags.any((et) => et.lowercase == t.lowercase))
+                                              .toList(),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                          child: Text(str.color),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0),
+                                          child: ColorChooser(
                                             currentColor: entry.color,
-                                            onChangeColor: (EntryColor color) => changeColor(context, color)),
-                                      ),
-                                    ],
-                                  ),
-                                  Divider(
-                                    indent: 16,
-                                    endIndent: 16,
-                                  ),
-                                  IntegrationSettingsWidget(),
-                                  Divider(
-                                    indent: 16,
-                                    endIndent: 16,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                        child: Text(str.detCreated),
-                                      ),
-                                      Tooltip(
-                                        message:
-                                            '${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).jms}',
-                                        child: Text(Jiffy.parseFromDateTime(entry.createdTime).fromNow()),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                                        child: Text(str.detUpdated),
-                                      ),
-                                      Tooltip(
-                                        message:
-                                            '${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).jms}',
-                                        child: Text(Jiffy.parseFromDateTime(entry.modifiedTime).fromNow()),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                            onChangeColor: (EntryColor color) => changeColor(context, color),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(indent: 16, endIndent: 16),
+                                    IntegrationSettingsWidget(),
+                                    Divider(indent: 16, endIndent: 16),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                          child: Text(str.detCreated),
+                                        ),
+                                        Tooltip(
+                                          message:
+                                              '${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).jms}',
+                                          child: Text(Jiffy.parseFromDateTime(entry.createdTime).fromNow()),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                                          child: Text(str.detUpdated),
+                                        ),
+                                        Tooltip(
+                                          message:
+                                              '${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).jms}',
+                                          child: Text(Jiffy.parseFromDateTime(entry.modifiedTime).fromNow()),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Visibility(
+                        Visibility(
                           visible: (savingViaAutofill || entry.isDirty) && MediaQuery.of(context).viewInsets.bottom > 0,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 12.0, top: 4),
                             child: ElevatedButton.icon(
                               icon: Icon(Icons.check_circle),
-                              label: Text(
-                                (savingViaAutofill ? str.done : str.saveChanges).toUpperCase(),
-                              ),
+                              label: Text((savingViaAutofill ? str.done : str.saveChanges).toUpperCase()),
                               onPressed: () => endEditing(true),
                             ),
-                          )),
-                    ],
-                  ),
-                ),
-                extendBody: true,
-                floatingActionButton: SpeedDial(
-                  children: [
-                    SpeedDialChild(
-                      label: str.addField,
-                      child: Icon(Icons.label),
-                      onTap: () async => await _selectCustomKey(context),
+                          ),
+                        ),
+                      ],
                     ),
-                    if (!entry.fields.any((f) => f.isTotp))
+                  ),
+                  extendBody: true,
+                  floatingActionButton: SpeedDial(
+                    children: [
                       SpeedDialChild(
-                        label: str.addTOTPSecret,
-                        child: Icon(Icons.lock_clock),
+                        label: str.addField,
+                        child: Icon(Icons.label),
+                        onTap: () async => await _selectCustomKey(context),
+                      ),
+                      if (!entry.fields.any((f) => f.isTotp))
+                        SpeedDialChild(
+                          label: str.addTOTPSecret,
+                          child: Icon(Icons.lock_clock),
+                          onTap: () async {
+                            final cubit = BlocProvider.of<EntryCubit>(context);
+                            final totp = await _askForTotpSecret(context);
+                            if (totp != null) {
+                              final field = FieldViewModel.fromCustomAndBrowser(
+                                KdbxKeyCommon.OTP,
+                                ProtectedValue.fromString(totp.toUri().toString()),
+                                null,
+                              );
+                              cubit.addField(field);
+                            }
+                          },
+                        ),
+                      SpeedDialChild(
+                        label: str.addAttachment,
+                        child: Icon(Icons.attach_file),
                         onTap: () async {
-                          final cubit = BlocProvider.of<EntryCubit>(context);
-                          final totp = await _askForTotpSecret(context);
-                          if (totp != null) {
-                            final field = FieldViewModel.fromCustomAndBrowser(
-                              KdbxKeyCommon.OTP,
-                              ProtectedValue.fromString(totp.toUri().toString()),
-                              null,
-                            );
-                            cubit.addField(field);
-                          }
+                          await _attachFile(context);
                         },
                       ),
-                    SpeedDialChild(
-                      label: str.addAttachment,
-                      child: Icon(Icons.attach_file),
-                      onTap: () async {
-                        await _attachFile(context);
-                      },
-                    ),
-                  ],
-                  icon: Icons.add,
-                  activeIcon: Icons.close,
-                  useRotationAnimation: true,
-                  childPadding: const EdgeInsets.all(5),
-                  spaceBetweenChildren: 4,
-                  spacing: 3,
-                  overlayColor: Colors.black,
-                ),
-                floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-                bottomNavigationBar: BottomBarWidget(
-                  () {
-                    unawaited(showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+                    ],
+                    icon: Icons.add,
+                    activeIcon: Icons.close,
+                    useRotationAnimation: true,
+                    childPadding: const EdgeInsets.all(5),
+                    spaceBetweenChildren: 4,
+                    spacing: 3,
+                    overlayColor: Colors.black,
+                  ),
+                  floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+                  bottomNavigationBar: BottomBarWidget(
+                    () {
+                      unawaited(
+                        showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10.0),
+                              topRight: Radius.circular(10.0),
+                            ),
+                          ),
+                          builder: (BuildContext context) {
+                            return BottomDrawerWidget();
+                          },
                         ),
-                        builder: (BuildContext context) {
-                          return BottomDrawerWidget();
-                        }));
-                  },
-                  centreButton: Visibility(
+                      );
+                    },
+                    centreButton: Visibility(
                       visible: entry.isDirty || savingViaAutofill,
                       child: ElevatedButton.icon(
                         icon: Icon(Icons.check_circle),
-                        label: Text(
-                          (savingViaAutofill ? str.done : str.saveChanges).toUpperCase(),
-                        ),
+                        label: Text((savingViaAutofill ? str.done : str.saveChanges).toUpperCase()),
                         onPressed: () => endEditing(true),
-                      )),
+                      ),
+                    ),
+                  ),
                 ),
+              );
+            }
+            return ColouredSafeArea(
+              child: Scaffold(
+                key: key,
+                appBar: AppBar(title: Text(str.openError)),
+                body: Center(child: Text('Entry not found. Please close and re-launch the app.')),
               ),
             );
-          }
-          return ColouredSafeArea(
-            child: Scaffold(
-              key: key,
-              appBar: AppBar(
-                title: Text(str.openError),
-              ),
-              body: Center(
-                child: Text('Entry not found. Please close and re-launch the app.'),
-              ),
-            ),
-          );
-        },
-      );
-    });
+          },
+        );
+      },
+    );
   }
 }
 
@@ -678,58 +679,61 @@ class StringEntryFieldEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    return Stack(alignment: Alignment.centerRight, children: [
-      TextFormField(
-        key: formFieldKey,
-        maxLines: field.keyboardType == TextInputType.multiline ? 7 : 3,
-        minLines: 1,
-        focusNode: focusNode,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: field.name ?? fieldKey?.key,
-          prefixIcon: field.icon != null ? Icon(field.icon) : null,
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        TextFormField(
+          key: formFieldKey,
+          maxLines: field.keyboardType == TextInputType.multiline ? 7 : 3,
+          minLines: 1,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: field.name ?? fieldKey?.key,
+            prefixIcon: field.icon != null ? Icon(field.icon) : null,
+          ),
+          keyboardType: field.keyboardType,
+          autocorrect: field.autocorrect,
+          enableSuggestions: field.enableSuggestions,
+          textCapitalization: field.textCapitalization,
+          controller: controller,
+          onChanged: onChange,
         ),
-        keyboardType: field.keyboardType,
-        autocorrect: field.autocorrect,
-        enableSuggestions: field.enableSuggestions,
-        textCapitalization: field.textCapitalization,
-        controller: controller,
-        onChanged: onChange,
-      ),
-      ValueListenableBuilder<TextEditingValue>(
-        valueListenable: controller,
-        builder: (context, value, child) {
-          if (fieldKey == KdbxKeyCommon.PASSWORD || field.protect) {
-            return OpenContainer<bool>(
-              key: ValueKey('generate single password screen'),
-              tappable: false,
-              closedShape: RoundedRectangleBorder(),
-              closedElevation: 0,
-              closedColor: Colors.transparent,
-              transitionType: ContainerTransitionType.fade,
-              transitionDuration: const Duration(milliseconds: 300),
-              openBuilder: (context, close) {
-                return PasswordGeneratorWidget(
-                  key: ValueKey('password generator'),
-                  apply: (String password) {
-                    controller.text = password;
-                    onChange(password);
-                  },
-                );
-              },
-              closedBuilder: (context, open) {
-                return IconButton(
-                  tooltip: str.footerTitleGen,
-                  icon: const Icon(Icons.flash_on),
-                  onPressed: () => open(),
-                );
-              },
-            );
-          }
-          return const SizedBox();
-        },
-      ),
-    ]);
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller,
+          builder: (context, value, child) {
+            if (fieldKey == KdbxKeyCommon.PASSWORD || field.protect) {
+              return OpenContainer<bool>(
+                key: ValueKey('generate single password screen'),
+                tappable: false,
+                closedShape: RoundedRectangleBorder(),
+                closedElevation: 0,
+                closedColor: Colors.transparent,
+                transitionType: ContainerTransitionType.fade,
+                transitionDuration: const Duration(milliseconds: 300),
+                openBuilder: (context, close) {
+                  return PasswordGeneratorWidget(
+                    key: ValueKey('password generator'),
+                    apply: (String password) {
+                      controller.text = password;
+                      onChange(password);
+                    },
+                  );
+                },
+                closedBuilder: (context, open) {
+                  return IconButton(
+                    tooltip: str.footerTitleGen,
+                    icon: const Icon(Icons.flash_on),
+                    onPressed: () => open(),
+                  );
+                },
+              );
+            }
+            return const SizedBox();
+          },
+        ),
+      ],
+    );
   }
 }
 
@@ -740,11 +744,7 @@ abstract class FieldDelegate {
 enum FieldType { string, otp, checkbox }
 
 class ObscuredEntryFieldEditor extends StatelessWidget {
-  const ObscuredEntryFieldEditor({
-    super.key,
-    required this.onPressed,
-    required this.field,
-  });
+  const ObscuredEntryFieldEditor({super.key, required this.onPressed, required this.field});
 
   final VoidCallback onPressed;
   final FieldViewModel field;
@@ -764,13 +764,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
             labelText: field.name ?? field.key?.key,
             prefixIcon: field.icon != null ? Icon(field.icon) : null,
           ),
-          child: Text(
-            '*anythIng*',
-            style: TextStyle(
-              color: color.withOpacity(0),
-              fontSize: 16,
-            ),
-          ),
+          child: Text('*anythIng*', style: TextStyle(color: color.withOpacity(0), fontSize: 16)),
         ),
         Positioned.fill(
           top: 12,
@@ -779,23 +773,15 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
           right: 8,
           child: ClipRect(
             child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 2,
-                sigmaY: 2,
-              ),
+              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
               child: TextButton(
                 onPressed: onPressed,
                 child: Container(
                   alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(
-                    left: 32.0,
-                    right: 24.0,
-                  ),
+                  padding: const EdgeInsets.only(left: 32.0, right: 24.0),
                   child: Text(
                     str.protectedClickToReveal,
-                    style: TextStyle(
-                      color: theme.brightness == Brightness.dark ? Colors.white : theme.primaryColor,
-                    ),
+                    style: TextStyle(color: theme.brightness == Brightness.dark ? Colors.white : theme.primaryColor),
                   ),
                 ),
               ),
@@ -813,12 +799,4 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
   }
 }
 
-enum EntryAction {
-  changeIcon,
-  copy,
-  copyRawData,
-  rename,
-  protect,
-  delete,
-  openInBrowser,
-}
+enum EntryAction { changeIcon, copy, copyRawData, rename, protect, delete, openInBrowser }

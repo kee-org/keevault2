@@ -17,10 +17,7 @@ S _str = S();
 
 class PasswordGeneratorWidget extends StatefulWidget {
   final Function? apply;
-  const PasswordGeneratorWidget({
-    super.key,
-    this.apply,
-  });
+  const PasswordGeneratorWidget({super.key, this.apply});
 
   @override
   State<PasswordGeneratorWidget> createState() => _PasswordGeneratorWidgetState();
@@ -100,19 +97,21 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 2.0),
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Center(
-                            child: Text(
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 2.0),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: Text(
                           _currentPassword,
                           textAlign: TextAlign.center,
                           style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                      )),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -127,7 +126,8 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                             Padding(
                               padding: const EdgeInsets.only(bottom: 16.0),
                               child: Text(
-                                  '${widget.apply != null ? str.createNewPasswordApplyExplanation : str.createNewPasswordCopyExplanation} ${str.createNewPasswordConfigurationExplanation}'),
+                                '${widget.apply != null ? str.createNewPasswordApplyExplanation : str.createNewPasswordCopyExplanation} ${str.createNewPasswordConfigurationExplanation}',
+                              ),
                             ),
                             _profileChooser(context, generatorState),
                             lengthChooser(context, generatorState.current),
@@ -177,10 +177,7 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: Text(_str.preset),
-          ),
+          Padding(padding: const EdgeInsets.only(right: 12.0), child: Text(_str.preset)),
           Flexible(
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
@@ -192,22 +189,14 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                     itemHeight: null,
                     value: generatorState.current.name,
                     items: <DropdownMenuItem<String>>[
-                      ...generatorState.enabled.map((p) => DropdownMenuItem(
-                            value: p.name,
-                            child: Text(
-                              p.title,
-                            ),
-                          ))
+                      ...generatorState.enabled.map((p) => DropdownMenuItem(value: p.name, child: Text(p.title))),
                     ],
                     selectedItemBuilder: (BuildContext context) {
                       return generatorState.enabled
                           .map(
                             (p) => Align(
                               alignment: Alignment.centerLeft,
-                              child: Text(
-                                p.title,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              child: Text(p.title, overflow: TextOverflow.ellipsis),
                             ),
                           )
                           .toList();
@@ -218,8 +207,9 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                       final newProfile = cubit.changeCurrentProfile(value);
                       if (newProfile != null) {
                         _includeTextController.value = TextEditingValue(
-                            text: newProfile.current.include,
-                            selection: TextSelection.collapsed(offset: newProfile.current.include.length));
+                          text: newProfile.current.include,
+                          selection: TextSelection.collapsed(offset: newProfile.current.include.length),
+                        );
                       }
                     },
                   ),
@@ -232,15 +222,16 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
             child: ConstrainedBox(
               constraints: const BoxConstraints(minWidth: 150),
               child: OutlinedButton(
-                onPressed: () async => await AppConfig.router.navigateTo(
-                  context,
-                  Routes.passwordPresetManager,
-                  transition: TransitionType.inFromRight,
-                ),
+                onPressed:
+                    () async => await AppConfig.router.navigateTo(
+                      context,
+                      Routes.passwordPresetManager,
+                      transition: TransitionType.inFromRight,
+                    ),
                 child: Text(_str.managePresets),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -271,58 +262,59 @@ Widget lengthChooser(BuildContext context, PasswordGeneratorProfile profile) {
   final str = S.of(context);
   return Visibility(
     visible: profile.supportsLengthChoosing,
-    child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-      Row(
-        children: <Widget>[
-          Text(str.genLen),
-          Expanded(
-            child: Slider(
-              value: profile.length.toDouble(),
-              min: 4.0,
-              max: 100.0,
-              onChanged: (double value) {
-                final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                cubit.changeLength(value);
-              },
-            ),
-          ),
-          Semantics(
-            label: str.genLen,
-            child: SizedBox(
-              width: 48,
-              height: 48,
-              child: TextField(
-                onSubmitted: (String value) {
-                  final double? newValue = double.tryParse(value);
-                  if (newValue != null && newValue != profile.length) {
-                    final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                    cubit.changeLength(newValue.clamp(4, 100));
-                  }
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Text(str.genLen),
+            Expanded(
+              child: Slider(
+                value: profile.length.toDouble(),
+                min: 4.0,
+                max: 100.0,
+                onChanged: (double value) {
+                  final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                  cubit.changeLength(value);
                 },
-                keyboardType: TextInputType.number,
-                controller: TextEditingController(
-                  text: profile.length.toStringAsFixed(0),
+              ),
+            ),
+            Semantics(
+              label: str.genLen,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: TextField(
+                  onSubmitted: (String value) {
+                    final double? newValue = double.tryParse(value);
+                    if (newValue != null && newValue != profile.length) {
+                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                      cubit.changeLength(newValue.clamp(4, 100));
+                    }
+                  },
+                  keyboardType: TextInputType.number,
+                  controller: TextEditingController(text: profile.length.toStringAsFixed(0)),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    ]),
+          ],
+        ),
+      ],
+    ),
   );
 }
 
 Widget additionalCharIncludes(
-    BuildContext context, PasswordGeneratorProfile profile, TextEditingController controller) {
+  BuildContext context,
+  PasswordGeneratorProfile profile,
+  TextEditingController controller,
+) {
   final str = S.of(context);
   return Visibility(
     visible: profile.supportsCharacterChoosing,
     child: Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 12.0),
-          child: Text(str.additionalCharacters),
-        ),
+        Padding(padding: const EdgeInsets.only(right: 12.0), child: Text(str.additionalCharacters)),
         Expanded(
           child: TextField(
             onChanged: (String value) {
@@ -351,12 +343,7 @@ Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile)
           FilterChip(
             visualDensity: VisualDensity.compact,
             label: Text(_str.genPsUpper),
-            avatar: profile.upper
-                ? Icon(
-                    Icons.check,
-                    size: 18,
-                  )
-                : SizedBox(width: 24),
+            avatar: profile.upper ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
             labelPadding: EdgeInsets.only(left: 2, right: 12),
             showCheckmark: false,
             selected: profile.upper,
@@ -366,12 +353,7 @@ Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile)
           FilterChip(
             visualDensity: VisualDensity.compact,
             label: Text(_str.genPsLower),
-            avatar: profile.lower
-                ? Icon(
-                    Icons.check,
-                    size: 18,
-                  )
-                : SizedBox(width: 24),
+            avatar: profile.lower ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
             labelPadding: EdgeInsets.only(left: 2, right: 12),
             showCheckmark: false,
             selected: profile.lower,
@@ -381,12 +363,7 @@ Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile)
           FilterChip(
             visualDensity: VisualDensity.compact,
             label: Text(_str.genPsDigits),
-            avatar: profile.digits
-                ? Icon(
-                    Icons.check,
-                    size: 18,
-                  )
-                : SizedBox(width: 24),
+            avatar: profile.digits ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
             labelPadding: EdgeInsets.only(left: 2, right: 12),
             showCheckmark: false,
             selected: profile.digits,
@@ -396,12 +373,7 @@ Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile)
           FilterChip(
             visualDensity: VisualDensity.compact,
             label: Text(_str.genPsSpecial),
-            avatar: profile.special
-                ? Icon(
-                    Icons.check,
-                    size: 18,
-                  )
-                : SizedBox(width: 24),
+            avatar: profile.special ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
             labelPadding: EdgeInsets.only(left: 2, right: 12),
             showCheckmark: false,
             selected: profile.special,
@@ -411,12 +383,7 @@ Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile)
           FilterChip(
             visualDensity: VisualDensity.compact,
             label: Text(_str.genPsBrackets),
-            avatar: profile.brackets
-                ? Icon(
-                    Icons.check,
-                    size: 18,
-                  )
-                : SizedBox(width: 24),
+            avatar: profile.brackets ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
             labelPadding: EdgeInsets.only(left: 2, right: 12),
             showCheckmark: false,
             selected: profile.brackets,
@@ -426,12 +393,7 @@ Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile)
           FilterChip(
             visualDensity: VisualDensity.compact,
             label: Text(_str.genPsHigh),
-            avatar: profile.high
-                ? Icon(
-                    Icons.check,
-                    size: 18,
-                  )
-                : SizedBox(width: 24),
+            avatar: profile.high ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
             labelPadding: EdgeInsets.only(left: 2, right: 12),
             showCheckmark: false,
             selected: profile.high,
@@ -441,12 +403,7 @@ Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile)
           FilterChip(
             visualDensity: VisualDensity.compact,
             label: Text(_str.genPsAmbiguous),
-            avatar: profile.ambiguous
-                ? Icon(
-                    Icons.check,
-                    size: 18,
-                  )
-                : SizedBox(width: 24),
+            avatar: profile.ambiguous ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
             labelPadding: EdgeInsets.only(left: 2, right: 12),
             showCheckmark: false,
             selected: profile.ambiguous,

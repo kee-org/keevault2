@@ -35,9 +35,12 @@ linter:
 analyzer:
   errors:
     todo: ignore
-    deprecated_member_use: ignore # until upgrade to MD3 components, colours, etc.
+   # deprecated_member_use: ignore # until upgrade to MD3 components, colours, etc.
   exclude:
     - lib/generated/**
     - lib/phonetic.dart
     - lib/generated_plugin_registrant.dart
     - integration_test/** # until Patrol is no longer bundled with release code
+
+formatter:
+  page_width: 120

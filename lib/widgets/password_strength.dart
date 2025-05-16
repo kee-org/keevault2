@@ -7,10 +7,7 @@ import '../password_strength.dart';
 Widget renderPasswordStrength(double strength, double size) {
   return RatingBarIndicator(
     rating: strength,
-    itemBuilder: (context, index) => Icon(
-      Icons.lock,
-      color: Colors.amber,
-    ),
+    itemBuilder: (context, index) => Icon(Icons.lock, color: Colors.amber),
     itemCount: 5,
     itemSize: size,
   );
@@ -27,15 +24,16 @@ class PasswordStrengthWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: Text(str.passwordStrength),
-          ),
+          Padding(padding: const EdgeInsets.only(right: 8.0), child: Text(str.passwordStrength)),
           Flexible(
-            child: LayoutBuilder(builder: (context2, constraints) {
-              return renderPasswordStrength(
-                  testValue.isNotEmpty ? exactStrength(testValue, []) : 0, min(constraints.biggest.width, 160) / 5);
-            }),
+            child: LayoutBuilder(
+              builder: (context2, constraints) {
+                return renderPasswordStrength(
+                  testValue.isNotEmpty ? exactStrength(testValue, []) : 0,
+                  min(constraints.biggest.width, 160) / 5,
+                );
+              },
+            ),
           ),
         ],
       ),

@@ -47,7 +47,8 @@ class QuickUnlocker {
     return val;
   }
 
-  Future<BiometricStorageFile> _storageFile() => _storageFileCached ??= BiometricStorage().getStorage(
+  Future<BiometricStorageFile> _storageFile() =>
+      _storageFileCached ??= BiometricStorage().getStorage(
         storageFileName,
         forceInit: true,
         options: StorageFileInitOptions(
@@ -135,9 +136,11 @@ class QuickUnlocker {
     l.t('QU _read');
     try {
       final contents = await storage.read(
-          promptInfo: PromptInfo(
-              iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
-              androidPromptInfo: AndroidPromptInfo(title: S.current.unlock, description: S.current.confirmItsYou)));
+        promptInfo: PromptInfo(
+          iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
+          androidPromptInfo: AndroidPromptInfo(title: S.current.unlock, description: S.current.confirmItsYou),
+        ),
+      );
       return contents;
     } on AuthException catch (e, stackTrace) {
       if (e.code == AuthExceptionCode.timeout) {
@@ -155,22 +158,24 @@ $stackTrace''');
     }
   }
 
-// This is the only place we enable autofill for ios
-// maybe do it in more places? one day?
+  // This is the only place we enable autofill for ios
+  // maybe do it in more places? one day?
   Future<void> _write(BiometricStorageFile storage, String contents) async {
     l.t('QU _write');
     try {
-      await storage.write(contents,
-          promptInfo: PromptInfo(
-              iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
-              androidPromptInfo: AndroidPromptInfo(
-                  title: S.current.rememberVaultPassword,
-                  description: S.current.biometricsStoreDescription(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN'))));
+      await storage.write(
+        contents,
+        promptInfo: PromptInfo(
+          iosPromptInfo: IosPromptInfo(accessTitle: S.current.unlock, saveTitle: S.current.rememberVaultPassword),
+          androidPromptInfo: AndroidPromptInfo(
+            title: S.current.rememberVaultPassword,
+            description: S.current.biometricsStoreDescription(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN'),
+          ),
+        ),
+      );
       if (KeeVaultPlatform.isIOS) {
         l.t('setUserId = $_currentUser');
-        await _autoFillMethodChannel.invokeMethod('setUserId', <String, dynamic>{
-          'userId': _currentUser,
-        });
+        await _autoFillMethodChannel.invokeMethod('setUserId', <String, dynamic>{'userId': _currentUser});
       }
     } on AuthException catch (e, stackTrace) {
       if (e.code == AuthExceptionCode.timeout) {
@@ -238,8 +243,13 @@ $stackTrace''');
       l.d('UserPassKey has not changed');
     } else {
       final storage = await _storageFile();
-      updatedCreds = ExpiringCachedCredentials(updatedCreds.kdbxBase64Hash, updatedCreds.kdbxKdfCacheKey,
-          updatedCreds.kdbxKdfResultBase64, userPassKey!, updatedCreds.expiry);
+      updatedCreds = ExpiringCachedCredentials(
+        updatedCreds.kdbxBase64Hash,
+        updatedCreds.kdbxKdfCacheKey,
+        updatedCreds.kdbxKdfResultBase64,
+        userPassKey!,
+        updatedCreds.expiry,
+      );
       _currentCreds = updatedCreds;
       _currentCredsMap!.update(_currentUser!, updatedCreds);
       await _write(storage, json.encode(_currentCredsMap));
@@ -263,7 +273,9 @@ $stackTrace''');
     if (updatedCreds == null) {
       if (newUserPassKey?.isEmpty ?? true) {
         if (_currentUser != localUserMagicString) {
-          l.i("Kdbx credentials can't be saved before setting newUserPassKey. This is expected if the user has yet to sign-in following the enablement of a platform biometric.");
+          l.i(
+            "Kdbx credentials can't be saved before setting newUserPassKey. This is expected if the user has yet to sign-in following the enablement of a platform biometric.",
+          );
           return;
         }
         newUserPassKey = 'notARealPassword';

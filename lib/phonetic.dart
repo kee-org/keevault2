@@ -23,7 +23,7 @@ const PHONETIC_PRE = [
   'sc', 'sh', 'sl', 'sn', 'sr', 'st', 'str', 'sw',
   'th', 'tr',
   'br',
-  'v', 'w', 'y', 'z'
+  'v', 'w', 'y', 'z',
 ];
 
 /// The number of simple phonetics within the 'pre' set.
@@ -36,7 +36,7 @@ const PHONETIC_MID = [
   // Simple phonetics
   'a', 'e', 'i', 'o', 'u',
   // Complex phonetics
-  'ee', 'ie', 'oo', 'ou', 'ue'
+  'ee', 'ie', 'oo', 'ou', 'ue',
 ];
 
 /// The number of simple phonetics within the 'mid' set.
@@ -55,7 +55,7 @@ const PHONETIC_POST = [
   'rn',
   'sh', 'sk', 'st',
   'th',
-  'x', 'z'
+  'x', 'z',
 ];
 
 /// The number of simple phonetics within the 'post' set.
@@ -130,10 +130,10 @@ class Options {
   final int compoundSimplicity;
 
   Options({int? length, Random? randomSource, int? phoneticSimplicity, int? compoundSimplicity})
-      : length = length ?? 16,
-        randomSource = randomSource ?? Random.secure(),
-        phoneticSimplicity = phoneticSimplicity ?? 5,
-        compoundSimplicity = compoundSimplicity ?? 5;
+    : length = length ?? 16,
+      randomSource = randomSource ?? Random.secure(),
+      phoneticSimplicity = phoneticSimplicity ?? 5,
+      compoundSimplicity = compoundSimplicity ?? 5;
 }
 
 /// Gets the next pseudo-random phonetic from a given phonetic set,
@@ -201,12 +201,13 @@ class WordObj {
   String word;
   final Options opts;
 
-  WordObj(
-      {required this.numeric,
-      required this.lastSkippedPost,
-      required this.lastSkippedPre,
-      required this.word,
-      required this.opts});
+  WordObj({
+    required this.numeric,
+    required this.lastSkippedPost,
+    required this.lastSkippedPre,
+    required this.word,
+    required this.opts,
+  });
 }
 
 /// Generates a new word based on the given options.  For available options,
@@ -217,11 +218,12 @@ class WordObj {
 generate(Options options) {
   final length = options.length;
   final wordObj = WordObj(
-      numeric: getNumericHash(options.randomSource.nextDouble().toString()),
-      lastSkippedPost: false,
-      lastSkippedPre: false,
-      word: '',
-      opts: options);
+    numeric: getNumericHash(options.randomSource.nextDouble().toString()),
+    lastSkippedPost: false,
+    lastSkippedPre: false,
+    word: '',
+    opts: options,
+  );
 
   // Occasionally post processing will result in a slightly shorter string; we add two
   // extra syllables to help but can't guarantee that will be enough.

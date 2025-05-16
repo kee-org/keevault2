@@ -8,13 +8,14 @@ class EditableListWidget<T> extends StatefulWidget {
   final String title;
   final String hint;
 
-  const EditableListWidget(
-      {super.key,
-      required this.items,
-      required this.onAddFromString,
-      required this.onRemove,
-      required this.title,
-      required this.hint});
+  const EditableListWidget({
+    super.key,
+    required this.items,
+    required this.onAddFromString,
+    required this.onRemove,
+    required this.title,
+    required this.hint,
+  });
 
   @override
   State<EditableListWidget<T>> createState() => _EditableListWidgetState<T>();
@@ -30,10 +31,7 @@ class _EditableListWidgetState<T> extends State<EditableListWidget<T>> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          widget.title,
-          style: theme.textTheme.titleMedium,
-        ),
+        Text(widget.title, style: theme.textTheme.titleMedium),
         Row(
           children: [
             Expanded(
@@ -41,10 +39,7 @@ class _EditableListWidgetState<T> extends State<EditableListWidget<T>> {
                 padding: EdgeInsets.fromLTRB(0, 12, 12, 12),
                 child: TextFormField(
                   controller: newItemController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: widget.hint,
-                  ),
+                  decoration: InputDecoration(border: OutlineInputBorder(), labelText: widget.hint),
                 ),
               ),
             ),
@@ -64,31 +59,27 @@ class _EditableListWidgetState<T> extends State<EditableListWidget<T>> {
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 220),
           child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              itemCount: widget.items.length,
-              itemBuilder: (BuildContext context, int index) {
-                return SizedBox(
-                  height: 48,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.items[index].toString(),
-                          style: theme.textTheme.titleSmall,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete_forever),
-                        onPressed: () {
-                          widget.onRemove(widget.items[index]);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              }),
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            itemCount: widget.items.length,
+            itemBuilder: (BuildContext context, int index) {
+              return SizedBox(
+                height: 48,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: Text(widget.items[index].toString(), style: theme.textTheme.titleSmall)),
+                    IconButton(
+                      icon: Icon(Icons.delete_forever),
+                      onPressed: () {
+                        widget.onRemove(widget.items[index]);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ],
     );

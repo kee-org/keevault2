@@ -17,10 +17,11 @@ class SubscriptionService {
     if (user.tokens != null && user.tokens!.identity != null && user.tokens!.identity!.isNotEmpty) {
       try {
         final response = await _service.postRequest<String>(
-            'associate',
-            {'source': subscriptionSource, 'validationData': validationData},
-            user.tokens!.identity,
-            () => _userRefresh(user, false));
+          'associate',
+          {'source': subscriptionSource, 'validationData': validationData},
+          user.tokens!.identity,
+          () => _userRefresh(user, false),
+        );
         return response.statusCode == 200;
       } on KeeExceededQuotaException {
         throw KeeSubscriptionExpiredException();

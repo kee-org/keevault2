@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:keevault/colors.dart';
 
 class ColorChooser extends StatelessWidget {
-  const ColorChooser({
-    super.key,
-    required this.onChangeColor,
-    this.currentColor,
-  });
+  const ColorChooser({super.key, required this.onChangeColor, this.currentColor});
 
   final Function onChangeColor;
   final EntryColor? currentColor;
@@ -15,9 +11,7 @@ class ColorChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Row(
-      children: EntryColor.values.map((c) => colorBlock(c, theme)).toList(),
-    );
+    return Row(children: EntryColor.values.map((c) => colorBlock(c, theme)).toList());
   }
 
   Widget colorBlock(EntryColor c, ThemeData theme) {
@@ -29,13 +23,7 @@ class ColorChooser extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
         color: color,
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.8),
-            offset: Offset(1.0, 2.0),
-            blurRadius: 3.0,
-          ),
-        ],
+        boxShadow: [BoxShadow(color: color.withOpacity(0.8), offset: Offset(1.0, 2.0), blurRadius: 3.0)],
       ),
       child: Material(
         color: Colors.transparent,
@@ -45,10 +33,7 @@ class ColorChooser extends StatelessWidget {
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 250),
             opacity: isCurrentColor ? 1.0 : 0.0,
-            child: Icon(
-              Icons.done,
-              color: theme.brightness == Brightness.dark ? Colors.black : Colors.white,
-            ),
+            child: Icon(Icons.done, color: theme.brightness == Brightness.dark ? Colors.black : Colors.white),
           ),
         ),
       ),

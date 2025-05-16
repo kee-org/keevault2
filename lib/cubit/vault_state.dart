@@ -108,7 +108,12 @@ class VaultUploadCredentialsRequired extends VaultReconcilingUpload {
   final bool causedByInteraction;
   final PasswordMismatchRecoverySituation recovery;
   const VaultUploadCredentialsRequired(
-      super.vault, super.locally, super.remotely, this.causedByInteraction, this.recovery);
+    super.vault,
+    super.locally,
+    super.remotely,
+    this.causedByInteraction,
+    this.recovery,
+  );
 }
 
 class VaultChangingPassword extends VaultLoaded {

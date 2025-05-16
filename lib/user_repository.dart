@@ -57,7 +57,11 @@ class UserRepository {
   }
 
   Future<void> changeEmailAddress(
-      User user, String newEmailAddress, String newEmailHashed, ProtectedValue password) async {
+    User user,
+    String newEmailAddress,
+    String newEmailHashed,
+    ProtectedValue password,
+  ) async {
     await userService.changeEmailAddress(user, newEmailAddress, newEmailHashed, password);
     return;
   }
@@ -82,8 +86,8 @@ class UserRepository {
     return await subscriptionService.associate(user, subscriptionSource, validationData);
   }
 
-// If user has submitted same subscription ID again, they'll just get stuck here
-// for ages and be told to try later. not ideal but not unsafe
+  // If user has submitted same subscription ID again, they'll just get stuck here
+  // for ages and be told to try later. not ideal but not unsafe
   Future<User?> waitUntilValidSubscription(User user, PurchasedItem purchasedItem) async {
     for (final delay in [3, 4, 6, 10, 10, 15, 20]) {
       await Future.delayed(Duration(seconds: delay));

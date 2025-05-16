@@ -50,7 +50,8 @@ class EntryCubit extends Cubit<EntryState> {
 
   void removeHistoryEntry(KdbxEntry entry, int historyIndex) {
     throw Exception(
-        "Not implemented. Because of the challenge of synchronising adjustments to the list of history items, we can't support targetted history deletion at the moment.");
+      "Not implemented. Because of the challenge of synchronising adjustments to the list of history items, we can't support targetted history deletion at the moment.",
+    );
   }
 
   update({
@@ -77,9 +78,7 @@ class EntryCubit extends Cubit<EntryState> {
     emit(EntryLoaded(updated));
   }
 
-  updateGroupByUUID({
-    required String uuid,
-  }) {
+  updateGroupByUUID({required String uuid}) {
     final entry = (state as EntryLoaded).entry;
     try {
       final newGroup = entry.group.file!.findGroupByUuid(KdbxUuid(uuid));
@@ -104,9 +103,10 @@ class EntryCubit extends Cubit<EntryState> {
     final entry = (state as EntryLoaded).entry;
     final newList = entry.fields.toList();
     final uniqueName = findUniqueFieldName(newList, field.fieldKey!);
-    field = uniqueName == field.fieldKey!
-        ? field
-        : field.copyWith(browserModel: field.browserModel!.copyWith(name: uniqueName));
+    field =
+        uniqueName == field.fieldKey!
+            ? field
+            : field.copyWith(browserModel: field.browserModel!.copyWith(name: uniqueName));
     newList.add(field);
     final updated = entry.copyWith(fields: newList, isDirty: true);
     emit(EntryLoaded(updated));
@@ -133,11 +133,7 @@ class EntryCubit extends Cubit<EntryState> {
     emit(EntryLoaded(updated));
   }
 
-  renameField(
-    KdbxKey? key,
-    String? oldBrowserDisplayName,
-    String newName,
-  ) {
+  renameField(KdbxKey? key, String? oldBrowserDisplayName, String newName) {
     final entry = (state as EntryLoaded).entry;
     int fieldIndex;
 
@@ -160,12 +156,10 @@ class EntryCubit extends Cubit<EntryState> {
     final currentField = entry.fields[fieldIndex];
 
     final updatedFieldName = findUniqueFieldName(newList, newName);
-    final updatedField = currentField.fieldStorage == FieldStorage.JSON
-        ? currentField.copyWith(browserModel: currentField.browserModel!.copyWith(name: updatedFieldName))
-        : currentField.copyWith(
-            key: KdbxKey(updatedFieldName),
-            name: updatedFieldName,
-          );
+    final updatedField =
+        currentField.fieldStorage == FieldStorage.JSON
+            ? currentField.copyWith(browserModel: currentField.browserModel!.copyWith(name: updatedFieldName))
+            : currentField.copyWith(key: KdbxKey(updatedFieldName), name: updatedFieldName);
 
     newList.replaceRange(fieldIndex, fieldIndex + 1, [updatedField]);
     final updated = entry.copyWith(fields: newList, isDirty: true);
@@ -209,19 +203,20 @@ class EntryCubit extends Cubit<EntryState> {
     final newList = entry.fields.toList();
 
     final updatedField = entry.fields[fieldIndex].copyWith(
-        key: newCustomFieldName != null ? KdbxKey(newCustomFieldName) : key,
-        autocorrect: autocorrect,
-        browserModel: browserModel,
-        enableSuggestions: enableSuggestions,
-        icon: icon,
-        isDirty: isDirty,
-        keyboardType: keyboardType,
-        localisedCommonName: localisedCommonName,
-        name: newCustomFieldName,
-        protect: protect,
-        showIfEmpty: showIfEmpty,
-        textCapitalization: textCapitalization,
-        value: value);
+      key: newCustomFieldName != null ? KdbxKey(newCustomFieldName) : key,
+      autocorrect: autocorrect,
+      browserModel: browserModel,
+      enableSuggestions: enableSuggestions,
+      icon: icon,
+      isDirty: isDirty,
+      keyboardType: keyboardType,
+      localisedCommonName: localisedCommonName,
+      name: newCustomFieldName,
+      protect: protect,
+      showIfEmpty: showIfEmpty,
+      textCapitalization: textCapitalization,
+      value: value,
+    );
     newList.replaceRange(fieldIndex, fieldIndex + 1, [updatedField]);
     final updated = entry.copyWith(fields: newList, isDirty: true);
     emit(EntryLoaded(updated));
@@ -241,10 +236,7 @@ class EntryCubit extends Cubit<EntryState> {
   void attachFile({required String fileName, required Uint8List bytes}) {
     final entry = (state as EntryLoaded).entry;
     final binary = entry.createBinaryForCopy(name: fileName, bytes: bytes);
-    final updated = entry.copyWith(
-      isDirty: true,
-      binaryMapEntries: [...entry.binaryMapEntries, binary],
-    );
+    final updated = entry.copyWith(isDirty: true, binaryMapEntries: [...entry.binaryMapEntries, binary]);
     emit(EntryLoaded(updated));
   }
 

@@ -20,18 +20,9 @@ class FreeUserTermsDialog extends StatelessWidget with DialogMixin<bool> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.freeUserTermsPopup1),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.freeUserTermsPopup2),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.freeUserTermsPopup3),
-            ),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.freeUserTermsPopup1)),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.freeUserTermsPopup2)),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.freeUserTermsPopup3)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Link(
@@ -43,8 +34,9 @@ class FreeUserTermsDialog extends StatelessWidget with DialogMixin<bool> {
                     child: Text(
                       tosLink,
                       style: theme.textTheme.bodyMedium!.copyWith(
-                          color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
-                          fontWeight: FontWeight.bold),
+                        color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   );
                 },
@@ -61,26 +53,19 @@ class FreeUserTermsDialog extends StatelessWidget with DialogMixin<bool> {
                     child: Text(
                       privacyLink,
                       style: theme.textTheme.bodyMedium!.copyWith(
-                          color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
-                          fontWeight: FontWeight.bold),
+                        color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   );
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.freeUserTermsPopup4),
-            ),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.freeUserTermsPopup4)),
           ],
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(str.alertOk),
-        ),
-      ],
+      actions: <Widget>[TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(str.alertOk))],
     );
   }
 

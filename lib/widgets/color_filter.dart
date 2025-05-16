@@ -32,9 +32,10 @@ class ColorFilterWidget extends StatelessWidget {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           alignment: WrapAlignment.center,
                           runSpacing: 16.0,
-                          children: EntryColor.values
-                              .map((c) => colorBlock(c, filterState.colors.contains(c), theme, context))
-                              .toList(),
+                          children:
+                              EntryColor.values
+                                  .map((c) => colorBlock(c, filterState.colors.contains(c), theme, context))
+                                  .toList(),
                         ),
                       ),
                     ),
@@ -48,27 +49,19 @@ class ColorFilterWidget extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: Icon(
-                      Icons.info,
-                      color: theme.textTheme.bodySmall!.color,
-                    ),
+                    child: Icon(Icons.info, color: theme.textTheme.bodySmall!.color),
                   ),
                   Expanded(
-                      child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          str.colorsExplanation,
-                          style: theme.textTheme.bodySmall,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(str.colorsExplanation, style: theme.textTheme.bodySmall),
                         ),
-                      ),
-                      Text(
-                        str.colorFilteringHint,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  )),
+                        Text(str.colorFilteringHint, style: theme.textTheme.bodySmall),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -85,13 +78,7 @@ class ColorFilterWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24.0),
         color: color,
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.8),
-            offset: Offset(1.0, 2.0),
-            blurRadius: 2.0,
-          ),
-        ],
+        boxShadow: [BoxShadow(color: color.withOpacity(0.8), offset: Offset(1.0, 2.0), blurRadius: 2.0)],
       ),
       child: Material(
         color: Colors.transparent,

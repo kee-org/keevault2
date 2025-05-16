@@ -8,14 +8,16 @@ part 'app_settings_state.dart';
 
 class AppSettingsCubit extends Cubit<AppSettingsState> {
   AppSettingsCubit()
-      : super(AppSettingsBasic(
+    : super(
+        AppSettingsBasic(
           getThemeMode(Settings.getValue<String>('theme') ?? 'sys'),
           Settings.getValue<bool>('introShownVaultSummary') ?? false,
           InAppMessage.fromAppSetting('iamEmailSignup'),
           InAppMessage.fromAppSetting('iamMakeMoreChangesOrSave'),
           InAppMessage.fromAppSetting('iamSavingVault'),
           InAppMessage.fromAppSetting('iamAutofillDisabled'),
-        ));
+        ),
+      );
 
   static ThemeMode getThemeMode(String brightness) {
     if (brightness == 'lt') return ThemeMode.light;

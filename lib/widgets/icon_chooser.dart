@@ -45,27 +45,24 @@ class _IconChooserState extends State<IconChooser> {
       content: SizedBox(
         width: 300,
         child: GridView.builder(
-            itemCount: IconChooser.iconMap.length,
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              childAspectRatio: 1 / 1,
-              mainAxisSpacing: 5,
-              crossAxisSpacing: 5,
-              maxCrossAxisExtent: widget.iconSize != null ? widget.iconSize! + 10 : 50,
-            ),
-            itemBuilder: (context, index) {
-              var item = IconChooser.iconMap.entries.elementAt(index);
-              const imageSize = 24.0;
-              return GestureDetector(
-                onTap: () {
-                  Navigator.pop(context, item.key is int ? KdbxIcon.values[item.key] : item.key as KdbxCustomIcon);
-                },
-                child: item.value is IconData
-                    ? Icon(
-                        item.value,
-                        size: widget.iconSize,
-                        color: widget.iconColor,
-                      )
-                    : Container(
+          itemCount: IconChooser.iconMap.length,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            childAspectRatio: 1 / 1,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
+            maxCrossAxisExtent: widget.iconSize != null ? widget.iconSize! + 10 : 50,
+          ),
+          itemBuilder: (context, index) {
+            var item = IconChooser.iconMap.entries.elementAt(index);
+            const imageSize = 24.0;
+            return GestureDetector(
+              onTap: () {
+                Navigator.pop(context, item.key is int ? KdbxIcon.values[item.key] : item.key as KdbxCustomIcon);
+              },
+              child:
+                  item.value is IconData
+                      ? Icon(item.value, size: widget.iconSize, color: widget.iconColor)
+                      : Container(
                         height: imageSize,
                         width: imageSize,
                         constraints: BoxConstraints(maxWidth: imageSize, minWidth: imageSize),
@@ -78,15 +75,14 @@ class _IconChooserState extends State<IconChooser> {
                           ),
                         ),
                       ),
-              );
-            }),
+            );
+          },
+        ),
       ),
       actions: [
         TextButton(
           style: ButtonStyle(
-            padding: WidgetStateProperty.resolveWith(
-              (states) => const EdgeInsets.symmetric(horizontal: 20),
-            ),
+            padding: WidgetStateProperty.resolveWith((states) => const EdgeInsets.symmetric(horizontal: 20)),
           ),
           onPressed: () => Navigator.of(context).pop(),
           child: Text(str.alertClose),

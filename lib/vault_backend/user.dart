@@ -84,7 +84,9 @@ class User {
       final now = DateTime.now().millisecondsSinceEpoch;
       final expiryTimeWithGracePeriod = subValidUntil + 1200000; // 20 mins
       final newestSubExpiryAllowedForNewTrial = max(
-          now - (86400 * 548 * 1000), DateTime.utc(2022, 4, 1).millisecondsSinceEpoch); // 18 months or 1st April 2022
+        now - (86400 * 548 * 1000),
+        DateTime.utc(2022, 4, 1).millisecondsSinceEpoch,
+      ); // 18 months or 1st April 2022
       if (expiryTimeWithGracePeriod >= now) {
         return AccountSubscriptionStatus.current;
       } else if (subValidUntil < newestSubExpiryAllowedForNewTrial &&

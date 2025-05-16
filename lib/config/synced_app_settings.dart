@@ -6,11 +6,8 @@ import 'package:keevault/model/password_generator_profile.dart';
 
 class SyncedAppSettings {
   static KeeVaultEmbeddedConfig export(KeeVaultEmbeddedConfig embeddedConf) {
-    final newConfig = embeddedConf.vault ??
-        <String, dynamic>{
-          'prefs': <String, dynamic>{},
-          'updatedAt': <String, dynamic>{},
-        };
+    final newConfig =
+        embeddedConf.vault ?? <String, dynamic>{'prefs': <String, dynamic>{}, 'updatedAt': <String, dynamic>{}};
     newConfig['prefs']['generatorPresets'] = PasswordGeneratorProfileSettings.fromStorage().toMap();
     if (newConfig['updatedAt'] is! Map<String, dynamic>) {
       newConfig['updatedAt'] = <String, dynamic>{};
@@ -36,7 +33,9 @@ class SyncedAppSettings {
         settings = PasswordGeneratorProfileSettings.fromMap(embedded);
         settings = repairIfRequired(cubit, settings);
       } on Exception {
-        l.w('Embedded password generator profile settings corrupt. Will ignore and bump our local updated time to mark that as the newest known version to aid recovery on other devices.');
+        l.w(
+          'Embedded password generator profile settings corrupt. Will ignore and bump our local updated time to mark that as the newest known version to aid recovery on other devices.',
+        );
         await Settings.setValue('embeddedConfigUpdatedAtGeneratorPresets', newUpdatedDate);
         return;
       }
@@ -52,10 +51,15 @@ class SyncedAppSettings {
   // for the known situation where a user of the PWA can set a disabled profile to be
   // the default, we can make rare fixups to the incoming data here.
   static PasswordGeneratorProfileSettings repairIfRequired(
-      GeneratorProfilesCubit cubit, PasswordGeneratorProfileSettings settings) {
+    GeneratorProfilesCubit cubit,
+    PasswordGeneratorProfileSettings settings,
+  ) {
     if (settings.disabled.contains(settings.defaultProfileName)) {
-      final newDefaultName =
-          cubit.determineNewDefaultProfileName(settings.defaultProfileName, settings.disabled, settings.user);
+      final newDefaultName = cubit.determineNewDefaultProfileName(
+        settings.defaultProfileName,
+        settings.disabled,
+        settings.user,
+      );
       return settings.copyWith(defaultProfileName: newDefaultName);
     }
     return settings;

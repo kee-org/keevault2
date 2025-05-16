@@ -10,74 +10,84 @@ import '../generated/l10n.dart';
 import 'in_app_messenger.dart';
 
 class VaultDrawerWidget extends StatelessWidget {
-  const VaultDrawerWidget({
-    super.key,
-  });
+  const VaultDrawerWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    return BlocBuilder<EntryCubit, EntryState>(builder: (context, entryState) {
-      return BlocBuilder<VaultCubit, VaultState>(builder: (context, state) {
-        final isSaveEnabled = entryState is! EntryLoaded &&
-            (state is VaultLoaded && state.vault.files.current.isDirty) &&
-            !(state is VaultSaving && state.locally);
-        return Row(
-          children: [
-            Expanded(
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: OutlinedButton.icon(
-                  icon: _buildIcon(state, str),
-                  label: _buildTitle(state, str),
-                  onPressed: () async {
-                    await DialogUtils.showSimpleAlertDialog(context, null, _buildDescription(state, str),
-                        routeAppend: 'vaultStatusExplanation');
-                  },
+    return BlocBuilder<EntryCubit, EntryState>(
+      builder: (context, entryState) {
+        return BlocBuilder<VaultCubit, VaultState>(
+          builder: (context, state) {
+            final isSaveEnabled =
+                entryState is! EntryLoaded &&
+                (state is VaultLoaded && state.vault.files.current.isDirty) &&
+                !(state is VaultSaving && state.locally);
+            return Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: OutlinedButton.icon(
+                      icon: _buildIcon(state, str),
+                      label: _buildTitle(state, str),
+                      onPressed: () async {
+                        await DialogUtils.showSimpleAlertDialog(
+                          context,
+                          null,
+                          _buildDescription(state, str),
+                          routeAppend: 'vaultStatusExplanation',
+                        );
+                      },
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: isSaveEnabled
-                  ? () async {
-                      final iam = InAppMessengerWidget.of(context);
-                      final accountCubit = BlocProvider.of<AccountCubit>(context);
+                ElevatedButton(
+                  onPressed:
+                      isSaveEnabled
+                          ? () async {
+                            final iam = InAppMessengerWidget.of(context);
+                            final accountCubit = BlocProvider.of<AccountCubit>(context);
+                            final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                            await BlocProvider.of<InteractionCubit>(context).databaseSaved();
+                            await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
+                            User? user = accountCubit.currentUserIfKnown;
+                            await vaultCubit.save(user);
+                          }
+                          : null,
+                  child: Text(str.save.toUpperCase()),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
                       final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                      await BlocProvider.of<InteractionCubit>(context).databaseSaved();
-                      await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
-                      User? user = accountCubit.currentUserIfKnown;
-                      await vaultCubit.save(user);
-                    }
-                  : null,
-              child: Text(str.save.toUpperCase()),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                  final accountCubit = BlocProvider.of<AccountCubit>(context);
-                  if (state is VaultLoaded && state.vault.files.current.isDirty) {
-                    final proceed = await DialogUtils.showConfirmDialog(
-                        context: context,
-                        params: ConfirmDialogParams(
+                      final accountCubit = BlocProvider.of<AccountCubit>(context);
+                      if (state is VaultLoaded && state.vault.files.current.isDirty) {
+                        final proceed = await DialogUtils.showConfirmDialog(
+                          context: context,
+                          params: ConfirmDialogParams(
                             content: str.appCannotLock,
                             negativeButtonText: str.alertNo,
-                            positiveButtonText: str.discardChanges));
-                    if (!proceed) {
-                      return;
-                    }
-                  }
-                  vaultCubit.lock();
-                  await accountCubit.signout();
-                },
-                child: Text(str.lock.toUpperCase()),
-              ),
-            ),
-          ],
+                            positiveButtonText: str.discardChanges,
+                          ),
+                        );
+                        if (!proceed) {
+                          return;
+                        }
+                      }
+                      vaultCubit.lock();
+                      await accountCubit.signout();
+                    },
+                    child: Text(str.lock.toUpperCase()),
+                  ),
+                ),
+              ],
+            );
+          },
         );
-      });
-    });
+      },
+    );
   }
 
   Icon _buildIcon(VaultState state, S str) {

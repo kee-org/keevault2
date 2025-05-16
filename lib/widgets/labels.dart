@@ -32,17 +32,15 @@ class _LabelsWidgetState extends State<LabelsWidget> {
         enabled: true,
         maxChips: 25,
         textStyle: const TextStyle(height: 1.5, fontFamily: 'Roboto', fontSize: 16),
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.label),
-          labelText: str.labels,
-          border: OutlineInputBorder(),
-        ),
+        decoration: InputDecoration(prefixIcon: Icon(Icons.label), labelText: str.labels, border: OutlineInputBorder()),
         findSuggestions: (String query) {
           if (query.isNotEmpty) {
             var lowercaseQuery = query.toLowerCase();
-            final otherMatchingTags = widget.otherKnownTags.where((tag) {
-              return tag.lowercase.contains(lowercaseQuery);
-            }).toList(growable: false)
+            final otherMatchingTags = widget.otherKnownTags
+                .where((tag) {
+                  return tag.lowercase.contains(lowercaseQuery);
+                })
+                .toList(growable: false)
               ..sort((a, b) => a.lowercase.indexOf(lowercaseQuery).compareTo(b.lowercase.indexOf(lowercaseQuery)));
             if (otherMatchingTags.followedBy(widget.tags).any((tag) => tag.lowercase == lowercaseQuery)) {
               return otherMatchingTags;
@@ -82,11 +80,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
                   child: Chip(
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     backgroundColor: theme.brightness == Brightness.dark ? Colors.grey.shade900 : null,
-                    label: Text(
-                      tag.name,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    label: Text(tag.name, softWrap: false, overflow: TextOverflow.ellipsis),
                     padding: EdgeInsets.all(0.0),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),
                   ),
@@ -96,13 +90,15 @@ class _LabelsWidgetState extends State<LabelsWidget> {
             onTap: () => state.selectSuggestion(tag),
           );
         },
-        suggestionListBuilder: (context, child) => Material(
-          elevation: 4.0,
-          type: MaterialType.canvas,
-          child: Container(
-              color: theme.brightness == Brightness.dark ? Colors.grey.shade800 : theme.secondaryHeaderColor,
-              child: child),
-        ),
+        suggestionListBuilder:
+            (context, child) => Material(
+              elevation: 4.0,
+              type: MaterialType.canvas,
+              child: Container(
+                color: theme.brightness == Brightness.dark ? Colors.grey.shade800 : theme.secondaryHeaderColor,
+                child: child,
+              ),
+            ),
       ),
     );
   }

@@ -14,10 +14,7 @@ S _str = S();
 
 class PasswordPresetManagerWidget extends StatefulWidget {
   final Function? apply;
-  const PasswordPresetManagerWidget({
-    super.key,
-    this.apply,
-  });
+  const PasswordPresetManagerWidget({super.key, this.apply});
 
   @override
   State<PasswordPresetManagerWidget> createState() => _PasswordPresetManagerWidgetState();
@@ -56,108 +53,111 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
             key: widget.key,
             appBar: AppBar(title: Text(_str.managePasswordPresets)),
             body: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                itemCount: generatorState.all.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Card(
-                          clipBehavior: Clip.antiAlias,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ListTile(
-                                title: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(
-                                    generatorState.all[index].title,
-                                    style: theme.textTheme.titleMedium,
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              itemCount: generatorState.all.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              title: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(generatorState.all[index].title, style: theme.textTheme.titleMedium),
+                              ),
+                              subtitle: Text(
+                                describeProfile(context, generatorState.all[index]),
+                                style: theme.textTheme.titleSmall,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    title: Text(str.enabled),
+                                    leading: Switch(
+                                      value:
+                                          !generatorState.profileSettings.disabled.contains(
+                                            generatorState.all[index].name,
+                                          ),
+                                      onChanged: (bool? value) async {
+                                        if (value != null) {
+                                          final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                          await cubit.setEnabledProfile(generatorState.all[index].name, value);
+                                        }
+                                      },
+                                    ),
                                   ),
                                 ),
-                                subtitle: Text(
-                                  describeProfile(context, generatorState.all[index]),
-                                  style: theme.textTheme.titleSmall,
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: ListTile(
-                                      title: Text(str.enabled),
-                                      leading: Switch(
-                                        value: !generatorState.profileSettings.disabled
-                                            .contains(generatorState.all[index].name),
-                                        onChanged: (bool? value) async {
-                                          if (value != null) {
-                                            final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                            await cubit.setEnabledProfile(generatorState.all[index].name, value);
-                                          }
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Visibility(
+                                    visible:
+                                        generatorState.profileSettings.defaultProfileName ==
+                                        generatorState.all[index].name,
+                                    replacement: Visibility(
+                                      visible:
+                                          !generatorState.profileSettings.disabled.contains(
+                                            generatorState.all[index].name,
+                                          ),
+                                      child: OutlinedButton(
+                                        child: Text(str.setDefault),
+                                        onPressed: () async {
+                                          final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                          await cubit.changeDefaultProfile(generatorState.all[index].name);
                                         },
                                       ),
                                     ),
+                                    child: Text(str.genPsDefault),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                    child: Visibility(
-                                      visible: generatorState.profileSettings.defaultProfileName ==
-                                          generatorState.all[index].name,
-                                      replacement: Visibility(
-                                        visible: !generatorState.profileSettings.disabled
-                                            .contains(generatorState.all[index].name),
-                                        child: OutlinedButton(
-                                          child: Text(str.setDefault),
-                                          onPressed: () async {
-                                            final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                            await cubit.changeDefaultProfile(generatorState.all[index].name);
-                                          },
-                                        ),
-                                      ),
-                                      child: Text(str.genPsDefault),
-                                    ),
+                                ),
+                              ],
+                            ),
+                            Visibility(
+                              visible: generatorState.all[index].isUserDefined,
+                              child: ButtonBar(
+                                alignment: MainAxisAlignment.start,
+                                children: [
+                                  TextButton(
+                                    onPressed: () async {
+                                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                      final newName = await SimplePromptDialog(
+                                        title: str.renamingPreset,
+                                        labelText: str.enterNewPresetName,
+                                        initialValue: generatorState.all[index].name,
+                                      ).show(context);
+                                      if (newName != null) {
+                                        await cubit.renameProfile(generatorState.all[index].name, newName);
+                                      }
+                                    },
+                                    child: Text(str.tagRename.toUpperCase()),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                      await cubit.removeProfile(generatorState.all[index].name);
+                                    },
+                                    child: Text(str.genPsDelete.toUpperCase()),
                                   ),
                                 ],
                               ),
-                              Visibility(
-                                visible: generatorState.all[index].isUserDefined,
-                                child: ButtonBar(
-                                  alignment: MainAxisAlignment.start,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                        final newName = await SimplePromptDialog(
-                                          title: str.renamingPreset,
-                                          labelText: str.enterNewPresetName,
-                                          initialValue: generatorState.all[index].name,
-                                        ).show(context);
-                                        if (newName != null) {
-                                          await cubit.renameProfile(generatorState.all[index].name, newName);
-                                        }
-                                      },
-                                      child: Text(str.tagRename.toUpperCase()),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                        await cubit.removeProfile(generatorState.all[index].name);
-                                      },
-                                      child: Text(str.genPsDelete.toUpperCase()),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  );
-                }),
+                    ),
+                  ],
+                );
+              },
+            ),
             floatingActionButton: OpenContainer<bool>(
               key: ValueKey('new password generator profile screen'),
               tappable: false,
@@ -172,9 +172,7 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                     final generatorState = state as GeneratorProfilesCreating;
                     return ColouredSafeArea(
                       child: Scaffold(
-                        appBar: AppBar(
-                          title: Text(str.newProfile),
-                        ),
+                        appBar: AppBar(title: Text(str.newProfile)),
                         body: SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -207,19 +205,21 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             OutlinedButton(
-                                child: Text(str.alertCancel.toUpperCase()),
-                                onPressed: () {
-                                  final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                  cubit.discardNewProfile();
-                                  Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
-                                }),
+                              child: Text(str.alertCancel.toUpperCase()),
+                              onPressed: () {
+                                final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                cubit.discardNewProfile();
+                                Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
+                              },
+                            ),
                             OutlinedButton(
-                                child: Text(str.add.toUpperCase()),
-                                onPressed: () async {
-                                  final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                  await cubit.addNewProfile();
-                                  Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
-                                }),
+                              child: Text(str.add.toUpperCase()),
+                              onPressed: () async {
+                                final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                await cubit.addNewProfile();
+                                Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
+                              },
+                            ),
                           ],
                         ),
                       ),

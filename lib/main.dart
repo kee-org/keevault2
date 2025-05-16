@@ -55,7 +55,9 @@ void main() async {
         });
       } else if (error is FlutterError &&
           error.message.startsWith('Scaffold.geometryOf() must only be accessed during the paint phase.')) {
-        l.w("Known Flutter bug ignored: 'Scaffold.geometryOf() must only be accessed during the paint phase.' This is known to be caused by tap interactions while the animations package is actively animating from an entrylistitem to an entry for editing. Other potential causes should be investigated if this is unlikely to have been the cause in this specific situation.");
+        l.w(
+          "Known Flutter bug ignored: 'Scaffold.geometryOf() must only be accessed during the paint phase.' This is known to be caused by tap interactions while the animations package is actively animating from an entrylistitem to an entry for editing. Other potential causes should be investigated if this is unlikely to have been the cause in this specific situation.",
+        );
       } else {
         l.f('Unhandled error in app.', error: error, stackTrace: stackTrace);
         navigatorKey.currentState?.overlay?.context.let((context) {

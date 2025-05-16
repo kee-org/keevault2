@@ -61,7 +61,7 @@ class KeeLoginRequiredException extends KeeException {
   final QUStatus? quStatus;
 
   KeeLoginRequiredException({String? cause, this.quStatus, dynamic exception, StackTrace? stackTrace})
-      : super(cause, exception, stackTrace);
+    : super(cause, exception, stackTrace);
 }
 
 class KeeLoginFailedException extends KeeException {}

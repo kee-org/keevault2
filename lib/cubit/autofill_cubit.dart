@@ -87,40 +87,42 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   Future<void> setSavingPreference(value) async {
     final prefs = await AutofillService().preferences;
-    await AutofillService().setPreferences(AutofillPreferences(
-      enableDebug: prefs.enableDebug,
-      enableSaving: value,
-      enableIMERequests: prefs.enableIMERequests,
-    ));
+    await AutofillService().setPreferences(
+      AutofillPreferences(
+        enableDebug: prefs.enableDebug,
+        enableSaving: value,
+        enableIMERequests: prefs.enableIMERequests,
+      ),
+    );
   }
 
   Future<void> setDebugEnabledPreference(value) async {
     if (KeeVaultPlatform.isIOS) {
       final iosAutofillEnableDebug =
           await _autoFillMethodChannel.invokeMethod<bool>('setDebugEnabled', <String, dynamic>{
-                'debugEnabled': value,
-              }) ??
-              false;
+            'debugEnabled': value,
+          }) ??
+          false;
       if (!iosAutofillEnableDebug) {
         l.e('Failed to set debug status for autofill service');
       }
     } else {
       final prefs = await AutofillService().preferences;
-      await AutofillService().setPreferences(AutofillPreferences(
-        enableDebug: value,
-        enableSaving: prefs.enableSaving,
-        enableIMERequests: prefs.enableIMERequests,
-      ));
+      await AutofillService().setPreferences(
+        AutofillPreferences(
+          enableDebug: value,
+          enableSaving: prefs.enableSaving,
+          enableIMERequests: prefs.enableIMERequests,
+        ),
+      );
     }
   }
 
   Future<void> setIMEIntegrationPreference(value) async {
     final prefs = await AutofillService().preferences;
-    await AutofillService().setPreferences(AutofillPreferences(
-      enableDebug: prefs.enableDebug,
-      enableSaving: prefs.enableSaving,
-      enableIMERequests: value,
-    ));
+    await AutofillService().setPreferences(
+      AutofillPreferences(enableDebug: prefs.enableDebug, enableSaving: prefs.enableSaving, enableIMERequests: value),
+    );
   }
 
   Future<bool> autofillWithList(LocalVaultFile vault) async {
@@ -146,11 +148,15 @@ class AutofillCubit extends Cubit<AutofillState> {
   bool shouldIgnoreRequest(AutofillMetadata androidMetadata) {
     bool ignoreRequest = false;
     if (androidMetadata.packageNames.length > 1) {
-      l.e("Multiple package names found for autofill. We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed names.");
+      l.e(
+        "Multiple package names found for autofill. We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed names.",
+      );
       ignoreRequest = true;
     }
     if (androidMetadata.webDomains.length > 1) {
-      l.e("Multiple domains found for autofill. We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed domains.");
+      l.e(
+        "Multiple domains found for autofill. We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed domains.",
+      );
       ignoreRequest = true;
     }
     if ((androidMetadata.webDomains.firstOrNull?.domain.isEmpty ?? true) &&
@@ -170,11 +176,7 @@ class AutofillCubit extends Cubit<AutofillState> {
     final title = entry.getString(KdbxKeyCommon.TITLE)?.getText() ?? 'untitled entry';
     final username = entry.getString(KdbxKeyCommon.USER_NAME)?.getText() ?? '';
     final pwd = entry.getString(KdbxKeyCommon.PASSWORD)?.getText() ?? '';
-    return PwDataset(
-      label: title,
-      username: username,
-      password: pwd,
-    );
+    return PwDataset(label: title, username: username, password: pwd);
   }
 
   void autofillInstantly(KdbxEntry entry) async {
@@ -210,9 +212,16 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   List<KdbxEntry> _findMatchesByPackageName(AutofillMetadata androidMetadata, KdbxFile current) {
     final matches = <KdbxEntry>[];
-    matches.addAll(current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) =>
-        !entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide) &&
-        entry.androidPackageNames.any((pn) => androidMetadata.packageNames.contains(pn))));
+    matches.addAll(
+      current.body.rootGroup
+          .getAllEntries(enterRecycleBin: false)
+          .values
+          .where(
+            (entry) =>
+                !entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide) &&
+                entry.androidPackageNames.any((pn) => androidMetadata.packageNames.contains(pn)),
+          ),
+    );
     return matches;
   }
 
@@ -222,8 +231,9 @@ class AutofillCubit extends Cubit<AutofillState> {
     // Old versions of Android don't tell us the scheme so we have to assume it is
     // https otherwise we'll rarely be able to match any entries.
     final requestedUrl = urls.parse(
-        "${androidMetadata.webDomains.firstOrNull?.scheme ?? 'https'}://${androidMetadata.webDomains.firstOrNull?.domain ?? ''}"
-            .trim());
+      "${androidMetadata.webDomains.firstOrNull?.scheme ?? 'https'}://${androidMetadata.webDomains.firstOrNull?.domain ?? ''}"
+          .trim(),
+    );
 
     // Apparently Android never supplies us with a port so this is the best we can do
     final hostname = requestedUrl?.publicSuffixUrl.sourceUrl.host;
@@ -234,53 +244,64 @@ class AutofillCubit extends Cubit<AutofillState> {
     final matches = <KdbxEntry>[];
 
     if (hostname == null || registrableDomain == null || scheme == null) {
-      l.e("Android supplied a WebDomain we can't understand. Please report the exact web page you encounter this error on so we can see if it is possible to add support for autofilling this in future.");
+      l.e(
+        "Android supplied a WebDomain we can't understand. Please report the exact web page you encounter this error on so we can see if it is possible to add support for autofilling this in future.",
+      );
       return matches;
     }
     final matchAccuracyDomainOverride = MatchAccuracy.values.singleWhereOrNull(
-        (val) => val.name == current.body.meta.browserSettings.matchedURLAccuracyOverrides[registrableDomain]);
+      (val) => val.name == current.body.meta.browserSettings.matchedURLAccuracyOverrides[registrableDomain],
+    );
 
-    matches.addAll(current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) {
-      if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
-        return false;
-      }
-      bool isAMatch = false;
-      var minimumMatchAccuracy = matchAccuracyDomainOverride ??
-          entry.browserSettings.matcherConfigs
-              .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
-              ?.urlMatchMethod ??
-          MatchAccuracy.Domain;
-
-      final matchPatterns = entry.browserSettings.includeUrls.toList();
-      final primaryUrlString = entry.getString(KdbxKeyCommon.URL)?.getText();
-
-      if (primaryUrlString != null) {
-        matchPatterns.add(primaryUrlString);
-      }
-      for (var pattern in matchPatterns) {
-        if (urlsMatch(pattern, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
-          isAMatch = true;
-          break;
+    matches.addAll(
+      current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) {
+        if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
+          return false;
         }
-      }
+        bool isAMatch = false;
+        var minimumMatchAccuracy =
+            matchAccuracyDomainOverride ??
+            entry.browserSettings.matcherConfigs
+                .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
+                ?.urlMatchMethod ??
+            MatchAccuracy.Domain;
 
-      if (isAMatch) {
-        for (var pattern in entry.browserSettings.excludeUrls) {
+        final matchPatterns = entry.browserSettings.includeUrls.toList();
+        final primaryUrlString = entry.getString(KdbxKeyCommon.URL)?.getText();
+
+        if (primaryUrlString != null) {
+          matchPatterns.add(primaryUrlString);
+        }
+        for (var pattern in matchPatterns) {
           if (urlsMatch(pattern, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
-            isAMatch = false;
+            isAMatch = true;
             break;
           }
         }
-      }
 
-      return isAMatch;
-    }));
+        if (isAMatch) {
+          for (var pattern in entry.browserSettings.excludeUrls) {
+            if (urlsMatch(pattern, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
+              isAMatch = false;
+              break;
+            }
+          }
+        }
+
+        return isAMatch;
+      }),
+    );
     return matches;
   }
 
   @visibleForTesting
   bool urlsMatch(
-      Pattern pattern, MatchAccuracy minimumMatchAccuracy, String scheme, String hostname, String registrableDomain) {
+    Pattern pattern,
+    MatchAccuracy minimumMatchAccuracy,
+    String scheme,
+    String hostname,
+    String registrableDomain,
+  ) {
     Pattern testValue;
     if (pattern is String) {
       final testUrl = urls.parse(pattern.trim());

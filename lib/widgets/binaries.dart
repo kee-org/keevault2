@@ -17,11 +17,7 @@ import 'dialog_utils.dart';
 
 abstract class AttachmentSource {
   Future<Uint8List> readAttachmentBytes(KdbxBinary binary);
-  Future<void> attachFile({
-    required KdbxEntry entry,
-    required String fileName,
-    required Uint8List bytes,
-  });
+  Future<void> attachFile({required KdbxEntry entry, required String fileName, required Uint8List bytes});
 }
 
 class AttachmentSourceKdbx extends AttachmentSource {
@@ -31,16 +27,8 @@ class AttachmentSourceKdbx extends AttachmentSource {
   }
 
   @override
-  Future<void> attachFile({
-    required KdbxEntry entry,
-    required String fileName,
-    required Uint8List bytes,
-  }) async {
-    entry.createBinary(
-      isProtected: false,
-      name: fileName,
-      bytes: bytes,
-    );
+  Future<void> attachFile({required KdbxEntry entry, required String fileName, required Uint8List bytes}) async {
+    entry.createBinary(isProtected: false, name: fileName, bytes: bytes);
   }
 }
 
@@ -98,12 +86,7 @@ class AttachmentSourceKdbx extends AttachmentSource {
 // }
 
 class KeeVaultAccountAttachmentMetadata {
-  KeeVaultAccountAttachmentMetadata({
-    required this.id,
-    required this.secret,
-    required this.format,
-    required this.size,
-  });
+  KeeVaultAccountAttachmentMetadata({required this.id, required this.secret, required this.format, required this.size});
 
   final String id;
   final String secret;
@@ -113,18 +96,13 @@ class KeeVaultAccountAttachmentMetadata {
 
   String get identifier => prefixIdentifier;
 
-//TODO:f: finalise prefix identifier choice
+  //TODO:f: finalise prefix identifier choice
   static const prefixIdentifier = 'https://s.kee.pm/a ';
 
   static final prefixIdentifierBytes = utf8.encode(prefixIdentifier);
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'secret': secret,
-      'format': format.index,
-      'size': size,
-    };
+    return {'id': id, 'secret': secret, 'format': format.index, 'size': size};
   }
 
   factory KeeVaultAccountAttachmentMetadata.fromMap(Map<String, dynamic> map) {
@@ -163,18 +141,10 @@ class KeeVaultAccountAttachmentMetadata {
   }
 }
 
-enum AttachmentFormat {
-  gzipChaCha7539,
-  unsupported,
-}
+enum AttachmentFormat { gzipChaCha7539, unsupported }
 
 class BinaryCardWidget extends StatelessWidget {
-  const BinaryCardWidget({
-    super.key,
-    required this.entry,
-    required this.attachment,
-    required this.readOnly,
-  });
+  const BinaryCardWidget({super.key, required this.entry, required this.attachment, required this.readOnly});
 
   final EntryViewModel entry;
   final MapEntry<KdbxKey, KdbxBinary> attachment;
@@ -190,25 +160,21 @@ class BinaryCardWidget extends StatelessWidget {
     final str = S.of(context);
     final theme = Theme.of(context);
     return Card(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        color: theme.brightness == Brightness.dark ? Color(0xFF292929) : Color(0xFFffffff),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-          side: BorderSide(
-            color: theme.brightness == Brightness.dark ? Colors.white60 : Color(0xffbababa),
-            width: 1,
-          ),
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      color: theme.brightness == Brightness.dark ? Color(0xFF292929) : Color(0xFFffffff),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+        side: BorderSide(color: theme.brightness == Brightness.dark ? Colors.white60 : Color(0xffbababa), width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 12),
             leading: Icon(Icons.attach_file),
             minLeadingWidth: 24,
             title: Text(attachment.key.key),
-            subtitle: Text(
-              str.sizeBytes(attachment.value.value.length),
-              style: theme.textTheme.bodySmall,
-            ),
+            subtitle: Text(str.sizeBytes(attachment.value.value.length), style: theme.textTheme.bodySmall),
           ),
           Align(
             alignment: Alignment.centerRight,
@@ -225,9 +191,10 @@ class BinaryCardWidget extends StatelessWidget {
                           final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
                           final mimeType = lookupMimeType(
                             attachment.key.key,
-                            headerBytes: bytes.length > defaultMagicNumbersMaxLength
-                                ? Uint8List.sublistView(bytes, 0, defaultMagicNumbersMaxLength)
-                                : null,
+                            headerBytes:
+                                bytes.length > defaultMagicNumbersMaxLength
+                                    ? Uint8List.sublistView(bytes, 0, defaultMagicNumbersMaxLength)
+                                    : null,
                           );
                           l.d('Sharing attachment with mimeType $mimeType');
 
@@ -277,77 +244,72 @@ class BinaryCardWidget extends StatelessWidget {
                 PopupMenuButton(
                   icon: const Icon(Icons.more_vert),
                   offset: const Offset(0, 32),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      onTap: () async {
-                        WidgetsBinding.instance.addPostFrameCallback((_) async {
-                          final sm = ScaffoldMessenger.of(context);
-                          try {
-                            final attachmentSource = AttachmentSourceKdbx();
-                            final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
-                            l.d('Exporting attachment');
-                            final params = SaveFileDialogParams(
-                              data: bytes,
-                              fileName: attachment.key.key,
-                            );
-                            final outputFilename = await FlutterFileDialog.saveFile(params: params);
-                            if (outputFilename == null) {
-                              l.d('File system integration reports that the export was cancelled.');
-                              return;
-                            }
-                            l.i('Exported attachment to $outputFilename');
-                            sm.showSnackBar(SnackBar(
-                              content: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(str.exported),
-                                ],
-                              ),
-                              duration: Duration(seconds: 3),
-                            ));
-                          } on Exception catch (e, st) {
-                            l.e('Export failed', error: e, stackTrace: st);
-                            if (e is PlatformException) {
-                              if (e.code == 'read_external_storage_denied' && context.mounted) {
-                                alertUserToPermissionsProblem(context, 'export');
-                                return;
+                  itemBuilder:
+                      (context) => [
+                        PopupMenuItem(
+                          onTap: () async {
+                            WidgetsBinding.instance.addPostFrameCallback((_) async {
+                              final sm = ScaffoldMessenger.of(context);
+                              try {
+                                final attachmentSource = AttachmentSourceKdbx();
+                                final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
+                                l.d('Exporting attachment');
+                                final params = SaveFileDialogParams(data: bytes, fileName: attachment.key.key);
+                                final outputFilename = await FlutterFileDialog.saveFile(params: params);
+                                if (outputFilename == null) {
+                                  l.d('File system integration reports that the export was cancelled.');
+                                  return;
+                                }
+                                l.i('Exported attachment to $outputFilename');
+                                sm.showSnackBar(
+                                  SnackBar(
+                                    content: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [Text(str.exported)],
+                                    ),
+                                    duration: Duration(seconds: 3),
+                                  ),
+                                );
+                              } on Exception catch (e, st) {
+                                l.e('Export failed', error: e, stackTrace: st);
+                                if (e is PlatformException) {
+                                  if (e.code == 'read_external_storage_denied' && context.mounted) {
+                                    alertUserToPermissionsProblem(context, 'export');
+                                    return;
+                                  }
+                                }
+                                if (context.mounted) {
+                                  await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+                                } else {
+                                  l.w('context was destroyed so could not notify user of previous error');
+                                }
                               }
-                            }
-                            if (context.mounted) {
-                              await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
-                            } else {
-                              l.w('context was destroyed so could not notify user of previous error');
-                            }
-                          }
-                        });
-                      },
-                      child: ListTile(
-                        leading: const Icon(Icons.download),
-                        title: Text(str.export),
-                      ),
-                    ),
-                    if (!readOnly)
-                      PopupMenuItem(
-                        onTap: () async {
-                          WidgetsBinding.instance.addPostFrameCallback((_) async {
-                            final proceed = await DialogUtils.showConfirmDialog(
-                                context: context,
-                                params: ConfirmDialogParams(content: str.attachmentConfirmDelete(attachment.key.key)));
-                            if (proceed && context.mounted) {
-                              _deleteFile(context, attachment.key);
-                            }
-                          });
-                        },
-                        child: ListTile(
-                          leading: const Icon(Icons.delete),
-                          title: Text(str.delete),
+                            });
+                          },
+                          child: ListTile(leading: const Icon(Icons.download), title: Text(str.export)),
                         ),
-                      ),
-                  ],
+                        if (!readOnly)
+                          PopupMenuItem(
+                            onTap: () async {
+                              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                                final proceed = await DialogUtils.showConfirmDialog(
+                                  context: context,
+                                  params: ConfirmDialogParams(content: str.attachmentConfirmDelete(attachment.key.key)),
+                                );
+                                if (proceed && context.mounted) {
+                                  _deleteFile(context, attachment.key);
+                                }
+                              });
+                            },
+                            child: ListTile(leading: const Icon(Icons.delete), title: Text(str.delete)),
+                          ),
+                      ],
                 ),
               ],
             ),
           ),
-        ]));
+        ],
+      ),
+    );
   }
 }

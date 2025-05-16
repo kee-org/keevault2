@@ -14,9 +14,7 @@ import 'coloured_safe_area_widget.dart';
 import 'entry.dart';
 
 class AutofillSaveWidget extends StatefulWidget {
-  const AutofillSaveWidget({
-    super.key,
-  });
+  const AutofillSaveWidget({super.key});
 
   @override
   State<AutofillSaveWidget> createState() => _AutofillSaveWidgetState();
@@ -51,12 +49,14 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
 
     final appId =
         autofillState.androidMetadata.packageNames.isNotEmpty ? autofillState.androidMetadata.packageNames.first : '';
-    final webDomain = autofillState.androidMetadata.webDomains.isNotEmpty
-        ? autofillState.androidMetadata.webDomains.first.domain
-        : '';
-    final scheme = autofillState.androidMetadata.webDomains.isNotEmpty
-        ? autofillState.androidMetadata.webDomains.first.scheme
-        : null;
+    final webDomain =
+        autofillState.androidMetadata.webDomains.isNotEmpty
+            ? autofillState.androidMetadata.webDomains.first.domain
+            : '';
+    final scheme =
+        autofillState.androidMetadata.webDomains.isNotEmpty
+            ? autofillState.androidMetadata.webDomains.first.scheme
+            : null;
 
     if (webDomain.isNotEmpty) {
       newEntry!.addAutofillUrl(webDomain, scheme);
@@ -83,10 +83,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
 
       // We skip remote upload for now because it could take a long time
       // and interrupt the user's priority task for too long.
-      await vaultCubit.save(
-        BlocProvider.of<AccountCubit>(context).currentUserIfKnown,
-        skipRemote: true,
-      );
+      await vaultCubit.save(BlocProvider.of<AccountCubit>(context).currentUserIfKnown, skipRemote: true);
 
       // User may return to this Kee Vault instance in future and will
       // want the filter options to reflect any changes made while
@@ -99,10 +96,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
       // entry has yet to be saved.
       // We skip remote upload for now because it could take a long time
       // and interrupt the user's priority task for too long.
-      await vaultCubit.save(
-        BlocProvider.of<AccountCubit>(context).currentUserIfKnown,
-        skipRemote: true,
-      );
+      await vaultCubit.save(BlocProvider.of<AccountCubit>(context).currentUserIfKnown, skipRemote: true);
     }
 
     await autofillCubit.finishSaving();
@@ -122,14 +116,10 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
             key: ValueKey('autofillSaveDetails'),
             savingViaAutofill: true,
             endEditing: (bool keepChanges) => onEndEditing(keepChanges, vaultCubit, vault.files.current.tags),
-            allCustomIcons: vault.files.current.body.meta.customIcons.map((key, value) => MapEntry(
-                  value,
-                  Image.memory(
-                    value.data,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.low,
-                  ),
-                )),
+            allCustomIcons: vault.files.current.body.meta.customIcons.map(
+              (key, value) =>
+                  MapEntry(value, Image.memory(value.data, fit: BoxFit.contain, filterQuality: FilterQuality.low)),
+            ),
             revertTo: (int index) {},
             deleteAt: (int index) {},
           );
@@ -142,9 +132,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const <Widget>[
-                      LoadingSpinner(tooltip: 'Please wait...'),
-                    ],
+                    children: const <Widget>[LoadingSpinner(tooltip: 'Please wait...')],
                   ),
                 ),
               ),

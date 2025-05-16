@@ -35,12 +35,9 @@ void main() {
       await Settings.init(cacheProvider: SharePreferenceCache());
       await Settings.setValue('biometrics-enabled', false);
       await Settings.setValue('introShownVaultSummary', true);
-//    await Settings.setValue('currentSortOrder', enumToString(mode));
+      //    await Settings.setValue('currentSortOrder', enumToString(mode));
 
-      await MatomoTracker.instance.initialize(
-        siteId: 7,
-        url: 'https://fakematomoaddressfortesting.kee.pm/',
-      );
+      await MatomoTracker.instance.initialize(siteId: 7, url: 'https://fakematomoaddressfortesting.kee.pm/');
 
       // install local user kdbx file for demo
       await createDemo();
