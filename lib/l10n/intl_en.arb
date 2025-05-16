@@ -194,6 +194,7 @@
   "yourPasswordEntries": "Your password entries",
   "introSortYourEntries": "\nSort your entries",
   "introFilter": "\nFilter by group, label, colour and text",
+  "viewEntries": "View Entries",
   "createSecurePassword": "Create secure password",
   "renamingField": "Renaming field",
   "renameFieldEnterNewName": "Enter the new name for the field",

@@ -247,7 +247,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
   Widget build(BuildContext context) {
     final str = S.of(context);
     final theme = Theme.of(context);
-    final mainColor = theme.brightness == Brightness.dark ? theme.colorScheme.secondary : theme.colorScheme.primary;
+    final linkColor = theme.brightness == Brightness.dark ? theme.colorScheme.secondary : theme.colorScheme.primary;
     return BlocBuilder<AccountCubit, AccountState>(
       builder: (context, state) {
         if (state is AccountSubscribed) {
@@ -269,7 +269,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: ElevatedButton(
+                              child: FilledButton(
                                 onPressed: () async {
                                   // During development we repeatedly hit this branch because
                                   // we do not check whether the free kdbx has been imported
@@ -307,7 +307,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                             Text('Welcome! Thanks for subscribing.'),
                             Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: ElevatedButton(
+                              child: FilledButton(
                                 onPressed: () async {
                                   final accountCubit = BlocProvider.of<AccountCubit>(context);
                                   await accountCubit.finaliseRegistration(state.user);
@@ -346,7 +346,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                             TextSpan(
                               text: str.localOnlyAgree2,
                               style: theme.textTheme.bodyMedium!.copyWith(
-                                color: mainColor,
+                                color: linkColor,
                                 fontWeight: FontWeight.bold,
                               ),
                               recognizer:
@@ -367,7 +367,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                   : [];
           final actionButton =
               state is AccountSubscribeError
-                  ? ElevatedButton(
+                  ? FilledButton(
                     onPressed: () async {
                       // sign out so user can see initial signin/register page again.
                       final vc = BlocProvider.of<VaultCubit>(context);
@@ -380,7 +380,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                     },
                     child: Text('Sign in'),
                   )
-                  : ElevatedButton(
+                  : FilledButton(
                     onPressed:
                         saving || iap == null || iap!.formattedPrice == null
                             ? null
@@ -501,7 +501,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                               });
                             },
                           ),
-                          suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                          //  suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
@@ -536,7 +536,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                               });
                             },
                           ),
-                          suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                          // suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
@@ -576,7 +576,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                             TextSpan(
                               text: str.localOnlyAgree2,
                               style: theme.textTheme.bodyMedium!.copyWith(
-                                color: mainColor,
+                                color: linkColor,
                                 fontWeight: FontWeight.bold,
                               ),
                               recognizer:
@@ -614,7 +614,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                     ),
                     Align(
                       alignment: Alignment.center,
-                      child: ElevatedButton(
+                      child: FilledButton(
                         onPressed:
                             saving || !agreedToS || iap == null || iap!.formattedPrice == null
                                 ? null

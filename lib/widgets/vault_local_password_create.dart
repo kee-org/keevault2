@@ -62,7 +62,6 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
                       });
                     },
                   ),
-                  suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? false) {
@@ -101,7 +100,6 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
                       });
                     },
                   ),
-                  suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? false) {
@@ -150,7 +148,7 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
                 });
               },
             ),
-            ElevatedButton(
+            FilledButton(
               onPressed:
                   _userAgreed
                       ? () async {

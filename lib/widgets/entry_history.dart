@@ -308,7 +308,7 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
       key: ValueKey(widget.field.key),
       background: Container(
         alignment: Alignment.centerLeft,
-        color: Theme.of(context).primaryColor,
+        // color: Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [

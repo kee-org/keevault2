@@ -126,7 +126,7 @@ class AccountDrawerWidget extends StatelessWidget {
                       textColor: headerColor,
                       iconColor: headerColor,
                       children: [
-                        ButtonBar(
+                        OverflowBar(
                           alignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             OutlinedButton(
@@ -151,10 +151,10 @@ class AccountDrawerWidget extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                           ),
-                          ButtonBar(
+                          OverflowBar(
                             alignment: MainAxisAlignment.center,
                             children: [
-                              ElevatedButton(
+                              FilledButton(
                                 onPressed: () async {
                                   Navigator.pop(context);
                                   await _forgetUser(context);
@@ -197,13 +197,21 @@ class BottomBarWidget extends StatelessWidget {
           loadedVaultState = vaultState;
         } else {
           return BottomAppBar(
-            elevation: 11,
+            //elevation: 11,
+            height: 48,
             child: Container(
               // We have to wrap in a Container with transparent color because otherwise taps bubble
               // up to the underlying Stack and entry list items contained within.
               color: Colors.transparent,
               child: Row(
-                children: [IconButton(icon: Icon(Icons.menu), onPressed: _toggleBottomDrawerVisibility), Spacer()],
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.menu),
+                    onPressed: _toggleBottomDrawerVisibility,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  Spacer(),
+                ],
               ),
             ),
           );
@@ -215,14 +223,18 @@ class BottomBarWidget extends StatelessWidget {
         return BottomAppBar(
           shape: CircularNotchedRectangle(),
           notchMargin: 4,
-          elevation: 11,
+          //elevation: 11,
           child: Container(
             // We have to wrap in a Container with transparent color because otherwise taps bubble
             // up to the underlying Stack and entry list items contained within.
             color: Colors.transparent,
             child: Row(
               children: [
-                IconButton(icon: Icon(Icons.menu), onPressed: _toggleBottomDrawerVisibility),
+                IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: _toggleBottomDrawerVisibility,
+                  visualDensity: VisualDensity.compact,
+                ),
                 VaultStatusIconWidget(),
                 if (loadedVaultState is VaultSaving || loadedVaultState is VaultUpdatingLocalFromAutofill) sipi,
                 if (loadedVaultState is! VaultSaving && loadedVaultState is! VaultUpdatingLocalFromAutofill)
@@ -323,7 +335,7 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
     return AnimatedOpacity(
       opacity: widget.visible ? 1.0 : 0.0,
       duration: Duration(milliseconds: 300),
-      child: ElevatedButton(
+      child: FilledButton(
         onPressed: () async {
           if (!widget.visible) return;
           final iam = InAppMessengerWidget.of(context);

@@ -200,7 +200,7 @@ class _PendingUpdateErrorRecoveryWidgetState extends State<PendingUpdateErrorRec
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
+                child: FilledButton(
                   onPressed: () async {
                     final proceed = await DialogUtils.showConfirmDialog(
                       context: context,
@@ -219,7 +219,7 @@ class _PendingUpdateErrorRecoveryWidgetState extends State<PendingUpdateErrorRec
                     }
                     l.i('deletePendingUpdateFile skipped by user');
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: widget.theme.buttonTheme.colorScheme!.error),
+                  style: FilledButton.styleFrom(backgroundColor: widget.theme.buttonTheme.colorScheme!.error),
                   child: Text('Delete pending Kee Vault data'),
                 ),
               ),

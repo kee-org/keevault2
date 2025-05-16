@@ -64,7 +64,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(str.startNewTrialSuccess),
-                        ElevatedButton(
+                        FilledButton(
                           onPressed: () async {
                             final accountCubit = BlocProvider.of<AccountCubit>(context);
                             BlocProvider.of<VaultCubit>(context).signout();
@@ -83,7 +83,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(str.startNewTrialError, style: theme.textTheme.bodyLarge),
-                        ElevatedButton(
+                        FilledButton(
                           onPressed: () async {
                             final accountCubit = BlocProvider.of<AccountCubit>(context);
                             BlocProvider.of<VaultCubit>(context).signout();
@@ -103,7 +103,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                 final loading = state is AccountTrialRestartStarted;
                 if (state.user.subscriptionSource == AccountSubscriptionSource.chargeBee) {
                   return widget.trialAvailable
-                      ? ElevatedButton.icon(
+                      ? FilledButton.icon(
                         onPressed:
                             loading
                                 ? null

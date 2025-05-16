@@ -100,13 +100,13 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                           'You can export it in KDBX format or force it to be destroyed immediately, only if you are certain that it contains no important information which has yet to be exported or imported into your current Vault.',
                         ),
                       ),
-                      ButtonBar(
+                      OverflowBar(
                         alignment: MainAxisAlignment.end,
                         children: [
-                          ElevatedButton(onPressed: () => {_exportFreeKdbx(context)}, child: Text(str.export)),
-                          ElevatedButton(
+                          FilledButton(onPressed: () => {_exportFreeKdbx(context)}, child: Text(str.export)),
+                          FilledButton(
                             onPressed: () => {_deleteFreeKdbx(context)},
-                            style: ElevatedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                            style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
                             child: Text(str.detDelEntryPerm),
                           ),
                         ],
@@ -153,10 +153,10 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                               children: [
                                 ListTile(title: Text(str.importKdbx)),
                                 Padding(padding: const EdgeInsets.all(16.0), child: Text(str.willTrySamePasswordFirst)),
-                                ButtonBar(
+                                OverflowBar(
                                   alignment: MainAxisAlignment.end,
                                   children: [
-                                    ElevatedButton(
+                                    FilledButton(
                                       onPressed: state is VaultLoaded ? () => {_import(context, state)} : null,
                                       child: Text(str.import),
                                     ),
@@ -187,10 +187,10 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                                   padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
                                   child: Text(str.rememberExportsDoNotUpdate),
                                 ),
-                                ButtonBar(
+                                OverflowBar(
                                   alignment: MainAxisAlignment.end,
                                   children: [
-                                    ElevatedButton(
+                                    FilledButton(
                                       onPressed: (state is VaultLoaded) ? () => {_export(context, state)} : null,
                                       child: Text(str.export),
                                     ),

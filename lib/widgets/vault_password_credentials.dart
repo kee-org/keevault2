@@ -82,7 +82,6 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                           widget.showError
                               ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
                               : null,
-                      suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                       suffixIcon: IconButton(
                         icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
                         onPressed: () {
@@ -112,7 +111,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
-                  child: ElevatedButton(
+                  child: FilledButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();

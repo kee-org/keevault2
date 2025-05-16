@@ -161,7 +161,6 @@ class BinaryCardWidget extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      color: theme.brightness == Brightness.dark ? Color(0xFF292929) : Color(0xFFffffff),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4),
         side: BorderSide(color: theme.brightness == Brightness.dark ? Colors.white60 : Color(0xffbababa), width: 1),

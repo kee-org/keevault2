@@ -46,6 +46,7 @@ class RootWidgetState extends State<RootWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ColouredSafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -53,7 +54,7 @@ class RootWidgetState extends State<RootWidget> {
             image: AssetImage('assets/vault.png'),
             excludeFromSemantics: true,
             height: 48,
-            color: Colors.white,
+            color: theme.colorScheme.primary,
           ),
           centerTitle: true,
           toolbarHeight: 80,

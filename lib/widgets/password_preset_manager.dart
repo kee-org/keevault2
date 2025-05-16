@@ -123,7 +123,7 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                             ),
                             Visibility(
                               visible: generatorState.all[index].isUserDefined,
-                              child: ButtonBar(
+                              child: OverflowBar(
                                 alignment: MainAxisAlignment.start,
                                 children: [
                                   TextButton(

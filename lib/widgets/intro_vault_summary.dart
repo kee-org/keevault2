@@ -97,7 +97,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                           ),
                         ),
                       ),
-                      ElevatedButton(
+                      FilledButton(
                         child: Text(str.gotIt),
                         onPressed: () async {
                           final appSettings = BlocProvider.of<AppSettingsCubit>(context);
