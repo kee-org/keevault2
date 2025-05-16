@@ -109,17 +109,18 @@ class LogConsoleState extends State<LogConsole> {
   }
 
   void _refreshFilter() {
-    var newFilteredBuffer = _renderedBuffer.where((it) {
-      var logLevelMatches = it.level.index >= _filterLevel.index;
-      if (!logLevelMatches) {
-        return false;
-      } else if (_filterController.text.isNotEmpty) {
-        var filterText = _filterController.text.toLowerCase();
-        return it.lowerCaseText.contains(filterText);
-      } else {
-        return true;
-      }
-    }).toList();
+    var newFilteredBuffer =
+        _renderedBuffer.where((it) {
+          var logLevelMatches = it.level.index >= _filterLevel.index;
+          if (!logLevelMatches) {
+            return false;
+          } else if (_filterController.text.isNotEmpty) {
+            var filterText = _filterController.text.toLowerCase();
+            return it.lowerCaseText.contains(filterText);
+          } else {
+            return true;
+          }
+        }).toList();
     setState(() {
       _filteredBuffer = newFilteredBuffer;
     });
@@ -138,13 +139,7 @@ class LogConsoleState extends State<LogConsole> {
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            _buildTopBar(dark),
-            Expanded(
-              child: _buildLogContent(dark),
-            ),
-            _buildBottomBar(dark),
-          ],
+          children: <Widget>[_buildTopBar(dark), Expanded(child: _buildLogContent(dark)), _buildBottomBar(dark)],
         ),
       ),
       floatingActionButton: AnimatedOpacity(
@@ -156,10 +151,7 @@ class LogConsoleState extends State<LogConsole> {
             mini: true,
             clipBehavior: Clip.antiAlias,
             onPressed: _scrollToBottom,
-            child: Icon(
-              Icons.arrow_downward,
-              color: dark ? Colors.white : Colors.lightBlue[900],
-            ),
+            child: Icon(Icons.arrow_downward, color: dark ? Colors.white : Colors.lightBlue[900]),
           ),
         ),
       ),
@@ -196,57 +188,61 @@ class LogConsoleState extends State<LogConsole> {
       dark: dark,
       child: Column(
         children: [
-          const Row(children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                    'Sharing technical logs can help to fix problems. Share to yourself (Cloud storage/email) and then read the instructions that appear.'),
+          const Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Sharing technical logs can help to fix problems. Share to yourself (Cloud storage/email) and then read the instructions that appear.',
+                  ),
+                ),
               ),
-            ),
-          ]),
-          Row(children: [
-            Expanded(
-              child: ListTile(
-                title: Text('Enable Autofill logging'),
-                subtitle: Text(
-                    'Keep this option disabled unless you are actively investigating a problem with Autofill into other apps/websites. The preview below never shows Autofill logs.'),
-                leading: Switch(
-                  value: _autofillDebugEnabled,
-                  onChanged: (bool? value) async {
-                    if (value != null) {
-                      final afc = BlocProvider.of<AutofillCubit>(context);
-                      await Settings.setValue<bool>('autofillServiceDebugEnabled', value);
-                      await afc.setDebugEnabledPreference(value);
-                      setState(() {
-                        _autofillDebugEnabled = value;
-                      });
-                    }
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: ListTile(
+                  title: Text('Enable Autofill logging'),
+                  subtitle: Text(
+                    'Keep this option disabled unless you are actively investigating a problem with Autofill into other apps/websites. The preview below never shows Autofill logs.',
+                  ),
+                  leading: Switch(
+                    value: _autofillDebugEnabled,
+                    onChanged: (bool? value) async {
+                      if (value != null) {
+                        final afc = BlocProvider.of<AutofillCubit>(context);
+                        await Settings.setValue<bool>('autofillServiceDebugEnabled', value);
+                        await afc.setDebugEnabledPreference(value);
+                        setState(() {
+                          _autofillDebugEnabled = value;
+                        });
+                      }
+                    },
+                  ),
+                  visualDensity: VisualDensity.compact,
+                  titleAlignment: ListTileTitleAlignment.top,
+                  isThreeLine: true,
+                  onTap: () async {
+                    final afc = BlocProvider.of<AutofillCubit>(context);
+                    await Settings.setValue<bool>('autofillServiceDebugEnabled', !_autofillDebugEnabled);
+                    await afc.setDebugEnabledPreference(!_autofillDebugEnabled);
+                    setState(() {
+                      _autofillDebugEnabled = !_autofillDebugEnabled;
+                    });
                   },
                 ),
-                visualDensity: VisualDensity.compact,
-                titleAlignment: ListTileTitleAlignment.top,
-                isThreeLine: true,
-                onTap: () async {
-                  final afc = BlocProvider.of<AutofillCubit>(context);
-                  await Settings.setValue<bool>('autofillServiceDebugEnabled', !_autofillDebugEnabled);
-                  await afc.setDebugEnabledPreference(!_autofillDebugEnabled);
-                  setState(() {
-                    _autofillDebugEnabled = !_autofillDebugEnabled;
-                  });
-                },
               ),
-            ),
-          ]),
+            ],
+          ),
           Row(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: OutlinedButton.icon(
-                  icon: const Icon(
-                    Icons.delete,
-                  ),
+                  icon: const Icon(Icons.delete),
                   label: const Text('Delete'),
                   onPressed: clearLogs,
                 ),
@@ -254,16 +250,15 @@ class LogConsoleState extends State<LogConsole> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: OutlinedButton.icon(
-                  icon: sharing
-                      ? Container(
-                          width: 24,
-                          height: 24,
-                          padding: const EdgeInsets.all(2.0),
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 3,
-                          ),
-                        )
-                      : const Icon(Icons.share),
+                  icon:
+                      sharing
+                          ? Container(
+                            width: 24,
+                            height: 24,
+                            padding: const EdgeInsets.all(2.0),
+                            child: const CircularProgressIndicator(strokeWidth: 3),
+                          )
+                          : const Icon(Icons.share),
                   label: const Text('Share'),
                   onPressed: sharing ? null : startShareLogs,
                 ),
@@ -343,25 +338,26 @@ class LogConsoleState extends State<LogConsole> {
         );
         if (shareResult.status == ShareResultStatus.success) {
           await showDialog<dynamic>(
-              barrierDismissible: false,
-              context: AppConfig.navigatorKey.currentContext!,
-              routeSettings: RouteSettings(name: '/dialog/alert/sharesuccess'),
-              builder: (context) {
-                return AlertDialog(
-                  insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  scrollable: true,
-                  title: Text('Finished sharing to your chosen destination'),
-                  content: getShareInstructions(),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('DONE'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              });
+            barrierDismissible: false,
+            context: AppConfig.navigatorKey.currentContext!,
+            routeSettings: RouteSettings(name: '/dialog/alert/sharesuccess'),
+            builder: (context) {
+              return AlertDialog(
+                insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                scrollable: true,
+                title: Text('Finished sharing to your chosen destination'),
+                content: getShareInstructions(),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('DONE'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         }
       } finally {
         await file.delete();
@@ -387,9 +383,7 @@ class LogConsoleState extends State<LogConsole> {
     if (fileList.isEmpty) {
       return;
     }
-    await Future.wait([
-      for (var file in fileList) file.delete(),
-    ]);
+    await Future.wait([for (var file in fileList) file.delete()]);
   }
 
   Future<List<ArchiveFile>> getAutofillLogs() async {
@@ -409,13 +403,9 @@ class LogConsoleState extends State<LogConsole> {
     if (fileList.isEmpty) {
       return [];
     }
-    var statResults = await Future.wait([
-      for (var path in fileList) FileStat.stat(path),
-    ]);
+    var statResults = await Future.wait([for (var path in fileList) FileStat.stat(path)]);
 
-    var dates = <String, DateTime>{
-      for (var i = 0; i < fileList.length; i += 1) fileList[i]: statResults[i].changed,
-    };
+    var dates = <String, DateTime>{for (var i = 0; i < fileList.length; i += 1) fileList[i]: statResults[i].changed};
 
     fileList.sort((a, b) => dates[a]!.compareTo(dates[b]!));
 
@@ -431,7 +421,7 @@ class LogConsoleState extends State<LogConsole> {
     return archiveFiles;
   }
 
-//TODO:f: deduplicate
+  //TODO:f: deduplicate
   getStorageDirectory() async {
     const autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
     if (KeeVaultPlatform.isIOS) {
@@ -466,36 +456,18 @@ class LogConsoleState extends State<LogConsole> {
             DropdownButton<Level>(
               value: _filterLevel,
               items: const [
-                DropdownMenuItem(
-                  value: Level.trace,
-                  child: Text('TRACE'),
-                ),
-                DropdownMenuItem(
-                  value: Level.debug,
-                  child: Text('DEBUG'),
-                ),
-                DropdownMenuItem(
-                  value: Level.info,
-                  child: Text('INFO'),
-                ),
-                DropdownMenuItem(
-                  value: Level.warning,
-                  child: Text('WARNING'),
-                ),
-                DropdownMenuItem(
-                  value: Level.error,
-                  child: Text('ERROR'),
-                ),
-                DropdownMenuItem(
-                  value: Level.fatal,
-                  child: Text('FATAL'),
-                )
+                DropdownMenuItem(value: Level.trace, child: Text('TRACE')),
+                DropdownMenuItem(value: Level.debug, child: Text('DEBUG')),
+                DropdownMenuItem(value: Level.info, child: Text('INFO')),
+                DropdownMenuItem(value: Level.warning, child: Text('WARNING')),
+                DropdownMenuItem(value: Level.error, child: Text('ERROR')),
+                DropdownMenuItem(value: Level.fatal, child: Text('FATAL')),
               ],
               onChanged: (value) {
                 _filterLevel = value ?? Level.info;
                 _refreshFilter();
               },
-            )
+            ),
           ],
         ),
       ),
@@ -536,12 +508,7 @@ class LogConsoleState extends State<LogConsole> {
   }
 
   TextSpan createSpan(String text, Level level) {
-    return TextSpan(
-      text: text,
-      style: TextStyle(
-        color: colorForLevel(level),
-      ),
-    );
+    return TextSpan(text: text, style: TextStyle(color: colorForLevel(level)));
   }
 
   colorForLevel(Level level) {
@@ -587,7 +554,8 @@ ${deviceInfo.data}
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
           child: Text(
-              'We need to be able to associate these logs with a description of the issue you are experiencing so please:'),
+            'We need to be able to associate these logs with a description of the issue you are experiencing so please:',
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
@@ -600,8 +568,9 @@ ${deviceInfo.data}
                 child: Text(
                   '1) Log in to the community forum',
                   style: theme.textTheme.titleMedium!.copyWith(
-                      color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
-                      fontWeight: FontWeight.w800),
+                    color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               );
             },
@@ -610,8 +579,9 @@ ${deviceInfo.data}
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
-              '2) Post to a relevant existing topic or start a new one describing why you are sharing these logs',
-              style: theme.textTheme.titleMedium!),
+            '2) Post to a relevant existing topic or start a new one describing why you are sharing these logs',
+            style: theme.textTheme.titleMedium!,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -624,8 +594,9 @@ ${deviceInfo.data}
                 child: Text(
                   '3) Send a new private message to luckyrat',
                   style: theme.textTheme.titleMedium!.copyWith(
-                      color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
-                      fontWeight: FontWeight.w800),
+                    color: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               );
             },
@@ -634,19 +605,22 @@ ${deviceInfo.data}
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8.0, 0, 8.0),
           child: Text(
-              'a) Click on the Upload button in the message box toolbar, find the Zip file, upload it and then send the message',
-              style: theme.textTheme.bodyMedium),
+            'a) Click on the Upload button in the message box toolbar, find the Zip file, upload it and then send the message',
+            style: theme.textTheme.bodyMedium,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0.0, 0, 8.0),
           child: Text(
-              'b) We will use your username to match the topic you were contributing to but feel free to provide more details, especially if you have multiple ongoing conversation topics',
-              style: theme.textTheme.bodyMedium),
+            'b) We will use your username to match the topic you were contributing to but feel free to provide more details, especially if you have multiple ongoing conversation topics',
+            style: theme.textTheme.bodyMedium,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
-              'We have been extra careful to avoid including any personal information in the application logs but the nature of unexpected application problems is that occasionally unexpected things happen! If we do ever come across anything potentially sensitive we will delete it as soon as possible and notify you. We also encourage you to search through the contents of the files in the zip archive if you desire additional peace of mind before uploading the file.'),
+            'We have been extra careful to avoid including any personal information in the application logs but the nature of unexpected application problems is that occasionally unexpected things happen! If we do ever come across anything potentially sensitive we will delete it as soon as possible and notify you. We also encourage you to search through the contents of the files in the zip archive if you desire additional peace of mind before uploading the file.',
+          ),
         ),
       ],
     );

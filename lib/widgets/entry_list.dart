@@ -24,9 +24,7 @@ import 'package:keevault/generated/l10n.dart';
 import 'dialog_utils.dart';
 
 class EntryListWidget extends StatelessWidget {
-  const EntryListWidget({
-    super.key,
-  });
+  const EntryListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,27 +50,24 @@ class EntryListWidget extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        str.noEntriesCreateNewInstruction,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      child: Text(str.noEntriesCreateNewInstruction, style: Theme.of(context).textTheme.bodyLarge),
                     ),
                     OutlinedButton(
                       child: Text(str.import),
                       onPressed: () async => await AppConfig.router.navigateTo(context, Routes.importExport),
-                    )
+                    ),
                   ],
                 );
               }
 
-              listItems.addAll(entries.where((entry) => filterCubit.entryMatches(entry)).sorted(comparator).map(
-                    (e) => EntryListItemWidget(uuid: e.uuid.uuid),
-                  ));
+              listItems.addAll(
+                entries
+                    .where((entry) => filterCubit.entryMatches(entry))
+                    .sorted(comparator)
+                    .map((e) => EntryListItemWidget(uuid: e.uuid.uuid)),
+              );
             }
-            return ListView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              children: listItems,
-            );
+            return ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, children: listItems);
           },
         );
       },
@@ -81,9 +76,7 @@ class EntryListWidget extends StatelessWidget {
 }
 
 class EntryListHeaderWidget extends StatelessWidget {
-  const EntryListHeaderWidget({
-    super.key,
-  });
+  const EntryListHeaderWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -97,48 +90,33 @@ class EntryListHeaderWidget extends StatelessWidget {
               state.androidMetadata.webDomains.isNotEmpty ? state.androidMetadata.webDomains.first.domain : '';
 
           final messageTarget = [
-            TextSpan(
-              text: 'Select an entry to fill into ',
-              style: theme.textTheme.bodyMedium,
-            ),
+            TextSpan(text: 'Select an entry to fill into ', style: theme.textTheme.bodyMedium),
             webDomain != ''
-                ? TextSpan(
-                    text: webDomain,
-                    style: theme.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                  )
-                : TextSpan(
-                    text: 'the app described below',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-            TextSpan(
-              text: '.',
-              style: theme.textTheme.bodyMedium,
-            ),
+                ? TextSpan(text: webDomain, style: theme.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold))
+                : TextSpan(text: 'the app described below', style: theme.textTheme.bodyMedium),
+            TextSpan(text: '.', style: theme.textTheme.bodyMedium),
           ];
           final messageOutcome = TextSpan(
-            text: state.forceInteractive
-                ? " We'll add it to the list of matches for this ${webDomain != '' ? 'site' : 'app'}."
-                : " We'll remember next time.",
+            text:
+                state.forceInteractive
+                    ? " We'll add it to the list of matches for this ${webDomain != '' ? 'site' : 'app'}."
+                    : " We'll remember next time.",
             style: theme.textTheme.bodyMedium,
           );
 
-          final message = RichText(
-            text: TextSpan(
-              children: <TextSpan>[...messageTarget, messageOutcome],
-            ),
-          );
+          final message = RichText(text: TextSpan(children: <TextSpan>[...messageTarget, messageOutcome]));
 
           //TODO:f skip subtitle for known browser IDs
           final subTitle = appId.isNotEmpty ? Text('Filling into this app: $appId') : null;
           return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: ListTile(
-                tileColor:
-                    theme.brightness == Brightness.dark ? Colors.deepOrange.shade900 : Colors.deepOrange.shade100,
-                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                title: Padding(padding: EdgeInsets.only(bottom: 10), child: message),
-                subtitle: subTitle,
-              ));
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: ListTile(
+              tileColor: theme.brightness == Brightness.dark ? Colors.deepOrange.shade900 : Colors.deepOrange.shade100,
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              title: Padding(padding: EdgeInsets.only(bottom: 10), child: message),
+              subtitle: subTitle,
+            ),
+          );
         } else {
           return SizedBox.shrink();
         }
@@ -149,10 +127,7 @@ class EntryListHeaderWidget extends StatelessWidget {
 
 class EntryListItemWidget extends StatelessWidget {
   final String uuid;
-  const EntryListItemWidget({
-    super.key,
-    required this.uuid,
-  });
+  const EntryListItemWidget({super.key, required this.uuid});
 
   @override
   Widget build(BuildContext context) {
@@ -184,26 +159,37 @@ class EntryListItemWidget extends StatelessWidget {
                       // We may display a loading spinner if the autofill process takes
                       // long enough for the dialog to render but in many cases we'll
                       // be fast enough that it's won't finish animating in to view.
-                      unawaited(showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => PopScope(
-                          canPop: false,
-                          child: Center(
-                              child: SizedBox(width: 48, height: 48, child: LoadingSpinner(tooltip: str.autofilling))),
+                      unawaited(
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder:
+                              (context) => PopScope(
+                                canPop: false,
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 48,
+                                    height: 48,
+                                    child: LoadingSpinner(tooltip: str.autofilling),
+                                  ),
+                                ),
+                              ),
                         ),
-                      ));
+                      );
 
                       // Save app id or domain for future matching purposes
-                      final appId = autoFillState.androidMetadata.packageNames.isNotEmpty
-                          ? autoFillState.androidMetadata.packageNames.first
-                          : '';
-                      final webDomain = autoFillState.androidMetadata.webDomains.isNotEmpty
-                          ? autoFillState.androidMetadata.webDomains.first.domain
-                          : '';
-                      final scheme = autoFillState.androidMetadata.webDomains.isNotEmpty
-                          ? autoFillState.androidMetadata.webDomains.first.scheme
-                          : null;
+                      final appId =
+                          autoFillState.androidMetadata.packageNames.isNotEmpty
+                              ? autoFillState.androidMetadata.packageNames.first
+                              : '';
+                      final webDomain =
+                          autoFillState.androidMetadata.webDomains.isNotEmpty
+                              ? autoFillState.androidMetadata.webDomains.first.domain
+                              : '';
+                      final scheme =
+                          autoFillState.androidMetadata.webDomains.isNotEmpty
+                              ? autoFillState.androidMetadata.webDomains.first.scheme
+                              : null;
 
                       await vaultCubit.addAutofillPersistentQueueItem({
                         'domain': webDomain,
@@ -250,14 +236,12 @@ class EntryListItemWidget extends StatelessWidget {
                           }
                           vaultCubit.reemitLoadedState();
                         },
-                        allCustomIcons: entry.file!.body.meta.customIcons.map((key, value) => MapEntry(
-                              value,
-                              Image.memory(
-                                value.data,
-                                fit: BoxFit.contain,
-                                filterQuality: FilterQuality.low,
-                              ),
-                            )),
+                        allCustomIcons: entry.file!.body.meta.customIcons.map(
+                          (key, value) => MapEntry(
+                            value,
+                            Image.memory(value.data, fit: BoxFit.contain, filterQuality: FilterQuality.low),
+                          ),
+                        ),
                         revertTo: (int index) {
                           final entryCubit = BlocProvider.of<EntryCubit>(context);
                           entryCubit.revertToHistoryEntry(entry, index);
@@ -279,7 +263,9 @@ class EntryListItemWidget extends StatelessWidget {
                     },
                     onClosed: (bool? keepChanges) async {
                       if (!context.mounted) {
-                        l.e("context not mounted so we can't tidy up or save the entry. Presumably something happened to make the underlying Vault go away, such as autofill save entry screen replacing the main vault.");
+                        l.e(
+                          "context not mounted so we can't tidy up or save the entry. Presumably something happened to make the underlying Vault go away, such as autofill save entry screen replacing the main vault.",
+                        );
                         return;
                       }
                       final entryCubit = BlocProvider.of<EntryCubit>(context);
@@ -293,8 +279,9 @@ class EntryListItemWidget extends StatelessWidget {
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?
                       } else {
                         entryCubit.endEditing(null);
-                        await vaultCubit
-                            .applyPendingChangesIfSafe(BlocProvider.of<AccountCubit>(context).currentUserIfKnown);
+                        await vaultCubit.applyPendingChangesIfSafe(
+                          BlocProvider.of<AccountCubit>(context).currentUserIfKnown,
+                        );
                         await iam.showIfAppropriate(InAppMessageTrigger.entryUnchanged);
                       }
                     },
@@ -306,13 +293,15 @@ class EntryListItemWidget extends StatelessWidget {
                         isThreeLine: true,
                         subtitle: Text('${entryListItemVM.username}\n${entryListItemVM.domain ?? ''}'),
                         leading: entryListItemVM.getIcon(32, Theme.of(context).brightness == Brightness.dark),
-                        trailing: url != null
-                            ? IconButton(
-                                icon: Icon(Icons.open_in_new),
-                                onPressed: () async {
-                                  await DialogUtils.openUrl(url);
-                                })
-                            : null,
+                        trailing:
+                            url != null
+                                ? IconButton(
+                                  icon: Icon(Icons.open_in_new),
+                                  onPressed: () async {
+                                    await DialogUtils.openUrl(url);
+                                  },
+                                )
+                                : null,
                         onTap: () {
                           FocusScope.of(context).unfocus();
                           BlocProvider.of<EntryCubit>(context).startEditing(entry);

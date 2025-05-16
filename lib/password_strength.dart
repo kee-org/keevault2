@@ -85,8 +85,8 @@ class StrengthAssessedCredentials {
   final Argon2StrengthCategory strength;
 
   StrengthAssessedCredentials(ProtectedValue password, List<String> emailAddrParts)
-      : strength = fuzzyStrength(password.getText(), emailAddrParts),
-        credentials = Credentials(password);
+    : strength = fuzzyStrength(password.getText(), emailAddrParts),
+      credentials = Credentials(password);
 
   VarDictionary createNewKdfParameters() {
     final argon2Params = Argon2Params.forStrength(strength);

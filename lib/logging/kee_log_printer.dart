@@ -64,13 +64,7 @@ class KeeLogPrinter extends LogPrinter {
   }
 
   String? formatStackTrace(StackTrace? stackTrace, int? methodCount) {
-    List<String> lines = stackTrace
-        .toString()
-        .split('\n')
-        .where(
-          (line) => line.isNotEmpty,
-        )
-        .toList();
+    List<String> lines = stackTrace.toString().split('\n').where((line) => line.isNotEmpty).toList();
     List<String> formatted = [];
 
     int stackTraceLength = (methodCount != null ? min(lines.length, methodCount) : lines.length);

@@ -37,6 +37,7 @@ class KeeVaultKdfCache extends KdfCache {
   @override
   Future<String> argon2ArgumentsKey(Argon2Arguments a) async {
     return await hashBytes(
-        Uint8List.fromList([...a.key, ...a.salt, a.memory, a.iterations, a.length, a.parallelism, a.type, a.version]));
+      Uint8List.fromList([...a.key, ...a.salt, a.memory, a.iterations, a.length, a.parallelism, a.type, a.version]),
+    );
   }
 }

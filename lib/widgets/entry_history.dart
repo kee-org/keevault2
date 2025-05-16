@@ -19,86 +19,88 @@ class EntryHistoryWidget extends StatelessWidget {
   final Function(int index) revertTo;
   final Function(int index) deleteAt;
 
-  const EntryHistoryWidget({
-    super.key,
-    required this.revertTo,
-    required this.deleteAt,
-  });
+  const EntryHistoryWidget({super.key, required this.revertTo, required this.deleteAt});
 
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
     return TraceableWidget(
       actionName: 'EntryHistory',
-      child: BlocBuilder<EntryCubit, EntryState>(builder: (context, state) {
-        if (state is! EntryLoaded) return Container();
-        final EditEntryViewModel entry = state.entry;
-        return ColouredSafeArea(
-          child: Scaffold(
-            key: key,
-            appBar: AppBar(title: Text(str.entryHistory)),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: SafeArea(
-                  top: false,
-                  left: false,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-                        child: Text(str.entryHistoryExplainer),
-                      ),
-                      ...entry.history
-                          .asMap()
-                          .entries
-                          .map((mapEntry) {
-                            final historyIndex = mapEntry.key;
-                            final historyEntry = mapEntry.value;
-                            return EntryHistoryItem(
-                              revert: () async {
-                                final navigator = Navigator.of(context);
-                                if (entry.isDirty) {
-                                  final proceed = await DialogUtils.showConfirmDialog(
+      child: BlocBuilder<EntryCubit, EntryState>(
+        builder: (context, state) {
+          if (state is! EntryLoaded) return Container();
+          final EditEntryViewModel entry = state.entry;
+          return ColouredSafeArea(
+            child: Scaffold(
+              key: key,
+              appBar: AppBar(title: Text(str.entryHistory)),
+              body: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: SafeArea(
+                    top: false,
+                    left: false,
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+                          child: Text(str.entryHistoryExplainer),
+                        ),
+                        ...entry.history
+                            .asMap()
+                            .entries
+                            .map((mapEntry) {
+                              final historyIndex = mapEntry.key;
+                              final historyEntry = mapEntry.value;
+                              return EntryHistoryItem(
+                                revert: () async {
+                                  final navigator = Navigator.of(context);
+                                  if (entry.isDirty) {
+                                    final proceed = await DialogUtils.showConfirmDialog(
                                       context: context,
                                       params: ConfirmDialogParams(
-                                          content: str.revertUnsavedWarning,
-                                          negativeButtonText: str.alertNo,
-                                          positiveButtonText: str.discardChanges));
+                                        content: str.revertUnsavedWarning,
+                                        negativeButtonText: str.alertNo,
+                                        positiveButtonText: str.discardChanges,
+                                      ),
+                                    );
+                                    if (!proceed) {
+                                      return;
+                                    }
+                                  }
+                                  if (!context.mounted) {
+                                    return;
+                                  }
+                                  final proceed = await DialogUtils.showConfirmDialog(
+                                    context: context,
+                                    params: ConfirmDialogParams(
+                                      content: str.detHistoryRevertAlert,
+                                      negativeButtonText: str.alertNo,
+                                      positiveButtonText: str.detHistoryRevert,
+                                    ),
+                                  );
                                   if (!proceed) {
                                     return;
                                   }
-                                }
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                final proceed = await DialogUtils.showConfirmDialog(
-                                    context: context,
-                                    params: ConfirmDialogParams(
-                                        content: str.detHistoryRevertAlert,
-                                        negativeButtonText: str.alertNo,
-                                        positiveButtonText: str.detHistoryRevert));
-                                if (!proceed) {
-                                  return;
-                                }
-                                navigator.pop(true);
-                                revertTo(historyIndex);
-                              },
-                              delete: () => {},
-                              entry: historyEntry,
-                            );
-                          })
-                          .toList()
-                          .reversed
-                    ],
+                                  navigator.pop(true);
+                                  revertTo(historyIndex);
+                                },
+                                delete: () => {},
+                                entry: historyEntry,
+                              );
+                            })
+                            .toList()
+                            .reversed,
+                      ],
+                    ),
                   ),
                 ),
               ),
+              extendBody: true,
             ),
-            extendBody: true,
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }
@@ -107,12 +109,7 @@ class EntryHistoryItem extends StatelessWidget {
   final Function() revert;
   final Function() delete;
   final EntryViewModel entry;
-  const EntryHistoryItem({
-    super.key,
-    required this.revert,
-    required this.entry,
-    required this.delete,
-  });
+  const EntryHistoryItem({super.key, required this.revert, required this.entry, required this.delete});
 
   @override
   Widget build(BuildContext context) {
@@ -133,15 +130,8 @@ class EntryHistoryItem extends StatelessWidget {
                   entry.getIcon(48, Theme.of(context).brightness == Brightness.dark),
                   const SizedBox(width: 4),
                   Expanded(
-                    child: entry.fields
-                        .take(1)
-                        .map(
-                          (f) => EntryHistoryField(
-                            fieldType: FieldType.string,
-                            field: f,
-                          ),
-                        )
-                        .first,
+                    child:
+                        entry.fields.take(1).map((f) => EntryHistoryField(fieldType: FieldType.string, field: f)).first,
                   ),
                 ],
               ),
@@ -150,9 +140,10 @@ class EntryHistoryItem extends StatelessWidget {
                   .skip(1)
                   .map(
                     (f) => EntryHistoryField(
-                      fieldType: f.isTotp
-                          ? FieldType.otp
-                          : f.isCheckbox
+                      fieldType:
+                          f.isTotp
+                              ? FieldType.otp
+                              : f.isCheckbox
                               ? FieldType.checkbox
                               : FieldType.string,
                       field: f,
@@ -162,47 +153,41 @@ class EntryHistoryItem extends StatelessWidget {
               ...entry.binaryMapEntries.isEmpty
                   ? []
                   : entry.binaryMapEntries.map((e) {
-                      return BinaryCardWidget(
-                        key: ValueKey('${e.key}-${e.value.valueHashCode}'),
-                        entry: entry,
-                        attachment: e,
-                        readOnly: true,
-                      );
-                    }),
-              Divider(
-                indent: 16,
-                endIndent: 16,
-              ),
+                    return BinaryCardWidget(
+                      key: ValueKey('${e.key}-${e.value.valueHashCode}'),
+                      entry: entry,
+                      attachment: e,
+                      readOnly: true,
+                    );
+                  }),
+              Divider(indent: 16, endIndent: 16),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(str.labels),
-                  ),
+                  Padding(padding: const EdgeInsets.all(16.0), child: Text(str.labels)),
                   Expanded(
                     child: Wrap(
-                      children: entry.tags
-                          .map((tag) => Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: InputChip(
-                                  label: Text(tag.name),
-                                  padding: EdgeInsets.all(0.0),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),
-                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                      children:
+                          entry.tags
+                              .map(
+                                (tag) => Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: InputChip(
+                                    label: Text(tag.name),
+                                    padding: EdgeInsets.all(0.0),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),
+                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                                  ),
                                 ),
-                              ))
-                          .toList(),
+                              )
+                              .toList(),
                     ),
                   ),
                 ],
               ),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                    child: Text(str.color),
-                  ),
+                  Padding(padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0), child: Text(str.color)),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 16.0),
                     child: Text(enumToString(entry.color) ?? ''),
@@ -212,10 +197,7 @@ class EntryHistoryItem extends StatelessWidget {
               IntegrationSettingsHistoryWidget(entry: entry),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                    child: Text(str.detCreated),
-                  ),
+                  Padding(padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0), child: Text(str.detCreated)),
                   Tooltip(
                     message:
                         '${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.createdTime.toLocal()).jms}',
@@ -225,10 +207,7 @@ class EntryHistoryItem extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                    child: Text(str.detUpdated),
-                  ),
+                  Padding(padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0), child: Text(str.detUpdated)),
                   Tooltip(
                     message:
                         '${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).yMMMMEEEEd} ${Jiffy.parseFromDateTime(entry.modifiedTime.toLocal()).jms}',
@@ -246,11 +225,7 @@ class EntryHistoryItem extends StatelessWidget {
 }
 
 class EntryHistoryField extends StatelessWidget {
-  const EntryHistoryField({
-    super.key,
-    required this.fieldType,
-    required this.field,
-  });
+  const EntryHistoryField({super.key, required this.fieldType, required this.field});
 
   final FieldType fieldType;
   final FieldViewModel field;
@@ -260,8 +235,8 @@ class EntryHistoryField extends StatelessWidget {
     return fieldType == FieldType.otp
         ? EntryHistoryFieldOtp(field: field)
         : fieldType == FieldType.checkbox
-            ? EntryHistoryFieldBoolean(field: field)
-            : EntryHistoryFieldText(field: field);
+        ? EntryHistoryFieldBoolean(field: field)
+        : EntryHistoryFieldText(field: field);
   }
 }
 
@@ -339,20 +314,12 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.content_copy),
-                const SizedBox(height: 4),
-                Text(str.alertCopy),
-              ],
+              children: <Widget>[const Icon(Icons.content_copy), const SizedBox(height: 4), Text(str.alertCopy)],
             ),
             Spacer(),
             Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(Icons.content_copy),
-                const SizedBox(height: 4),
-                Text(str.alertCopy),
-              ],
+              children: <Widget>[const Icon(Icons.content_copy), const SizedBox(height: 4), Text(str.alertCopy)],
             ),
           ],
         ),
@@ -365,9 +332,7 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: <Widget>[
-            Expanded(
-              child: _buildEntryFieldViewer(),
-            ),
+            Expanded(child: _buildEntryFieldViewer()),
             Container(
               width: 48,
               height: 48,
@@ -390,22 +355,21 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
     final immutableMenuItems = <PopupMenuEntry<EntryAction>>[
       PopupMenuItem(
         value: EntryAction.copy,
-        child: ListTile(
-          leading: const Icon(Icons.content_copy),
-          title: Text(str.alertCopy),
-        ),
+        child: ListTile(leading: const Icon(Icons.content_copy), title: Text(str.alertCopy)),
       ),
     ];
     final mutableMenuItems = <PopupMenuEntry<EntryAction>>[];
 
     if (_isProtected) {
-      mutableMenuItems.add(PopupMenuItem(
-        value: EntryAction.protect,
-        child: ListTile(
-          leading: Icon(_isValueObscured ? Icons.no_encryption : Icons.enhanced_encryption),
-          title: Text(_isValueObscured ? str.show : str.hide),
+      mutableMenuItems.add(
+        PopupMenuItem(
+          value: EntryAction.protect,
+          child: ListTile(
+            leading: Icon(_isValueObscured ? Icons.no_encryption : Icons.enhanced_encryption),
+            title: Text(_isValueObscured ? str.show : str.hide),
+          ),
         ),
-      ));
+      );
     }
     return immutableMenuItems.followedBy(mutableMenuItems).toList();
   }
@@ -431,22 +395,20 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
     final isSensitive = widget.field.value is ProtectedValue || widget.field.protect == true;
     final userNotified = await KeeClipboard.set(widget.field.textValue, isSensitive);
     if (!userNotified) {
-      sm.showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(str.detFieldCopied),
-          ],
+      sm.showSnackBar(
+        SnackBar(
+          content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.detFieldCopied)]),
+          duration: Duration(seconds: 3),
         ),
-        duration: Duration(seconds: 3),
-      ));
+      );
     }
     return true;
   }
 
-  Widget _buildEntryFieldViewer() => _isValueObscured && widget.field.textValue.isEmpty == false
-      ? _buildObscuredEntryFieldViewer()
-      : _buildStringEntryFieldViewer();
+  Widget _buildEntryFieldViewer() =>
+      _isValueObscured && widget.field.textValue.isEmpty == false
+          ? _buildObscuredEntryFieldViewer()
+          : _buildStringEntryFieldViewer();
 
   Widget _buildObscuredEntryFieldViewer() {
     return Padding(
@@ -465,10 +427,7 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
 
 class IntegrationSettingsHistoryWidget extends StatefulWidget {
   final EntryViewModel entry;
-  const IntegrationSettingsHistoryWidget({
-    super.key,
-    required this.entry,
-  });
+  const IntegrationSettingsHistoryWidget({super.key, required this.entry});
 
   @override
   State<IntegrationSettingsHistoryWidget> createState() => _IntegrationSettingsHistoryWidgetState();
@@ -492,9 +451,7 @@ class _IntegrationSettingsHistoryWidgetState extends State<IntegrationSettingsHi
           ExpansionPanel(
             canTapOnHeader: true,
             isExpanded: _isExpanded,
-            headerBuilder: (context, isExpanded) => ListTile(
-              title: Text(str.integrationSettings),
-            ),
+            headerBuilder: (context, isExpanded) => ListTile(title: Text(str.integrationSettings)),
             body: Padding(
               padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
               child: Column(
@@ -505,18 +462,17 @@ class _IntegrationSettingsHistoryWidgetState extends State<IntegrationSettingsHi
                         child: ListTile(
                           title: Text(str.showEntryInBrowsersAndApps),
                           leading: Switch(
-                            value: !widget.entry.browserSettings.matcherConfigs
-                                .any((mc) => mc.matcherType == EntryMatcherType.Hide),
+                            value:
+                                !widget.entry.browserSettings.matcherConfigs.any(
+                                  (mc) => mc.matcherType == EntryMatcherType.Hide,
+                                ),
                             onChanged: null,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  Divider(
-                    indent: 16,
-                    endIndent: 16,
-                  ),
+                  Divider(indent: 16, endIndent: 16),
                   Column(
                     children: widget.entry.browserSettings.includeUrls
                         .whereType<String>()
@@ -524,29 +480,24 @@ class _IntegrationSettingsHistoryWidgetState extends State<IntegrationSettingsHi
                         .map((s) => Text(s.toLowerCase()))
                         .toList(growable: false),
                   ),
-                  Divider(
-                    indent: 16,
-                    endIndent: 16,
-                  ),
+                  Divider(indent: 16, endIndent: 16),
                   Row(
                     children: <Widget>[
-                      Expanded(
-                        child: Text(str.minURLMatchAccuracy),
+                      Expanded(child: Text(str.minURLMatchAccuracy)),
+                      Text(
+                        (widget.entry.browserSettings.matcherConfigs
+                                    .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
+                                    ?.urlMatchMethod ??
+                                MatchAccuracy.Domain)
+                            .name,
                       ),
-                      Text((widget.entry.browserSettings.matcherConfigs
-                                  .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
-                                  ?.urlMatchMethod ??
-                              MatchAccuracy.Domain)
-                          .name),
                     ],
                   ),
-                  Divider(
-                    indent: 16,
-                    endIndent: 16,
-                  ),
+                  Divider(indent: 16, endIndent: 16),
                   Column(
-                    children:
-                        widget.entry.androidPackageNames.map((s) => Text(s.toLowerCase())).toList(growable: false),
+                    children: widget.entry.androidPackageNames
+                        .map((s) => Text(s.toLowerCase()))
+                        .toList(growable: false),
                   ),
                 ],
               ),

@@ -7,9 +7,7 @@ import '../colors.dart';
 import '../generated/l10n.dart';
 
 class _BackdropTitle extends StatelessWidget {
-  const _BackdropTitle({
-    required Listenable listenable,
-  });
+  const _BackdropTitle({required Listenable listenable});
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +32,7 @@ class _BackdropTitle extends StatelessWidget {
           textInputAction: TextInputAction.search,
           style: const TextStyle(color: Colors.white, fontSize: 18.0),
           decoration: InputDecoration(
-            suffixIcon: Icon(
-              Icons.search,
-              semanticLabel: 'search',
-              color: Colors.white,
-            ),
+            suffixIcon: Icon(Icons.search, semanticLabel: 'search', color: Colors.white),
             isDense: true,
             errorMaxLines: 0,
             helperMaxLines: 0,
@@ -95,77 +89,76 @@ AppBar vaultTopBarWidget(
     ),
     actions: [
       PopupMenuButton(
-          icon: Icon(Icons.sort),
-          itemBuilder: (BuildContext context) {
-            final currentMode = (sortCubit.state is SortedState) ? (sortCubit.state as SortedState).mode : null;
-            final navigator = Navigator.of(context);
-            return <PopupMenuEntry>[
-              PopupMenuItem(
-                child: ListTile(
-                  trailing: currentMode == SortMode.titleAsc ? Icon(Icons.done) : null,
-                  title: Text(str.sortTitle),
-                  onTap: () async {
-                    await sortCubit.reorder(SortMode.titleAsc);
-                    navigator.pop();
-                  },
-                ),
+        icon: Icon(Icons.sort),
+        itemBuilder: (BuildContext context) {
+          final currentMode = (sortCubit.state is SortedState) ? (sortCubit.state as SortedState).mode : null;
+          final navigator = Navigator.of(context);
+          return <PopupMenuEntry>[
+            PopupMenuItem(
+              child: ListTile(
+                trailing: currentMode == SortMode.titleAsc ? Icon(Icons.done) : null,
+                title: Text(str.sortTitle),
+                onTap: () async {
+                  await sortCubit.reorder(SortMode.titleAsc);
+                  navigator.pop();
+                },
               ),
-              PopupMenuItem(
-                child: ListTile(
-                  trailing: currentMode == SortMode.titleDesc ? Icon(Icons.done) : null,
-                  title: Text(str.sortTitleReversed),
-                  onTap: () async {
-                    await sortCubit.reorder(SortMode.titleDesc);
-                    navigator.pop();
-                  },
-                ),
+            ),
+            PopupMenuItem(
+              child: ListTile(
+                trailing: currentMode == SortMode.titleDesc ? Icon(Icons.done) : null,
+                title: Text(str.sortTitleReversed),
+                onTap: () async {
+                  await sortCubit.reorder(SortMode.titleDesc);
+                  navigator.pop();
+                },
               ),
-              PopupMenuItem(
-                child: ListTile(
-                  trailing: currentMode == SortMode.modifiedDesc ? Icon(Icons.done) : null,
-                  title: Text(str.sortModified),
-                  onTap: () async {
-                    await sortCubit.reorder(SortMode.modifiedDesc);
-                    navigator.pop();
-                  },
-                ),
+            ),
+            PopupMenuItem(
+              child: ListTile(
+                trailing: currentMode == SortMode.modifiedDesc ? Icon(Icons.done) : null,
+                title: Text(str.sortModified),
+                onTap: () async {
+                  await sortCubit.reorder(SortMode.modifiedDesc);
+                  navigator.pop();
+                },
               ),
-              PopupMenuItem(
-                child: ListTile(
-                  trailing: currentMode == SortMode.modifiedAsc ? Icon(Icons.done) : null,
-                  title: Text(str.sortModifiedReversed),
-                  onTap: () async {
-                    await sortCubit.reorder(SortMode.modifiedAsc);
-                    navigator.pop();
-                  },
-                ),
+            ),
+            PopupMenuItem(
+              child: ListTile(
+                trailing: currentMode == SortMode.modifiedAsc ? Icon(Icons.done) : null,
+                title: Text(str.sortModifiedReversed),
+                onTap: () async {
+                  await sortCubit.reorder(SortMode.modifiedAsc);
+                  navigator.pop();
+                },
               ),
-              PopupMenuItem(
-                child: ListTile(
-                  trailing: currentMode == SortMode.createdDesc ? Icon(Icons.done) : null,
-                  title: Text(str.sortCreated),
-                  onTap: () async {
-                    await sortCubit.reorder(SortMode.createdDesc);
-                    navigator.pop();
-                  },
-                ),
+            ),
+            PopupMenuItem(
+              child: ListTile(
+                trailing: currentMode == SortMode.createdDesc ? Icon(Icons.done) : null,
+                title: Text(str.sortCreated),
+                onTap: () async {
+                  await sortCubit.reorder(SortMode.createdDesc);
+                  navigator.pop();
+                },
               ),
-              PopupMenuItem(
-                child: ListTile(
-                  trailing: currentMode == SortMode.createdAsc ? Icon(Icons.done) : null,
-                  title: Text(str.sortCreatedReversed),
-                  onTap: () async {
-                    await sortCubit.reorder(SortMode.createdAsc);
-                    navigator.pop();
-                  },
-                ),
+            ),
+            PopupMenuItem(
+              child: ListTile(
+                trailing: currentMode == SortMode.createdAsc ? Icon(Icons.done) : null,
+                title: Text(str.sortCreatedReversed),
+                onTap: () async {
+                  await sortCubit.reorder(SortMode.createdAsc);
+                  navigator.pop();
+                },
               ),
-            ];
-          })
+            ),
+          ];
+        },
+      ),
     ],
     titleSpacing: 8.0,
-    title: _BackdropTitle(
-      listenable: controller.view,
-    ),
+    title: _BackdropTitle(listenable: controller.view),
   );
 }

@@ -31,12 +31,17 @@ class UserService {
     final response1 = await request1;
     final srp1 = SRP1.fromJson(json.decode(response1.data!));
     user.salt = srp1.salt;
-    final nonce = (srp1.costFactor != null && srp1.costFactor! > 0)
-        ? await calculateCostNonce(srp1.costFactor!, srp1.costTarget!)
-        : '';
+    final nonce =
+        (srp1.costFactor != null && srp1.costFactor! > 0)
+            ? await calculateCostNonce(srp1.costFactor!, srp1.costTarget!)
+            : '';
 
-    user.loginParameters =
-        LoginParameters(clientEphemeral: clientEphemeral, B: srp1.B, authId: srp1.authId, nonce: nonce);
+    user.loginParameters = LoginParameters(
+      clientEphemeral: clientEphemeral,
+      B: srp1.B,
+      authId: srp1.authId,
+      nonce: nonce,
+    );
     user.kms = srp1.kms;
     return user;
   }
@@ -56,15 +61,20 @@ class UserService {
     if (user.passKey?.isEmpty ?? true) throw KeeInvalidStateException();
 
     final privateKey = derivePrivateKey(base642hex(user.salt!), user.emailHashed!, user.passKey!);
-    final clientSession = deriveSession(user.loginParameters!.clientEphemeral.secret,
-        base642hex(user.loginParameters!.B), base642hex(user.salt!), user.emailHashed!, privateKey);
+    final clientSession = deriveSession(
+      user.loginParameters!.clientEphemeral.secret,
+      base642hex(user.loginParameters!.B),
+      base642hex(user.salt!),
+      user.emailHashed!,
+      privateKey,
+    );
 
     final response2 = await _service.postRequest('loginFinish', {
       'emailHashed': user.emailHashed,
       'clientSessionEphemeral': hex2base64(user.loginParameters!.clientEphemeral.public),
       'authId': user.loginParameters!.authId,
       'costNonce': user.loginParameters!.nonce,
-      'clientSessionProof': hex2base64(clientSession.proof)
+      'clientSessionProof': hex2base64(clientSession.proof),
     });
 
     final srp2 = SRP2.fromJson(response2.data);
@@ -116,7 +126,7 @@ class UserService {
       'email': user.email,
       'introEmailStatus': 1,
       'marketingEmailStatus': marketingEmailStatus,
-      'provider': subscriptionSource
+      'provider': subscriptionSource,
     });
     final jwts = List<String>.from(json.decode(response.data!)['JWTs']);
     await _parseJWTs(user, jwts);
@@ -207,7 +217,11 @@ class UserService {
   // We make no changes to the User model since we will sign the user out and ask them to
   // sign in again, partly so that we can ensure they have verified their new email address.
   Future<void> changeEmailAddress(
-      User user, String newEmailAddress, String newEmailHashed, ProtectedValue password) async {
+    User user,
+    String newEmailAddress,
+    String newEmailHashed,
+    ProtectedValue password,
+  ) async {
     final key = password.hash;
     final oldPassKey = await derivePassKey(user.email!, key);
     final newPassKey = await derivePassKey(newEmailAddress, key);
@@ -225,16 +239,13 @@ class UserService {
     final oldVerifier = deriveVerifier(oldPrivateKey);
     final oldVerifierHashed = await hashBytes(Uint8List.fromList(hex.decode(oldVerifier)));
 
-    await _service.postRequest<String>(
-        'changeEmailAddress',
-        {
-          'emailHashed': newEmailHashed,
-          'verifier': hex2base64(newVerifier),
-          'salt': newSalt,
-          'email': newEmailAddress,
-          'oldVerifierHashed': oldVerifierHashed,
-        },
-        user.tokens!.identity);
+    await _service.postRequest<String>('changeEmailAddress', {
+      'emailHashed': newEmailHashed,
+      'verifier': hex2base64(newVerifier),
+      'salt': newSalt,
+      'email': newEmailAddress,
+      'oldVerifierHashed': oldVerifierHashed,
+    }, user.tokens!.identity);
     return;
   }
 
@@ -242,12 +253,9 @@ class UserService {
     final newPrivateKey = derivePrivateKey(base642hex(user.salt!), user.emailHashed!, newPassKey);
     final newVerifier = deriveVerifier(newPrivateKey);
 
-    await _service.postRequest<String>(
-        'changePasswordStart',
-        {
-          'verifier': hex2base64(newVerifier),
-        },
-        user.tokens!.identity);
+    await _service.postRequest<String>('changePasswordStart', {
+      'verifier': hex2base64(newVerifier),
+    }, user.tokens!.identity);
     return;
   }
 
@@ -276,8 +284,10 @@ class UserService {
               if (claim.exp > DateTime.now().millisecondsSinceEpoch) {
                 user.features = Features(enabled: claim.features, source: 'unknown', validUntil: claim.featureExpiry);
                 user.id = claim.sub;
-                user.idB64url =
-                    user.id!.replaceAll(RegExp(r'\+'), '-').replaceAll(RegExp(r'/'), '_').replaceAll(RegExp(r'='), '.');
+                user.idB64url = user.id!
+                    .replaceAll(RegExp(r'\+'), '-')
+                    .replaceAll(RegExp(r'/'), '_')
+                    .replaceAll(RegExp(r'='), '.');
                 user.tokens!.client = jwt;
                 user.subscriptionId = claim.subscriptionId;
               }

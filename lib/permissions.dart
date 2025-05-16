@@ -25,13 +25,14 @@ Future<PermissionResult> tryToGetPermission(
       if (permissionStatus == PermissionStatus.permanentlyDenied) {
         l.w('$permissionName permission permanently denied');
         if (await DialogUtils.showConfirmDialog(
-            context: context,
-            params: ConfirmDialogParams(
-              title: str.permissionError,
-              content: str.permissionDeniedPermanentlyError(reason),
-              positiveButtonText: str.openSettings,
-              negativeButtonText: negativeConsequence,
-            ))) {
+          context: context,
+          params: ConfirmDialogParams(
+            title: str.permissionError,
+            content: str.permissionDeniedPermanentlyError(reason),
+            positiveButtonText: str.openSettings,
+            negativeButtonText: negativeConsequence,
+          ),
+        )) {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             if (!await openAppSettings()) {
               if (context.mounted) {
@@ -55,13 +56,14 @@ Future<PermissionResult> tryToGetPermission(
       if (permissionStatus == PermissionStatus.denied) {
         l.w('$permissionName permission denied: ${permissionStatus.toString()}');
         final tryAgain = await DialogUtils.showConfirmDialog(
-            context: context,
-            params: ConfirmDialogParams(
-              title: str.permissionError,
-              content: str.permissionDeniedError(reason),
-              positiveButtonText: str.tryAgain,
-              negativeButtonText: negativeConsequence,
-            ));
+          context: context,
+          params: ConfirmDialogParams(
+            title: str.permissionError,
+            content: str.permissionDeniedError(reason),
+            positiveButtonText: str.tryAgain,
+            negativeButtonText: negativeConsequence,
+          ),
+        );
         if (!tryAgain) {
           return PermissionResult.rejected;
         }
@@ -76,12 +78,13 @@ void alertUserToPermissionsProblem(BuildContext context, String action) {
   final str = S.of(context);
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     if (await DialogUtils.showConfirmDialog(
-        context: context,
-        params: ConfirmDialogParams(
-          title: str.permissionError,
-          content: str.permissionDeniedPermanentlyError(action),
-          positiveButtonText: str.openSettings,
-        ))) {
+      context: context,
+      params: ConfirmDialogParams(
+        title: str.permissionError,
+        content: str.permissionDeniedPermanentlyError(action),
+        positiveButtonText: str.openSettings,
+      ),
+    )) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!await openAppSettings()) {
           if (context.mounted) {

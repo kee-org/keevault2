@@ -6,7 +6,7 @@ class ExpiringCachedCredentialHashMap {
   ExpiringCachedCredentialHashMap(this._map);
 
   ExpiringCachedCredentialHashMap.fromJson(Map<String, dynamic> data)
-      : _map = data.map((u, c) => MapEntry(u, ExpiringCachedCredentials.fromJson(c)));
+    : _map = data.map((u, c) => MapEntry(u, ExpiringCachedCredentials.fromJson(c)));
 
   Map<String, dynamic> toJson() => _map.map((u, c) => MapEntry(u, c.toJson()));
 

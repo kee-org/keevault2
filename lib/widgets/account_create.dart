@@ -94,8 +94,14 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     });
   }
 
-  Future<void> handlePurchaseItem(PurchasedItem item, bool isAndroid, BlockingOverlayState blockingOverlay,
-      AccountCubit accountCubit, VaultCubit vaultCubit, str) async {
+  Future<void> handlePurchaseItem(
+    PurchasedItem item,
+    bool isAndroid,
+    BlockingOverlayState blockingOverlay,
+    AccountCubit accountCubit,
+    VaultCubit vaultCubit,
+    str,
+  ) async {
     final customMessage = Center(
       child: SizedBox(
         child: Material(
@@ -104,21 +110,16 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(str.subscriptionAssociatingDescription),
-              ),
+              Padding(padding: const EdgeInsets.all(16.0), child: Text(str.subscriptionAssociatingDescription)),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
                   width: 48,
                   height: 48,
                   padding: const EdgeInsets.all(8.0),
-                  child: const CircularProgressIndicator(
-                    strokeWidth: 4,
-                  ),
+                  child: const CircularProgressIndicator(strokeWidth: 4),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -126,14 +127,20 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     );
     blockingOverlay.show(customMessage, Duration(seconds: 0));
     final retry = await accountCubit.subscriptionSuccess(
-        item, isAndroid, () => vaultCubit.ensureRemoteCreated(accountCubit.currentUser, submittedPassword), () async {
-      try {
-        return PaymentService.instance.finishTransaction(item);
-      } on Exception catch (e) {
-        l.w('Exception while finishing the payment transaction. Ignoring but an app restart and/or a fresh sign-in or registration attempt may be required for everything to catch up. May also require a few minutes for server-side operations to complete.',
-            error: e);
-      }
-    });
+      item,
+      isAndroid,
+      () => vaultCubit.ensureRemoteCreated(accountCubit.currentUser, submittedPassword),
+      () async {
+        try {
+          return PaymentService.instance.finishTransaction(item);
+        } on Exception catch (e) {
+          l.w(
+            'Exception while finishing the payment transaction. Ignoring but an app restart and/or a fresh sign-in or registration attempt may be required for everything to catch up. May also require a few minutes for server-side operations to complete.',
+            error: e,
+          );
+        }
+      },
+    );
     if (retry) {
       try {
         await PaymentService.instance.buyProduct(iap!.products[0], iap!.offerTokenIndex);
@@ -168,7 +175,13 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
         if (accountCubit.state is AccountSubscribing) {
           final str = S.current;
           await handlePurchaseItem(
-              item, item.purchaseStateAndroid != null, blockingOverlay, accountCubit, vaultCubit, str);
+            item,
+            item.purchaseStateAndroid != null,
+            blockingOverlay,
+            accountCubit,
+            vaultCubit,
+            str,
+          );
         } else {
           // We're not expecting this purchase so we will defer it until the user has navigated to a point where we can do something useful with it (e.g. either creating a new account or exiting and signing in again with fresh authentication tokens)
           PaymentService.instance.deferPurchaseItem(item);
@@ -185,19 +198,21 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
 
           setState(() {
             iap = IapDetails(
-                products: prods,
-                offerTokenIndex: -1,
-                trialAvailable: true, // Apple don't permit us to know this information so we show the more general text
-                formattedPrice: prods[0].localizedPrice);
+              products: prods,
+              offerTokenIndex: -1,
+              trialAvailable: true, // Apple don't permit us to know this information so we show the more general text
+              formattedPrice: prods[0].localizedPrice,
+            );
           });
           return;
         }
         if (KeeVaultPlatform.isAndroid) {
           final trialProductIndex =
               prods[0].subscriptionOffersAndroid?.indexWhere((o) => o.offerId == 'supporter-yearly-trial') ?? -1;
-          final selectedProductIndex = trialProductIndex >= 0
-              ? trialProductIndex
-              : prods[0].subscriptionOffersAndroid?.indexWhere((o) => o.basePlanId == 'supporter-yearly') ?? -1;
+          final selectedProductIndex =
+              trialProductIndex >= 0
+                  ? trialProductIndex
+                  : prods[0].subscriptionOffersAndroid?.indexWhere((o) => o.basePlanId == 'supporter-yearly') ?? -1;
           final selectedProduct =
               selectedProductIndex >= 0 ? (prods[0].subscriptionOffersAndroid![selectedProductIndex]) : null;
 
@@ -208,10 +223,11 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
 
             setState(() {
               iap = IapDetails(
-                  products: prods,
-                  offerTokenIndex: selectedProductIndex,
-                  trialAvailable: trialProductIndex >= 0,
-                  formattedPrice: price);
+                products: prods,
+                offerTokenIndex: selectedProductIndex,
+                trialAvailable: trialProductIndex >= 0,
+                formattedPrice: price,
+              );
             });
             return;
           }
@@ -236,11 +252,12 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
       builder: (context, state) {
         if (state is AccountSubscribed) {
           return AccountCreateWrapperWidget(
-              skipBackCheck: false,
-              saving: false,
-              widget: widget,
-              mainContent: hasFreeKdbx ?? false
-                  ? Center(
+            skipBackCheck: false,
+            saving: false,
+            widget: widget,
+            mainContent:
+                hasFreeKdbx ?? false
+                    ? Center(
                       child: SizedBox(
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -248,7 +265,8 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                                'Thanks for subscribing. The last step is to transfer the items in your free vault to your new subscription. Depending upon your current preferences, you might later be asked to authenticate with biometrics or your free vault password.'),
+                              'Thanks for subscribing. The last step is to transfer the items in your free vault to your new subscription. Depending upon your current preferences, you might later be asked to authenticate with biometrics or your free vault password.',
+                            ),
                             Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: ElevatedButton(
@@ -263,19 +281,23 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
 
                                   final accountCubit = BlocProvider.of<AccountCubit>(context);
                                   await accountCubit.finaliseRegistration(state.user);
-                                  await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.root,
-                                      clearStack: true);
+                                  await AppConfig.router.navigateTo(
+                                    AppConfig.navigatorKey.currentContext!,
+                                    Routes.root,
+                                    clearStack: true,
+                                  );
                                 },
                                 child: Text('Start import'),
                               ),
                             ),
                             Text(
-                                'You can easily delete the transferred items in a moment if you are looking for a clean slate.'),
+                              'You can easily delete the transferred items in a moment if you are looking for a clean slate.',
+                            ),
                           ],
                         ),
                       ),
                     )
-                  : Center(
+                    : Center(
                       child: SizedBox(
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -289,129 +311,131 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                                 onPressed: () async {
                                   final accountCubit = BlocProvider.of<AccountCubit>(context);
                                   await accountCubit.finaliseRegistration(state.user);
-                                  await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.root,
-                                      clearStack: true);
+                                  await AppConfig.router.navigateTo(
+                                    AppConfig.navigatorKey.currentContext!,
+                                    Routes.root,
+                                    clearStack: true,
+                                  );
                                 },
                                 child: Text('Go to your Vault'),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
                     ),
-              mainTitle: 'Subscribe');
+            mainTitle: 'Subscribe',
+          );
         } else if (state is AccountAuthenticated && state is! AccountSubscribing) {
           final reasonText = resubscriptionNeededReason(state);
           final pricingText = pricingTextRenewal();
-          final renewalWidgets = isRenewalMode(state)
-              ? [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      pricingText,
-                      style: theme.textTheme.titleMedium,
+          final renewalWidgets =
+              isRenewalMode(state)
+                  ? [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(pricingText, style: theme.textTheme.titleMedium),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: RichText(
-                      text: TextSpan(
-                        style: theme.textTheme.bodySmall,
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'You have already agreed to our ',
-                          ),
-                          TextSpan(
-                            text: str.localOnlyAgree2,
-                            style: theme.textTheme.bodyMedium!.copyWith(color: mainColor, fontWeight: FontWeight.bold),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () async {
-                                await SubscriberTermsDialog().show(context);
-                              },
-                          ),
-                          TextSpan(
-                            text:
-                                '. You should recall that if your subscription has been expired for less than approximately 6 months, we may backdate any new subscription to the time that one expired, so that we can recover your protected password data.',
-                          ),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: RichText(
+                        text: TextSpan(
+                          style: theme.textTheme.bodySmall,
+                          children: <TextSpan>[
+                            TextSpan(text: 'You have already agreed to our '),
+                            TextSpan(
+                              text: str.localOnlyAgree2,
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                color: mainColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              recognizer:
+                                  TapGestureRecognizer()
+                                    ..onTap = () async {
+                                      await SubscriberTermsDialog().show(context);
+                                    },
+                            ),
+                            TextSpan(
+                              text:
+                                  '. You should recall that if your subscription has been expired for less than approximately 6 months, we may backdate any new subscription to the time that one expired, so that we can recover your protected password data.',
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                  ]
+                  : [];
+          final actionButton =
+              state is AccountSubscribeError
+                  ? ElevatedButton(
+                    onPressed: () async {
+                      // sign out so user can see initial signin/register page again.
+                      final vc = BlocProvider.of<VaultCubit>(context);
+                      await BlocProvider.of<AccountCubit>(context).forgetUser(vc.signout);
+                      await AppConfig.router.navigateTo(
+                        AppConfig.navigatorKey.currentContext!,
+                        Routes.root,
+                        clearStack: true,
+                      );
+                    },
+                    child: Text('Sign in'),
                   )
-                ]
-              : [];
-          final actionButton = state is AccountSubscribeError
-              ? ElevatedButton(
-                  onPressed: () async {
-                    // sign out so user can see initial signin/register page again.
-                    final vc = BlocProvider.of<VaultCubit>(context);
-                    await BlocProvider.of<AccountCubit>(context).forgetUser(vc.signout);
-                    await AppConfig.router
-                        .navigateTo(AppConfig.navigatorKey.currentContext!, Routes.root, clearStack: true);
-                  },
-                  child: Text('Sign in'),
-                )
-              : ElevatedButton(
-                  onPressed: saving || iap == null || iap!.formattedPrice == null
-                      ? null
-                      : () async {
-                          setState(() {
-                            saveError = false;
-                            saving = true;
-                          });
-                          try {
-                            await subscribeUser(state.user);
-                            setState(() {
-                              saving = false;
-                            });
-                          } on Exception {
-                            setState(() {
-                              saving = false;
-                              saveError = true;
-                            });
-                          }
-                        },
-                  child: saving
-                      ? Container(
-                          width: 24,
-                          height: 24,
-                          padding: const EdgeInsets.all(2.0),
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 3,
-                          ),
-                        )
-                      : Text('Subscribe now'),
-                );
+                  : ElevatedButton(
+                    onPressed:
+                        saving || iap == null || iap!.formattedPrice == null
+                            ? null
+                            : () async {
+                              setState(() {
+                                saveError = false;
+                                saving = true;
+                              });
+                              try {
+                                await subscribeUser(state.user);
+                                setState(() {
+                                  saving = false;
+                                });
+                              } on Exception {
+                                setState(() {
+                                  saving = false;
+                                  saveError = true;
+                                });
+                              }
+                            },
+                    child:
+                        saving
+                            ? Container(
+                              width: 24,
+                              height: 24,
+                              padding: const EdgeInsets.all(2.0),
+                              child: const CircularProgressIndicator(strokeWidth: 3),
+                            )
+                            : Text('Subscribe now'),
+                  );
           return AccountCreateWrapperWidget(
-              widget: widget,
-              skipBackCheck: true,
-              saving: false,
-              mainContent: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      reasonText,
-                      style: theme.textTheme.titleLarge,
-                    ),
-                  ),
-                  ...renewalWidgets,
-                  Align(
-                    alignment: Alignment.center,
-                    child: actionButton,
-                  )
-                ],
-              ),
-              mainTitle: 'Subscribe');
+            widget: widget,
+            skipBackCheck: true,
+            saving: false,
+            mainContent: Column(
+              children: [
+                Align(alignment: Alignment.centerLeft, child: Text(reasonText, style: theme.textTheme.titleLarge)),
+                ...renewalWidgets,
+                Align(alignment: Alignment.center, child: actionButton),
+              ],
+            ),
+            mainTitle: 'Subscribe',
+          );
         } else {
           return AccountCreateWrapperWidget(
-              skipBackCheck: saveError || (registrationErrorMessage?.isNotEmpty ?? false),
-              saving: saving,
-              widget: widget,
-              mainContent: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            skipBackCheck: saveError || (registrationErrorMessage?.isNotEmpty ?? false),
+            saving: saving,
+            widget: widget,
+            mainContent: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: Text(
@@ -446,21 +470,16 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Text(
-                        pricingText(),
-                        style: theme.textTheme.titleMedium,
-                      ),
+                      child: Text(pricingText(), style: theme.textTheme.titleMedium),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Text(str.registrationBlurb1),
-                    ),
+                    Padding(padding: const EdgeInsets.only(bottom: 16.0), child: Text(str.registrationBlurb1)),
                     Visibility(
                       visible: hasFreeKdbx ?? false,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
-                        child:
-                            Text('Tip: Using the password you chose for your free Vault is simpler but not mandatory.'),
+                        child: Text(
+                          'Tip: Using the password you chose for your free Vault is simpler but not mandatory.',
+                        ),
                       ),
                     ),
                     Padding(
@@ -494,12 +513,11 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                       ),
                     ),
                     ValueListenableBuilder(
-                        valueListenable: _password,
-                        builder: (context, TextEditingValue content, child) {
-                          return PasswordStrengthWidget(
-                            testValue: content.text,
-                          );
-                        }),
+                      valueListenable: _password,
+                      builder: (context, TextEditingValue content, child) {
+                        return PasswordStrengthWidget(testValue: content.text);
+                      },
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: TextFormField(
@@ -554,17 +572,18 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                         text: TextSpan(
                           style: theme.textTheme.bodyMedium,
                           children: <TextSpan>[
-                            TextSpan(
-                              text: str.localOnlyAgree1,
-                            ),
+                            TextSpan(text: str.localOnlyAgree1),
                             TextSpan(
                               text: str.localOnlyAgree2,
-                              style:
-                                  theme.textTheme.bodyMedium!.copyWith(color: mainColor, fontWeight: FontWeight.bold),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  await SubscriberTermsDialog().show(context);
-                                },
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                color: mainColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              recognizer:
+                                  TapGestureRecognizer()
+                                    ..onTap = () async {
+                                      await SubscriberTermsDialog().show(context);
+                                    },
                             ),
                           ],
                         ),
@@ -585,57 +604,60 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
                     Visibility(
                       visible: saveError,
                       child: Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Text(
-                            registrationErrorMessage ??
-                                'There was a problem creating your account. Please try again in a moment when you have a more stable network connection.',
-                            style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.error),
-                          )),
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Text(
+                          registrationErrorMessage ??
+                              'There was a problem creating your account. Please try again in a moment when you have a more stable network connection.',
+                          style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.error),
+                        ),
+                      ),
                     ),
                     Align(
                       alignment: Alignment.center,
                       child: ElevatedButton(
-                        onPressed: saving || !agreedToS || iap == null || iap!.formattedPrice == null
-                            ? null
-                            : () async {
-                                setState(() {
-                                  saveError = false;
-                                  registrationErrorMessage = null;
-                                });
-                                if (_formKey.currentState!.validate()) {
+                        onPressed:
+                            saving || !agreedToS || iap == null || iap!.formattedPrice == null
+                                ? null
+                                : () async {
                                   setState(() {
-                                    saving = true;
+                                    saveError = false;
+                                    registrationErrorMessage = null;
                                   });
-                                  _formKey.currentState!.save();
-                                  try {
-                                    await registerAccount(submittedEmail!, submittedPassword!, marketingPreference);
+                                  if (_formKey.currentState!.validate()) {
                                     setState(() {
-                                      saving = false;
+                                      saving = true;
                                     });
-                                  } on Exception {
-                                    setState(() {
-                                      saving = false;
-                                      saveError = true;
-                                    });
+                                    _formKey.currentState!.save();
+                                    try {
+                                      await registerAccount(submittedEmail!, submittedPassword!, marketingPreference);
+                                      setState(() {
+                                        saving = false;
+                                      });
+                                    } on Exception {
+                                      setState(() {
+                                        saving = false;
+                                        saveError = true;
+                                      });
+                                    }
                                   }
-                                }
-                              },
-                        child: saving
-                            ? Container(
-                                width: 24,
-                                height: 24,
-                                padding: const EdgeInsets.all(2.0),
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                ),
-                              )
-                            : Text('Subscribe now'),
+                                },
+                        child:
+                            saving
+                                ? Container(
+                                  width: 24,
+                                  height: 24,
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: const CircularProgressIndicator(strokeWidth: 3),
+                                )
+                                : Text('Subscribe now'),
                       ),
                     ),
-                  ]),
+                  ],
                 ),
               ),
-              mainTitle: 'Subscribe');
+            ),
+            mainTitle: 'Subscribe',
+          );
         }
       },
     );
@@ -688,8 +710,14 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     // app just before it expired and then the app detected the expiry and pushes user here to resolve.
     // Probably in practice that will not happen much since they will sign into the app again much later, if ever!
     if (PaymentService.instance.activePurchaseItem != null) {
-      await handlePurchaseItem(PaymentService.instance.activePurchaseItem!, KeeVaultPlatform.isAndroid, blockingOverlay,
-          accountCubit, vaultCubit, str);
+      await handlePurchaseItem(
+        PaymentService.instance.activePurchaseItem!,
+        KeeVaultPlatform.isAndroid,
+        blockingOverlay,
+        accountCubit,
+        vaultCubit,
+        str,
+      );
       return;
     }
     try {
@@ -787,9 +815,7 @@ class AccountCreateWrapperWidget extends StatelessWidget {
     return ColouredSafeArea(
       child: Scaffold(
         key: widget.key,
-        appBar: AppBar(
-          title: Text(mainTitle),
-        ),
+        appBar: AppBar(title: Text(mainTitle)),
         body: PopScope(
           canPop: skipBackCheck,
           onPopInvokedWithResult: (bool didPop, Object? result) async {
@@ -800,20 +826,26 @@ class AccountCreateWrapperWidget extends StatelessWidget {
             final ac = BlocProvider.of<AccountCubit>(context);
             final NavigatorState navigator = Navigator.of(context);
             final result = await showDialog(
-                routeSettings: RouteSettings(),
-                context: context,
-                builder: (context) => AlertDialog(
-                        title: Text('Cancel registration?'),
-                        content: Text(
-                            'If you are part way through the account registration process, we cannot be sure whether your registration has completed or not, nor whether your Subscription provider has activated your subscription already. In that case, you may need to take additional actions to complete registration later or tidy up afterwards.'),
-                        actions: <Widget>[
-                          OutlinedButton(
-                              child: Text('Cancel registration'.toUpperCase()),
-                              onPressed: () => Navigator.of(context).pop(true)),
-                          OutlinedButton(
-                              child: Text('Continue registering'.toUpperCase()),
-                              onPressed: () => Navigator.of(context).pop(false)),
-                        ]));
+              routeSettings: RouteSettings(),
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    title: Text('Cancel registration?'),
+                    content: Text(
+                      'If you are part way through the account registration process, we cannot be sure whether your registration has completed or not, nor whether your Subscription provider has activated your subscription already. In that case, you may need to take additional actions to complete registration later or tidy up afterwards.',
+                    ),
+                    actions: <Widget>[
+                      OutlinedButton(
+                        child: Text('Cancel registration'.toUpperCase()),
+                        onPressed: () => Navigator.of(context).pop(true),
+                      ),
+                      OutlinedButton(
+                        child: Text('Continue registering'.toUpperCase()),
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                    ],
+                  ),
+            );
             if (result) {
               // sign out so user can see initial signin/register page again.
               await ac.forgetUser(vc.signout);
@@ -823,11 +855,7 @@ class AccountCreateWrapperWidget extends StatelessWidget {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: SafeArea(
-                top: false,
-                left: false,
-                child: mainContent,
-              ),
+              child: SafeArea(top: false, left: false, child: mainContent),
             ),
           ),
         ),

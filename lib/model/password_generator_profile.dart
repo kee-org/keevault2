@@ -260,11 +260,7 @@ class PasswordGeneratorProfileSettings {
   final List<String> disabled;
   final String defaultProfileName;
 
-  PasswordGeneratorProfileSettings(
-    this.user,
-    this.disabled,
-    this.defaultProfileName,
-  );
+  PasswordGeneratorProfileSettings(this.user, this.disabled, this.defaultProfileName);
 
   PasswordGeneratorProfileSettings copyWith({
     List<PasswordGeneratorProfile>? user,
@@ -339,7 +335,6 @@ class PasswordGeneratorCharRanges {
       '¡¢£¤¥¦§©ª«¬®¯°±²³´µ¶¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþ';
   static const String ambiguous = 'O0oIl';
 }
-
 
 //TODO:f: something like below for a tooltip display of exact chars included in each range
 //

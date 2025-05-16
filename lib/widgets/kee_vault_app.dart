@@ -112,55 +112,53 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   StreamSubscription? _receiveIntentSubscription;
 
   void _initReceiveIntentSubscription() async {
-    _receiveIntentSubscription = ri.ReceiveIntent.receivedIntentStream.listen((ri.Intent? intent) {
-      l.d('Received intent: $intent');
-      final navigator = widget.navigatorKey.currentState;
-      final navContext = navigator?.overlay?.context;
-      if (navContext == null) {
-        l.e('Nav context unexpectedly missing. Autofill navigation is likely to fail in strange ways.');
-        return;
-      }
-      if (!navContext.mounted) {
-        l.e('Nav context unexpectedly unmounted. Autofill navigation is likely to fail in strange ways.');
-        return;
-      }
-      final mode = intent?.extra?['autofill_mode'];
-      if (mode?.startsWith('/autofill') ?? false) {
-        BlocProvider.of<AutofillCubit>(navContext).refresh();
-      }
-    }, onError: (err) {
-      l.e('intent error: $err');
-    });
+    _receiveIntentSubscription = ri.ReceiveIntent.receivedIntentStream.listen(
+      (ri.Intent? intent) {
+        l.d('Received intent: $intent');
+        final navigator = widget.navigatorKey.currentState;
+        final navContext = navigator?.overlay?.context;
+        if (navContext == null) {
+          l.e('Nav context unexpectedly missing. Autofill navigation is likely to fail in strange ways.');
+          return;
+        }
+        if (!navContext.mounted) {
+          l.e('Nav context unexpectedly unmounted. Autofill navigation is likely to fail in strange ways.');
+          return;
+        }
+        final mode = intent?.extra?['autofill_mode'];
+        if (mode?.startsWith('/autofill') ?? false) {
+          BlocProvider.of<AutofillCubit>(navContext).refresh();
+        }
+      },
+      onError: (err) {
+        l.e('intent error: $err');
+      },
+    );
   }
 
   ThemeData getThemeData(bool isDark, MaterialColor palette) {
-    final theme = isDark
-        ? ThemeData.from(
-            useMaterial3: false,
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: palette,
-              brightness: Brightness.dark,
-              cardColor: Color(0xFF292929),
-              accentColor: AppPalettes.keeVaultPaletteAccent[100],
-              backgroundColor: Colors.grey[900],
-            ).copyWith(
-              surface: Colors.grey[850],
-              secondaryContainer: palette[700],
-            ),
-          )
-        : ThemeData.from(
-            useMaterial3: false,
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: palette,
-              brightness: Brightness.light,
-              cardColor: Colors.white,
-              accentColor: palette[500],
-              backgroundColor: Colors.grey[50],
-            ).copyWith(
-              surface: Colors.grey[100],
-              secondaryContainer: palette[700],
-            ),
-          );
+    final theme =
+        isDark
+            ? ThemeData.from(
+              useMaterial3: false,
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: palette,
+                brightness: Brightness.dark,
+                cardColor: Color(0xFF292929),
+                accentColor: AppPalettes.keeVaultPaletteAccent[100],
+                backgroundColor: Colors.grey[900],
+              ).copyWith(surface: Colors.grey[850], secondaryContainer: palette[700]),
+            )
+            : ThemeData.from(
+              useMaterial3: false,
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: palette,
+                brightness: Brightness.light,
+                cardColor: Colors.white,
+                accentColor: palette[500],
+                backgroundColor: Colors.grey[50],
+              ).copyWith(surface: Colors.grey[100], secondaryContainer: palette[700]),
+            );
     return theme.copyWith(
       primaryColor: palette[500],
       canvasColor: isDark ? Colors.grey[900] : Colors.grey[50],
@@ -171,7 +169,8 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
         selectionColor: isDark ? palette[700] : palette[100],
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(foregroundColor: isDark ? palette[100] : palette[600])),
+        style: OutlinedButton.styleFrom(foregroundColor: isDark ? palette[100] : palette[600]),
+      ),
       textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: theme.colorScheme.secondary)),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
@@ -217,8 +216,10 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
       ),
       bottomAppBarTheme: BottomAppBarTheme(color: isDark ? palette[800] : palette[100]),
       inputDecorationTheme: theme.inputDecorationTheme.copyWith(
-          errorStyle: theme.inputDecorationTheme.errorStyle?.copyWith(fontWeight: FontWeight.bold) ??
-              TextStyle(fontWeight: FontWeight.bold)),
+        errorStyle:
+            theme.inputDecorationTheme.errorStyle?.copyWith(fontWeight: FontWeight.bold) ??
+            TextStyle(fontWeight: FontWeight.bold),
+      ),
     );
   }
 
@@ -233,16 +234,18 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
           return MultiBlocProvider(
             providers: [
               BlocProvider(
-                  create: (context) => VaultCubit(
-                        userRepo,
-                        quickUnlocker,
-                        RemoteVaultRepository(userService, storageService),
-                        LocalVaultRepository(quickUnlocker),
-                        entryCubit,
-                        () => autofillCubit.isAutofilling() || autofillCubit.isAutofillSaving(),
-                        generatorProfilesCubit,
-                        accountCubit,
-                      )),
+                create:
+                    (context) => VaultCubit(
+                      userRepo,
+                      quickUnlocker,
+                      RemoteVaultRepository(userService, storageService),
+                      LocalVaultRepository(quickUnlocker),
+                      entryCubit,
+                      () => autofillCubit.isAutofilling() || autofillCubit.isAutofillSaving(),
+                      generatorProfilesCubit,
+                      accountCubit,
+                    ),
+              ),
               BlocProvider(create: (context) => accountCubit),
               BlocProvider(create: (context) => entryCubit),
               BlocProvider(create: (context) => FilterCubit()),
@@ -273,9 +276,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                   themeMode: (appSettingsState as AppSettingsBasic).themeMode,
                   onGenerateRoute: AppConfig.router.generator,
                   initialRoute: '/',
-                  navigatorObservers: [
-                    matomoObserver,
-                  ],
+                  navigatorObservers: [matomoObserver],
                 ),
               ),
             ),

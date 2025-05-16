@@ -78,77 +78,75 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
     final str = S.of(context);
     return Column(
       children: [
-        BlocConsumer<AccountCubit, AccountState>(builder: (context, state) {
-          if (state is AccountInitial) {
-            return LoadingSpinner(tooltip: str.loading);
-          } else if (state is AccountUnknown) {
-            return VaultAccountCredentialsWidget(
+        BlocConsumer<AccountCubit, AccountState>(
+          builder: (context, state) {
+            if (state is AccountInitial) {
+              return LoadingSpinner(tooltip: str.loading);
+            } else if (state is AccountUnknown) {
+              return VaultAccountCredentialsWidget(
                 onSignInRequest: _startSignin,
                 onLocalOnlyRequested: _requestLocalOnly,
-                onRegisterRequest: _startRegistration);
-          } else if (state is AccountLocalOnlyRequested) {
-            return VaultLocalOnlyCreateWidget(
-              onSubmit: _createLocalOnlyVault,
-              showError: false,
-            );
-          } else if (state is AccountIdentifying) {
-            return LoadingSpinner(tooltip: str.identifying);
-          } else if (state is AccountIdentified) {
-            return Column(
-              children: [
-                VaultPasswordCredentialsWidget(
-                  reason: str.welcome_message(state.user.email ?? ''),
-                  onSubmit: _initVault,
-                  showError: state.causedByInteraction,
-                ),
-                Visibility(
-                  visible: state.user.email?.isNotEmpty ?? false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: TextButton(
-                      onPressed: () async => await ResetAccountPromptDialog(
-                        emailAddress: state.user.email!,
-                      ).show(context),
-                      child: Text(
-                        str.forgotPasswordOrCheckAccount,
-                        textAlign: TextAlign.center,
+                onRegisterRequest: _startRegistration,
+              );
+            } else if (state is AccountLocalOnlyRequested) {
+              return VaultLocalOnlyCreateWidget(onSubmit: _createLocalOnlyVault, showError: false);
+            } else if (state is AccountIdentifying) {
+              return LoadingSpinner(tooltip: str.identifying);
+            } else if (state is AccountIdentified) {
+              return Column(
+                children: [
+                  VaultPasswordCredentialsWidget(
+                    reason: str.welcome_message(state.user.email ?? ''),
+                    onSubmit: _initVault,
+                    showError: state.causedByInteraction,
+                  ),
+                  Visibility(
+                    visible: state.user.email?.isNotEmpty ?? false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: TextButton(
+                        onPressed:
+                            () async => await ResetAccountPromptDialog(emailAddress: state.user.email!).show(context),
+                        child: Text(str.forgotPasswordOrCheckAccount, textAlign: TextAlign.center),
                       ),
                     ),
                   ),
-                ),
-              ],
-            );
-          } else if (state is AccountAuthenticating) {
-            return LoadingSpinner(tooltip: str.authenticating);
-          } else if (state is AccountExpired) {
-            return AccountExpiredWidget(trialAvailable: state.trialAvailable);
-          } else if (state is AccountEmailChangeRequested) {
-            return AccountEmailChangeWidget();
-          } else if (state is AccountEmailNotVerified) {
-            return AccountEmailNotVerifiedWidget();
-          } else if (state is AccountChosen || state is AccountLocalOnly) {
-            return VaultLoaderWidget();
-          }
-          return Text(str.vaultStatusUnknownState);
-        }, listenWhen: (prev, current) {
-          if (current is AccountAuthenticated && prev is! AccountEmailNotVerified && prev is! AccountExpired) {
-            return false;
-          }
-          return true;
-        }, listener: (context, state) async {
-          if (state is AccountError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('account error')));
-          } else if (state is AccountCreateRequested) {
-            await AppConfig.router.navigateTo(
-              context,
-              Routes.createAccount.replaceFirst(':email', state.user.email ?? ''),
-              transition: TransitionType.inFromRight,
-            );
-          } else if (state is AccountAuthenticated && state is! AccountEmailChangeRequested) {
-            final vaultCubit = BlocProvider.of<VaultCubit>(context);
-            await vaultCubit.startup(state.user, null);
-          }
-        }),
+                ],
+              );
+            } else if (state is AccountAuthenticating) {
+              return LoadingSpinner(tooltip: str.authenticating);
+            } else if (state is AccountExpired) {
+              return AccountExpiredWidget(trialAvailable: state.trialAvailable);
+            } else if (state is AccountEmailChangeRequested) {
+              return AccountEmailChangeWidget();
+            } else if (state is AccountEmailNotVerified) {
+              return AccountEmailNotVerifiedWidget();
+            } else if (state is AccountChosen || state is AccountLocalOnly) {
+              return VaultLoaderWidget();
+            }
+            return Text(str.vaultStatusUnknownState);
+          },
+          listenWhen: (prev, current) {
+            if (current is AccountAuthenticated && prev is! AccountEmailNotVerified && prev is! AccountExpired) {
+              return false;
+            }
+            return true;
+          },
+          listener: (context, state) async {
+            if (state is AccountError) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('account error')));
+            } else if (state is AccountCreateRequested) {
+              await AppConfig.router.navigateTo(
+                context,
+                Routes.createAccount.replaceFirst(':email', state.user.email ?? ''),
+                transition: TransitionType.inFromRight,
+              );
+            } else if (state is AccountAuthenticated && state is! AccountEmailChangeRequested) {
+              final vaultCubit = BlocProvider.of<VaultCubit>(context);
+              await vaultCubit.startup(state.user, null);
+            }
+          },
+        ),
       ],
     );
   }

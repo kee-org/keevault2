@@ -19,13 +19,14 @@ class AppRatingCubit extends Cubit<AppRatingState> {
   Future<void> start() async {
     l.d('starting app rating cubit');
     _rateMyApp = RateMyApp(
-        preferencesPrefix: 'rateMyAppKV_',
-        minDays: 60,
-        minLaunches: 20,
-        remindDays: 60,
-        remindLaunches: 15,
-        googlePlayIdentifier: 'com.keevault.keevault',
-        appStoreIdentifier: '1640663427');
+      preferencesPrefix: 'rateMyAppKV_',
+      minDays: 60,
+      minLaunches: 20,
+      remindDays: 60,
+      remindLaunches: 15,
+      googlePlayIdentifier: 'com.keevault.keevault',
+      appStoreIdentifier: '1640663427',
+    );
     await _rateMyApp.init();
     emit(AppRatingReady());
   }
@@ -48,16 +49,17 @@ class AppRatingCubit extends Cubit<AppRatingState> {
             },
           ),
           TextButton(
-            onPressed: stars != null && stars > 0
-                ? () async {
-                    final starInt = stars.round();
-                    trackEvent('rated', value: starInt);
-                    await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
-                    if (!context.mounted) return;
-                    Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
-                    unawaited(starInt < 5 ? showForumDialog(starInt) : showStoreLoadDialog());
-                  }
-                : null,
+            onPressed:
+                stars != null && stars > 0
+                    ? () async {
+                      final starInt = stars.round();
+                      trackEvent('rated', value: starInt);
+                      await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
+                      if (!context.mounted) return;
+                      Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
+                      unawaited(starInt < 5 ? showForumDialog(starInt) : showStoreLoadDialog());
+                    }
+                    : null,
             child: Text('CONTINUE'),
           ),
         ];
@@ -70,26 +72,30 @@ class AppRatingCubit extends Cubit<AppRatingState> {
         messagePadding: EdgeInsets.only(bottom: 20),
       ),
       starRatingOptions: StarRatingOptions(initialRating: initialStars.toDouble()),
-      onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType
-          .laterButtonPressed), // Called when the user dismissed the dialog (either by taping outside or by pressing the "back" button).
+      onDismissed:
+          () => _rateMyApp.callEvent(
+            RateMyAppEventType.laterButtonPressed,
+          ), // Called when the user dismissed the dialog (either by taping outside or by pressing the "back" button).
     );
   }
 
   void trackEvent(String action, {String? name, num? value}) {
-    MatomoTracker.instance
-        .trackEvent(eventInfo: EventInfo(category: 'rating', name: name, action: action, value: value));
+    MatomoTracker.instance.trackEvent(
+      eventInfo: EventInfo(category: 'rating', name: name, action: action, value: value),
+    );
   }
 
   Future<void> showForumDialog(num stars) async {
     final result = await DialogUtils.showIgnorableConfirmDialog(
-        context: AppConfig.navigatorKey.currentContext!,
-        params: ConfirmDialogParams(
-          content:
-              'We\'re sorry to hear that Kee Vault is not yet a 5 star experience for you.\n\nSharing your feedback with our community really helps us to keep Kee Vault improving. Our community forum also contains a variety of documentation topics and previously answered questions which might help to improve your experience.',
-          negativeButtonText: 'BACK',
-          positiveButtonText: 'Visit forum'.toUpperCase(),
-          title: 'How can we improve?',
-        ));
+      context: AppConfig.navigatorKey.currentContext!,
+      params: ConfirmDialogParams(
+        content:
+            'We\'re sorry to hear that Kee Vault is not yet a 5 star experience for you.\n\nSharing your feedback with our community really helps us to keep Kee Vault improving. Our community forum also contains a variety of documentation topics and previously answered questions which might help to improve your experience.',
+        negativeButtonText: 'BACK',
+        positiveButtonText: 'Visit forum'.toUpperCase(),
+        title: 'How can we improve?',
+      ),
+    );
 
     if (result == true) {
       trackEvent('forumLaunched', value: stars);
@@ -104,14 +110,15 @@ class AppRatingCubit extends Cubit<AppRatingState> {
 
   Future<void> showStoreLoadDialog() async {
     final result = await DialogUtils.showConfirmDialog(
-        context: AppConfig.navigatorKey.currentContext!,
-        params: ConfirmDialogParams(
-          content:
-              'Glad to hear you\'re happy! Sharing your 5 star rating and an optional review comment on ${KeeVaultPlatform.isAndroid ? 'Google Play' : 'the App Store'} really helps us to keep Kee Vault improving.\n\nCan you spare a minute to do this?',
-          negativeButtonText: 'NO',
-          positiveButtonText: 'Yes, I\'ll help'.toUpperCase(),
-          title: 'Share the love?',
-        ));
+      context: AppConfig.navigatorKey.currentContext!,
+      params: ConfirmDialogParams(
+        content:
+            'Glad to hear you\'re happy! Sharing your 5 star rating and an optional review comment on ${KeeVaultPlatform.isAndroid ? 'Google Play' : 'the App Store'} really helps us to keep Kee Vault improving.\n\nCan you spare a minute to do this?',
+        negativeButtonText: 'NO',
+        positiveButtonText: 'Yes, I\'ll help'.toUpperCase(),
+        title: 'Share the love?',
+      ),
+    );
 
     if (result) {
       final launchResult = await _rateMyApp.launchStore();

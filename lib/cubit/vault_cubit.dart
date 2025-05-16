@@ -64,8 +64,11 @@ class VaultCubit extends Cubit<VaultState> {
 
   void initAutofillPersistentQueue(String uuid) {
     if (KeeVaultPlatform.isAndroid) {
-      _persistentQueueAfAssociations = PersistentQueue('keevaultpendingautofillassociations-$uuid',
-          flushAt: 1000000, flushTimeout: const Duration(days: 10000));
+      _persistentQueueAfAssociations = PersistentQueue(
+        'keevaultpendingautofillassociations-$uuid',
+        flushAt: 1000000,
+        flushTimeout: const Duration(days: 10000),
+      );
     }
   }
 
@@ -219,8 +222,11 @@ class VaultCubit extends Cubit<VaultState> {
       try {
         l.d('local vault found; looking for any update pending from the last time we were running');
         LocalVaultFile? loadedFile;
-        final pendingUpdateFile =
-            await _localVaultRepo.loadStagedUpdate(user, credentialProvider, localFile.persistedAt);
+        final pendingUpdateFile = await _localVaultRepo.loadStagedUpdate(
+          user,
+          credentialProvider,
+          localFile.persistedAt,
+        );
         if (pendingUpdateFile != null) {
           l.d('found a pending update from remote for local file');
           final newFile = await update(user, localFile, pendingUpdateFile);
@@ -239,8 +245,9 @@ class VaultCubit extends Cubit<VaultState> {
           final localFreeFile = await _localVaultRepo.loadFreeUserLocked();
           if (localFreeFile == null) {
             emitError(
-                'Import of existing data failed. We found some but then it went away while we were processing it. Please check for storage failures on your device and restore from a backup if necessary. Restart this app when you have checked this.',
-                forceNotLoaded: true);
+              'Import of existing data failed. We found some but then it went away while we were processing it. Please check for storage failures on your device and restore from a backup if necessary. Restart this app when you have checked this.',
+              forceNotLoaded: true,
+            );
             return;
           }
           await importKdbx(loadedFile, localFreeFile, loadedFile.files.current.credentials, false, false);
@@ -255,8 +262,9 @@ class VaultCubit extends Cubit<VaultState> {
       } on Exception catch (e, stack) {
         l.e("Kee Vault startup failed. Couldn't apply a pending change to your local vault: $e \n\n stack: $stack");
         emitError(
-            "Kee Vault startup failed. Sorry, we couldn't apply a pending change to your local vault for some unexpected reason. Please navigate to the Help menu item and then Share your application logs with us so that we can discuss and advise what to do next. If you have your Kee Vault on other devices, we recommend disconnecting them from the internet and exporting your vault to a KDBX file now, especially if you do not have a recent backup. We are likely to be able to restore all or most of your data but this may take a significant amount of time so the sooner you contact us to explain the details of what may have triggered the problem and share the error logs with us, the sooner we'll get you back up and running.",
-            forceNotLoaded: true);
+          "Kee Vault startup failed. Sorry, we couldn't apply a pending change to your local vault for some unexpected reason. Please navigate to the Help menu item and then Share your application logs with us so that we can discuss and advise what to do next. If you have your Kee Vault on other devices, we recommend disconnecting them from the internet and exporting your vault to a KDBX file now, especially if you do not have a recent backup. We are likely to be able to restore all or most of your data but this may take a significant amount of time so the sooner you contact us to explain the details of what may have triggered the problem and share the error logs with us, the sooner we'll get you back up and running.",
+          forceNotLoaded: true,
+        );
         return;
       }
     }
@@ -271,8 +279,12 @@ class VaultCubit extends Cubit<VaultState> {
     return await _localVaultRepo.removeStagedUpdate(user);
   }
 
-  Future<void> emitVaultLoaded(LocalVaultFile vault, User? user,
-      {bool immediateRemoteRefresh = true, required bool safe}) async {
+  Future<void> emitVaultLoaded(
+    LocalVaultFile vault,
+    User? user, {
+    bool immediateRemoteRefresh = true,
+    required bool safe,
+  }) async {
     if (user?.subscriptionStatus == AccountSubscriptionStatus.expired ||
         user?.subscriptionStatus == AccountSubscriptionStatus.freeTrialAvailable) {
       return;
@@ -339,7 +351,9 @@ class VaultCubit extends Cubit<VaultState> {
         l.d('applying pending update from remote to local file');
         newFile = await update(user, vState.vaultLocal, pendingUpdateFile);
       } else {
-        l.w('pending update disappeared while user was entering password. No idea how this can happen but nothing we can do now except move on.');
+        l.w(
+          'pending update disappeared while user was entering password. No idea how this can happen but nothing we can do now except move on.',
+        );
         newFile = vState.vaultLocal;
       }
     } on KdbxInvalidKeyException {
@@ -352,8 +366,10 @@ class VaultCubit extends Cubit<VaultState> {
     }
 
     if (newFile == null) {
-      l.e('Unexpected error applying new password from remote. This app instance may now be broken but we'
-          'll try just sticking with the current version just in case that works.');
+      l.e(
+        'Unexpected error applying new password from remote. This app instance may now be broken but we'
+        'll try just sticking with the current version just in case that works.',
+      );
       newFile = vState.vaultLocal;
     }
     l.d('applying user-supplied new master password to account User');
@@ -365,15 +381,19 @@ class VaultCubit extends Cubit<VaultState> {
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     await _qu.saveQuickUnlockUserPassKey(user.passKey);
     await _qu.saveQuickUnlockFileCredentials(
-        creds,
-        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
-        await newFile.files.current.kdfCacheKey);
+      creds,
+      DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+      await newFile.files.current.kdfCacheKey,
+    );
 
     await emitVaultLoaded(newFile, user, safe: false);
   }
 
-  Future<void> download(User user,
-      {StrengthAssessedCredentials? credentialsWithStrength, Credentials? kdbxCredentials}) async {
+  Future<void> download(
+    User user, {
+    StrengthAssessedCredentials? credentialsWithStrength,
+    Credentials? kdbxCredentials,
+  }) async {
     try {
       l.d('downloading remote file');
       emit(const VaultDownloading());
@@ -392,8 +412,11 @@ class VaultCubit extends Cubit<VaultState> {
         try {
           downloadedFile = await _remoteVaultRepo.create(user, credentialsWithStrength);
         } on Exception {
-          emit(const VaultError(
-              'We were unable to complete the setup of your Kee Vault. Please close the app and try again later.'));
+          emit(
+            const VaultError(
+              'We were unable to complete the setup of your Kee Vault. Please close the app and try again later.',
+            ),
+          );
           return;
         }
       }
@@ -422,8 +445,9 @@ class VaultCubit extends Cubit<VaultState> {
         final localFreeFile = await _localVaultRepo.loadFreeUserLocked();
         if (localFreeFile == null) {
           emitError(
-              'Import of existing data failed. We found some but then it went away while we were processing it. Please check for storage failures on your device and restore from a backup if necessary. Restart this app when you have checked this.',
-              forceNotLoaded: true);
+            'Import of existing data failed. We found some but then it went away while we were processing it. Please check for storage failures on your device and restore from a backup if necessary. Restart this app when you have checked this.',
+            forceNotLoaded: true,
+          );
           return;
         }
         await importKdbx(vaultFile, localFreeFile, kdbxCredentials, false, false);
@@ -435,9 +459,10 @@ class VaultCubit extends Cubit<VaultState> {
       emit(const VaultDownloadCredentialsRequired('no message', false));
     } on KdbxInvalidKeyException catch (e, s) {
       throw KeeException(
-          'Remote KDBX not in sync with account password. Please report this to Kee Vault support. While waiting for help, you may be able to resolve the problem by using a different device to change your Kee Vault password again.',
-          e,
-          s);
+        'Remote KDBX not in sync with account password. Please report this to Kee Vault support. While waiting for help, you may be able to resolve the problem by using a different device to change your Kee Vault password again.',
+        e,
+        s,
+      );
     } on KeeLoginFailedMITMException {
       rethrow;
     } on KeeServiceTransportException catch (e) {
@@ -487,15 +512,17 @@ class VaultCubit extends Cubit<VaultState> {
       }
       if (file == null) {
         throw Exception(
-            'Probably the file has been locally deleted due to local storage capacity or reliability problems.');
+          'Probably the file has been locally deleted due to local storage capacity or reliability problems.',
+        );
       }
       if (importRequired) {
         l.i('opened; import is required');
         final localFreeFile = await _localVaultRepo.loadFreeUserLocked();
         if (localFreeFile == null) {
           emitError(
-              'Import of existing data failed. We found some but then it went away while we were processing it. Please check for storage failures on your device and restore from a backup if necessary. Restart this app when you have checked this.',
-              forceNotLoaded: true);
+            'Import of existing data failed. We found some but then it went away while we were processing it. Please check for storage failures on your device and restore from a backup if necessary. Restart this app when you have checked this.',
+            forceNotLoaded: true,
+          );
           return false;
         }
         await importKdbx(file, localFreeFile, file.files.current.credentials, false, false);
@@ -508,21 +535,28 @@ class VaultCubit extends Cubit<VaultState> {
         await user.attachKey(suppliedPassword.hash);
         await _qu.saveQuickUnlockUserPassKey(user.passKey);
         await _qu.saveQuickUnlockFileCredentials(
-            suppliedCreds,
-            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
-            await file.files.current.kdfCacheKey);
+          suppliedCreds,
+          DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+          await file.files.current.kdfCacheKey,
+        );
       } else if (suppliedPassword != null) {
         await _qu.saveQuickUnlockFileCredentials(
-            suppliedCreds,
-            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
-            await file.files.current.kdfCacheKey);
+          suppliedCreds,
+          DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+          await file.files.current.kdfCacheKey,
+        );
       }
       l.d('local vault opened');
       await emitVaultLoaded(file, user, safe: false);
       return true;
     } on KeeLoginRequiredException catch (e) {
-      emit(VaultLocalFileCredentialsRequired('no message', suppliedPassword != null,
-          quStatus: e.quStatus ?? QUStatus.unknown));
+      emit(
+        VaultLocalFileCredentialsRequired(
+          'no message',
+          suppliedPassword != null,
+          quStatus: e.quStatus ?? QUStatus.unknown,
+        ),
+      );
     } on KdbxInvalidKeyException {
       emit(VaultLocalFileCredentialsRequired('KDBX key incorrect', suppliedPassword != null));
     } on Exception catch (e) {
@@ -532,19 +566,23 @@ class VaultCubit extends Cubit<VaultState> {
   }
 
   Future<CredentialLookupResult> loadQuickUnlockFileCredentialsIfNotSupplied(
-      Credentials? suppliedCreds, User user) async {
+    Credentials? suppliedCreds,
+    User user,
+  ) async {
     if (suppliedCreds != null) {
       return CredentialLookupResult(credentials: suppliedCreds, quStatus: QUStatus.unknown);
     } else {
       final quStatus = await _userRepo.setQuickUnlockUser(user);
-      final creds = await _qu
-          .loadQuickUnlockFileCredentials(); //TODO:f: gate on credsAvailable as per local user to reduce log noise?
+      final creds =
+          await _qu
+              .loadQuickUnlockFileCredentials(); //TODO:f: gate on credsAvailable as per local user to reduce log noise?
       return CredentialLookupResult(credentials: creds, quStatus: quStatus);
     }
   }
 
   Future<CredentialLookupResult> loadLocalUserQuickUnlockFileCredentialsIfNotSupplied(
-      Credentials? suppliedCreds) async {
+    Credentials? suppliedCreds,
+  ) async {
     if (suppliedCreds != null) {
       return CredentialLookupResult(credentials: suppliedCreds, quStatus: QUStatus.unknown);
     }
@@ -555,9 +593,11 @@ class VaultCubit extends Cubit<VaultState> {
 
   /// We can't know in advance if the recovery should be for situation 4 since we can only try to unlock the remote file once the user has supplied a valid password for authentication.
   /// Our understanding of which situation we need to recover from can change as we proceed through the various attempts to recover.
-  Future<void> refresh(User user,
-      {String? overridePasswordRemote,
-      PasswordMismatchRecoverySituation recovery = PasswordMismatchRecoverySituation.none}) async {
+  Future<void> refresh(
+    User user, {
+    String? overridePasswordRemote,
+    PasswordMismatchRecoverySituation recovery = PasswordMismatchRecoverySituation.none,
+  }) async {
     VaultState s = state;
 
     if (s is VaultLoaded) {
@@ -611,7 +651,9 @@ class VaultCubit extends Cubit<VaultState> {
       }
 
       if (uploadPending) {
-        l.i('Found pending upload marker. Previous upload attempt must have been aborted by network or platform (e.g. app was closed)');
+        l.i(
+          'Found pending upload marker. Previous upload attempt must have been aborted by network or platform (e.g. app was closed)',
+        );
         // We'll upload the latest local changes instead. Since that will merge in any recent remote
         // changes, the end result will be consistent and thus there's no need to continue with this refresh function.
         // Pending merge from autofill will thus be deferred until the next vault load or device task switch restoration
@@ -663,12 +705,13 @@ class VaultCubit extends Cubit<VaultState> {
           // they change it to their new password successfully after this recovery is complete.
 
           updatedLocalFile = LocalVaultFile(
-              await s.vault.files.copyWithNewCredentials(credentialsOverrideWithStrength!),
-              s.vault.lastOpenedAt,
-              s.vault.persistedAt,
-              s.vault.uuid,
-              s.vault.etag,
-              s.vault.versionId);
+            await s.vault.files.copyWithNewCredentials(credentialsOverrideWithStrength!),
+            s.vault.lastOpenedAt,
+            s.vault.persistedAt,
+            s.vault.uuid,
+            s.vault.etag,
+            s.vault.versionId,
+          );
 
           // May be some cases where this is not necessary. Probably all are edge cases
           // but maybe could try harder to identify times we can safely skip this step
@@ -678,9 +721,10 @@ class VaultCubit extends Cubit<VaultState> {
               int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
           l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
           await _qu.saveQuickUnlockFileCredentials(
-              credentialsOverrideWithStrength.credentials,
-              DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
-              await updatedLocalFile.files.current.kdfCacheKey);
+            credentialsOverrideWithStrength.credentials,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await updatedLocalFile.files.current.kdfCacheKey,
+          );
 
           if (tempLockedFile == null) {
             l.d("Latest remote file not changed so didn't download it");
@@ -717,8 +761,9 @@ class VaultCubit extends Cubit<VaultState> {
         return;
       } on KeeSubscriptionExpiredException {
         emitError(
-            '${S.current.expiredWhileSignedIn} Unfortunately if you were in the middle of making a change, you will have to make it again when your subscription has been re-activated so we recommend doing so quickly while it is still fresh in your mind.',
-            forceNotLoaded: true);
+          '${S.current.expiredWhileSignedIn} Unfortunately if you were in the middle of making a change, you will have to make it again when your subscription has been re-activated so we recommend doing so quickly while it is still fresh in your mind.',
+          forceNotLoaded: true,
+        );
         return;
       } on KeeAccountUnverifiedException {
         handleRefreshEmailVerificationError();
@@ -781,9 +826,10 @@ class VaultCubit extends Cubit<VaultState> {
               int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
           l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
           await _qu.saveQuickUnlockFileCredentials(
-              successfulCredentials,
-              DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
-              await (updatedLocalFile ?? s.vault).files.current.kdfCacheKey);
+            successfulCredentials,
+            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+            await (updatedLocalFile ?? s.vault).files.current.kdfCacheKey,
+          );
         }
 
         await prefs.setString('user.${user.email}.lastRemoteEtag', file.etag!);
@@ -809,13 +855,18 @@ class VaultCubit extends Cubit<VaultState> {
         // etags and version ids are lost when staging an update. Thus, when comparing for latest
         // etag during the next refresh or upload operation, we will re-download the update
         // and perform a merge. This should be a NOOP but is inefficient.
-        handleRefreshAuthError(updatedLocalFile ?? s.vault,
-            recovery: PasswordMismatchRecoverySituation.remoteFileDiffers);
+        handleRefreshAuthError(
+          updatedLocalFile ?? s.vault,
+          recovery: PasswordMismatchRecoverySituation.remoteFileDiffers,
+        );
       } on Exception catch (e, stack) {
-        l.e("Kee Vault failed to apply a change to your local vault for some unexpected reason or hardware fault. Please Share these application logs with us so that we can discuss and advise what to do next. If you have your Kee Vault on other devices, we recommend disconnecting them from the internet and exporting your vault to a KDBX file now, especially if you do not have a recent backup. We are likely to be able to restore all or most of your data but this may take a significant amount of time so the sooner you contact us to explain the details of what may have triggered the problem and share the error logs with us, the sooner we'll get you back up and running. Background refresh error: $e \n\n stack: $stack");
+        l.e(
+          "Kee Vault failed to apply a change to your local vault for some unexpected reason or hardware fault. Please Share these application logs with us so that we can discuss and advise what to do next. If you have your Kee Vault on other devices, we recommend disconnecting them from the internet and exporting your vault to a KDBX file now, especially if you do not have a recent backup. We are likely to be able to restore all or most of your data but this may take a significant amount of time so the sooner you contact us to explain the details of what may have triggered the problem and share the error logs with us, the sooner we'll get you back up and running. Background refresh error: $e \n\n stack: $stack",
+        );
         emitError(
-            'Background refresh error. Check your device has enough storage space. Otherwise, this may indicate a faulty operating system or hardware. Export your Vault now just in case. Then inspect extra error information in the Menu > Help > Logs.',
-            toast: true);
+          'Background refresh error. Check your device has enough storage space. Otherwise, this may indicate a faulty operating system or hardware. Export your Vault now just in case. Then inspect extra error information in the Menu > Help > Logs.',
+          toast: true,
+        );
         return;
       }
     } else {
@@ -844,8 +895,9 @@ class VaultCubit extends Cubit<VaultState> {
       }
     } else {
       emitError(
-          'Please save your vault now and/or kill and restart the app (an authorisation error has occurred while refreshing, possibly because of a recent password or subscription change)',
-          toast: true);
+        'Please save your vault now and/or kill and restart the app (an authorisation error has occurred while refreshing, possibly because of a recent password or subscription change)',
+        toast: true,
+      );
     }
   }
 
@@ -864,8 +916,9 @@ class VaultCubit extends Cubit<VaultState> {
       signout();
     } else {
       emitError(
-          'Your email address has not yet been verified. Please check your emails and do that now. If you want us to resend the email, save your vault then sign out and back in again.',
-          toast: true);
+        'Your email address has not yet been verified. Please check your emails and do that now. If you want us to resend the email, save your vault then sign out and back in again.',
+        toast: true,
+      );
     }
   }
 
@@ -883,8 +936,9 @@ class VaultCubit extends Cubit<VaultState> {
       emit(VaultUploadCredentialsRequired(v, local, false, false, recovery));
     } else {
       emitError(
-          'Please save your vault now and/or kill and restart the app (an authorisation error has occurred while uploading, possibly because of a recent password or subscription change)',
-          toast: true);
+        'Please save your vault now and/or kill and restart the app (an authorisation error has occurred while uploading, possibly because of a recent password or subscription change)',
+        toast: true,
+      );
     }
   }
 
@@ -895,24 +949,27 @@ class VaultCubit extends Cubit<VaultState> {
       final newCurrent = await currentVaultFile!.files.pending;
       if (newCurrent != null) {
         await emitVaultLoaded(
-            LocalVaultFile(
-              currentVaultFile!.files.copyWithAppliedPendingUpdate(newCurrent),
-              currentVaultFile!.lastOpenedAt,
-              currentVaultFile!.persistedAt,
-              currentVaultFile!.uuid,
-              currentVaultFile!.etag,
-              currentVaultFile!.versionId,
-            ),
-            user,
-            immediateRemoteRefresh: false,
-            safe: true);
+          LocalVaultFile(
+            currentVaultFile!.files.copyWithAppliedPendingUpdate(newCurrent),
+            currentVaultFile!.lastOpenedAt,
+            currentVaultFile!.persistedAt,
+            currentVaultFile!.uuid,
+            currentVaultFile!.etag,
+            currentVaultFile!.versionId,
+          ),
+          user,
+          immediateRemoteRefresh: false,
+          safe: true,
+        );
       }
     }
   }
 
   Future<void> ensureRemoteCreated(User user, String? password) async {
     if (password == null) {
-      l.d("skipping creation of new remote and local vault since we don't know the password. User needs to enter it as part of next sign-in instead.");
+      l.d(
+        "skipping creation of new remote and local vault since we don't know the password. User needs to enter it as part of next sign-in instead.",
+      );
       return;
     }
     l.d('creating new remote and local vault');
@@ -938,10 +995,11 @@ class VaultCubit extends Cubit<VaultState> {
     final quStatus = await _qu.initialiseForUser(user.id!, false);
     if (quStatus != QUStatus.unavailable) {
       await _qu.saveBothSecrets(
-          user.passKey!,
-          credentialsWithStrength.credentials,
-          DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
-          await unlockedFile.files.current.kdfCacheKey);
+        user.passKey!,
+        credentialsWithStrength.credentials,
+        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+        await unlockedFile.files.current.kdfCacheKey,
+      );
       l.d('New user password stored in Quick Unlock');
     }
   }
@@ -960,15 +1018,17 @@ class VaultCubit extends Cubit<VaultState> {
       final quStatus = await _qu.initialiseForUser(_qu.localUserMagicString, false);
       if (quStatus != QUStatus.unavailable) {
         await _qu.saveQuickUnlockFileCredentials(
-            credentialsWithStrength.credentials,
-            DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
-            await file.files.current.kdfCacheKey);
+          credentialsWithStrength.credentials,
+          DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+          await file.files.current.kdfCacheKey,
+        );
         l.d('New free user password stored in Quick Unlock');
       }
       await emitVaultLoaded(file, null, safe: false);
     } on Exception catch (e) {
       emitError(
-          'Failed to create new local vault file. Check that you have allowed all permissions and that you have some available storage space. There may be more information in this message: $e');
+        'Failed to create new local vault file. Check that you have allowed all permissions and that you have some available storage space. There may be more information in this message: $e',
+      );
       l.d('new local vault creation failed');
     }
   }
@@ -989,7 +1049,7 @@ class VaultCubit extends Cubit<VaultState> {
     return null;
   }
 
-// currentVaultFile is always present, even if we haven't yet issued our first VaultLoaded state.
+  // currentVaultFile is always present, even if we haven't yet issued our first VaultLoaded state.
   Future<LocalVaultFile?> _updateLocalVaultFile(User user, LocalVaultFile local, RemoteVaultFile remote) async {
     final mergeResult = await merge(user, local, remote);
     if (mergeResult == null) {
@@ -1096,17 +1156,25 @@ class VaultCubit extends Cubit<VaultState> {
       l.w("No credentials available so can't save to quick unlock");
       return;
     }
-    l.d('Enabling quick unlock data for current user ($user). Other users will have to sign in with their master password next time.');
+    l.d(
+      'Enabling quick unlock data for current user ($user). Other users will have to sign in with their master password next time.',
+    );
     final requireFullPasswordPeriod =
         int.tryParse(Settings.getValue<String>('requireFullPasswordPeriod') ?? '60') ?? 60;
     l.d('Will require a full password to be entered every $requireFullPasswordPeriod days');
     final quStatus = await _qu.initialiseForUser(user?.id ?? _qu.localUserMagicString, true);
     if (quStatus != QUStatus.mapAvailable && quStatus != QUStatus.credsAvailable) {
-      l.w("Quick unlock credential provider is unavailable or unknown. Can't proceed to save credentials in this state.");
+      l.w(
+        "Quick unlock credential provider is unavailable or unknown. Can't proceed to save credentials in this state.",
+      );
       return;
     }
-    await _qu.saveBothSecrets(user?.passKey ?? 'notARealPassword', credentials,
-        DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch, await file!.kdfCacheKey);
+    await _qu.saveBothSecrets(
+      user?.passKey ?? 'notARealPassword',
+      credentials,
+      DateTime.now().add(Duration(days: requireFullPasswordPeriod)).millisecondsSinceEpoch,
+      await file!.kdfCacheKey,
+    );
   }
 
   Future<void> save(User? user, {bool skipRemote = false}) async {
@@ -1123,8 +1191,11 @@ class VaultCubit extends Cubit<VaultState> {
       l.d('saving vault');
       final vault = currentVaultFile!;
       emit(VaultSaving(vault, true, s is VaultSaving ? s.remotely : false));
-      final mergedOrCurrentVaultFile =
-          await _localVaultRepo.save(user, vault, applyAndConsumePendingAutofillAssociations);
+      final mergedOrCurrentVaultFile = await _localVaultRepo.save(
+        user,
+        vault,
+        applyAndConsumePendingAutofillAssociations,
+      );
       //TODO:f: Sync with iOS shared credentials keychain (also in other places like merge from autofill and refresh)
       // if (KeeVaultPlatform.isIOS) {
       //   final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup
@@ -1159,9 +1230,12 @@ class VaultCubit extends Cubit<VaultState> {
   }
 
   //TODO:f: check history after upload and warn user or attempt reconciliation in case that they uploaded a newer version from a different device in between our check for the latest version and the network upload completing.
-  Future<void> upload(User user, LocalVaultFile vault,
-      {String? overridePasswordRemote,
-      PasswordMismatchRecoverySituation recovery = PasswordMismatchRecoverySituation.none}) async {
+  Future<void> upload(
+    User user,
+    LocalVaultFile vault, {
+    String? overridePasswordRemote,
+    PasswordMismatchRecoverySituation recovery = PasswordMismatchRecoverySituation.none,
+  }) async {
     l.d('uploading vault with recovery mode $recovery');
     VaultState s = state;
     if (s is VaultLoaded) {
@@ -1183,7 +1257,8 @@ class VaultCubit extends Cubit<VaultState> {
 
       if (credsLocal == null) {
         throw KeeException(
-            'Cannot upload when we do not know the credentials required to perform merge operation or update KDBX password. Please tell us about this error so we can resolve it for you.');
+          'Cannot upload when we do not know the credentials required to perform merge operation or update KDBX password. Please tell us about this error so we can resolve it for you.',
+        );
       }
 
       if (recovery != PasswordMismatchRecoverySituation.none && overridePasswordRemote != null) {
@@ -1219,9 +1294,14 @@ class VaultCubit extends Cubit<VaultState> {
       try {
         remoteEtag = await _remoteVaultRepo.latestEtag(user);
       } on KeeLoginRequiredException {
-        l.w('Unable to determine latest remote file etag due to authentication error. User recently changed password elsewhere?');
-        handleUploadAuthError(updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false,
-            PasswordMismatchRecoverySituation.remoteUserDiffers);
+        l.w(
+          'Unable to determine latest remote file etag due to authentication error. User recently changed password elsewhere?',
+        );
+        handleUploadAuthError(
+          updatedLocalFile,
+          state is VaultSaving ? (state as VaultSaving).locally : false,
+          PasswordMismatchRecoverySituation.remoteUserDiffers,
+        );
         return;
       } on KeeServiceTransportException catch (e) {
         final message = e.handle('Error establishing current remote file version');
@@ -1244,23 +1324,31 @@ class VaultCubit extends Cubit<VaultState> {
         return;
       }
       if (state is! VaultLoaded) {
-        l.w('Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on network activity?');
+        l.w(
+          'Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on network activity?',
+        );
         return;
       }
       if (remoteEtag != lastRemoteEtag) {
         // files.current and files.remoteMergeTarget start the same when this function begins but user may modify current at any time (e.g. if we wait for remote HEAD for a long time).
 
-        emit(VaultReconcilingUpload(
-            updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false, true));
+        emit(
+          VaultReconcilingUpload(updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false, true),
+        );
         RemoteVaultFile latestRemoteFile;
         LockedVaultFile? latestLockedRemoteFile;
         try {
           latestLockedRemoteFile = await _remoteVaultRepo.download(user, credsRemote, null);
         } on KeeLoginRequiredException {
           // This should be rare because we've recently retrieved or checked our download auth token but can happen sometimes, maybe on very slow networks when the user is changing their master password elsewhere concurrently.
-          l.w('Unable to download latest remote file for local merging due to authentication error. User recently changed password elsewhere?');
-          handleUploadAuthError(updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false,
-              PasswordMismatchRecoverySituation.remoteUserDiffers);
+          l.w(
+            'Unable to download latest remote file for local merging due to authentication error. User recently changed password elsewhere?',
+          );
+          handleUploadAuthError(
+            updatedLocalFile,
+            state is VaultSaving ? (state as VaultSaving).locally : false,
+            PasswordMismatchRecoverySituation.remoteUserDiffers,
+          );
           return;
         } on KeeServiceTransportException catch (e) {
           final message = e.handle('Error while downloading more recent changes from remote');
@@ -1283,7 +1371,9 @@ class VaultCubit extends Cubit<VaultState> {
           return;
         }
         if (state is! VaultLoaded) {
-          l.w('Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on network activity?');
+          l.w(
+            'Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on network activity?',
+          );
           return;
         }
         try {
@@ -1304,11 +1394,14 @@ class VaultCubit extends Cubit<VaultState> {
           // etag during the next refresh or upload operation, we will re-download the update
           // and perform a merge. This should be a NOOP but is inefficient.
 
-          l.w('Remote file failed to unlock using latest password. User uploaded from other device using auth token created before recent password change?');
+          l.w(
+            'Remote file failed to unlock using latest password. User uploaded from other device using auth token created before recent password change?',
+          );
           throw KeeException(
-              'Remote file failed to unlock using latest password. When you kill and then restart the app, we will attempt to automatically fix the problem. If that does not work, please ask for help.',
-              e,
-              s);
+            'Remote file failed to unlock using latest password. When you kill and then restart the app, we will attempt to automatically fix the problem. If that does not work, please ask for help.',
+            e,
+            s,
+          );
         } on Exception catch (e) {
           final message =
               'Error while unlocking more recent changes from remote. There may be more information in this message: $e';
@@ -1317,7 +1410,9 @@ class VaultCubit extends Cubit<VaultState> {
           return;
         }
         if (state is! VaultLoaded) {
-          l.w('Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on unlock activity?');
+          l.w(
+            'Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on unlock activity?',
+          );
           return;
         }
         try {
@@ -1334,7 +1429,9 @@ class VaultCubit extends Cubit<VaultState> {
           return;
         }
         if (state is! VaultLoaded) {
-          l.w('Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on merge activity?');
+          l.w(
+            'Upload aborted because Vault is no longer loaded. User forcibly locked while waiting on merge activity?',
+          );
           return;
         }
         // At this point we can refresh the visible vault to include the results of the merge from remote, although if the user was editing again by now, the current vault shown to them won't yet be changed.
@@ -1375,10 +1472,15 @@ class VaultCubit extends Cubit<VaultState> {
         // added to the system. Since things appear to work well at the moment, we
         // will defer this until a definitive real world benefit is confirmed.
         await SyncedAppSettings.import(
-            _generatorProfilesCubit, updatedLocalFile.files.current.body.meta.keeVaultSettings);
+          _generatorProfilesCubit,
+          updatedLocalFile.files.current.body.meta.keeVaultSettings,
+        );
       } on KeeLoginRequiredException {
-        handleUploadAuthError(updatedLocalFile, state is VaultSaving ? (state as VaultSaving).locally : false,
-            PasswordMismatchRecoverySituation.remoteUserDiffers);
+        handleUploadAuthError(
+          updatedLocalFile,
+          state is VaultSaving ? (state as VaultSaving).locally : false,
+          PasswordMismatchRecoverySituation.remoteUserDiffers,
+        );
         return;
       } on KeeMissingPrimaryDBException {
         emitKeeMissingPrimaryDBExceptionError();
@@ -1418,9 +1520,7 @@ class VaultCubit extends Cubit<VaultState> {
         currentVaultFile!.files.current.body.rootGroup;
   }
 
-  KdbxEntry createEntry({
-    required KdbxGroup group,
-  }) {
+  KdbxEntry createEntry({required KdbxGroup group}) {
     l.t('VaultCubit.createEntry');
     final destinationGroup = group;
     final entry = KdbxEntry.create(currentVaultFile!.files.current, destinationGroup);
@@ -1449,8 +1549,14 @@ class VaultCubit extends Cubit<VaultState> {
       emit(VaultUpdatingLocalFromAutofill(castState.vault));
     } else if (state is VaultRefreshCredentialsRequired) {
       final castState = state as VaultRefreshCredentialsRequired;
-      emit(VaultRefreshCredentialsRequired(
-          castState.vault, castState.reason, castState.causedByInteraction, castState.recovery));
+      emit(
+        VaultRefreshCredentialsRequired(
+          castState.vault,
+          castState.reason,
+          castState.causedByInteraction,
+          castState.recovery,
+        ),
+      );
     } else if (state is VaultRefreshing) {
       final castState = state as VaultRefreshing;
       emit(VaultRefreshing(castState.vault));
@@ -1459,13 +1565,15 @@ class VaultCubit extends Cubit<VaultState> {
       emit(VaultBackgroundError(castState.vault, castState.message, castState.toast));
     } else if (state is VaultUploadCredentialsRequired) {
       final castState = state as VaultUploadCredentialsRequired;
-      emit(VaultUploadCredentialsRequired(
-        castState.vault,
-        castState.locally,
-        castState.remotely,
-        castState.causedByInteraction,
-        castState.recovery,
-      ));
+      emit(
+        VaultUploadCredentialsRequired(
+          castState.vault,
+          castState.locally,
+          castState.remotely,
+          castState.causedByInteraction,
+          castState.recovery,
+        ),
+      );
     } else if (state is VaultChangingPassword) {
       final castState = state as VaultChangingPassword;
       emit(VaultChangingPassword(castState.vault, castState.error));
@@ -1518,13 +1626,20 @@ class VaultCubit extends Cubit<VaultState> {
     reemitLoadedState();
   }
 
-  Future<void> importKdbx(LocalVaultFile destination, LockedVaultFile source, Credentials? sourceCredentials,
-      bool causedByInteraction, bool manual) async {
+  Future<void> importKdbx(
+    LocalVaultFile destination,
+    LockedVaultFile source,
+    Credentials? sourceCredentials,
+    bool causedByInteraction,
+    bool manual,
+  ) async {
     emit(VaultImporting());
     try {
       l.d('attempting to open source vault');
-      final unlockedSourceFile =
-          await LocalVaultFile.unlock(source.copyWith(credentials: sourceCredentials), importOnly: true);
+      final unlockedSourceFile = await LocalVaultFile.unlock(
+        source.copyWith(credentials: sourceCredentials),
+        importOnly: true,
+      );
       l.d('source vault unlocked');
       destination.files.current.import(unlockedSourceFile.files.current);
       l.d('source vault imported');
@@ -1562,7 +1677,8 @@ class VaultCubit extends Cubit<VaultState> {
       // no action required
     }
     final importAlreadyPerformed = importedAt != null;
-    final importedLocalFreeFileCanBeDeleted = localFileExists &&
+    final importedLocalFreeFileCanBeDeleted =
+        localFileExists &&
         importAlreadyPerformed &&
         (importedAt * 1000) > DateTime.now().add(Duration(days: 90)).millisecondsSinceEpoch;
     if (importedLocalFreeFileCanBeDeleted) {
@@ -1619,7 +1735,8 @@ class VaultCubit extends Cubit<VaultState> {
       reportPasswordChangeError(e.cause);
     } on Exception catch (e) {
       reportPasswordChangeError(
-          'There was a problem saving your new password. Please try again in a moment and then check that your device storage has free space and is not faulty. Further information may follow: ${e.toString()}');
+        'There was a problem saving your new password. Please try again in a moment and then check that your device storage has free space and is not faulty. Further information may follow: ${e.toString()}',
+      );
     }
   }
 
@@ -1709,10 +1826,7 @@ class VaultCubit extends Cubit<VaultState> {
       final newFile = await _localVaultRepo.tryAutofillMerge(user, creds, s.vault);
 
       if (newFile != null && user != null) {
-        await upload(
-          user,
-          newFile,
-        );
+        await upload(user, newFile);
       } else {
         await emitVaultLoaded(newFile ?? s.vault, user, immediateRemoteRefresh: false, safe: true);
       }

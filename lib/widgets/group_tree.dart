@@ -10,10 +10,7 @@ import 'package:keevault/generated/l10n.dart';
 import 'dialog_utils.dart';
 import 'group_move_tree.dart';
 
-enum GroupTreeMode {
-  all,
-  standardOnly,
-}
+enum GroupTreeMode { all, standardOnly }
 
 class GroupTreeWidget extends StatelessWidget {
   final GroupTreeMode treeMode;
@@ -25,118 +22,104 @@ class GroupTreeWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final str = S.of(context);
     return BlocBuilder<VaultCubit, VaultState>(
-        buildWhen: (previous, current) => current is VaultLoaded,
-        builder: (context, state) {
-          if (state is VaultLoaded) {
-            final root = state.vault.files.current.body.rootGroup;
-            final bin = state.vault.files.current.recycleBin;
+      buildWhen: (previous, current) => current is VaultLoaded,
+      builder: (context, state) {
+        if (state is VaultLoaded) {
+          final root = state.vault.files.current.body.rootGroup;
+          final bin = state.vault.files.current.recycleBin;
 
-            final nodes = [
+          final nodes = [
+            Node<GroupData>(
+              key: root.uuid.uuid,
+              label: root.name.get() ?? 'My Kee Vault',
+              data: GroupData(uuid: root.uuid.uuid, isDeleted: false, isMovable: false),
+              expanded: true,
+              children: kdbxGroupToNodes(root, 1, (group) => group != bin),
+            ),
+          ];
+
+          List<Node<GroupData>>? binNodes;
+          if (treeMode == GroupTreeMode.all && bin != null) {
+            binNodes = [
               Node<GroupData>(
-                key: root.uuid.uuid,
-                label: root.name.get() ?? 'My Kee Vault',
-                data: GroupData(
-                  uuid: root.uuid.uuid,
-                  isDeleted: false,
-                  isMovable: false,
-                ),
-                expanded: true,
-                children: kdbxGroupToNodes(root, 1, (group) => group != bin),
+                key: bin.uuid.uuid,
+                label: bin.name.get() ?? str.menuTrash,
+                data: GroupData(uuid: bin.uuid.uuid, isDeleted: false, isMovable: false, isRecycleBin: true),
+                expanded: false,
+                children: kdbxGroupToNodes(bin, 1, (_) => true),
               ),
             ];
-
-            List<Node<GroupData>>? binNodes;
-            if (treeMode == GroupTreeMode.all && bin != null) {
-              binNodes = [
-                Node<GroupData>(
-                  key: bin.uuid.uuid,
-                  label: bin.name.get() ?? str.menuTrash,
-                  data: GroupData(
-                    uuid: bin.uuid.uuid,
-                    isDeleted: false,
-                    isMovable: false,
-                    isRecycleBin: true,
-                  ),
-                  expanded: false,
-                  children: kdbxGroupToNodes(bin, 1, (_) => true),
-                ),
-              ];
-            }
-
-            return BlocBuilder<FilterCubit, FilterState>(
-              builder: (context, state) {
-                if (state is! FilterActive) return Container();
-                //TODO:f: Add a "search for group name" textfield which can then filter the list of nodes that we supply
-                final selectedGroup = state.groupUuid;
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: GroupTreeListWidget(nodes: nodes, selectedGroupUuid: selectedGroup),
-                          ),
-                          if (binNodes != null)
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.symmetric(horizontal: BorderSide(color: theme.canvasColor, width: 2))),
-                              child: ConstrainedBox(
-                                constraints:
-                                    BoxConstraints(maxHeight: (MediaQuery.of(context).size.height - 300) * 0.6),
-                                child: GroupTreeListWidget(nodes: binNodes, selectedGroupUuid: selectedGroup),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16, bottom: 8.0, left: 8, right: 16),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Icon(
-                              Icons.info,
-                              color: theme.textTheme.bodySmall!.color,
-                            ),
-                          ),
-                          Expanded(
-                              child: Text(
-                            str.longPressGroupExplanation,
-                            style: theme.textTheme.bodySmall,
-                          )),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            );
           }
-          return Container();
-        });
+
+          return BlocBuilder<FilterCubit, FilterState>(
+            builder: (context, state) {
+              if (state is! FilterActive) return Container();
+              //TODO:f: Add a "search for group name" textfield which can then filter the list of nodes that we supply
+              final selectedGroup = state.groupUuid;
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(child: GroupTreeListWidget(nodes: nodes, selectedGroupUuid: selectedGroup)),
+                        if (binNodes != null)
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.symmetric(horizontal: BorderSide(color: theme.canvasColor, width: 2)),
+                            ),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: (MediaQuery.of(context).size.height - 300) * 0.6),
+                              child: GroupTreeListWidget(nodes: binNodes, selectedGroupUuid: selectedGroup),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, bottom: 8.0, left: 8, right: 16),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Icon(Icons.info, color: theme.textTheme.bodySmall!.color),
+                        ),
+                        Expanded(child: Text(str.longPressGroupExplanation, style: theme.textTheme.bodySmall)),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+        return Container();
+      },
+    );
   }
 }
 
 List<Node<GroupData>> kdbxGroupToNodes(KdbxGroup group, int depth, bool Function(KdbxGroup) filter) {
-  final nodes = group.groups.values
-      .where((subgroup) => filter(subgroup))
-      .map((subgroup) => Node<GroupData>(
-            key: subgroup.uuid.uuid,
-            label: subgroup.name.get() ?? '[no name]',
-            data: GroupData(
-              uuid: subgroup.uuid.uuid,
-              isDeleted: subgroup.isInRecycleBin,
-              isMovable: !subgroup.isInRecycleBin,
+  final nodes =
+      group.groups.values
+          .where((subgroup) => filter(subgroup))
+          .map(
+            (subgroup) => Node<GroupData>(
+              key: subgroup.uuid.uuid,
+              label: subgroup.name.get() ?? '[no name]',
+              data: GroupData(
+                uuid: subgroup.uuid.uuid,
+                isDeleted: subgroup.isInRecycleBin,
+                isMovable: !subgroup.isInRecycleBin,
+              ),
+              expanded: depth < 6,
+              children: kdbxGroupToNodes(subgroup, depth + 1, filter),
             ),
-            expanded: depth < 6,
-            children: kdbxGroupToNodes(subgroup, depth + 1, filter),
-          ))
-      .toList();
+          )
+          .toList();
   return nodes;
 }
 
@@ -152,11 +135,7 @@ class GroupData {
 class GroupTreeListWidget extends StatefulWidget {
   final List<Node<GroupData>> nodes;
   final String selectedGroupUuid;
-  const GroupTreeListWidget({
-    super.key,
-    required this.nodes,
-    required this.selectedGroupUuid,
-  });
+  const GroupTreeListWidget({super.key, required this.nodes, required this.selectedGroupUuid});
   @override
   State<GroupTreeListWidget> createState() => _GroupTreeListWidgetState();
 }
@@ -169,68 +148,67 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocBuilder<VaultCubit, VaultState>(
-        buildWhen: (previous, current) => current is VaultLoaded,
-        builder: (context, state) {
-          if (state is VaultLoaded) {
-            _treeViewController = TreeViewController<GroupData>(children: widget.nodes);
-            TreeViewTheme treeViewTheme = TreeViewTheme(
-              labelOverflow: TextOverflow.ellipsis,
-              colorScheme:
-                  theme.colorScheme.copyWith(primary: theme.focusColor, onPrimary: theme.colorScheme.secondary),
-              expanderTheme: ExpanderThemeData(
-                animated: true,
-                position: ExpanderPosition.start,
-                type: ExpanderType.chevron,
-                size: 32,
-                modifier: ExpanderModifier.none,
-                color: theme.colorScheme.secondary,
-              ),
-              parentLabelStyle: TextStyle(
-                fontWeight: FontWeight.normal,
-              ),
-              horizontalSpacing: 15,
-              verticalSpacing: 15,
-              parentLabelOverflow: TextOverflow.ellipsis,
-            );
-            return BlocBuilder<FilterCubit, FilterState>(
-              builder: (context, state) {
-                if (state is! FilterActive) return Container();
-                final selectedGroup = state.groupUuid;
-                _treeViewController = _treeViewController.copyWith(selectedKey: selectedGroup);
-                return TreeView<GroupData>(
-                    controller: _treeViewController,
-                    allowParentSelect: true,
-                    shrinkWrap: true,
-                    supportParentDoubleTap: false,
-                    onNodeTap: (key) {
-                      Node<GroupData>? selectedNode = _treeViewController.getNode(key);
-                      BlocProvider.of<FilterCubit>(context).changeGroup(selectedNode!.data!.uuid);
-                    },
-                    onNodeLongPress: (key) {
-                      setState(() {
-                        if (_managedGroupUuid == key) {
-                          _managedGroupUuid = null;
-                        } else {
-                          _managedGroupUuid = key;
-                        }
-                      });
-                    },
-                    onExpansionChanged: (String key, bool expanded) {
-                      Node<GroupData>? node = _treeViewController.getNode(key);
-                      if (node != null) {
-                        final updated = _treeViewController.updateNode(key, node.copyWith(expanded: expanded));
-                        setState(() {
-                          _treeViewController = _treeViewController.copyWith(children: updated);
-                        });
-                      }
-                    },
-                    nodeBuilder: _buildNodeContents,
-                    theme: treeViewTheme);
-              },
-            );
-          }
-          return Container();
-        });
+      buildWhen: (previous, current) => current is VaultLoaded,
+      builder: (context, state) {
+        if (state is VaultLoaded) {
+          _treeViewController = TreeViewController<GroupData>(children: widget.nodes);
+          TreeViewTheme treeViewTheme = TreeViewTheme(
+            labelOverflow: TextOverflow.ellipsis,
+            colorScheme: theme.colorScheme.copyWith(primary: theme.focusColor, onPrimary: theme.colorScheme.secondary),
+            expanderTheme: ExpanderThemeData(
+              animated: true,
+              position: ExpanderPosition.start,
+              type: ExpanderType.chevron,
+              size: 32,
+              modifier: ExpanderModifier.none,
+              color: theme.colorScheme.secondary,
+            ),
+            parentLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+            horizontalSpacing: 15,
+            verticalSpacing: 15,
+            parentLabelOverflow: TextOverflow.ellipsis,
+          );
+          return BlocBuilder<FilterCubit, FilterState>(
+            builder: (context, state) {
+              if (state is! FilterActive) return Container();
+              final selectedGroup = state.groupUuid;
+              _treeViewController = _treeViewController.copyWith(selectedKey: selectedGroup);
+              return TreeView<GroupData>(
+                controller: _treeViewController,
+                allowParentSelect: true,
+                shrinkWrap: true,
+                supportParentDoubleTap: false,
+                onNodeTap: (key) {
+                  Node<GroupData>? selectedNode = _treeViewController.getNode(key);
+                  BlocProvider.of<FilterCubit>(context).changeGroup(selectedNode!.data!.uuid);
+                },
+                onNodeLongPress: (key) {
+                  setState(() {
+                    if (_managedGroupUuid == key) {
+                      _managedGroupUuid = null;
+                    } else {
+                      _managedGroupUuid = key;
+                    }
+                  });
+                },
+                onExpansionChanged: (String key, bool expanded) {
+                  Node<GroupData>? node = _treeViewController.getNode(key);
+                  if (node != null) {
+                    final updated = _treeViewController.updateNode(key, node.copyWith(expanded: expanded));
+                    setState(() {
+                      _treeViewController = _treeViewController.copyWith(children: updated);
+                    });
+                  }
+                },
+                nodeBuilder: _buildNodeContents,
+                theme: treeViewTheme,
+              );
+            },
+          );
+        }
+        return Container();
+      },
+    );
   }
 
   Widget _buildNodeContents(BuildContext context, Node<GroupData> node) {
@@ -240,10 +218,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
     bool isSelected = treeView.controller.selectedKey != null && treeView.controller.selectedKey == node.key;
     List<StatefulWidget> buttons = node.data!.uuid == _managedGroupUuid ? _buildButtons(node, isSelected) : [];
     return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: theme.verticalSpacing ?? (theme.dense ? 10 : 15),
-        horizontal: 0,
-      ),
+      padding: EdgeInsets.symmetric(vertical: theme.verticalSpacing ?? (theme.dense ? 10 : 15), horizontal: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -256,26 +231,21 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
                   node.label,
                   softWrap: node.isParent ? theme.parentLabelOverflow == null : theme.labelOverflow == null,
                   overflow: node.isParent ? theme.parentLabelOverflow : theme.labelOverflow,
-                  style: node.isParent
-                      ? theme.parentLabelStyle.copyWith(
-                          fontWeight: theme.parentLabelStyle.fontWeight,
-                          color: isSelected ? theme.colorScheme.onPrimary : theme.parentLabelStyle.color,
-                        )
-                      : theme.labelStyle.copyWith(
-                          fontWeight: theme.labelStyle.fontWeight,
-                          color: isSelected ? theme.colorScheme.onPrimary : null,
-                        ),
+                  style:
+                      node.isParent
+                          ? theme.parentLabelStyle.copyWith(
+                            fontWeight: theme.parentLabelStyle.fontWeight,
+                            color: isSelected ? theme.colorScheme.onPrimary : theme.parentLabelStyle.color,
+                          )
+                          : theme.labelStyle.copyWith(
+                            fontWeight: theme.labelStyle.fontWeight,
+                            color: isSelected ? theme.colorScheme.onPrimary : null,
+                          ),
                 ),
               ),
             ],
           ),
-          Wrap(
-            spacing: 16,
-            runSpacing: 0,
-            children: [
-              ...buttons,
-            ],
-          )
+          Wrap(spacing: 16, runSpacing: 0, children: [...buttons]),
         ],
       ),
     );
@@ -378,7 +348,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
           onPressed: () {
             _emptyTrash();
           },
-        )
+        ),
     ];
     return buttons;
   }
@@ -386,10 +356,7 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
   void _newGroup(String uuid) async {
     final str = S.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
-    final newName = await SimplePromptDialog(
-      title: str.newGroup,
-      labelText: str.groupNameNewExplanation,
-    ).show(context);
+    final newName = await SimplePromptDialog(title: str.newGroup, labelText: str.groupNameNewExplanation).show(context);
     if (newName != null && newName.isNotEmpty) {
       vaultCubit.createGroup(parent: uuid, name: newName);
       setState(() {

@@ -18,7 +18,7 @@ const Map<Stage, Map<String, String>> endpoints = {
     'messages': 'https://msg-dev.kee.pm/',
     'reset': 'https://resetacc-dev.kee.pm/',
     'mailer': 'https://mailerapi-dev.kee.pm/',
-    'subscriptions': 'https://subs-dev.kee.pm/'
+    'subscriptions': 'https://subs-dev.kee.pm/',
   },
   Stage.beta: {
     'storage': 'https://s-beta.kee.pm/',
@@ -26,7 +26,7 @@ const Map<Stage, Map<String, String>> endpoints = {
     'messages': 'https://msg-beta.kee.pm/',
     'reset': 'https://resetacc-beta.kee.pm/',
     'mailer': 'https://mailerapi-beta.kee.pm/',
-    'subscriptions': 'https://subs-beta.kee.pm/'
+    'subscriptions': 'https://subs-beta.kee.pm/',
   },
   Stage.prod: {
     'storage': 'https://s.kee.pm/',
@@ -34,8 +34,8 @@ const Map<Stage, Map<String, String>> endpoints = {
     'messages': 'https://msg.kee.pm/',
     'reset': 'https://resetacc.kee.pm/',
     'mailer': 'https://mailerapi.kee.pm/',
-    'subscriptions': 'https://subs.kee.pm/'
-  }
+    'subscriptions': 'https://subs.kee.pm/',
+  },
 };
 
 class RemoteService {
@@ -93,8 +93,13 @@ class RemoteService {
     }
   }
 
-  Future<Response<T>> _doRequest<T>(Options config, String path,
-      {String? token, TokenRefreshFunction? tokenRefresh, Object? obj}) async {
+  Future<Response<T>> _doRequest<T>(
+    Options config,
+    String path, {
+    String? token,
+    TokenRefreshFunction? tokenRefresh,
+    Object? obj,
+  }) async {
     var shouldGetNewTokenIfRequired = tokenRefresh != null;
     var haveAToken = token?.isNotEmpty ?? false;
     if (shouldGetNewTokenIfRequired && !haveAToken) {
@@ -112,8 +117,12 @@ class RemoteService {
     do {
       retriesRemaining--;
       try {
-        var response =
-            await _dio.request<T>(path, queryParameters: {if (haveAToken) 't': token}, options: config, data: obj);
+        var response = await _dio.request<T>(
+          path,
+          queryParameters: {if (haveAToken) 't': token},
+          options: config,
+          data: obj,
+        );
         return response;
       } on DioException catch (e, s) {
         await e.handle(_name, s, retriesRemaining, () async {

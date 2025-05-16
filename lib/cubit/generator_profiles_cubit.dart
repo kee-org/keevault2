@@ -10,29 +10,32 @@ part 'generator_profiles_state.dart';
 class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
   factory GeneratorProfilesCubit() {
     final settings = PasswordGeneratorProfileSettings.fromStorage();
-    final defaultProfile = (builtinPasswordGeneratorProfiles + settings.user)
-            .firstWhereOrNull((profile) => profile.name == settings.defaultProfileName) ??
+    final defaultProfile =
+        (builtinPasswordGeneratorProfiles + settings.user).firstWhereOrNull(
+          (profile) => profile.name == settings.defaultProfileName,
+        ) ??
         defaultPasswordGeneratorProfile;
     return GeneratorProfilesCubit._(settings, defaultProfile);
   }
 
   GeneratorProfilesCubit._(PasswordGeneratorProfileSettings settings, PasswordGeneratorProfile defaultProfile)
-      : super(GeneratorProfilesEnabled(
-          settings,
-          defaultProfile,
-        ));
+    : super(GeneratorProfilesEnabled(settings, defaultProfile));
 
   void reloadFromSettings(PasswordGeneratorProfileSettings settings) {
     if (state is GeneratorProfilesCreating) {
       final currentState = state as GeneratorProfilesCreating;
 
-      emit(GeneratorProfilesCreating(
+      emit(
+        GeneratorProfilesCreating(
           settings,
           currentState.enabled.any((enabled) => enabled.name == currentState.current.name)
               ? currentState.current
-              : currentState.enabled
-                  .firstWhere((profile) => profile.name == currentState.profileSettings.defaultProfileName),
-          currentState.newProfile));
+              : currentState.enabled.firstWhere(
+                (profile) => profile.name == currentState.profileSettings.defaultProfileName,
+              ),
+          currentState.newProfile,
+        ),
+      );
     } else {
       final currentState = state as GeneratorProfilesEnabled;
       emit(GeneratorProfilesEnabled(settings, currentState.current));
@@ -66,35 +69,31 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
     }
 
     final newSettings = currentState.profileSettings.copyWith(
-      user: [
-        ...currentState.profileSettings.user.where((profile) => profile.name != oldName),
-        newProfile,
-      ],
+      user: [...currentState.profileSettings.user.where((profile) => profile.name != oldName), newProfile],
       disabled: disabled,
       defaultProfileName: currentState.profileSettings.defaultProfileName == oldName ? newName : null,
     );
 
-    emit(GeneratorProfilesEnabled(
-      newSettings,
-      currentState.current,
-    ));
+    emit(GeneratorProfilesEnabled(newSettings, currentState.current));
     await persistLatestSettings(newSettings);
   }
 
   void startDefiningNewProfile() {
     if (state is GeneratorProfilesCreating) return;
     final currentState = state as GeneratorProfilesEnabled;
-    emit(GeneratorProfilesCreating(
-        currentState.profileSettings, currentState.current, PasswordGeneratorProfile.emptyTemplate()));
+    emit(
+      GeneratorProfilesCreating(
+        currentState.profileSettings,
+        currentState.current,
+        PasswordGeneratorProfile.emptyTemplate(),
+      ),
+    );
   }
 
   void discardNewProfile() {
     if (state is! GeneratorProfilesCreating) return;
     final currentState = state as GeneratorProfilesCreating;
-    emit(GeneratorProfilesEnabled(
-      currentState.profileSettings,
-      currentState.current,
-    ));
+    emit(GeneratorProfilesEnabled(currentState.profileSettings, currentState.current));
   }
 
   Future<void> addNewProfile() async {
@@ -110,10 +109,7 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
       user: [...currentState.profileSettings.user, currentState.newProfile.copyWith(name: newName, title: newName)],
     );
 
-    emit(GeneratorProfilesEnabled(
-      newSettings,
-      currentState.current,
-    ));
+    emit(GeneratorProfilesEnabled(newSettings, currentState.current));
     await persistLatestSettings(newSettings);
   }
 
@@ -140,12 +136,14 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
       user: newUserProfiles,
       disabled: currentState.profileSettings.disabled.where((profile) => profile != name).toList(),
     );
-    emit(GeneratorProfilesEnabled(
-      newSettings,
-      currentState.current.name == name
-          ? currentState.enabled.firstWhere((profile) => profile.name == newDefaultName).copyWith()
-          : currentState.current,
-    ));
+    emit(
+      GeneratorProfilesEnabled(
+        newSettings,
+        currentState.current.name == name
+            ? currentState.enabled.firstWhere((profile) => profile.name == newDefaultName).copyWith()
+            : currentState.current,
+      ),
+    );
     await persistLatestSettings(newSettings);
   }
 
@@ -159,28 +157,27 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
         return;
       }
     }
-    final newList = [
-      ...currentState.profileSettings.disabled.where((profile) => profile != name),
-      if (!enabled) name,
-    ];
+    final newList = [...currentState.profileSettings.disabled.where((profile) => profile != name), if (!enabled) name];
 
     String newDefaultName = currentState.profileSettings.defaultProfileName;
     if (newList.contains(currentState.profileSettings.defaultProfileName)) {
       newDefaultName = determineNewDefaultProfileName(
-          currentState.profileSettings.defaultProfileName, newList, currentState.profileSettings.user);
+        currentState.profileSettings.defaultProfileName,
+        newList,
+        currentState.profileSettings.user,
+      );
     }
 
-    final newSettings = currentState.profileSettings.copyWith(
-      defaultProfileName: newDefaultName,
-      disabled: newList,
-    );
+    final newSettings = currentState.profileSettings.copyWith(defaultProfileName: newDefaultName, disabled: newList);
 
-    emit(GeneratorProfilesEnabled(
-      newSettings,
-      newList.contains(currentState.current.name)
-          ? currentState.all.firstWhere((profile) => profile.name == newDefaultName)
-          : currentState.current,
-    ));
+    emit(
+      GeneratorProfilesEnabled(
+        newSettings,
+        newList.contains(currentState.current.name)
+            ? currentState.all.firstWhere((profile) => profile.name == newDefaultName)
+            : currentState.current,
+      ),
+    );
     await persistLatestSettings(newSettings);
   }
 
@@ -221,34 +218,43 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
       return;
     }
     final newSettings = currentState.profileSettings.copyWith(defaultProfileName: name);
-    emit(GeneratorProfilesEnabled(
-      newSettings,
-      currentState.current,
-    ));
+    emit(GeneratorProfilesEnabled(newSettings, currentState.current));
     await persistLatestSettings(newSettings);
   }
 
   void changeLength(double length) {
     if (state is GeneratorProfilesCreating) {
       final currentState = state as GeneratorProfilesCreating;
-      emit(GeneratorProfilesCreating(currentState.profileSettings, currentState.current,
-          currentState.newProfile.copyWith(length: length.toInt())));
+      emit(
+        GeneratorProfilesCreating(
+          currentState.profileSettings,
+          currentState.current,
+          currentState.newProfile.copyWith(length: length.toInt()),
+        ),
+      );
     } else {
       final currentState = state as GeneratorProfilesEnabled;
-      emit(GeneratorProfilesEnabled(
-          currentState.profileSettings, currentState.current.copyWith(length: length.toInt())));
+      emit(
+        GeneratorProfilesEnabled(currentState.profileSettings, currentState.current.copyWith(length: length.toInt())),
+      );
     }
   }
 
   void changeName(String name) {
     if (state is GeneratorProfilesCreating) {
       final currentState = state as GeneratorProfilesCreating;
-      emit(GeneratorProfilesCreating(currentState.profileSettings, currentState.current,
-          currentState.newProfile.copyWith(name: name, title: name)));
+      emit(
+        GeneratorProfilesCreating(
+          currentState.profileSettings,
+          currentState.current,
+          currentState.newProfile.copyWith(name: name, title: name),
+        ),
+      );
     } else {
       final currentState = state as GeneratorProfilesEnabled;
-      emit(GeneratorProfilesEnabled(
-          currentState.profileSettings, currentState.current.copyWith(name: name, title: name)));
+      emit(
+        GeneratorProfilesEnabled(currentState.profileSettings, currentState.current.copyWith(name: name, title: name)),
+      );
     }
   }
 
@@ -263,7 +269,8 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
   }) {
     if (state is GeneratorProfilesCreating) {
       final currentState = state as GeneratorProfilesCreating;
-      emit(GeneratorProfilesCreating(
+      emit(
+        GeneratorProfilesCreating(
           currentState.profileSettings,
           currentState.current,
           currentState.newProfile.copyWith(
@@ -274,10 +281,13 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
             brackets: brackets,
             high: high,
             ambiguous: ambiguous,
-          )));
+          ),
+        ),
+      );
     } else {
       final currentState = state as GeneratorProfilesEnabled;
-      emit(GeneratorProfilesEnabled(
+      emit(
+        GeneratorProfilesEnabled(
           currentState.profileSettings,
           currentState.current.copyWith(
             upper: upper,
@@ -287,26 +297,25 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
             brackets: brackets,
             high: high,
             ambiguous: ambiguous,
-          )));
+          ),
+        ),
+      );
     }
   }
 
   void changeAdditionalChars(String value) {
     if (state is GeneratorProfilesCreating) {
       final currentState = state as GeneratorProfilesCreating;
-      emit(GeneratorProfilesCreating(
+      emit(
+        GeneratorProfilesCreating(
           currentState.profileSettings,
           currentState.current,
-          currentState.newProfile.copyWith(
-            include: value,
-          )));
+          currentState.newProfile.copyWith(include: value),
+        ),
+      );
     } else {
       final currentState = state as GeneratorProfilesEnabled;
-      emit(GeneratorProfilesEnabled(
-          currentState.profileSettings,
-          currentState.current.copyWith(
-            include: value,
-          )));
+      emit(GeneratorProfilesEnabled(currentState.profileSettings, currentState.current.copyWith(include: value)));
     }
   }
 

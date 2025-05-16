@@ -21,14 +21,8 @@ class PrcPrivacyDialog extends StatelessWidget with DialogMixin<bool> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.prcRegistrationPrivacy1),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(str.prcRegistrationPrivacy2),
-            ),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.prcRegistrationPrivacy1)),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.prcRegistrationPrivacy2)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Link(
@@ -48,12 +42,7 @@ class PrcPrivacyDialog extends StatelessWidget with DialogMixin<bool> {
           ],
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(str.alertOk),
-        ),
-      ],
+      actions: <Widget>[TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(str.alertOk))],
     );
   }
 

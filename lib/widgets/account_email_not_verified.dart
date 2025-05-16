@@ -10,9 +10,7 @@ import '../vault_backend/exceptions.dart';
 typedef SubmitCallback = Future<void> Function(String string);
 
 class AccountEmailNotVerifiedWidget extends StatefulWidget {
-  const AccountEmailNotVerifiedWidget({
-    super.key,
-  });
+  const AccountEmailNotVerifiedWidget({super.key});
 
   @override
   State<AccountEmailNotVerifiedWidget> createState() => _AccountEmailNotVerifiedWidgetState();
@@ -121,97 +119,93 @@ class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedW
   Widget build(BuildContext context) {
     final str = S.of(context);
     final theme = Theme.of(context);
-    return BlocBuilder<AccountCubit, AccountState>(builder: (context, state) {
-      if (state is AccountEmailNotVerified) {
-        final userEmail = state.user.email;
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                str.emailVerification,
-                style: theme.textTheme.titleLarge,
-              ),
+    return BlocBuilder<AccountCubit, AccountState>(
+      builder: (context, state) {
+        if (state is AccountEmailNotVerified) {
+          final userEmail = state.user.email;
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(str.emailVerification, style: theme.textTheme.titleLarge),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(
+                    str.verificationRequest(userEmail ?? 'error - unknown email address - contact us for help'),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+                OutlinedButton(
+                  onPressed:
+                      disableResending
+                          ? null
+                          : () async {
+                            await resendEmail();
+                          },
+                  child:
+                      resending
+                          ? Container(
+                            width: 24,
+                            height: 24,
+                            padding: const EdgeInsets.all(2.0),
+                            child: const CircularProgressIndicator(strokeWidth: 3),
+                          )
+                          : Text(str.resendVerification),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(str.signInAgainWhenVerified, textAlign: TextAlign.center),
+                ),
+                ElevatedButton(
+                  onPressed:
+                      disableRefreshing
+                          ? null
+                          : () async {
+                            await refreshUserAndTokens();
+                          },
+                  child:
+                      refreshing
+                          ? Container(
+                            width: 24,
+                            height: 24,
+                            padding: const EdgeInsets.all(2.0),
+                            child: const CircularProgressIndicator(strokeWidth: 3),
+                          )
+                          : Text(str.continueSigningIn),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(str.noLongerHaveAccessToUnverifiedEmail, textAlign: TextAlign.center),
+                ),
+                OutlinedButton(
+                  onPressed:
+                      disableRefreshing
+                          ? null
+                          : () {
+                            startEmailChange();
+                          },
+                  child:
+                      refreshing
+                          ? Container(
+                            width: 24,
+                            height: 24,
+                            padding: const EdgeInsets.all(2.0),
+                            child: const CircularProgressIndicator(strokeWidth: 3),
+                          )
+                          : Text(str.changeEmail),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                str.verificationRequest(userEmail ?? 'error - unknown email address - contact us for help'),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge,
-              ),
-            ),
-            OutlinedButton(
-              onPressed: disableResending
-                  ? null
-                  : () async {
-                      await resendEmail();
-                    },
-              child: resending
-                  ? Container(
-                      width: 24,
-                      height: 24,
-                      padding: const EdgeInsets.all(2.0),
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 3,
-                      ),
-                    )
-                  : Text(str.resendVerification),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text(
-                str.signInAgainWhenVerified,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: disableRefreshing
-                  ? null
-                  : () async {
-                      await refreshUserAndTokens();
-                    },
-              child: refreshing
-                  ? Container(
-                      width: 24,
-                      height: 24,
-                      padding: const EdgeInsets.all(2.0),
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 3,
-                      ),
-                    )
-                  : Text(str.continueSigningIn),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text(
-                str.noLongerHaveAccessToUnverifiedEmail,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            OutlinedButton(
-              onPressed: disableRefreshing
-                  ? null
-                  : () {
-                      startEmailChange();
-                    },
-              child: refreshing
-                  ? Container(
-                      width: 24,
-                      height: 24,
-                      padding: const EdgeInsets.all(2.0),
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 3,
-                      ),
-                    )
-                  : Text(str.changeEmail),
-            ),
-          ]),
-        );
-      } else {
-        return Text(str.unexpected_error('Account in invalid state for AccountEmailNotVerifiedWidget'));
-      }
-    });
+          );
+        } else {
+          return Text(str.unexpected_error('Account in invalid state for AccountEmailNotVerifiedWidget'));
+        }
+      },
+    );
   }
 }

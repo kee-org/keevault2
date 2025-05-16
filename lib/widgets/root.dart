@@ -62,9 +62,7 @@ class RootWidgetState extends State<RootWidget> {
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const <Widget>[
-                AccountWrapperWidget(),
-              ],
+              children: const <Widget>[AccountWrapperWidget()],
             ),
           ),
         ),

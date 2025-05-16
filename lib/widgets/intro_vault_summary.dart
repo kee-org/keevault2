@@ -5,10 +5,7 @@ import 'package:keevault/cubit/app_settings_cubit.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class IntroVaultSummaryWidget extends StatefulWidget {
-  const IntroVaultSummaryWidget({
-    super.key,
-    required this.theme,
-  });
+  const IntroVaultSummaryWidget({super.key, required this.theme});
 
   final ThemeData theme;
 
@@ -21,10 +18,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
     duration: const Duration(milliseconds: 1100),
     vsync: this,
   )..value = 1;
-  late final Animation<double> _animation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.ease,
-  );
+  late final Animation<double> _animation = CurvedAnimation(parent: _controller, curve: Curves.ease);
   @override
   void dispose() {
     super.dispose();
@@ -39,15 +33,10 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
       axis: Axis.vertical,
       axisAlignment: 1,
       child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: 1.5,
-          sigmaY: 1.5,
-        ),
+        filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: widget.theme.canvasColor.withOpacity(0.75),
-          ),
+          decoration: BoxDecoration(color: widget.theme.canvasColor.withOpacity(0.75)),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
             child: Column(
@@ -62,12 +51,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                           text: TextSpan(
                             style: widget.theme.textTheme.titleLarge,
                             children: [
-                              WidgetSpan(
-                                child: Icon(
-                                  Icons.north_outlined,
-                                  size: 32,
-                                ),
-                              ),
+                              WidgetSpan(child: Icon(Icons.north_outlined, size: 32)),
                               TextSpan(text: str.introFilter),
                             ],
                           ),
@@ -85,15 +69,8 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                             text: TextSpan(
                               style: widget.theme.textTheme.titleLarge,
                               children: [
-                                WidgetSpan(
-                                  child: Icon(
-                                    Icons.north_outlined,
-                                    size: 32,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: str.introSortYourEntries,
-                                ),
+                                WidgetSpan(child: Icon(Icons.north_outlined, size: 32)),
+                                TextSpan(text: str.introSortYourEntries),
                               ],
                             ),
                           ),
@@ -112,15 +89,10 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                             style: widget.theme.textTheme.titleLarge,
                             children: [
                               WidgetSpan(
-                                child: Icon(
-                                  Icons.south_outlined,
-                                  size: 32,
-                                ),
+                                child: Icon(Icons.south_outlined, size: 32),
                                 alignment: PlaceholderAlignment.middle,
                               ),
-                              TextSpan(
-                                text: str.yourPasswordEntries,
-                              ),
+                              TextSpan(text: str.yourPasswordEntries),
                             ],
                           ),
                         ),
@@ -132,7 +104,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
                           await _controller.reverse();
                           await appSettings.completeIntroShownVaultSummary();
                         },
-                      )
+                      ),
                     ],
                   ),
                 ),

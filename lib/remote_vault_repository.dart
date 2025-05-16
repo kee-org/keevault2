@@ -98,8 +98,9 @@ class RemoteVaultRepository {
       throw Exception('Missing URLs from storage service.');
     }
     final dlUrl = siList[0].urls!.dl;
-    final dio =
-        Dio(BaseOptions(connectTimeout: Duration(milliseconds: 20000), receiveTimeout: Duration(milliseconds: 30000)));
+    final dio = Dio(
+      BaseOptions(connectTimeout: Duration(milliseconds: 20000), receiveTimeout: Duration(milliseconds: 30000)),
+    );
     var retriesRemaining = 3;
     do {
       retriesRemaining--;
@@ -108,13 +109,7 @@ class RemoteVaultRepository {
         final fileModifiedAt = HttpDate.parse(response.headers['last-modified']![0]);
         final etag = response.headers['etag']![0];
         final versionId = response.headers['x-amz-version-id']![0];
-        return LockedVaultFile(
-          response.data,
-          fileModifiedAt,
-          kdbxCredentials,
-          etag,
-          versionId,
-        );
+        return LockedVaultFile(response.data, fileModifiedAt, kdbxCredentials, etag, versionId);
       } on DioException catch (e, s) {
         await e.handle('Get primary file', s, retriesRemaining, () async {
           throw KeeLoginRequiredException();
@@ -127,13 +122,18 @@ class RemoteVaultRepository {
   }
 
   Future<LockedVaultFile> _putPrimaryFile(
-      User user, Uint8List fileData, List<StorageItem> siList, Credentials? credentials) async {
+    User user,
+    Uint8List fileData,
+    List<StorageItem> siList,
+    Credentials? credentials,
+  ) async {
     if (siList[0].urls == null) {
       throw Exception('Missing URLs from storage service.');
     }
     final ulUrl = siList[0].urls!.ul;
-    final dio =
-        Dio(BaseOptions(connectTimeout: Duration(milliseconds: 20000), sendTimeout: Duration(milliseconds: 30000)));
+    final dio = Dio(
+      BaseOptions(connectTimeout: Duration(milliseconds: 20000), sendTimeout: Duration(milliseconds: 30000)),
+    );
     var retriesRemaining = 3;
     do {
       retriesRemaining--;
@@ -151,13 +151,7 @@ class RemoteVaultRepository {
         );
         final etag = response.headers['etag']![0];
         final versionId = response.headers['x-amz-version-id']![0];
-        return LockedVaultFile(
-          fileData,
-          DateTime.now(),
-          credentials,
-          etag,
-          versionId,
-        );
+        return LockedVaultFile(fileData, DateTime.now(), credentials, etag, versionId);
       } on DioException catch (e, s) {
         await e.handle('Put primary file', s, retriesRemaining, () async {
           throw KeeLoginRequiredException();
@@ -174,8 +168,9 @@ class RemoteVaultRepository {
       throw Exception('Missing URLs from storage service.');
     }
     final headUrl = siList[0].urls!.st;
-    final dio =
-        Dio(BaseOptions(connectTimeout: Duration(milliseconds: 20000), receiveTimeout: Duration(milliseconds: 15000)));
+    final dio = Dio(
+      BaseOptions(connectTimeout: Duration(milliseconds: 20000), receiveTimeout: Duration(milliseconds: 15000)),
+    );
     var retriesRemaining = 3;
     do {
       retriesRemaining--;

@@ -41,7 +41,8 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
   }
 
   _detectBiometrics() async {
-    final hide = widget.forceBiometric == null ||
+    final hide =
+        widget.forceBiometric == null ||
         widget.quStatus == QUStatus.mapAvailable ||
         widget.quStatus == QUStatus.unavailable ||
         !(Settings.getValue<bool>('biometrics-enabled') ?? true) ||
@@ -59,94 +60,93 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
     final theme = Theme.of(context);
     return Form(
       key: _formKey,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            widget.reason,
-            style: theme.textTheme.titleLarge,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  obscureText: password1Obscured,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: str.enter_your_account_password,
-                    labelText: str.password,
-                    errorText: widget.showError
-                        ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
-                        : null,
-                    suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
-                    suffixIcon: IconButton(
-                      icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          password1Obscured = !password1Obscured;
-                        });
-                      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(padding: const EdgeInsets.all(16.0), child: Text(widget.reason, style: theme.textTheme.titleLarge)),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    obscureText: password1Obscured,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: str.enter_your_account_password,
+                      labelText: str.password,
+                      errorText:
+                          widget.showError
+                              ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
+                              : null,
+                      suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                      suffixIcon: IconButton(
+                        icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            password1Obscured = !password1Obscured;
+                          });
+                        },
+                      ),
                     ),
+                    validator: (value) {
+                      if (value?.isEmpty ?? false) {
+                        return str.this_field_required;
+                      }
+                      return null;
+                    },
+                    onSaved: (String? value) {
+                      submittedValue = value;
+                    },
+                    onFieldSubmitted: (value) async {
+                      if (_formKey.currentState!.validate()) {
+                        await widget.onSubmit(value);
+                      }
+                    },
+                    autofocus: true,
+                    keyboardType: TextInputType.visiblePassword,
                   ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? false) {
-                      return str.this_field_required;
-                    }
-                    return null;
-                  },
-                  onSaved: (String? value) {
-                    submittedValue = value;
-                  },
-                  onFieldSubmitted: (value) async {
-                    if (_formKey.currentState!.validate()) {
-                      await widget.onSubmit(value);
-                    }
-                  },
-                  autofocus: true,
-                  keyboardType: TextInputType.visiblePassword,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      await widget.onSubmit(submittedValue!);
-                    }
-                  },
-                  child: Text(str.unlock),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        await widget.onSubmit(submittedValue!);
+                      }
+                    },
+                    child: Text(str.unlock),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        widget.showError && widget.quStatus == QUStatus.mapAvailable
-            ? Padding(
+          widget.showError && widget.quStatus == QUStatus.mapAvailable
+              ? Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(str.biometricsErrorExplanation(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN')),
               )
-            : SizedBox.shrink(),
-        _showBiometricSigninButton
-            ? Padding(
+              : SizedBox.shrink(),
+          _showBiometricSigninButton
+              ? Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: OutlinedButton.icon(
-                    onPressed: () async {
-                      if (!await widget.forceBiometric!()) {
-                        l.w('Failed to force biometric signin');
-                      }
-                    },
-                    label: Text(str.unlock_with_biometrics),
-                    icon: Icon(Icons.fingerprint)),
+                  onPressed: () async {
+                    if (!await widget.forceBiometric!()) {
+                      l.w('Failed to force biometric signin');
+                    }
+                  },
+                  label: Text(str.unlock_with_biometrics),
+                  icon: Icon(Icons.fingerprint),
+                ),
               )
-            : SizedBox.shrink()
-      ]),
+              : SizedBox.shrink(),
+        ],
+      ),
     );
   }
 }

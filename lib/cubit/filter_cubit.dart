@@ -15,54 +15,32 @@ class FilterCubit extends Cubit<FilterState> {
   }
 
   void start(String rootUuid, bool includeChildGroups) {
-    emit(FilterActive(
-      rootUuid,
-      includeChildGroups,
-      const [],
-      const [],
-      '',
-      SearchOptions(),
-      rootUuid,
-    ));
+    emit(FilterActive(rootUuid, includeChildGroups, const [], const [], '', SearchOptions(), rootUuid));
   }
 
   void changeGroup(String? uuid) {
     final fa = state as FilterActive;
-    emit(FilterActive(
-      uuid ?? fa.rootGroupUuid,
-      fa.includeChildGroups,
-      fa.colors,
-      fa.tags,
-      fa.text,
-      fa.textOptions,
-      fa.rootGroupUuid,
-    ));
+    emit(
+      FilterActive(
+        uuid ?? fa.rootGroupUuid,
+        fa.includeChildGroups,
+        fa.colors,
+        fa.tags,
+        fa.text,
+        fa.textOptions,
+        fa.rootGroupUuid,
+      ),
+    );
   }
 
   void changeText(String text) {
     final fa = state as FilterActive;
-    emit(FilterActive(
-      fa.groupUuid,
-      fa.includeChildGroups,
-      fa.colors,
-      fa.tags,
-      text,
-      fa.textOptions,
-      fa.rootGroupUuid,
-    ));
+    emit(FilterActive(fa.groupUuid, fa.includeChildGroups, fa.colors, fa.tags, text, fa.textOptions, fa.rootGroupUuid));
   }
 
   void changeChildGroupInclusion(bool includeChildGroups) {
     final fa = state as FilterActive;
-    emit(FilterActive(
-      fa.groupUuid,
-      includeChildGroups,
-      fa.colors,
-      fa.tags,
-      fa.text,
-      fa.textOptions,
-      fa.rootGroupUuid,
-    ));
+    emit(FilterActive(fa.groupUuid, includeChildGroups, fa.colors, fa.tags, fa.text, fa.textOptions, fa.rootGroupUuid));
   }
 
   void toggleTag(String tagInput) {
@@ -73,15 +51,9 @@ class FilterCubit extends Cubit<FilterState> {
     if (!didRemoveTag) {
       newList.add(tag);
     }
-    emit(FilterActive(
-      fa.groupUuid,
-      fa.includeChildGroups,
-      fa.colors,
-      newList,
-      fa.text,
-      fa.textOptions,
-      fa.rootGroupUuid,
-    ));
+    emit(
+      FilterActive(fa.groupUuid, fa.includeChildGroups, fa.colors, newList, fa.text, fa.textOptions, fa.rootGroupUuid),
+    );
   }
 
   void toggleColor(EntryColor color) {
@@ -91,28 +63,14 @@ class FilterCubit extends Cubit<FilterState> {
     if (!didRemoveColor) {
       newList.add(color);
     }
-    emit(FilterActive(
-      fa.groupUuid,
-      fa.includeChildGroups,
-      newList,
-      fa.tags,
-      fa.text,
-      fa.textOptions,
-      fa.rootGroupUuid,
-    ));
+    emit(
+      FilterActive(fa.groupUuid, fa.includeChildGroups, newList, fa.tags, fa.text, fa.textOptions, fa.rootGroupUuid),
+    );
   }
 
   void updateTextOptions(SearchOptions textOptions) {
     final fa = state as FilterActive;
-    emit(FilterActive(
-      fa.groupUuid,
-      fa.includeChildGroups,
-      fa.colors,
-      fa.tags,
-      fa.text,
-      textOptions,
-      fa.rootGroupUuid,
-    ));
+    emit(FilterActive(fa.groupUuid, fa.includeChildGroups, fa.colors, fa.tags, fa.text, textOptions, fa.rootGroupUuid));
   }
 
   // When filterable criteria have changed, we need to call this so that the configured
@@ -130,20 +88,23 @@ class FilterCubit extends Cubit<FilterState> {
     final rootGroupUuid = allCurrentGroups.containsKey(fa.rootGroupUuid) ? fa.rootGroupUuid : rootGroup.uuid.uuid;
     final groupUuid = allCurrentGroups.containsKey(fa.groupUuid) ? fa.groupUuid : rootGroup.uuid.uuid;
 
-    emit(FilterActive(
-      groupUuid,
-      fa.includeChildGroups,
-      fa.colors,
-      fa.tags.where((t) => validTagsLowerCase.contains(t)).toList(),
-      fa.text,
-      fa.textOptions,
-      rootGroupUuid,
-    ));
+    emit(
+      FilterActive(
+        groupUuid,
+        fa.includeChildGroups,
+        fa.colors,
+        fa.tags.where((t) => validTagsLowerCase.contains(t)).toList(),
+        fa.text,
+        fa.textOptions,
+        rootGroupUuid,
+      ),
+    );
   }
 
   bool entryMatches(KdbxEntry entry) {
     final fa = state as FilterActive;
-    final quickCheck = (fa.tags.isEmpty || entry.tags.get()!.any((tag) => fa.tags.contains(tag.toLowerCase()))) &&
+    final quickCheck =
+        (fa.tags.isEmpty || entry.tags.get()!.any((tag) => fa.tags.contains(tag.toLowerCase()))) &&
         (fa.colors.isEmpty || fa.colors.contains(entry.color));
 
     if (!quickCheck) {
@@ -182,8 +143,9 @@ class FilterCubit extends Cubit<FilterState> {
   }
 
   bool matchEntryVersion(KdbxEntry entry, SearchOptions opts, bool Function(String) compare) {
-    for (var mapEntry in entry.stringEntries
-        .where((me) => !['KPRPC JSON', 'TOTP Seed', 'TOTP Settings', 'OTPAuth'].contains(me.key.key))) {
+    for (var mapEntry in entry.stringEntries.where(
+      (me) => !['KPRPC JSON', 'TOTP Seed', 'TOTP Settings', 'OTPAuth'].contains(me.key.key),
+    )) {
       if (mapEntry.key == KdbxKeyCommon.USER_NAME) {
         if (opts.username && compare(mapEntry.value!.getText())) {
           return true;

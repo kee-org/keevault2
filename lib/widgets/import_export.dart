@@ -68,58 +68,55 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final theme = Theme.of(context);
     final str = S.of(context);
     final timeOfDeath = (_localFreeKdbxImportedAt?.toLocal() ?? DateTime.now()).add(Duration(days: 90));
-    final freeVaultWidgets = (_localFreeKdbxExists ?? false) && _localFreeKdbxImportedAt != null
-        ? [
-            Divider(),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-              child: Text(
-                'Free Vault (local only)',
-                style: theme.textTheme.headlineMedium,
+    final freeVaultWidgets =
+        (_localFreeKdbxExists ?? false) && _localFreeKdbxImportedAt != null
+            ? [
+              Divider(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Text('Free Vault (local only)', style: theme.textTheme.headlineMedium),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                elevation: 6,
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text('We found an old Vault from the time when you were using Kee Vault as a free user.'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                      child: Text(
-                        'It is due to be automatically destroyed soon after ${Jiffy.parseFromDateTime(timeOfDeath).yMMMMEEEEd} ${Jiffy.parseFromDateTime(timeOfDeath).jm}.',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                      child: Text(
-                        'You can export it in KDBX format or force it to be destroyed immediately, only if you are certain that it contains no important information which has yet to be exported or imported into your current Vault.',
-                      ),
-                    ),
-                    ButtonBar(
-                      alignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => {_exportFreeKdbx(context)},
-                          child: Text(str.export),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 6,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          'We found an old Vault from the time when you were using Kee Vault as a free user.',
                         ),
-                        ElevatedButton(
-                          onPressed: () => {_deleteFreeKdbx(context)},
-                          style: ElevatedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
-                          child: Text(str.detDelEntryPerm),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                        child: Text(
+                          'It is due to be automatically destroyed soon after ${Jiffy.parseFromDateTime(timeOfDeath).yMMMMEEEEd} ${Jiffy.parseFromDateTime(timeOfDeath).jm}.',
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                        child: Text(
+                          'You can export it in KDBX format or force it to be destroyed immediately, only if you are certain that it contains no important information which has yet to be exported or imported into your current Vault.',
+                        ),
+                      ),
+                      ButtonBar(
+                        alignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton(onPressed: () => {_exportFreeKdbx(context)}, child: Text(str.export)),
+                          ElevatedButton(
+                            onPressed: () => {_deleteFreeKdbx(context)},
+                            style: ElevatedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                            child: Text(str.detDelEntryPerm),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            )
-          ]
-        : [];
+            ]
+            : [];
     return TraceableWidget(
       actionName: 'ImportExport',
       child: BlocBuilder<VaultCubit, VaultState>(
@@ -143,15 +140,9 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                         Divider(),
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                          child: Text(
-                            str.import,
-                            style: theme.textTheme.headlineMedium,
-                          ),
+                          child: Text(str.import, style: theme.textTheme.headlineMedium),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(str.importOtherInstructions1),
-                        ),
+                        Padding(padding: const EdgeInsets.only(bottom: 8.0), child: Text(str.importOtherInstructions1)),
                         Text(str.importOtherInstructions4),
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
@@ -160,15 +151,8 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                             elevation: 6,
                             child: Column(
                               children: [
-                                ListTile(
-                                  title: Text(str.importKdbx),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Text(
-                                    str.willTrySamePasswordFirst,
-                                  ),
-                                ),
+                                ListTile(title: Text(str.importKdbx)),
+                                Padding(padding: const EdgeInsets.all(16.0), child: Text(str.willTrySamePasswordFirst)),
                                 ButtonBar(
                                   alignment: MainAxisAlignment.end,
                                   children: [
@@ -185,10 +169,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                         Divider(),
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                          child: Text(
-                            str.export,
-                            style: theme.textTheme.headlineMedium,
-                          ),
+                          child: Text(str.export, style: theme.textTheme.headlineMedium),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
@@ -197,20 +178,14 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                             elevation: 6,
                             child: Column(
                               children: [
-                                ListTile(
-                                  title: Text(str.importKdbx),
-                                ),
+                                ListTile(title: Text(str.importKdbx)),
                                 Padding(
                                   padding: const EdgeInsets.all(16.0),
-                                  child: Text(
-                                    str.exportUsesCurrentPassword,
-                                  ),
+                                  child: Text(str.exportUsesCurrentPassword),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                                  child: Text(
-                                    str.rememberExportsDoNotUpdate,
-                                  ),
+                                  child: Text(str.rememberExportsDoNotUpdate),
                                 ),
                                 ButtonBar(
                                   alignment: MainAxisAlignment.end,
@@ -225,7 +200,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                             ),
                           ),
                         ),
-                        ...freeVaultWidgets
+                        ...freeVaultWidgets,
                       ],
                     ),
                   ),
@@ -278,7 +253,12 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         null,
       );
       await vaultCubit.importKdbx(
-          vaultState.vault, lockedSource, vaultState.vault.files.current.credentials, false, true);
+        vaultState.vault,
+        lockedSource,
+        vaultState.vault.files.current.credentials,
+        false,
+        true,
+      );
       await cleanupFuture;
     } on KdbxUnsupportedException catch (e) {
       l.e('Import failed: $e');
@@ -311,13 +291,14 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     if (state.vault.files.current.isDirty || entryBeingEdited) {
       l.i('Vault is dirty before an export');
       if (!await DialogUtils.showConfirmDialog(
-          context: context,
-          params: ConfirmDialogParams(
-            title: str.export,
-            content: str.exportDirtyFileWarning,
-            negativeButtonText: str.cancelExportOrImport(str.export.toLowerCase()),
-            positiveButtonText: str.exportAnyway,
-          ))) {
+        context: context,
+        params: ConfirmDialogParams(
+          title: str.export,
+          content: str.exportDirtyFileWarning,
+          negativeButtonText: str.cancelExportOrImport(str.export.toLowerCase()),
+          positiveButtonText: str.exportAnyway,
+        ),
+      )) {
         return;
       }
     }
@@ -335,15 +316,12 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         return;
       }
       l.i('Exported vault to $outputFilename');
-      sm.showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(str.exported),
-          ],
+      sm.showSnackBar(
+        SnackBar(
+          content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.exported)]),
+          duration: Duration(seconds: 3),
         ),
-        duration: Duration(seconds: 3),
-      ));
+      );
     } on Exception catch (e, st) {
       l.e('Export failed', error: e, stackTrace: st);
       if (e is PlatformException) {
@@ -368,15 +346,12 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final bytes = await vaultCubit.loadFreeFileForExport();
 
     if (bytes == null) {
-      sm.showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(str.exportError),
-          ],
+      sm.showSnackBar(
+        SnackBar(
+          content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.exportError)]),
+          duration: Duration(seconds: 3),
         ),
-        duration: Duration(seconds: 3),
-      ));
+      );
       return;
     }
 
@@ -391,15 +366,12 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
         return;
       }
       l.i('Exported vault to $outputFilename');
-      sm.showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(str.exported),
-          ],
+      sm.showSnackBar(
+        SnackBar(
+          content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.exported)]),
+          duration: Duration(seconds: 3),
         ),
-        duration: Duration(seconds: 3),
-      ));
+      );
     } on Exception catch (e, st) {
       l.e('Export failed', error: e, stackTrace: st);
       if (e is PlatformException) {
@@ -424,26 +396,20 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final deleted = await vaultCubit.forceLocalFreeFileDelete();
 
     if (!deleted) {
-      sm.showSnackBar(SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(str.openError),
-          ],
+      sm.showSnackBar(
+        SnackBar(
+          content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(str.openError)]),
+          duration: Duration(seconds: 3),
         ),
-        duration: Duration(seconds: 3),
-      ));
+      );
       return;
     }
-    sm.showSnackBar(SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Text('Deleted'),
-        ],
+    sm.showSnackBar(
+      SnackBar(
+        content: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [Text('Deleted')]),
+        duration: Duration(seconds: 3),
       ),
-      duration: Duration(seconds: 3),
-    ));
+    );
     setState(() {
       _localFreeKdbxExists = false;
       _localFreeKdbxImportedAt = null;

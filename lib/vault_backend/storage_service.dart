@@ -66,7 +66,11 @@ class StorageService {
     si.name = name;
     final emptyVault = base64.encode(vault.kdbxBytes);
     final request = _service.postRequest<String>(
-        'meta/', {'si': si, 'emptyVault': emptyVault, 'optional': true}, storageToken, () => _userRefresh(user, true));
+      'meta/',
+      {'si': si, 'emptyVault': emptyVault, 'optional': true},
+      storageToken,
+      () => _userRefresh(user, true),
+    );
     final response = await request;
     if (response.statusCode == 204) {
       throw PrimaryKdbxAlreadyExistsException();

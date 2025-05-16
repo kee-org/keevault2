@@ -17,9 +17,7 @@ import 'dialog_utils.dart';
 import '../logging/logger.dart';
 
 class HelpWidget extends StatefulWidget {
-  const HelpWidget({
-    super.key,
-  });
+  const HelpWidget({super.key});
 
   @override
   State<HelpWidget> createState() => _HelpWidgetState();
@@ -71,48 +69,45 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                    child: Text(
-                      'Documentation',
-                      style: theme.textTheme.titleLarge,
-                    ),
+                    child: Text('Documentation', style: theme.textTheme.titleLarge),
                   ),
                   Text(
-                      "We have carefully designed Kee Vault so that the fastest way for you to work out how to use it should be discoverable directly within the app itself so don't be afraid to try ideas out yourself - you're probably right! For some of the more complex aspects of the app or Kee Vault service, we maintain a set of documents on our community forum."),
+                    "We have carefully designed Kee Vault so that the fastest way for you to work out how to use it should be discoverable directly within the app itself so don't be afraid to try ideas out yourself - you're probably right! For some of the more complex aspects of the app or Kee Vault service, we maintain a set of documents on our community forum.",
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: OutlinedButton(
-                        onPressed: () async =>
-                            await DialogUtils.openUrl('https://forum.kee.pm/tags/c/kee-vault/9/documentation'),
-                        child: Text(str.viewDocumentation)),
+                      onPressed:
+                          () async =>
+                              await DialogUtils.openUrl('https://forum.kee.pm/tags/c/kee-vault/9/documentation'),
+                      child: Text(str.viewDocumentation),
+                    ),
                   ),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                    child: Text(
-                      'Feedback and other support',
-                      style: theme.textTheme.titleLarge,
-                    ),
+                    child: Text('Feedback and other support', style: theme.textTheme.titleLarge),
                   ),
                   Text(
-                      "Something not quite right? Don't worry, our community forum will help you and you can start your own topic if you can't find what you need already."),
+                    "Something not quite right? Don't worry, our community forum will help you and you can start your own topic if you can't find what you need already.",
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: OutlinedButton(
-                        onPressed: () async => await DialogUtils.openUrl('https://forum.kee.pm'),
-                        child: Text(str.visitTheForum)),
+                      onPressed: () async => await DialogUtils.openUrl('https://forum.kee.pm'),
+                      child: Text(str.visitTheForum),
+                    ),
                   ),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                    child: Text(
-                      'Diagnostics',
-                      style: theme.textTheme.titleLarge,
-                    ),
+                    child: Text('Diagnostics', style: theme.textTheme.titleLarge),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
-                    child:
-                        Text('For you or others to be able to help, you may need to refer to the information below.'),
+                    child: Text(
+                      'For you or others to be able to help, you may need to refer to the information below.',
+                    ),
                   ),
                   Text('Application name: ${_packageInfo.appName}'),
                   Text('Application version: ${_packageInfo.version}'),
@@ -121,10 +116,9 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: OutlinedButton(
-                      onPressed: () async => await AppConfig.router.navigateTo(
-                        AppConfig.navigatorKey.currentContext!,
-                        Routes.logger,
-                      ),
+                      onPressed:
+                          () async =>
+                              await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.logger),
                       child: Text('Share / view logs'),
                     ),
                   ),
@@ -141,10 +135,7 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
 }
 
 class PendingUpdateErrorRecoveryWidget extends StatefulWidget {
-  const PendingUpdateErrorRecoveryWidget({
-    super.key,
-    required this.theme,
-  });
+  const PendingUpdateErrorRecoveryWidget({super.key, required this.theme});
 
   final ThemeData theme;
 
@@ -193,33 +184,34 @@ class _PendingUpdateErrorRecoveryWidgetState extends State<PendingUpdateErrorRec
               Divider(),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                child: Text(
-                  'Error recovery',
-                  style: widget.theme.textTheme.titleLarge,
-                ),
+                child: Text('Error recovery', style: widget.theme.textTheme.titleLarge),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                    'There is a version of your Kee Vault pending merge with your current local version. This is a rare but expected behaviour in some cases of a failed download from the internet but once any fault with your device has been resolved, Kee Vault should automatically complete the merge when you sign-in to your Kee Vault.'),
+                  'There is a version of your Kee Vault pending merge with your current local version. This is a rare but expected behaviour in some cases of a failed download from the internet but once any fault with your device has been resolved, Kee Vault should automatically complete the merge when you sign-in to your Kee Vault.',
+                ),
               ),
               Text(
-                  'If you are experiencing an error that prevents the opening of your Kee Vault because this downloaded data is in some way corrupt or incompatible with your Kee Vault on this device, the button below may help. If the underlying fault with the previous download attempt has not been resolved, the error may re-appear and in very rare circumstances you may lose data (e.g. during certain offline modifications across multiple devices).'),
+                'If you are experiencing an error that prevents the opening of your Kee Vault because this downloaded data is in some way corrupt or incompatible with your Kee Vault on this device, the button below may help. If the underlying fault with the previous download attempt has not been resolved, the error may re-appear and in very rare circumstances you may lose data (e.g. during certain offline modifications across multiple devices).',
+              ),
               Text(
-                  'Ensure you understand the cause of your error situation and the implications of clicking the button - we recommend discussing the problem in the community forum before taking any action.'),
+                'Ensure you understand the cause of your error situation and the implications of clicking the button - we recommend discussing the problem in the community forum before taking any action.',
+              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () async {
                     final proceed = await DialogUtils.showConfirmDialog(
-                        context: context,
-                        params: ConfirmDialogParams(
-                          content:
-                              'If you delete this data we will attempt to re-download the latest version shortly after you next sign-in. After deleting this data, you must use your task manager to kill Kee Vault and then start it again (or restart your device if you are unsure how to do this). Ensure that you have resolved the underlying fault before proceeding (e.g. made more disk space available on your device or repaired the hardware fault on the device) and that you have a good network connection. Are you sure you want to delete the data?',
-                          negativeButtonText: 'Keep',
-                          positiveButtonText: 'Delete',
-                          title: 'Delete version of your Kee Vault data that is pending merge',
-                        ));
+                      context: context,
+                      params: ConfirmDialogParams(
+                        content:
+                            'If you delete this data we will attempt to re-download the latest version shortly after you next sign-in. After deleting this data, you must use your task manager to kill Kee Vault and then start it again (or restart your device if you are unsure how to do this). Ensure that you have resolved the underlying fault before proceeding (e.g. made more disk space available on your device or repaired the hardware fault on the device) and that you have a good network connection. Are you sure you want to delete the data?',
+                        negativeButtonText: 'Keep',
+                        positiveButtonText: 'Delete',
+                        title: 'Delete version of your Kee Vault data that is pending merge',
+                      ),
+                    );
                     if (proceed) {
                       l.w('deletePendingUpdateFile');
                       await vc.deletePendingUpdateFile(currentUser!);

@@ -52,10 +52,7 @@ class BlockingOverlayState extends State<BlockingOverlay> {
         if (_isLoading)
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-            child: const Opacity(
-              opacity: 0.3,
-              child: ModalBarrier(dismissible: false, color: Colors.black),
-            ),
+            child: const Opacity(opacity: 0.3, child: ModalBarrier(dismissible: false, color: Colors.black)),
           ),
         if (_isLoading)
           Center(

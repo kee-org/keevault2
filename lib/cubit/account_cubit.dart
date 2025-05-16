@@ -102,12 +102,19 @@ class AccountCubit extends Cubit<AccountState> {
   ) async {
     try {
       if (purchasedItem.purchaseToken == null && purchasedItem.transactionReceipt == null) {
-        emit(AccountSubscribeError(currentUser,
-            'Unexpected error associating your subscription - we found no purchaseToken and no transactionReceipt'));
+        emit(
+          AccountSubscribeError(
+            currentUser,
+            'Unexpected error associating your subscription - we found no purchaseToken and no transactionReceipt',
+          ),
+        );
         return false;
       }
       final success = await _userRepo.associate(
-          currentUser, isAndroid ? 2 : 3, purchasedItem.purchaseToken ?? purchasedItem.transactionReceipt!);
+        currentUser,
+        isAndroid ? 2 : 3,
+        purchasedItem.purchaseToken ?? purchasedItem.transactionReceipt!,
+      );
       if (success) {
         // Our association request was successful but we rely on the subscription
         // provider to respond too. Ideally we'd set up a websocket to receive an
@@ -120,8 +127,12 @@ class AccountCubit extends Cubit<AccountState> {
           // that the sub id is already associated with a different user?
           // "We've recorded your new subscription but some parts of the internet are slower than usual at the moment so we can't yet finalise your account. We will keep trying in the background. Try to sign in again a bit later and if it's not all ready by then, we will pick up where we've left off and get everything working as soon as possible."));
 
-          emit(AccountSubscribeError(currentUser,
-              "We've recorded your new subscription but we can't yet finalise your account. Sometimes this is because you have accidentally tried to associate your device's Subscription with a different account to the one you previously used. Alternatively, this may be a temporary problem with the internet. Please check your email archives and try again later, making sure you use the correct email address."));
+          emit(
+            AccountSubscribeError(
+              currentUser,
+              "We've recorded your new subscription but we can't yet finalise your account. Sometimes this is because you have accidentally tried to associate your device's Subscription with a different account to the one you previously used. Alternatively, this may be a temporary problem with the internet. Please check your email archives and try again later, making sure you use the correct email address.",
+            ),
+          );
         } else {
           await finishTransaction();
           try {
@@ -129,7 +140,9 @@ class AccountCubit extends Cubit<AccountState> {
             // because we need the new JWT for storage access
             await ensureRemoteCreated();
           } catch (ex) {
-            l.w("Initial storage creation failed. Probably a network interruption. We don't retry but it should all get sorted out automatically when the user signs in next time.: $ex");
+            l.w(
+              "Initial storage creation failed. Probably a network interruption. We don't retry but it should all get sorted out automatically when the user signs in next time.: $ex",
+            );
           } finally {
             emit(AccountSubscribed(updatedUser));
           }
@@ -138,7 +151,9 @@ class AccountCubit extends Cubit<AccountState> {
         emit(AccountSubscribeError(currentUser, 'Association error.'));
       }
     } on KeeSubscriptionExpiredException {
-      l.e('IAP store reports that the supplied subscription has already expired. This should be rare but could happen if we never had a chance to finish a purchase transaction a long time ago (e.g. user did not sign-in during their final subscription renewal period). We will finish the transaction now. User now needs to re-subscribe.');
+      l.e(
+        'IAP store reports that the supplied subscription has already expired. This should be rare but could happen if we never had a chance to finish a purchase transaction a long time ago (e.g. user did not sign-in during their final subscription renewal period). We will finish the transaction now. User now needs to re-subscribe.',
+      );
       await finishTransaction();
       return true;
     } on Exception catch (e) {
@@ -181,12 +196,14 @@ class AccountCubit extends Cubit<AccountState> {
     } on KeeServerConflictException catch (e) {
       l.w('User already registered. Details: $e');
       throw KeeException(
-          'This email address is already registered. Choose a different one or go back and sign in using your existing Kee Vault password, then we will work out any next steps you need to take.',
-          e);
+        'This email address is already registered. Choose a different one or go back and sign in using your existing Kee Vault password, then we will work out any next steps you need to take.',
+        e,
+      );
     } on KeeServiceTransportException catch (e) {
       l.w('Unable to register user due to a transport error. Details: $e');
       throw KeeException(
-          'The network connection was interrupted during registration. Usually that can be resolved by moving your device to somewhere with a stronger signal but rarely this could be due to technical problems elsewhere on the internet. If you keep having problems, please try again later in the day or tomorrow.');
+        'The network connection was interrupted during registration. Usually that can be resolved by moving your device to somewhere with a stronger signal but rarely this could be due to technical problems elsewhere on the internet. If you keep having problems, please try again later in the day or tomorrow.',
+      );
     } on Exception catch (e) {
       throw KeeException('Unknown error. Details: $e');
     }
@@ -201,7 +218,9 @@ class AccountCubit extends Cubit<AccountState> {
       l.d('sign in procedure now awaits a password and resulting SRP parameters');
       emit(AccountIdentified(user, false));
     } on KeeServiceTransportException catch (e) {
-      l.i('Unable to identify user due to a transport error. App should continue to work offline if user has previously stored their Vault unless they have changed their email address previously. Details: $e');
+      l.i(
+        'Unable to identify user due to a transport error. App should continue to work offline if user has previously stored their Vault unless they have changed their email address previously. Details: $e',
+      );
       emit(AccountIdentified(user, false));
     }
   }
@@ -217,7 +236,9 @@ class AccountCubit extends Cubit<AccountState> {
     } on KeeLoginRequiredException {
       emit(AccountIdentified(user, true));
     } on KeeServiceTransportException catch (e) {
-      l.i('Unable to authenticate due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e');
+      l.i(
+        'Unable to authenticate due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e',
+      );
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user.current.email', user.email!);
       if (user.id?.isNotEmpty ?? false) {
@@ -225,7 +246,9 @@ class AccountCubit extends Cubit<AccountState> {
       }
       emit(AccountAuthenticationBypassed(user));
     } on KeeMaybeOfflineException {
-      l.i('Unable to authenticate since initial identification failed, probably due to a transport error. App should continue to work offline if user has previously stored their Vault.');
+      l.i(
+        'Unable to authenticate since initial identification failed, probably due to a transport error. App should continue to work offline if user has previously stored their Vault.',
+      );
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user.current.email', user.email!);
       if (user.id?.isNotEmpty ?? false) {
@@ -256,10 +279,14 @@ class AccountCubit extends Cubit<AccountState> {
     } on KeeLoginRequiredException {
       emit(AccountIdentified(user, true));
     } on KeeServiceTransportException catch (e) {
-      l.i('Unable to authenticate due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e');
+      l.i(
+        'Unable to authenticate due to a transport error. App should continue to work offline if user has previously stored their Vault. Details: $e',
+      );
       emit(AccountChosen(user));
     } on KeeMaybeOfflineException {
-      l.e('Unable to authenticate since initial identification failed, possibly due to a transport error but this is probably a bug in Kee Vault too. App should continue to work offline if user has previously stored their Vault.');
+      l.e(
+        'Unable to authenticate since initial identification failed, possibly due to a transport error but this is probably a bug in Kee Vault too. App should continue to work offline if user has previously stored their Vault.',
+      );
       emit(AccountChosen(user));
     }
     return user;
@@ -311,7 +338,8 @@ class AccountCubit extends Cubit<AccountState> {
       emit(AccountExpired(user, false));
     } else {
       throw Exception(
-          'Unknown account status. Unable to proceed. This is probably a bug so please report it along with details of the Kee Vault service subscription you are trying to use (if any)');
+        'Unknown account status. Unable to proceed. This is probably a bug so please report it along with details of the Kee Vault service subscription you are trying to use (if any)',
+      );
     }
   }
 
@@ -354,14 +382,18 @@ class AccountCubit extends Cubit<AccountState> {
     } on KeeLoginRequiredException {
       l.w('Unable to change password due to a 403.');
       throw VaultPasswordChangeException(
-          'Due to an authentication problem, we were unable to change your password. Probably it has been too long since you last signed in. Please sign out and then sign in again with your previous password and try again when you have enough time to complete the operation within 10 minutes.');
+        'Due to an authentication problem, we were unable to change your password. Probably it has been too long since you last signed in. Please sign out and then sign in again with your previous password and try again when you have enough time to complete the operation within 10 minutes.',
+      );
     } on KeeNotFoundException {
       l.i('Unable to change password due to 404 response.');
       throw VaultPasswordChangeException('We cannot find your account. Have you recently deleted it?');
     } on KeeServiceTransportException catch (e) {
-      l.w('Unable to change password due to a transport error. Cannot be sure if the request was successful or not. Details: $e');
+      l.w(
+        'Unable to change password due to a transport error. Cannot be sure if the request was successful or not. Details: $e',
+      );
       throw VaultPasswordChangeException(
-          'Due to a network failure, we cannot say whether your request succeeded or not. If possible, try signing in to a different device with your new password to find out if the change took effect. If unsure if it worked, sign in with your previous password next time and try again when you have a more stable network connection.');
+        'Due to a network failure, we cannot say whether your request succeeded or not. If possible, try signing in to a different device with your new password to find out if the change took effect. If unsure if it worked, sign in with your previous password next time and try again when you have a more stable network connection.',
+      );
     }
   }
 
@@ -387,8 +419,12 @@ class AccountCubit extends Cubit<AccountState> {
       rethrow;
     } on KeeLoginRequiredException {
       l.w('Unable to changeEmailAddress due to a 403.');
-      emit(AccountEmailChangeRequested(user,
-          'Due to an authentication problem, we were unable to change your email address. Probably it has been too long since you last signed in with your previous email address. Please click Cancel and then sign in again with your previous email address and try this email change again when you have enough time to complete the operation within 10 minutes.'));
+      emit(
+        AccountEmailChangeRequested(
+          user,
+          'Due to an authentication problem, we were unable to change your email address. Probably it has been too long since you last signed in with your previous email address. Please click Cancel and then sign in again with your previous email address and try this email change again when you have enough time to complete the operation within 10 minutes.',
+        ),
+      );
     } on FormatException {
       // Local validation
       l.i('Unable to changeEmailAddress due to FormatException.');
@@ -396,19 +432,33 @@ class AccountCubit extends Cubit<AccountState> {
     } on KeeInvalidRequestException {
       // Local validation should mean this is unlikely to happen outside of malicious acts
       l.i('Unable to changeEmailAddress due to 400 response.');
-      emit(AccountEmailChangeRequested(user,
-          'Please double check that you have entered the correct password for your Kee Vault account. Also check that you have entered a valid email address of no more than 70 characters.'));
+      emit(
+        AccountEmailChangeRequested(
+          user,
+          'Please double check that you have entered the correct password for your Kee Vault account. Also check that you have entered a valid email address of no more than 70 characters.',
+        ),
+      );
     } on KeeServerConflictException {
       l.i('Unable to changeEmailAddress due to 409 response.');
-      emit(AccountEmailChangeRequested(user,
-          'Sorry, that email address is already associated with a different Kee Vault account (or is reserved due to earlier use by a deleted account). Try signing in to that account, and consider importing your exported KDBX file from this account if you wish to transfer your data to the other account. If you have access to the requested email address but are unable to remember your password, you could use the account reset feature to delete the contents of the other account and assign it a new password that you will remember.'));
+      emit(
+        AccountEmailChangeRequested(
+          user,
+          'Sorry, that email address is already associated with a different Kee Vault account (or is reserved due to earlier use by a deleted account). Try signing in to that account, and consider importing your exported KDBX file from this account if you wish to transfer your data to the other account. If you have access to the requested email address but are unable to remember your password, you could use the account reset feature to delete the contents of the other account and assign it a new password that you will remember.',
+        ),
+      );
     } on KeeNotFoundException {
       l.i('Unable to changeEmailAddress due to 404 response.');
       emit(AccountEmailChangeRequested(user, 'We cannot find your account. Have you recently deleted it?'));
     } on KeeServiceTransportException catch (e) {
-      l.w('Unable to changeEmailAddress due to a transport error. Cannot be sure if the request was successful or not. Details: $e');
-      emit(AccountEmailChangeRequested(user,
-          'Due to a network failure, we cannot say whether your request succeeded or not. Please check your new email address for a verification request. It might take a moment to arrive but if it does, that suggests the process did work so just verify your new address, click Cancel below and then sign-in using the new email address. If unsure if it worked, sign in with your previous email address next time and try again when you have a more stable network connection.'));
+      l.w(
+        'Unable to changeEmailAddress due to a transport error. Cannot be sure if the request was successful or not. Details: $e',
+      );
+      emit(
+        AccountEmailChangeRequested(
+          user,
+          'Due to a network failure, we cannot say whether your request succeeded or not. Please check your new email address for a verification request. It might take a moment to arrive but if it does, that suggests the process did work so just verify your new address, click Cancel below and then sign-in using the new email address. If unsure if it worked, sign in with your previous email address next time and try again when you have a more stable network connection.',
+        ),
+      );
     }
     return false;
   }

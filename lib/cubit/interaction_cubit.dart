@@ -7,14 +7,17 @@ part 'interaction_state.dart';
 
 class InteractionCubit extends Cubit<InteractionState> {
   InteractionCubit()
-      : super(InteractionBasic(
+    : super(
+        InteractionBasic(
           Settings.getValue<int>('interactionAnyEntrySavedCount') ?? 0,
           Settings.getValue<int>('interactionAnyDatabaseSavedCount') ?? 0,
           Settings.getValue<int>('interactionAnyDatabaseOpenedCount') ?? 0,
           DateTime.fromMillisecondsSinceEpoch(
-              Settings.getValue<int>('interactionInstalledBefore') ?? DateTime.now().toUtc().millisecondsSinceEpoch),
+            Settings.getValue<int>('interactionInstalledBefore') ?? DateTime.now().toUtc().millisecondsSinceEpoch,
+          ),
           DateTime.fromMillisecondsSinceEpoch(Settings.getValue<int>('interactionAnyDatabaseLastOpenedAt') ?? 0),
-        ));
+        ),
+      );
 
   Future<void> databaseOpened() async {
     final now = DateTime.now().toUtc();
@@ -29,11 +32,13 @@ class InteractionCubit extends Cubit<InteractionState> {
     setValueOperations.add(Settings.setValue('interactionAnyDatabaseLastOpenedAt', now.millisecondsSinceEpoch));
     setValueOperations.add(Settings.setValue('interactionAnyDatabaseOpenedCount', newOpenedCount));
     await Future.wait(setValueOperations);
-    emit(ibState.copyWith(
-      anyDatabaseLastOpenedAt: now,
-      anyDatabaseOpenedCount: newOpenedCount,
-      installedBefore: trackInitialInstall ? now : null,
-    ));
+    emit(
+      ibState.copyWith(
+        anyDatabaseLastOpenedAt: now,
+        anyDatabaseOpenedCount: newOpenedCount,
+        installedBefore: trackInitialInstall ? now : null,
+      ),
+    );
   }
 
   Future<void> databaseSaved() async {

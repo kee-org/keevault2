@@ -59,16 +59,16 @@ class OtpAuth {
   final int period;
 
   Uri toUri() => Uri(
-        scheme: SCHEME,
-        host: TYPE_TOTP,
-        pathSegments: [label],
-        queryParameters: <String, String?>{
-          PARAM_SECRET: base32.encode(secret),
-          PARAM_ALGORITHM: algorithms[algorithm],
-          PARAM_DIGITS: digits.toString(),
-          PARAM_PERIOD: period.toString(),
-        },
-      );
+    scheme: SCHEME,
+    host: TYPE_TOTP,
+    pathSegments: [label],
+    queryParameters: <String, String?>{
+      PARAM_SECRET: base32.encode(secret),
+      PARAM_ALGORITHM: algorithms[algorithm],
+      PARAM_DIGITS: digits.toString(),
+      PARAM_PERIOD: period.toString(),
+    },
+  );
 
   @override
   String toString() {

@@ -11,10 +11,7 @@ import 'package:keevault/logging/logger.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 
 class ResetAccountPromptDialog extends StatefulWidget with DialogMixin<bool> {
-  const ResetAccountPromptDialog({
-    super.key,
-    required this.emailAddress,
-  });
+  const ResetAccountPromptDialog({super.key, required this.emailAddress});
 
   final String emailAddress;
 
@@ -97,10 +94,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> wit
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: Text(str.resetPasswordInstructions),
-              ),
+              Padding(padding: const EdgeInsets.symmetric(vertical: 12.0), child: Text(str.resetPasswordInstructions)),
               TextButton.icon(
                 icon: Text(str.startAccountReset),
                 label: Icon(Icons.open_in_new),
@@ -154,16 +148,15 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> wit
               ),
               TextButton(
                 onPressed: loading ? null : signup,
-                child: loading
-                    ? Container(
-                        width: 24,
-                        height: 24,
-                        padding: const EdgeInsets.all(2.0),
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      )
-                    : Text(str.agreeAndCheckAccountStatus.toUpperCase()),
+                child:
+                    loading
+                        ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(strokeWidth: 3),
+                        )
+                        : Text(str.agreeAndCheckAccountStatus.toUpperCase()),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
