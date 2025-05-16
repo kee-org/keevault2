@@ -914,10 +914,11 @@ packages:
   receive_intent:
     dependency: "direct main"
     description:
-      name: receive_intent
-      sha256: "8e6b6edd1f4127265c1f19bfd53e8e92dd65f32cc9b377247bb7876a655479c8"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "6d1d61d0222f05bfe7e65f28c3d460944b644148"
+      url: "https://github.com/MoovBuilder983/receive_intent"
+    source: git
     version: "0.2.7"
   sensitive_clipboard:
     dependency: "direct main"

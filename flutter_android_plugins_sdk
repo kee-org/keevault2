@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+set -eu
+
+# Finds the version of Android SDK that Flutter plugins want to be compiled
+# against.
+#
+# To find unique entries, run:
+# $ flutter_android_plugins_sdk | rev | cut -d ' ' -f 1 | rev | sort | uniq -c
+
+flutter_plugins_paths="$(cut -d '=' -f 2 "$PWD/.flutter-plugins")"
+
+for plugin_path in $flutter_plugins_paths; do
+	plugin_name="$(printf "%s" "$plugin_path" | rev | cut -d '/' -f 2 | rev)"
+	gradle_file="${plugin_path}android/build.gradle"
+	if [ ! -f "$gradle_file" ]; then
+		continue
+	fi
+
+	# target="$(grep compileSdk "$gradle_file" | tr -d '[:space:]')"
+	target="$(grep compileSdk "$gradle_file" | tr -d "[:blank:]")"
+	echo "$plugin_name wants to be compiled against $target"
+done
