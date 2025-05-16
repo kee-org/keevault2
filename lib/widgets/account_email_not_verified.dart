@@ -161,7 +161,7 @@ class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedW
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(str.signInAgainWhenVerified, textAlign: TextAlign.center),
                 ),
-                ElevatedButton(
+                FilledButton(
                   onPressed:
                       disableRefreshing
                           ? null

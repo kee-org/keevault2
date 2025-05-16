@@ -43,7 +43,7 @@ class _EditableListWidgetState<T> extends State<EditableListWidget<T>> {
                 ),
               ),
             ),
-            ElevatedButton(
+            FilledButton(
               child: Text(str.add),
               onPressed: () {
                 final value = newItemController.text.toLowerCase();

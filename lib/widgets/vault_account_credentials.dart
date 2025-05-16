@@ -131,6 +131,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(maxHeight: 150),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -181,7 +182,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
-                      child: ElevatedButton(
+                      child: FilledButton(
                         onPressed: onSubmitButton,
                         child: Text(newUser == true ? str.register : str.signin),
                       ),
@@ -215,7 +216,7 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 50.0),
-            child: ElevatedButton(onPressed: widget.onLocalOnlyRequested, child: const Text('Use for free')),
+            child: FilledButton(onPressed: widget.onLocalOnlyRequested, child: const Text('Use for free')),
           ),
         ],
       ),

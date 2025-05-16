@@ -22,7 +22,7 @@ class EntryFilters extends StatelessWidget {
             Container(
               padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
-              color: Theme.of(context).primaryColor,
+              // color: Theme.of(context).primaryColor,
               child: TabBar(
                 labelPadding: EdgeInsets.all(0),
                 tabs: [
@@ -39,7 +39,7 @@ class EntryFilters extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: EdgeInsets.only(bottom: 48.0 + mq.padding.bottom),
+                padding: EdgeInsets.only(bottom: 16),
                 child: TabBarView(
                   children: const [
                     GroupTreeWidget(treeMode: GroupTreeMode.all),
@@ -49,6 +49,10 @@ class EntryFilters extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
+            Container(
+              padding: EdgeInsets.only(bottom: 8.0 + mq.padding.bottom),
+              child: FilledButton(child: Text('View Entries'), onPressed: () => Navigator.pop(context)),
             ),
           ],
         ),

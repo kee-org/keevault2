@@ -14,9 +14,8 @@ import 'package:keevault/local_vault_repository.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/credentials/quick_unlocker.dart';
 import 'package:keevault/config/environment_config.dart';
+import 'package:keevault/theme.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
-//import 'package:platform/platform.dart';
-import '../colors.dart';
 import '../config/platform.dart';
 import '../cubit/app_rating_cubit.dart';
 import '../cubit/interaction_cubit.dart';
@@ -136,97 +135,9 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
     );
   }
 
-  ThemeData getThemeData(bool isDark, MaterialColor palette) {
-    final theme =
-        isDark
-            ? ThemeData.from(
-              useMaterial3: false,
-              colorScheme: ColorScheme.fromSwatch(
-                primarySwatch: palette,
-                brightness: Brightness.dark,
-                cardColor: Color(0xFF292929),
-                accentColor: AppPalettes.keeVaultPaletteAccent[100],
-                backgroundColor: Colors.grey[900],
-              ).copyWith(surface: Colors.grey[850], secondaryContainer: palette[700]),
-            )
-            : ThemeData.from(
-              useMaterial3: false,
-              colorScheme: ColorScheme.fromSwatch(
-                primarySwatch: palette,
-                brightness: Brightness.light,
-                cardColor: Colors.white,
-                accentColor: palette[500],
-                backgroundColor: Colors.grey[50],
-              ).copyWith(surface: Colors.grey[100], secondaryContainer: palette[700]),
-            );
-    return theme.copyWith(
-      primaryColor: palette[500],
-      canvasColor: isDark ? Colors.grey[900] : Colors.grey[50],
-      appBarTheme: theme.appBarTheme.copyWith(backgroundColor: palette[500]),
-      textSelectionTheme: TextSelectionThemeData(
-        selectionHandleColor: palette[500],
-        cursorColor: isDark ? palette[50] : palette[500],
-        selectionColor: isDark ? palette[700] : palette[100],
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(foregroundColor: isDark ? palette[100] : palette[600]),
-      ),
-      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: theme.colorScheme.secondary)),
-      checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.disabled)) {
-            return null;
-          }
-          if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.secondary;
-          }
-          return null;
-        }),
-      ),
-      radioTheme: RadioThemeData(
-        fillColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.disabled)) {
-            return null;
-          }
-          if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.secondary;
-          }
-          return null;
-        }),
-      ),
-      switchTheme: SwitchThemeData(
-        thumbColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.disabled)) {
-            return null;
-          }
-          if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.secondary;
-          }
-          return null;
-        }),
-        trackColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.disabled)) {
-            return null;
-          }
-          if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.secondary;
-          }
-          return null;
-        }),
-      ),
-      bottomAppBarTheme: BottomAppBarTheme(color: isDark ? palette[800] : palette[100]),
-      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
-        errorStyle:
-            theme.inputDecorationTheme.errorStyle?.copyWith(fontWeight: FontWeight.bold) ??
-            TextStyle(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    const palette = AppPalettes.keeVaultPalette;
     return BlocProvider(
       create: (context) => AppSettingsCubit(),
       child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
@@ -271,8 +182,8 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                   navigatorKey: widget.navigatorKey,
                   supportedLocales: S.delegate.supportedLocales,
                   title: 'Kee Vault',
-                  theme: getThemeData(false, palette),
-                  darkTheme: getThemeData(true, palette),
+                  theme: AppTheme.light,
+                  darkTheme: AppTheme.dark,
                   themeMode: (appSettingsState as AppSettingsBasic).themeMode,
                   onGenerateRoute: AppConfig.router.generator,
                   initialRoute: '/',

@@ -84,53 +84,48 @@ class InAppMessengerWidget extends InheritedWidget {
 
   MaterialBanner _buildMaterialBannerEmailSignup(BuildContext context) {
     final str = S.of(context);
-    return MaterialBanner(
-      padding: EdgeInsets.all(20),
-      forceActionsBelow: true,
-      content: Text(str.bannerMsg1TitleB),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () async {
-            final appSettings = BlocProvider.of<AppSettingsCubit>(context);
-            final sm = ScaffoldMessenger.of(context);
-            final completed = await PRCSignupPromptDialog().show(context);
-            if (completed ?? false) {
-              await appSettings.iamEmailSignupSuppressUntil(DateTime(2122));
-              sm.hideCurrentMaterialBanner();
-            }
-          },
-          child: Text(str.alertYesPlease.toUpperCase()),
-        ),
-        TextButton(
-          onPressed: () async {
-            final appSettings = BlocProvider.of<AppSettingsCubit>(context);
-            final sm = ScaffoldMessenger.of(context);
-            final waitForDays = await BannerDismissDialog().show(context) ?? -1;
-            l.d('Will wait for $waitForDays days until reshowing this message');
-            await appSettings.iamEmailSignupSuppressUntil(
-              waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)),
-            );
+
+    return _buildBanner(context, Text(str.bannerMsg1TitleB), <Widget>[
+      TextButton(
+        onPressed: () async {
+          final appSettings = BlocProvider.of<AppSettingsCubit>(context);
+          final sm = ScaffoldMessenger.of(context);
+          final completed = await PRCSignupPromptDialog().show(context);
+          if (completed ?? false) {
+            await appSettings.iamEmailSignupSuppressUntil(DateTime(2122));
             sm.hideCurrentMaterialBanner();
-          },
-          child: Text(str.alertNo.toUpperCase()),
-        ),
-      ],
-    );
+          }
+        },
+        child: Text(str.alertYesPlease.toUpperCase()),
+      ),
+      TextButton(
+        onPressed: () async {
+          final appSettings = BlocProvider.of<AppSettingsCubit>(context);
+          final sm = ScaffoldMessenger.of(context);
+          final waitForDays = await BannerDismissDialog().show(context) ?? -1;
+          l.d('Will wait for $waitForDays days until reshowing this message');
+          await appSettings.iamEmailSignupSuppressUntil(
+            waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)),
+          );
+          sm.hideCurrentMaterialBanner();
+        },
+        child: Text(str.alertNo.toUpperCase()),
+      ),
+    ], null);
   }
 
   MaterialBanner _buildMaterialBannerMakeMoreChangesOrSave(BuildContext context) {
     final str = S.of(context);
-    return MaterialBanner(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      forceActionsBelow: true,
-      content: Column(
+    return _buildBanner(
+      context,
+      Column(
         children: [
           Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.makeMoreChangesOrSave1)),
           Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.makeMoreChangesOrSave2)),
           Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.makeMoreChangesOrSave3)),
         ],
       ),
-      actions: <Widget>[
+      <Widget>[
         TextButton(
           onPressed: () async {
             final sm = ScaffoldMessenger.of(context);
@@ -140,58 +135,71 @@ class InAppMessengerWidget extends InheritedWidget {
           child: Text(str.gotIt.toUpperCase()),
         ),
       ],
+      null,
+    );
+  }
+
+  MaterialBanner _buildBanner(BuildContext context, content, actions, leading) {
+    final theme = Theme.of(context);
+    final shadowColor = theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+    final dividerColor = theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+    final backgroundColor = theme.brightness == Brightness.dark ? Colors.grey.shade900 : Colors.grey.shade300;
+    return MaterialBanner(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      elevation: 3,
+      leading: leading,
+      forceActionsBelow: true,
+      content: content,
+      actions: actions,
+      shadowColor: shadowColor,
+      dividerColor: dividerColor,
+      backgroundColor: backgroundColor,
     );
   }
 
   MaterialBanner _buildMaterialBannerAutofillDisabled(BuildContext context) {
     final str = S.of(context);
-    return MaterialBanner(
-      padding: EdgeInsets.all(20),
-      forceActionsBelow: true,
-      content: Text(str.bannerMsgAutofillDisabled),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () async {
-            final sm = ScaffoldMessenger.of(context);
-            if (KeeVaultPlatform.isAndroid) {
-              await BlocProvider.of<AutofillCubit>(context).requestEnable();
-            } else if (KeeVaultPlatform.isIOS) {
-              await AppConfig.router.navigateTo(context, Routes.settings);
-            }
-            sm.hideCurrentMaterialBanner();
-          },
-          child: Text(str.enableAutofill.toUpperCase()),
-        ),
-        TextButton(
-          onPressed: () async {
-            final sm = ScaffoldMessenger.of(context);
-            final appSettings = BlocProvider.of<AppSettingsCubit>(context);
-            final waitForDays = await BannerDismissDialog().show(context) ?? -1;
-            l.d('Will wait for $waitForDays days until reshowing this message');
-            await appSettings.iamAutofillDisabledSuppressUntil(
-              waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)),
-            );
-            sm.hideCurrentMaterialBanner();
-          },
-          child: Text(str.alertNo.toUpperCase()),
-        ),
-      ],
-    );
+    return _buildBanner(context, Text(str.bannerMsgAutofillDisabled), <Widget>[
+      TextButton(
+        onPressed: () async {
+          final sm = ScaffoldMessenger.of(context);
+          if (KeeVaultPlatform.isAndroid) {
+            await BlocProvider.of<AutofillCubit>(context).requestEnable();
+          } else if (KeeVaultPlatform.isIOS) {
+            await AppConfig.router.navigateTo(context, Routes.settings);
+          }
+          sm.hideCurrentMaterialBanner();
+        },
+        child: Text(str.enableAutofill.toUpperCase()),
+      ),
+      TextButton(
+        onPressed: () async {
+          final sm = ScaffoldMessenger.of(context);
+          final appSettings = BlocProvider.of<AppSettingsCubit>(context);
+          final waitForDays = await BannerDismissDialog().show(context) ?? -1;
+          l.d('Will wait for $waitForDays days until reshowing this message');
+          await appSettings.iamAutofillDisabledSuppressUntil(
+            waitForDays == -1 ? DateTime(2122) : DateTime.now().toUtc().add(Duration(days: waitForDays)),
+          );
+          sm.hideCurrentMaterialBanner();
+        },
+        child: Text(str.alertNo.toUpperCase()),
+      ),
+    ], null);
   }
 
   MaterialBanner _buildMaterialBannerSavingVault(BuildContext context) {
     final str = S.of(context);
-    return MaterialBanner(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      leading: Icon(Icons.lock),
-      forceActionsBelow: true,
-      content: Column(
+    return _buildBanner(
+      context,
+      Column(
         children: [
           Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.bannerMsgSaving1)),
           Padding(padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(str.bannerMsgSaving2)),
         ],
       ),
-      actions: <Widget>[
+      <Widget>[
         TextButton(
           onPressed: () async {
             final sm = ScaffoldMessenger.of(context);
@@ -201,6 +209,7 @@ class InAppMessengerWidget extends InheritedWidget {
           child: Text(str.gotIt.toUpperCase()),
         ),
       ],
+      Icon(Icons.lock),
     );
   }
 }

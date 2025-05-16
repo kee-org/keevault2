@@ -89,8 +89,6 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                                     });
                                   },
                                 ),
-                                suffixIconColor:
-                                    theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                               ),
                               validator: (value) {
                                 if (value?.isEmpty ?? false) {
@@ -124,8 +122,6 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                                     });
                                   },
                                 ),
-                                suffixIconColor:
-                                    theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                               ),
                               validator: (value) {
                                 if (value?.isEmpty ?? false) {
@@ -160,8 +156,6 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                                     });
                                   },
                                 ),
-                                suffixIconColor:
-                                    theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                               ),
                               validator: (value) {
                                 if (value?.isEmpty ?? false) {
@@ -190,7 +184,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                           ),
                           Align(
                             alignment: Alignment.center,
-                            child: ElevatedButton(
+                            child: FilledButton(
                               onPressed:
                                   saving
                                       ? null

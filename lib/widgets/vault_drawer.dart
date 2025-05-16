@@ -42,7 +42,7 @@ class VaultDrawerWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                ElevatedButton(
+                FilledButton(
                   onPressed:
                       isSaveEnabled
                           ? () async {
@@ -59,7 +59,7 @@ class VaultDrawerWidget extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
-                  child: ElevatedButton(
+                  child: FilledButton(
                     onPressed: () async {
                       final vaultCubit = BlocProvider.of<VaultCubit>(context);
                       final accountCubit = BlocProvider.of<AccountCubit>(context);

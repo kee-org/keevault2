@@ -40,9 +40,9 @@ class EntryField extends StatefulWidget {
   final VoidCallback onChangeIcon;
 
   @override
-  // Ignoring because I can't work out why this can be a problem
-  // ignore: no_logic_in_create_state
   State<EntryField> createState() =>
+      // Ignoring because I can't work out why this can be a problem
+      // ignore: no_logic_in_create_state
       fieldType == FieldType.otp
           ? _OtpEntryFieldState()
           : fieldType == FieldType.checkbox
@@ -192,7 +192,6 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
       key: ValueKey(widget.field.key),
       background: Container(
         alignment: Alignment.centerLeft,
-        color: Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [

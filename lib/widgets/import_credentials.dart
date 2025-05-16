@@ -23,9 +23,9 @@ class ImportCredentialsWidget extends StatelessWidget {
           showError: vaultState.causedByInteraction,
         ),
         vaultState.manual
-            ? ElevatedButton(
+            ? FilledButton(
               onPressed: () => {_cancelImport(context, vaultState.destination)},
-              style: ElevatedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+              style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
               child: Text('Cancel import'),
             )
             : Align(
@@ -62,12 +62,12 @@ class ImportCredentialsWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      ButtonBar(
+                      OverflowBar(
                         alignment: MainAxisAlignment.end,
                         children: [
-                          ElevatedButton(
+                          FilledButton(
                             onPressed: () => {_skipImport(context, vaultState.destination)},
-                            style: ElevatedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                            style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
                             child: Text('Skip import'),
                           ),
                         ],

@@ -219,17 +219,12 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                     child: Column(
                       children: [
                         TextButton.icon(
-                          icon: Icon(
-                            Icons.history,
-                            color: theme.brightness == Brightness.dark ? Colors.grey.shade200 : Colors.grey.shade700,
-                          ),
+                          icon: Icon(Icons.history),
                           label: Text(
                             'Need to recover from a mistake in just one entry? You can use the History feature when viewing that entry in order to revert your recent changes.',
                             style: theme.textTheme.bodyMedium,
                           ),
                           onPressed: null,
-                          //TODO:f: MD3 might want to change theme style across entire app?
-                          //style: theme.iconButtonTheme.style,
                         ),
                       ],
                     ),
@@ -534,7 +529,7 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
               ),
               Visibility(
                 visible: !widget.isEnabled && KeeVaultPlatform.isAndroid,
-                child: ElevatedButton(
+                child: FilledButton(
                   child: Text(str.enableAutofill),
                   onPressed: () async {
                     await BlocProvider.of<AutofillCubit>(context).requestEnable();
@@ -543,7 +538,7 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
               ),
               Visibility(
                 visible: !widget.isEnabled && KeeVaultPlatform.isIOS,
-                child: ElevatedButton(
+                child: FilledButton(
                   child: Text(str.enableAutofill),
                   onPressed: () async {
                     var autofillCubit = BlocProvider.of<AutofillCubit>(context);

@@ -175,7 +175,7 @@ class _AccountEmailChangeWidgetState extends State<AccountEmailChangeWidget> {
                               });
                             },
                           ),
-                          suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
+                          // suffixIconColor: theme.brightness == Brightness.light ? theme.primaryColor : Colors.white,
                         ),
                         validator: (value) {
                           if (value?.isEmpty ?? false) {
@@ -198,7 +198,7 @@ class _AccountEmailChangeWidgetState extends State<AccountEmailChangeWidget> {
                           style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.error),
                         ),
                       ),
-                    ButtonBar(
+                    OverflowBar(
                       alignment: MainAxisAlignment.end,
                       children: [
                         OutlinedButton(
@@ -218,7 +218,7 @@ class _AccountEmailChangeWidgetState extends State<AccountEmailChangeWidget> {
                                   )
                                   : Text(str.alertCancel),
                         ),
-                        ElevatedButton(
+                        FilledButton(
                           onPressed:
                               changing || disableChange
                                   ? null

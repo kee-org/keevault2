@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:animate_icons/animate_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -133,6 +132,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final theme = Theme.of(context);
     return BlocConsumer<AutofillCubit, AutofillState>(
       builder: (context, autofillState) {
         return BlocConsumer<VaultCubit, VaultState>(
@@ -146,7 +146,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
                       image: AssetImage('assets/vault.png'),
                       excludeFromSemantics: true,
                       height: 48,
-                      color: Colors.white,
+                      color: theme.colorScheme.primary,
                     ),
                     centerTitle: true,
                     toolbarHeight: 80,
@@ -163,13 +163,16 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
               if (autofillState is AutofillSaving) {
                 return AutofillSaveWidget();
               } else {
-                return Backdrop(
-                  frontLayer: EntryListWidget(),
-                  backLayer: Container(
-                    color: Theme.of(context).cardColor,
-                    child: Theme(data: Theme.of(context), child: EntryFilters()),
+                return Scaffold(
+                  appBar: vaultTopBarWidget(context),
+                  body: _MainLayer(child: EntryListWidget()),
+                  drawer: Drawer(
+                    width: MediaQuery.of(context).size.width * 0.88,
+                    child: SafeArea(child: EntryFilters()),
                   ),
-                  frontTitle: Text('front title'),
+                  bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
+                  floatingActionButton: NewEntryButton(currentFile: state.vault.files.current),
+                  floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
                 );
               }
             } else {
@@ -202,12 +205,9 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
   }
 }
 
-const double _kFlingVelocity = 2.0;
+class _MainLayer extends StatelessWidget {
+  const _MainLayer({required this.child});
 
-class _FrontLayer extends StatelessWidget {
-  const _FrontLayer({this.onTap, required this.child});
-
-  final VoidCallback? onTap;
   final Widget child;
 
   @override
@@ -217,32 +217,22 @@ class _FrontLayer extends StatelessWidget {
         return BlocBuilder<AppSettingsCubit, AppSettingsState>(
           builder: (context, appSettingsState) {
             final theme = Theme.of(context);
-            final main = Material(
-              elevation: 10.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: onTap,
-                    child: Container(
-                      height: 48.0,
-                      alignment: AlignmentDirectional.centerStart,
-                      child: DefaultTextStyle(
-                        style: TextStyle(color: theme.hintColor),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Text(_generateTitle(context, state)),
-                        ),
-                      ),
+            final main = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Container(
+                  height: 48.0,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: DefaultTextStyle(
+                    style: TextStyle(color: theme.hintColor),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Text(_generateTitle(context, state)),
                     ),
                   ),
-                  Expanded(child: child),
-                ],
-              ),
+                ),
+                Expanded(child: child),
+              ],
             );
             return Column(
               children: [
@@ -285,118 +275,5 @@ class _FrontLayer extends StatelessWidget {
       }
     }
     return str.loading;
-  }
-}
-
-// Builds a Backdrop.
-//
-// A Backdrop widget has two layers, front and back. The front layer is shown
-// by default, and slides down to show the back layer.
-class Backdrop extends StatefulWidget {
-  final Widget frontLayer;
-  final Widget backLayer;
-  final Widget frontTitle;
-
-  const Backdrop({super.key, required this.frontLayer, required this.backLayer, required this.frontTitle});
-
-  @override
-  State<Backdrop> createState() => _BackdropState();
-}
-
-class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin {
-  final GlobalKey _backdropKey = GlobalKey(debugLabel: 'Backdrop');
-  late AnimationController _controller;
-  late AnimateIconController _animatedIconController;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(duration: Duration(milliseconds: 300), value: 1.0, vsync: this);
-    _animatedIconController = AnimateIconController();
-  }
-
-  @override
-  void didUpdateWidget(Backdrop old) {
-    super.didUpdateWidget(old);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  bool get _frontLayerVisible {
-    final AnimationStatus status = _controller.status;
-    return status == AnimationStatus.completed || status == AnimationStatus.forward;
-  }
-
-  void _toggleBackdropLayerVisibility() {
-    if (_frontLayerVisible) {
-      _removeKeyboardFocus();
-      _animatedIconController.animateToEnd();
-    } else {
-      _animatedIconController.animateToStart();
-    }
-    _controller.fling(velocity: _frontLayerVisible ? -_kFlingVelocity : _kFlingVelocity);
-  }
-
-  Widget _buildStack(BuildContext context, BoxConstraints constraints) {
-    final MediaQueryData mq = MediaQuery.of(context);
-    const double layerTitleHeight = 48.0;
-    // bottom app bar height is increased by viewPadding and zero when keyboard is showing
-    //final double bottomAppBarHeight = mq.viewInsets.bottom <= 0.0 ? mq.padding.bottom : 0;
-    final double bottomAppBarHeight = mq.padding.bottom;
-    final Size layerSize = constraints.biggest;
-    final double layerTop = layerSize.height - layerTitleHeight - bottomAppBarHeight;
-
-    Animation<RelativeRect> layerAnimation = RelativeRectTween(
-      begin: RelativeRect.fromLTRB(0.0, layerTop, 0.0, 0),
-      end: RelativeRect.fromLTRB(0.0, 0.0, 0.0, 0.0),
-    ).animate(_controller.view);
-
-    return Stack(
-      key: _backdropKey,
-      children: <Widget>[
-        ExcludeSemantics(excluding: _frontLayerVisible, child: widget.backLayer),
-        PositionedTransition(
-          rect: layerAnimation,
-          child: _FrontLayer(onTap: _toggleBackdropLayerVisibility, child: widget.frontLayer),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var appBar = vaultTopBarWidget(
-      context,
-      _animatedIconController,
-      _controller,
-      _toggleBackdropLayerVisibility,
-      Theme.of(context).primaryIconTheme.color!,
-    );
-    return BlocConsumer<VaultCubit, VaultState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        return ColouredSafeArea(
-          child: Scaffold(
-            appBar: appBar,
-            body: LayoutBuilder(builder: _buildStack),
-            extendBody: true,
-            bottomNavigationBar: BottomBarWidget(() => toggleBottomDrawerVisibility(context)),
-            floatingActionButton: NewEntryButton(currentFile: (state as VaultLoaded).vault.files.current),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          ),
-        );
-      },
-      // Sometimes we build this before navigation resulting from change of state
-      // to VaultLocalFileCredentialsRequired has occurred
-      buildWhen: (previous, current) => current is VaultLoaded,
-    );
-  }
-
-  _removeKeyboardFocus() {
-    FocusScope.of(context).unfocus();
   }
 }

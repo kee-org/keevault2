@@ -35,7 +35,7 @@ class VaultImportedWidget extends StatelessWidget {
               child: Text(str.importComplete, style: theme.textTheme.headlineSmall),
             ),
             ...(vaultState.manual ? _manual(str, theme) : _free(str, theme)),
-            ElevatedButton(
+            FilledButton(
               onPressed: () => {_loadVault(vaultState.vault, context)},
               child: Text(str.importedContinueToVault),
             ),

@@ -453,17 +453,17 @@ class LogConsoleState extends State<LogConsole> {
               ),
             ),
             const SizedBox(width: 20),
-            DropdownButton<Level>(
-              value: _filterLevel,
-              items: const [
-                DropdownMenuItem(value: Level.trace, child: Text('TRACE')),
-                DropdownMenuItem(value: Level.debug, child: Text('DEBUG')),
-                DropdownMenuItem(value: Level.info, child: Text('INFO')),
-                DropdownMenuItem(value: Level.warning, child: Text('WARNING')),
-                DropdownMenuItem(value: Level.error, child: Text('ERROR')),
-                DropdownMenuItem(value: Level.fatal, child: Text('FATAL')),
+            DropdownMenu<Level>(
+              initialSelection: _filterLevel,
+              dropdownMenuEntries: const [
+                DropdownMenuEntry(value: Level.trace, label: 'TRACE'),
+                DropdownMenuEntry(value: Level.debug, label: 'DEBUG'),
+                DropdownMenuEntry(value: Level.info, label: 'INFO'),
+                DropdownMenuEntry(value: Level.warning, label: 'WARNING'),
+                DropdownMenuEntry(value: Level.error, label: 'ERROR'),
+                DropdownMenuEntry(value: Level.fatal, label: 'FATAL'),
               ],
-              onChanged: (value) {
+              onSelected: (value) {
                 _filterLevel = value ?? Level.info;
                 _refreshFilter();
               },

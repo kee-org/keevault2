@@ -88,26 +88,26 @@ final entryHSLColors = {
   EntryColor.violet: HSLColor.fromColor(const Color(0xffff00ff)),
 };
 
-class AppPalettes {
-  static const MaterialColor keeVaultPalette = MaterialColor(_keeVaultPalettePrimaryValue, <int, Color>{
-    50: Color(0xFFE4E9ED),
-    100: Color(0xFFBAC8D3),
-    200: Color(0xFF8DA3B5),
-    300: Color(0xFF5F7E97),
-    400: Color(0xFF3C6281),
-    500: Color(_keeVaultPalettePrimaryValue),
-    600: Color(0xFF173F63),
-    700: Color(0xFF133758),
-    800: Color(0xFF0F2F4E),
-    900: Color(0xFF08203C),
-  });
-  static const int _keeVaultPalettePrimaryValue = 0xFF1A466B;
+// class AppPalettes {
+//   static const MaterialColor keeVaultPalette = MaterialColor(_keeVaultPalettePrimaryValue, <int, Color>{
+//     50: Color(0xFFE4E9ED),
+//     100: Color(0xFFBAC8D3),
+//     200: Color(0xFF8DA3B5),
+//     300: Color(0xFF5F7E97),
+//     400: Color(0xFF3C6281),
+//     500: Color(_keeVaultPalettePrimaryValue),
+//     600: Color(0xFF173F63),
+//     700: Color(0xFF133758),
+//     800: Color(0xFF0F2F4E),
+//     900: Color(0xFF08203C),
+//   });
+//   static const int _keeVaultPalettePrimaryValue = 0xFF1A466B;
 
-  static const MaterialColor keeVaultPaletteAccent = MaterialColor(_keeVaultPaletteAccentValue, <int, Color>{
-    100: Color(0xFF74ACFF),
-    200: Color(_keeVaultPaletteAccentValue),
-    400: Color(0xFF0E6FFF),
-    700: Color(0xFF0062F3),
-  });
-  static const int _keeVaultPaletteAccentValue = 0xFF418EFF;
-}
+//   static const MaterialColor keeVaultPaletteAccent = MaterialColor(_keeVaultPaletteAccentValue, <int, Color>{
+//     100: Color(0xFF74ACFF),
+//     200: Color(_keeVaultPaletteAccentValue),
+//     400: Color(0xFF0E6FFF),
+//     700: Color(0xFF0062F3),
+//   });
+//   static const int _keeVaultPaletteAccentValue = 0xFF418EFF;
+// }

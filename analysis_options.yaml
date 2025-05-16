@@ -35,7 +35,7 @@ linter:
 analyzer:
   errors:
     todo: ignore
-   # deprecated_member_use: ignore # until upgrade to MD3 components, colours, etc.
+    deprecated_member_use: ignore # until upgrade to MD3 components, colours, etc.
   exclude:
     - lib/generated/**
     - lib/phonetic.dart

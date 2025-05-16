@@ -1,92 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:animate_icons/animate_icons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/cubit/sort_cubit.dart';
-import '../colors.dart';
 import '../generated/l10n.dart';
 
-class _BackdropTitle extends StatelessWidget {
-  const _BackdropTitle({required Listenable listenable});
+class _SearchBar extends StatelessWidget {
+  const _SearchBar();
 
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    return SizedBox(
-      height: 40,
-      child: TextSelectionTheme(
-        data: TextSelectionThemeData(
-          cursorColor: AppPalettes.keeVaultPalette[50],
-          selectionHandleColor: AppPalettes.keeVaultPalette[50],
-          selectionColor: AppPalettes.keeVaultPalette[300],
-        ),
-        child: TextField(
-          maxLength: null,
-          minLines: 1,
-          maxLines: 1,
-          autocorrect: false,
-          autofillHints: null,
-          enableSuggestions: false,
-          expands: false,
-          textAlignVertical: TextAlignVertical.top,
-          textInputAction: TextInputAction.search,
-          style: const TextStyle(color: Colors.white, fontSize: 18.0),
-          decoration: InputDecoration(
-            suffixIcon: Icon(Icons.search, semanticLabel: 'search', color: Colors.white),
-            isDense: true,
-            errorMaxLines: 0,
-            helperMaxLines: 0,
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            filled: true,
-            fillColor: Color.fromRGBO(255, 255, 255, 0.1),
-            hintText: str.search,
-            hintStyle: const TextStyle(color: Colors.white60, fontSize: 18.0),
-            hintMaxLines: 1,
-          ),
-          onChanged: (String value) {
-            BlocProvider.of<FilterCubit>(context).changeText(value);
-          },
-        ),
+    return TextField(
+      maxLength: null,
+      minLines: 1,
+      maxLines: 1,
+      autocorrect: false,
+      autofillHints: null,
+      enableSuggestions: false,
+      expands: false,
+      textInputAction: TextInputAction.search,
+      decoration: InputDecoration(
+        suffixIcon: Icon(Icons.search, semanticLabel: 'search'),
+        isDense: true,
+        errorMaxLines: 0,
+        helperMaxLines: 0,
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        filled: true,
+        hintText: str.search,
+        hintMaxLines: 1,
       ),
+      onChanged: (String value) {
+        BlocProvider.of<FilterCubit>(context).changeText(value);
+      },
     );
   }
 }
 
-AppBar vaultTopBarWidget(
-  BuildContext context,
-  AnimateIconController animatedIconController,
-  AnimationController controller,
-  Function toggleBackdropLayerVisibility,
-  Color color,
-) {
+AppBar vaultTopBarWidget(BuildContext context) {
   final str = S.of(context);
   final sortCubit = BlocProvider.of<SortCubit>(context);
   return AppBar(
     automaticallyImplyLeading: false,
-    elevation: 0.0,
-    leading: IconButton(
-      icon: AnimateIcons(
-        startIcon: Icons.filter_alt,
-        endIcon: Icons.done,
-        controller: animatedIconController,
-        size: 24.0,
-        onStartIconPress: () {
-          toggleBackdropLayerVisibility();
-          return false;
-        },
-        onEndIconPress: () {
-          toggleBackdropLayerVisibility();
-          return false;
-        },
-        duration: Duration(milliseconds: 300),
-        startIconColor: color,
-        endIconColor: color,
-        clockwise: true,
-        startTooltip: str.filterTooltipClosed,
-        endTooltip: str.filterTooltipOpen,
-      ),
-      onPressed: toggleBackdropLayerVisibility as void Function()?,
-    ),
+    leading: ShowFilterWidget(str: str),
     actions: [
       PopupMenuButton(
         icon: Icon(Icons.sort),
@@ -159,6 +114,21 @@ AppBar vaultTopBarWidget(
       ),
     ],
     titleSpacing: 8.0,
-    title: _BackdropTitle(listenable: controller.view),
+    title: _SearchBar(),
   );
+}
+
+class ShowFilterWidget extends StatelessWidget {
+  const ShowFilterWidget({super.key, required this.str});
+
+  final S str;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.filter_alt),
+      tooltip: str.filterTooltipClosed,
+      onPressed: () => Scaffold.of(context).openDrawer(),
+    );
+  }
 }

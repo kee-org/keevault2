@@ -79,7 +79,6 @@ class _LabelsWidgetState extends State<LabelsWidget> {
                 Flexible(
                   child: Chip(
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    backgroundColor: theme.brightness == Brightness.dark ? Colors.grey.shade900 : null,
                     label: Text(tag.name, softWrap: false, overflow: TextOverflow.ellipsis),
                     padding: EdgeInsets.all(0.0),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),

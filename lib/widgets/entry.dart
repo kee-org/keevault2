@@ -285,7 +285,7 @@ class EntryWidget extends StatelessWidget {
                               image: AssetImage('assets/vault.png'),
                               excludeFromSemantics: true,
                               height: 32,
-                              color: Colors.white,
+                              color: Color.fromARGB(0xFF, 0x1A, 0x46, 0x6B),
                             ),
                             centerTitle: true,
                             toolbarHeight: 48,
@@ -560,7 +560,7 @@ class EntryWidget extends StatelessWidget {
                           visible: (savingViaAutofill || entry.isDirty) && MediaQuery.of(context).viewInsets.bottom > 0,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 12.0, top: 4),
-                            child: ElevatedButton.icon(
+                            child: FilledButton.icon(
                               icon: Icon(Icons.check_circle),
                               label: Text((savingViaAutofill ? str.done : str.saveChanges).toUpperCase()),
                               onPressed: () => endEditing(true),
@@ -631,8 +631,8 @@ class EntryWidget extends StatelessWidget {
                       );
                     },
                     centreButton: Visibility(
-                      visible: entry.isDirty || savingViaAutofill,
-                      child: ElevatedButton.icon(
+                      visible: (entry.isDirty || savingViaAutofill) && MediaQuery.of(context).viewInsets.bottom <= 0,
+                      child: FilledButton.icon(
                         icon: Icon(Icons.check_circle),
                         label: Text((savingViaAutofill ? str.done : str.saveChanges).toUpperCase()),
                         onPressed: () => endEditing(true),
@@ -790,7 +790,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.visibility),
-          color: theme.brightness == Brightness.dark ? Colors.white : theme.primaryColor,
+          // color: theme.brightness == Brightness.dark ? Colors.white : theme.primaryColor,
           tooltip: str.showProtectedField,
           onPressed: onPressed,
         ),

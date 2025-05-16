@@ -84,6 +84,8 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final theme = Theme.of(context);
+    final borderColor = theme.brightness == Brightness.light ? Colors.grey.shade800 : Colors.grey.shade300;
     return BlocConsumer<GeneratorProfilesCubit, GeneratorProfilesState>(
       builder: (context, state) {
         final generatorState = state as GeneratorProfilesEnabled;
@@ -98,7 +100,7 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                   padding: const EdgeInsets.all(16.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(width: 2.0),
+                      border: Border.all(width: 2.0, color: borderColor),
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
                     ),
                     child: Padding(
@@ -107,7 +109,7 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                         child: Text(
                           _currentPassword,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -184,24 +186,21 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  DropdownButton<String>(
-                    isExpanded: true,
-                    itemHeight: null,
-                    value: generatorState.current.name,
-                    items: <DropdownMenuItem<String>>[
-                      ...generatorState.enabled.map((p) => DropdownMenuItem(value: p.name, child: Text(p.title))),
+                  DropdownMenu<String>(
+                    initialSelection: generatorState.current.name,
+                    dropdownMenuEntries: <DropdownMenuEntry<String>>[
+                      ...generatorState.enabled.map(
+                        (p) => DropdownMenuEntry(
+                          value: p.name,
+                          label: p.title,
+                          labelWidget: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ),
                     ],
-                    selectedItemBuilder: (BuildContext context) {
-                      return generatorState.enabled
-                          .map(
-                            (p) => Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(p.title, overflow: TextOverflow.ellipsis),
-                            ),
-                          )
-                          .toList();
-                    },
-                    onChanged: (value) {
+                    onSelected: (value) {
                       if (value == null) return;
                       final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
                       final newProfile = cubit.changeCurrentProfile(value);
@@ -282,10 +281,10 @@ Widget lengthChooser(BuildContext context, PasswordGeneratorProfile profile) {
             Semantics(
               label: str.genLen,
               child: SizedBox(
-                width: 48,
-                height: 48,
+                width: 52,
+                // height: 48,
                 child: TextField(
-                  onSubmitted: (String value) {
+                  onChanged: (String value) {
                     final double? newValue = double.tryParse(value);
                     if (newValue != null && newValue != profile.length) {
                       final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
@@ -294,6 +293,7 @@ Widget lengthChooser(BuildContext context, PasswordGeneratorProfile profile) {
                   },
                   keyboardType: TextInputType.number,
                   controller: TextEditingController(text: profile.length.toStringAsFixed(0)),
+                  //TODO: reduce the padding inside this field?
                 ),
               ),
             ),
@@ -323,6 +323,7 @@ Widget additionalCharIncludes(
             },
             keyboardType: TextInputType.text,
             controller: controller,
+            //TODO: reduce the padding inside this field?
           ),
         ),
       ],
