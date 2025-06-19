@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/generated/l10n.dart';
 
 class LabelFilterWidget extends StatelessWidget {
@@ -20,7 +21,7 @@ class LabelFilterWidget extends StatelessWidget {
             if (state is! FilterActive) return Container();
             final filterState = state;
             return Visibility(
-              visible: vaultState.vault.files.current.tags.isNotEmpty,
+              visible: vaultState.vault.files.current.trimmedTags.isNotEmpty,
               replacement: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -50,7 +51,7 @@ class LabelFilterWidget extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 alignment: WrapAlignment.center,
                                 runSpacing: 8.0,
-                                children: vaultState.vault.files.current.tags.map((tag) {
+                                children: vaultState.vault.files.current.trimmedTags.map((tag) {
                                   final isSelected = filterState.tags.contains(tag.toLowerCase());
                                   return FilterChip(
                                     visualDensity: VisualDensity.standard,

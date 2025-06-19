@@ -99,6 +99,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
                     ),
                     OverflowBar(
                       alignment: MainAxisAlignment.end,
+                      spacing: 8.0,
                       children: [
                         FilledButton(onPressed: () => {_exportFreeKdbx(context)}, child: Text(str.export)),
                         FilledButton(

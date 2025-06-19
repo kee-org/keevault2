@@ -23,6 +23,7 @@ class VaultDrawerWidget extends StatelessWidget {
                 entryState is! EntryLoaded &&
                 (state is VaultLoaded && state.vault.files.current.isDirty) &&
                 !(state is VaultSaving && state.locally);
+            var title = _buildTitle(state, str);
             return Row(
               children: [
                 Expanded(
@@ -30,11 +31,11 @@ class VaultDrawerWidget extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: OutlinedButton.icon(
                       icon: _buildIcon(state, str),
-                      label: _buildTitle(state, str),
+                      label: title,
                       onPressed: () async {
                         await DialogUtils.showSimpleAlertDialog(
                           context,
-                          null,
+                          title.data,
                           _buildDescription(state, str),
                           routeAppend: 'vaultStatusExplanation',
                         );
@@ -109,7 +110,7 @@ class VaultDrawerWidget extends StatelessWidget {
     return Icon(Icons.device_unknown);
   }
 
-  Widget _buildTitle(VaultState state, S str) {
+  Text _buildTitle(VaultState state, S str) {
     if (state is VaultUploadCredentialsRequired) {
       return Text(str.vaultStatusActionNeeded);
     } else if (state is VaultSaving && state.remotely) {

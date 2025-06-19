@@ -121,31 +121,28 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                               tabBarTheme: theme.tabBarTheme.copyWith(
                                 labelColor: mainColor,
                                 indicatorColor: mainColor,
-                                indicatorSize: TabBarIndicatorSize.label,
+                                indicatorSize: TabBarIndicatorSize.tab,
+                                dividerHeight: 0,
+                                tabAlignment: TabAlignment.center,
                               ),
                             ),
                             child: Container(
                               padding: EdgeInsets.zero,
                               margin: EdgeInsets.zero,
-                              color: theme.colorScheme.surface,
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(maxHeight: 150),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TabBar(
-                                      controller: _tabController,
-                                      isScrollable: true,
-                                      indicatorColor: mainColor,
-                                      tabs: <Widget>[
-                                        Tab(icon: Icon(Icons.person_add_alt_1), text: str.newUser),
-                                        Tab(icon: Icon(Icons.person), text: str.existingUser),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TabBar(
+                                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 4),
+                                    controller: _tabController,
+                                    tabs: <Widget>[
+                                      Tab(icon: Icon(Icons.person_add_alt_1), text: str.newUser),
+                                      Tab(icon: Icon(Icons.person), text: str.existingUser),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ),

@@ -200,6 +200,7 @@ class _AccountEmailChangeWidgetState extends State<AccountEmailChangeWidget> {
                       ),
                     OverflowBar(
                       alignment: MainAxisAlignment.end,
+                      spacing: 8.0,
                       children: [
                         OutlinedButton(
                           onPressed: changing

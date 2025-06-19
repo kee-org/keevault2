@@ -166,10 +166,11 @@ class InAppMessengerWidget extends InheritedWidget {
           final sm = ScaffoldMessenger.of(context);
           if (KeeVaultPlatform.isAndroid) {
             await BlocProvider.of<AutofillCubit>(context).requestEnable();
+            sm.hideCurrentMaterialBanner();
           } else if (KeeVaultPlatform.isIOS) {
+            sm.hideCurrentMaterialBanner();
             await AppConfig.router.navigateTo(context, Routes.settings);
           }
-          sm.hideCurrentMaterialBanner();
         },
         child: Text(str.enableAutofill.toUpperCase()),
       ),

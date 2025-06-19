@@ -5,6 +5,7 @@ import 'package:kdbx/kdbx.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/widgets/in_app_messenger.dart';
 import '../cubit/account_cubit.dart';
 import '../cubit/interaction_cubit.dart';
@@ -58,7 +59,7 @@ class NewEntryButton extends StatelessWidget {
                   final filterCubit = BlocProvider.of<FilterCubit>(context);
                   await BlocProvider.of<InteractionCubit>(context).entrySaved();
                   await iam.showIfAppropriate(InAppMessageTrigger.entryChanged);
-                  filterCubit.reFilter(currentFile.tags, currentFile.body.rootGroup);
+                  filterCubit.reFilter(currentFile.trimmedTags, currentFile.body.rootGroup);
                 } else {
                   entryCubit.endCreating(null);
                   final vaultCubit = BlocProvider.of<VaultCubit>(context);

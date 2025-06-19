@@ -296,6 +296,7 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                           ),
                         ),
                         SwitchSettingsTile(
+                          activeColor: theme.colorScheme.inversePrimary,
                           settingKey: 'expandGroups',
                           title: str.setGenShowSubgroups,
                           defaultValue: true,
@@ -364,6 +365,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final theme = Theme.of(context);
     final quickUnlockSettings = [
       TextInputSettingsTile(
         title: str.automaticallySignInFor,
@@ -426,6 +428,7 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
                 visible: !KeeVaultPlatform.isIOS,
                 replacement: Column(children: quickUnlockSettings),
                 child: SwitchSettingsTile(
+                  activeColor: theme.colorScheme.inversePrimary,
                   settingKey: 'biometrics-enabled',
                   title: str.biometricSignIn,
                   onChange: (value) async {
@@ -508,6 +511,7 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
+    final theme = Theme.of(context);
 
     return Column(
       children: [
@@ -551,6 +555,7 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
               Visibility(
                 visible: widget.isEnabled && KeeVaultPlatform.isAndroid,
                 child: SwitchSettingsTile(
+                  activeColor: theme.colorScheme.inversePrimary,
                   settingKey: 'autofillServiceEnableSaving',
                   title: str.offerToSave,
                   defaultValue: true,
@@ -568,6 +573,7 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
                 visible:
                     widget.isEnabled && KeeVaultPlatform.isAndroid && (_androidDeviceInfo?.version.sdkInt ?? 0) >= 31,
                 child: SwitchSettingsTile(
+                  activeColor: theme.colorScheme.inversePrimary,
                   settingKey: 'autofillServiceEnableIMEIntegration',
                   title: 'Show in keyboard',
                   subtitle: 'experimental feature',

@@ -274,7 +274,7 @@ class VaultStatusIconWidget extends StatelessWidget {
                 onPressed: () async {
                   await DialogUtils.showSimpleAlertDialog(
                     context,
-                    null,
+                    _buildTitle(state, str).data,
                     _buildDescription(state, str),
                     routeAppend: 'vaultStatusExplanation',
                   );
@@ -301,6 +301,26 @@ class VaultStatusIconWidget extends StatelessWidget {
       return null;
     }
     return Icon(Icons.device_unknown);
+  }
+
+  Text _buildTitle(VaultState state, S str) {
+    if (state is VaultUploadCredentialsRequired) {
+      return Text(str.vaultStatusActionNeeded);
+    } else if (state is VaultSaving && state.remotely) {
+      return Text(str.vaultStatusUploading);
+    } else if (state is VaultSaving && state.locally) {
+      return Text(str.vaultStatusSaving);
+    } else if (state is VaultRefreshing) {
+      return Text(str.vaultStatusRefreshing);
+    } else if (state is VaultBackgroundError) {
+      return Text(str.vaultStatusError);
+    } else if (state is VaultLoaded) {
+      if (state.vault.hasPendingChanges) {
+        return Text(str.vaultStatusSaveNeeded);
+      }
+      return Text(str.vaultStatusLoaded);
+    }
+    return Text(str.vaultStatusUnknownState);
   }
 
   String _buildDescription(VaultState state, S str) {

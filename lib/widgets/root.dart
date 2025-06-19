@@ -50,12 +50,8 @@ class RootWidgetState extends State<RootWidget> {
     return ColouredSafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Image(
-            image: AssetImage('assets/vault.png'),
-            excludeFromSemantics: true,
-            height: 48,
-            color: theme.colorScheme.primary,
-          ),
+          backgroundColor: theme.scaffoldBackgroundColor,
+          title: Image(image: AssetImage('assets/vault.png'), excludeFromSemantics: true, height: 48),
           centerTitle: true,
           toolbarHeight: 80,
         ),

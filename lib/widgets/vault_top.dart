@@ -115,7 +115,63 @@ AppBar vaultTopBarWidget(BuildContext context) {
     ],
     titleSpacing: 8.0,
     title: _SearchBar(),
+    bottom: PreferredSize(
+      preferredSize: Size.fromHeight(48.0),
+      child: BlocBuilder<FilterCubit, FilterState>(
+        builder: (context, state) {
+          final theme = Theme.of(context);
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => Scaffold.of(context).openDrawer(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Container(
+                  height: 48.0,
+                  width: double.infinity,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: DefaultTextStyle(
+                    style: TextStyle(color: theme.hintColor),
+                    child: Text(_generateTitle(context, state)),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ),
   );
+}
+
+String _generateTitle(BuildContext context, FilterState state) {
+  final str = S.of(context);
+
+  if (state is FilterActive) {
+    final bool text = state.text.isNotEmpty;
+    final bool group = state.groupUuid != state.rootGroupUuid;
+    final bool tag = state.tags.isNotEmpty;
+    final bool color = state.colors.isNotEmpty;
+
+    if (!text && !group && !tag && !color) {
+      return str.showing_all_entries;
+    } else {
+      final criteria = [
+        if (group) str.group,
+        if (text) str.text.toLowerCase(),
+        if (tag && state.tags.length > 1) str.labels.toLowerCase(),
+        if (tag && state.tags.length == 1) str.label.toLowerCase(),
+        if (color && state.colors.length > 1) str.colors.toLowerCase(),
+        if (color && state.colors.length == 1) str.color.toLowerCase(),
+      ];
+      return str.filteredByCriteria(
+        criteria.length > 2
+            ? '${criteria.getRange(0, criteria.length - 1).join(', ')} and ${criteria.last}'
+            : criteria.join(' and '),
+      );
+    }
+  }
+  return str.loading;
 }
 
 class ShowFilterWidget extends StatelessWidget {
