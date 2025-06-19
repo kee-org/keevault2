@@ -37,8 +37,9 @@ class TextFilterWidget extends StatelessWidget {
                                 FilterChip(
                                   visualDensity: VisualDensity.standard,
                                   label: Text(str.sortTitle),
-                                  avatar:
-                                      filterState.textOptions.title ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+                                  avatar: filterState.textOptions.title
+                                      ? Icon(Icons.check, size: 18)
+                                      : SizedBox(width: 24),
                                   labelPadding: EdgeInsets.only(left: 2, right: 12),
                                   showCheckmark: false,
                                   selected: filterState.textOptions.title,
@@ -50,10 +51,9 @@ class TextFilterWidget extends StatelessWidget {
                                 FilterChip(
                                   visualDensity: VisualDensity.standard,
                                   label: Text(str.userEmail),
-                                  avatar:
-                                      filterState.textOptions.username
-                                          ? Icon(Icons.check, size: 18)
-                                          : SizedBox(width: 24),
+                                  avatar: filterState.textOptions.username
+                                      ? Icon(Icons.check, size: 18)
+                                      : SizedBox(width: 24),
                                   labelPadding: EdgeInsets.only(left: 2, right: 12),
                                   showCheckmark: false,
                                   selected: filterState.textOptions.username,
@@ -65,8 +65,9 @@ class TextFilterWidget extends StatelessWidget {
                                 FilterChip(
                                   visualDensity: VisualDensity.standard,
                                   label: Text(str.website),
-                                  avatar:
-                                      filterState.textOptions.urls ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+                                  avatar: filterState.textOptions.urls
+                                      ? Icon(Icons.check, size: 18)
+                                      : SizedBox(width: 24),
                                   labelPadding: EdgeInsets.only(left: 2, right: 12),
                                   showCheckmark: false,
                                   selected: filterState.textOptions.urls,
@@ -78,10 +79,9 @@ class TextFilterWidget extends StatelessWidget {
                                 FilterChip(
                                   visualDensity: VisualDensity.standard,
                                   label: Text(str.password),
-                                  avatar:
-                                      filterState.textOptions.password
-                                          ? Icon(Icons.check, size: 18)
-                                          : SizedBox(width: 24),
+                                  avatar: filterState.textOptions.password
+                                      ? Icon(Icons.check, size: 18)
+                                      : SizedBox(width: 24),
                                   labelPadding: EdgeInsets.only(left: 2, right: 12),
                                   showCheckmark: false,
                                   selected: filterState.textOptions.password,
@@ -93,8 +93,9 @@ class TextFilterWidget extends StatelessWidget {
                                 FilterChip(
                                   visualDensity: VisualDensity.standard,
                                   label: Text(str.notes),
-                                  avatar:
-                                      filterState.textOptions.notes ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+                                  avatar: filterState.textOptions.notes
+                                      ? Icon(Icons.check, size: 18)
+                                      : SizedBox(width: 24),
                                   labelPadding: EdgeInsets.only(left: 2, right: 12),
                                   showCheckmark: false,
                                   selected: filterState.textOptions.notes,
@@ -106,8 +107,9 @@ class TextFilterWidget extends StatelessWidget {
                                 FilterChip(
                                   visualDensity: VisualDensity.standard,
                                   label: Text(str.searchOtherStandard),
-                                  avatar:
-                                      filterState.textOptions.other ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+                                  avatar: filterState.textOptions.other
+                                      ? Icon(Icons.check, size: 18)
+                                      : SizedBox(width: 24),
                                   labelPadding: EdgeInsets.only(left: 2, right: 12),
                                   showCheckmark: false,
                                   selected: filterState.textOptions.other,
@@ -119,10 +121,9 @@ class TextFilterWidget extends StatelessWidget {
                                 FilterChip(
                                   visualDensity: VisualDensity.standard,
                                   label: Text(str.searchOtherSecure),
-                                  avatar:
-                                      filterState.textOptions.otherProtected
-                                          ? Icon(Icons.check, size: 18)
-                                          : SizedBox(width: 24),
+                                  avatar: filterState.textOptions.otherProtected
+                                      ? Icon(Icons.check, size: 18)
+                                      : SizedBox(width: 24),
                                   labelPadding: EdgeInsets.only(left: 2, right: 12),
                                   showCheckmark: false,
                                   selected: filterState.textOptions.otherProtected,

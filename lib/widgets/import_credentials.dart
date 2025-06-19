@@ -24,59 +24,59 @@ class ImportCredentialsWidget extends StatelessWidget {
         ),
         vaultState.manual
             ? FilledButton(
-              onPressed: () => {_cancelImport(context, vaultState.destination)},
-              style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
-              child: Text('Cancel import'),
-            )
+                onPressed: () => {_cancelImport(context, vaultState.destination)},
+                style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                child: Text('Cancel import'),
+              )
             : Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    border: Border.all(color: theme.colorScheme.primary, width: 1),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          "Can't remember your password? It's better if you try some other possibilities first but if you want to give up now, there is an escape hatch!",
-                          textAlign: TextAlign.left,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            height: 1.4,
-                            fontSize: (theme.textTheme.titleMedium!.fontSize ?? 14) - 3,
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      border: Border.all(color: theme.colorScheme.primary, width: 1),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            "Can't remember your password? It's better if you try some other possibilities first but if you want to give up now, there is an escape hatch!",
+                            textAlign: TextAlign.left,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              height: 1.4,
+                              fontSize: (theme.textTheme.titleMedium!.fontSize ?? 14) - 3,
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Your old data will remain available on this device only, for the next 90 days. You can export it to a file using the "Import/Export" screen.',
-                          textAlign: TextAlign.left,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            height: 1.4,
-                            fontSize: (theme.textTheme.titleMedium!.fontSize ?? 14) - 3,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            'Your old data will remain available on this device only, for the next 90 days. You can export it to a file using the "Import/Export" screen.',
+                            textAlign: TextAlign.left,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              height: 1.4,
+                              fontSize: (theme.textTheme.titleMedium!.fontSize ?? 14) - 3,
+                            ),
                           ),
                         ),
-                      ),
-                      OverflowBar(
-                        alignment: MainAxisAlignment.end,
-                        children: [
-                          FilledButton(
-                            onPressed: () => {_skipImport(context, vaultState.destination)},
-                            style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
-                            child: Text('Skip import'),
-                          ),
-                        ],
-                      ),
-                    ],
+                        OverflowBar(
+                          alignment: MainAxisAlignment.end,
+                          children: [
+                            FilledButton(
+                              onPressed: () => {_skipImport(context, vaultState.destination)},
+                              style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                              child: Text('Skip import'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
       ],
     );
   }

@@ -221,12 +221,11 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
             child: ConstrainedBox(
               constraints: const BoxConstraints(minWidth: 150),
               child: OutlinedButton(
-                onPressed:
-                    () async => await AppConfig.router.navigateTo(
-                      context,
-                      Routes.passwordPresetManager,
-                      transition: TransitionType.inFromRight,
-                    ),
+                onPressed: () async => await AppConfig.router.navigateTo(
+                  context,
+                  Routes.passwordPresetManager,
+                  transition: TransitionType.inFromRight,
+                ),
                 child: Text(_str.managePresets),
               ),
             ),

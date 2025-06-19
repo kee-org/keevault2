@@ -64,8 +64,8 @@ class DialogUtils {
           actions: <Widget>[
             TextButton(
               child: Text(S.of(context).openLogConsole),
-              onPressed:
-                  () async => await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.logger),
+              onPressed: () async =>
+                  await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.logger),
             ),
             TextButton(
               child: Text(materialLoc.okButtonLabel),
@@ -156,8 +156,11 @@ class ConfirmDialog extends StatelessWidget with DialogMixin<bool> {
 mixin DialogMixin<T> on Widget {
   String get name;
 
-  Future<T?> show(BuildContext context) =>
-      showDialog<T>(context: context, routeSettings: RouteSettings(name: name), builder: (context) => this);
+  Future<T?> show(BuildContext context) => showDialog<T>(
+    context: context,
+    routeSettings: RouteSettings(name: name),
+    builder: (context) => this,
+  );
 }
 
 class SimplePromptDialog extends StatefulWidget with DialogMixin<String> {

@@ -51,7 +51,9 @@ void main() async {
             l.w('Error while localising error message', error: e, stackTrace: stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, message);
-          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'error', name: 'mitm'));
+          MatomoTracker.instance.trackEvent(
+            eventInfo: EventInfo(category: 'main', action: 'error', name: 'mitm'),
+          );
         });
       } else if (error is FlutterError &&
           error.message.startsWith('Scaffold.geometryOf() must only be accessed during the paint phase.')) {
@@ -68,7 +70,9 @@ void main() async {
             l.w('Error while localising error message', error: e, stackTrace: stackTrace);
           }
           DialogUtils.showErrorDialog(context, null, '$message : $stackTrace');
-          MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'error', name: 'wtf'));
+          MatomoTracker.instance.trackEvent(
+            eventInfo: EventInfo(category: 'main', action: 'error', name: 'wtf'),
+          );
         });
       }
     },

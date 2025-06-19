@@ -202,63 +202,59 @@ class _AccountEmailChangeWidgetState extends State<AccountEmailChangeWidget> {
                       alignment: MainAxisAlignment.end,
                       children: [
                         OutlinedButton(
-                          onPressed:
-                              changing
-                                  ? null
-                                  : () async {
-                                    await cancel();
-                                  },
-                          child:
-                              changing
-                                  ? Container(
-                                    width: 24,
-                                    height: 24,
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: const CircularProgressIndicator(strokeWidth: 3),
-                                  )
-                                  : Text(str.alertCancel),
+                          onPressed: changing
+                              ? null
+                              : () async {
+                                  await cancel();
+                                },
+                          child: changing
+                              ? Container(
+                                  width: 24,
+                                  height: 24,
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: const CircularProgressIndicator(strokeWidth: 3),
+                                )
+                              : Text(str.alertCancel),
                         ),
                         FilledButton(
-                          onPressed:
-                              changing || disableChange
-                                  ? null
-                                  : () async {
-                                    final sm = ScaffoldMessenger.of(context);
-                                    if (_formKey.currentState!.validate()) {
-                                      _formKey.currentState!.save();
-                                      try {
-                                        final result = await changeEmailAddress(
-                                          submittedValuePassword!,
-                                          submittedValueNewEmailAddress!,
+                          onPressed: changing || disableChange
+                              ? null
+                              : () async {
+                                  final sm = ScaffoldMessenger.of(context);
+                                  if (_formKey.currentState!.validate()) {
+                                    _formKey.currentState!.save();
+                                    try {
+                                      final result = await changeEmailAddress(
+                                        submittedValuePassword!,
+                                        submittedValueNewEmailAddress!,
+                                      );
+                                      if (result) {
+                                        sm.showSnackBar(
+                                          SnackBar(content: Text(str.emailChanged), duration: Duration(seconds: 6)),
                                         );
-                                        if (result) {
-                                          sm.showSnackBar(
-                                            SnackBar(content: Text(str.emailChanged), duration: Duration(seconds: 6)),
-                                          );
-                                          await AppConfig.router.navigateTo(
-                                            AppConfig.navigatorKey.currentContext!,
-                                            Routes.root,
-                                            clearStack: true,
-                                          );
-                                        }
-                                      } finally {
-                                        if (mounted) {
-                                          setState(() {
-                                            changing = false;
-                                          });
-                                        }
+                                        await AppConfig.router.navigateTo(
+                                          AppConfig.navigatorKey.currentContext!,
+                                          Routes.root,
+                                          clearStack: true,
+                                        );
+                                      }
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() {
+                                          changing = false;
+                                        });
                                       }
                                     }
-                                  },
-                          child:
-                              changing
-                                  ? Container(
-                                    width: 24,
-                                    height: 24,
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: const CircularProgressIndicator(strokeWidth: 3),
-                                  )
-                                  : Text(str.changeEmail),
+                                  }
+                                },
+                          child: changing
+                              ? Container(
+                                  width: 24,
+                                  height: 24,
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: const CircularProgressIndicator(strokeWidth: 3),
+                                )
+                              : Text(str.changeEmail),
                         ),
                       ],
                     ),

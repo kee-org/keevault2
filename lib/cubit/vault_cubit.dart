@@ -573,9 +573,8 @@ class VaultCubit extends Cubit<VaultState> {
       return CredentialLookupResult(credentials: suppliedCreds, quStatus: QUStatus.unknown);
     } else {
       final quStatus = await _userRepo.setQuickUnlockUser(user);
-      final creds =
-          await _qu
-              .loadQuickUnlockFileCredentials(); //TODO:f: gate on credsAvailable as per local user to reduce log noise?
+      final creds = await _qu
+          .loadQuickUnlockFileCredentials(); //TODO:f: gate on credsAvailable as per local user to reduce log noise?
       return CredentialLookupResult(credentials: creds, quStatus: quStatus);
     }
   }

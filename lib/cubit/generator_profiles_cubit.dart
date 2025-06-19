@@ -31,8 +31,8 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
           currentState.enabled.any((enabled) => enabled.name == currentState.current.name)
               ? currentState.current
               : currentState.enabled.firstWhere(
-                (profile) => profile.name == currentState.profileSettings.defaultProfileName,
-              ),
+                  (profile) => profile.name == currentState.profileSettings.defaultProfileName,
+                ),
           currentState.newProfile,
         ),
       );
@@ -106,7 +106,10 @@ class GeneratorProfilesCubit extends Cubit<GeneratorProfilesState> {
     }
 
     final newSettings = currentState.profileSettings.copyWith(
-      user: [...currentState.profileSettings.user, currentState.newProfile.copyWith(name: newName, title: newName)],
+      user: [
+        ...currentState.profileSettings.user,
+        currentState.newProfile.copyWith(name: newName, title: newName),
+      ],
     );
 
     emit(GeneratorProfilesEnabled(newSettings, currentState.current));

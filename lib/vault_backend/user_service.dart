@@ -31,10 +31,9 @@ class UserService {
     final response1 = await request1;
     final srp1 = SRP1.fromJson(json.decode(response1.data!));
     user.salt = srp1.salt;
-    final nonce =
-        (srp1.costFactor != null && srp1.costFactor! > 0)
-            ? await calculateCostNonce(srp1.costFactor!, srp1.costTarget!)
-            : '';
+    final nonce = (srp1.costFactor != null && srp1.costFactor! > 0)
+        ? await calculateCostNonce(srp1.costFactor!, srp1.costTarget!)
+        : '';
 
     user.loginParameters = LoginParameters(
       clientEphemeral: clientEphemeral,

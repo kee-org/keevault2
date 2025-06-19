@@ -77,9 +77,8 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: OutlinedButton(
-                      onPressed:
-                          () async =>
-                              await DialogUtils.openUrl('https://forum.kee.pm/tags/c/kee-vault/9/documentation'),
+                      onPressed: () async =>
+                          await DialogUtils.openUrl('https://forum.kee.pm/tags/c/kee-vault/9/documentation'),
                       child: Text(str.viewDocumentation),
                     ),
                   ),
@@ -116,9 +115,8 @@ class _HelpWidgetState extends State<HelpWidget> with TraceableClientMixin {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: OutlinedButton(
-                      onPressed:
-                          () async =>
-                              await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.logger),
+                      onPressed: () async =>
+                          await AppConfig.router.navigateTo(AppConfig.navigatorKey.currentContext!, Routes.logger),
                       child: Text('Share / view logs'),
                     ),
                   ),

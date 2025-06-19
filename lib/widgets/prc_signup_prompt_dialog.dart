@@ -67,7 +67,9 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
         l.d('signup successful');
         navigator.pop(true);
         sm.showSnackBar(SnackBar(content: Text(str.prcRegistrationSuccess)));
-        MatomoTracker.instance.trackEvent(eventInfo: EventInfo(category: 'main', action: 'prcSignup', name: 'free'));
+        MatomoTracker.instance.trackEvent(
+          eventInfo: EventInfo(category: 'main', action: 'prcSignup', name: 'free'),
+        );
       } else {
         l.e('signup failed');
         setState(() {
@@ -135,18 +137,17 @@ class _PRCSignupPromptDialogState extends State<PRCSignupPromptDialog>
       actions: <Widget>[
         TextButton(
           onPressed: loading ? null : signup,
-          child:
-              loading
-                  ? Container(
-                    width: 24,
-                    height: 24,
-                    padding: const EdgeInsets.all(2.0),
-                    child: const CircularProgressIndicator(
-                      //color: Colors.white,
-                      strokeWidth: 3,
-                    ),
-                  )
-                  : Text(str.prcRegistrationSignUpButton.toUpperCase()),
+          child: loading
+              ? Container(
+                  width: 24,
+                  height: 24,
+                  padding: const EdgeInsets.all(2.0),
+                  child: const CircularProgressIndicator(
+                    //color: Colors.white,
+                    strokeWidth: 3,
+                  ),
+                )
+              : Text(str.prcRegistrationSignUpButton.toUpperCase()),
         ),
       ],
     );

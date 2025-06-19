@@ -10,7 +10,9 @@ class ColouredSafeArea extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: colour ?? Theme.of(context).appBarTheme.backgroundColor,
-      child: SafeArea(child: Container(color: Theme.of(context).colorScheme.surface, child: child)),
+      child: SafeArea(
+        child: Container(color: Theme.of(context).colorScheme.surface, child: child),
+      ),
     );
   }
 }

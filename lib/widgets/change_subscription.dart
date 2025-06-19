@@ -74,13 +74,12 @@ class _ChangeSubscriptionWidgetState extends State<ChangeSubscriptionWidget> {
                 child: TextButton.icon(
                   icon: Text(str.manageAccount),
                   label: Icon(Icons.open_in_new),
-                  onPressed:
-                      () async => launchUrl(
-                        Uri.parse(
-                          'https://play.google.com/store/account/subscriptions?sku=supporter&package=com.keevault.keevault',
-                        ),
-                        mode: LaunchMode.externalApplication,
-                      ),
+                  onPressed: () async => launchUrl(
+                    Uri.parse(
+                      'https://play.google.com/store/account/subscriptions?sku=supporter&package=com.keevault.keevault',
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  ),
                 ),
               ),
             ];
@@ -98,11 +97,10 @@ class _ChangeSubscriptionWidgetState extends State<ChangeSubscriptionWidget> {
                 child: TextButton.icon(
                   icon: Text(str.manageAccount),
                   label: Icon(Icons.open_in_new),
-                  onPressed:
-                      () async => launchUrl(
-                        Uri.parse('https://apps.apple.com/account/subscriptions'),
-                        mode: LaunchMode.externalApplication,
-                      ),
+                  onPressed: () async => launchUrl(
+                    Uri.parse('https://apps.apple.com/account/subscriptions'),
+                    mode: LaunchMode.externalApplication,
+                  ),
                 ),
               ),
             ];

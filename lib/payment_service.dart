@@ -25,8 +25,9 @@ class PaymentService {
   StreamSubscription<PurchaseResult?>? _purchaseErrorSubscription;
 
   /// List of product ids you want to fetch
-  final List<String> _productIds =
-      KeeVaultPlatform.isAndroid ? ['supporter', 'supporter-monthly', 'supporter-yearly'] : ['sub.supporter.yearly'];
+  final List<String> _productIds = KeeVaultPlatform.isAndroid
+      ? ['supporter', 'supporter-monthly', 'supporter-yearly']
+      : ['sub.supporter.yearly'];
 
   /// All available products will be store in this list
   List<IAPItem>? _products;

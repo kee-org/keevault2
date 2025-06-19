@@ -43,18 +43,17 @@ class VaultDrawerWidget extends StatelessWidget {
                   ),
                 ),
                 FilledButton(
-                  onPressed:
-                      isSaveEnabled
-                          ? () async {
-                            final iam = InAppMessengerWidget.of(context);
-                            final accountCubit = BlocProvider.of<AccountCubit>(context);
-                            final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                            await BlocProvider.of<InteractionCubit>(context).databaseSaved();
-                            await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
-                            User? user = accountCubit.currentUserIfKnown;
-                            await vaultCubit.save(user);
-                          }
-                          : null,
+                  onPressed: isSaveEnabled
+                      ? () async {
+                          final iam = InAppMessengerWidget.of(context);
+                          final accountCubit = BlocProvider.of<AccountCubit>(context);
+                          final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                          await BlocProvider.of<InteractionCubit>(context).databaseSaved();
+                          await iam.showIfAppropriate(InAppMessageTrigger.vaultSaved);
+                          User? user = accountCubit.currentUserIfKnown;
+                          await vaultCubit.save(user);
+                        }
+                      : null,
                   child: Text(str.save.toUpperCase()),
                 ),
                 Padding(

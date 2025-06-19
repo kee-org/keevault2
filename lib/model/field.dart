@@ -24,12 +24,11 @@ class FieldViewModel {
 
   String? _name;
 
-  FieldStorage get fieldStorage =>
-      key != null && browserModel != null
-          ? FieldStorage.BOTH
-          : key != null
-          ? FieldStorage.CUSTOM
-          : FieldStorage.JSON;
+  FieldStorage get fieldStorage => key != null && browserModel != null
+      ? FieldStorage.BOTH
+      : key != null
+      ? FieldStorage.CUSTOM
+      : FieldStorage.JSON;
 
   FieldViewModel(
     this._isDirty,
@@ -129,10 +128,9 @@ class FieldViewModel {
               .firstOrNull
               ?.nullIfBlank() ??
           (browserModel.type == kdbx.FieldType.Toggle || browserModel.value?.nullIfBlank() == null ? '' : '[no name]');
-      fieldValue =
-          browserModel.type == kdbx.FieldType.Password
-              ? ProtectedValue.fromString(browserModel.value ?? '')
-              : PlainValue(browserModel.value ?? '');
+      fieldValue = browserModel.type == kdbx.FieldType.Password
+          ? ProtectedValue.fromString(browserModel.value ?? '')
+          : PlainValue(browserModel.value ?? '');
       protect = browserModel.type == kdbx.FieldType.Password;
     } else {
       localisedCommonName = key!.key;

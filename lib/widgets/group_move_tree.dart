@@ -73,19 +73,18 @@ class EntryMoveTreeWidget extends StatelessWidget {
 }
 
 List<Node<String>> kdbxGroupToNodes(KdbxGroup root, int depth, bool Function(KdbxGroup) filter) {
-  final nodes =
-      root.groups.values
-          .where((group) => filter(group))
-          .map(
-            (value) => Node<String>(
-              key: value.uuid.uuid,
-              label: value.name.get() ?? '[no name]',
-              data: value.uuid.uuid,
-              expanded: depth < 6,
-              children: kdbxGroupToNodes(value, depth + 1, filter),
-            ),
-          )
-          .toList();
+  final nodes = root.groups.values
+      .where((group) => filter(group))
+      .map(
+        (value) => Node<String>(
+          key: value.uuid.uuid,
+          label: value.name.get() ?? '[no name]',
+          data: value.uuid.uuid,
+          expanded: depth < 6,
+          children: kdbxGroupToNodes(value, depth + 1, filter),
+        ),
+      )
+      .toList();
   return nodes;
 }
 

@@ -84,10 +84,9 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                   child: ListTile(
                                     title: Text(str.enabled),
                                     leading: Switch(
-                                      value:
-                                          !generatorState.profileSettings.disabled.contains(
-                                            generatorState.all[index].name,
-                                          ),
+                                      value: !generatorState.profileSettings.disabled.contains(
+                                        generatorState.all[index].name,
+                                      ),
                                       onChanged: (bool? value) async {
                                         if (value != null) {
                                           final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
@@ -104,10 +103,9 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                                         generatorState.profileSettings.defaultProfileName ==
                                         generatorState.all[index].name,
                                     replacement: Visibility(
-                                      visible:
-                                          !generatorState.profileSettings.disabled.contains(
-                                            generatorState.all[index].name,
-                                          ),
+                                      visible: !generatorState.profileSettings.disabled.contains(
+                                        generatorState.all[index].name,
+                                      ),
                                       child: OutlinedButton(
                                         child: Text(str.setDefault),
                                         onPressed: () async {

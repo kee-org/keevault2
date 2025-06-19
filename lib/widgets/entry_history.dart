@@ -130,8 +130,10 @@ class EntryHistoryItem extends StatelessWidget {
                   entry.getIcon(48, Theme.of(context).brightness == Brightness.dark),
                   const SizedBox(width: 4),
                   Expanded(
-                    child:
-                        entry.fields.take(1).map((f) => EntryHistoryField(fieldType: FieldType.string, field: f)).first,
+                    child: entry.fields
+                        .take(1)
+                        .map((f) => EntryHistoryField(fieldType: FieldType.string, field: f))
+                        .first,
                   ),
                 ],
               ),
@@ -140,12 +142,11 @@ class EntryHistoryItem extends StatelessWidget {
                   .skip(1)
                   .map(
                     (f) => EntryHistoryField(
-                      fieldType:
-                          f.isTotp
-                              ? FieldType.otp
-                              : f.isCheckbox
-                              ? FieldType.checkbox
-                              : FieldType.string,
+                      fieldType: f.isTotp
+                          ? FieldType.otp
+                          : f.isCheckbox
+                          ? FieldType.checkbox
+                          : FieldType.string,
                       field: f,
                     ),
                   )
@@ -153,34 +154,33 @@ class EntryHistoryItem extends StatelessWidget {
               ...entry.binaryMapEntries.isEmpty
                   ? []
                   : entry.binaryMapEntries.map((e) {
-                    return BinaryCardWidget(
-                      key: ValueKey('${e.key}-${e.value.valueHashCode}'),
-                      entry: entry,
-                      attachment: e,
-                      readOnly: true,
-                    );
-                  }),
+                      return BinaryCardWidget(
+                        key: ValueKey('${e.key}-${e.value.valueHashCode}'),
+                        entry: entry,
+                        attachment: e,
+                        readOnly: true,
+                      );
+                    }),
               Divider(indent: 16, endIndent: 16),
               Row(
                 children: [
                   Padding(padding: const EdgeInsets.all(16.0), child: Text(str.labels)),
                   Expanded(
                     child: Wrap(
-                      children:
-                          entry.tags
-                              .map(
-                                (tag) => Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: InputChip(
-                                    label: Text(tag.name),
-                                    padding: EdgeInsets.all(0.0),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),
-                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                      children: entry.tags
+                          .map(
+                            (tag) => Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: InputChip(
+                                label: Text(tag.name),
+                                padding: EdgeInsets.all(0.0),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ],
@@ -405,10 +405,9 @@ class _EntryHistoryFieldTextState extends State<EntryHistoryFieldText> {
     return true;
   }
 
-  Widget _buildEntryFieldViewer() =>
-      _isValueObscured && widget.field.textValue.isEmpty == false
-          ? _buildObscuredEntryFieldViewer()
-          : _buildStringEntryFieldViewer();
+  Widget _buildEntryFieldViewer() => _isValueObscured && widget.field.textValue.isEmpty == false
+      ? _buildObscuredEntryFieldViewer()
+      : _buildStringEntryFieldViewer();
 
   Widget _buildObscuredEntryFieldViewer() {
     return Padding(
@@ -462,10 +461,9 @@ class _IntegrationSettingsHistoryWidgetState extends State<IntegrationSettingsHi
                         child: ListTile(
                           title: Text(str.showEntryInBrowsersAndApps),
                           leading: Switch(
-                            value:
-                                !widget.entry.browserSettings.matcherConfigs.any(
-                                  (mc) => mc.matcherType == EntryMatcherType.Hide,
-                                ),
+                            value: !widget.entry.browserSettings.matcherConfigs.any(
+                              (mc) => mc.matcherType == EntryMatcherType.Hide,
+                            ),
                             onChanged: null,
                           ),
                         ),

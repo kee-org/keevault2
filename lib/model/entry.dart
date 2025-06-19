@@ -41,10 +41,10 @@ class EntryListItemViewModel {
     return entry.customIcon != null
         ? Image.memory(entry.customIcon!.data, width: size, height: size, fit: BoxFit.contain)
         : Icon(
-          PredefinedIcons.iconFor(entry.icon.get()!),
-          color: isDark ? entryColorsContrast[color] : entryColors[color],
-          size: size,
-        );
+            PredefinedIcons.iconFor(entry.icon.get()!),
+            color: isDark ? entryColorsContrast[color] : entryColors[color],
+            size: size,
+          );
   }
 }
 
@@ -98,26 +98,25 @@ class EntryViewModel {
     final userBrowserField = settings.fields?.firstWhereOrNull((field) => field.valuePath == 'UserName');
     final passBrowserField = settings.fields?.firstWhereOrNull((field) => field.valuePath == 'Password');
 
-    final fields =
-        entry.stringEntries
-            .where((me) => !['KPRPC JSON', 'TOTP Seed', 'TOTP Settings', 'OTPAuth'].contains(me.key.key))
-            .map((me) {
-              if (me.key == KdbxKeyCommon.USER_NAME) {
-                return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), userBrowserField);
-              } else if (me.key == KdbxKeyCommon.PASSWORD) {
-                return FieldViewModel.fromCustomAndBrowser(
-                  me.key,
-                  me.value ?? ProtectedValue.fromString(''),
-                  passBrowserField,
-                );
-              } else {
-                // Any other Kdbx string field does not have any browser config
-                // (at least until we add first class support for OTPs)
-                return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), null);
-              }
-            })
-            .where((vm) => vm.localisedCommonName.isNotEmpty)
-            .toList();
+    final fields = entry.stringEntries
+        .where((me) => !['KPRPC JSON', 'TOTP Seed', 'TOTP Settings', 'OTPAuth'].contains(me.key.key))
+        .map((me) {
+          if (me.key == KdbxKeyCommon.USER_NAME) {
+            return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), userBrowserField);
+          } else if (me.key == KdbxKeyCommon.PASSWORD) {
+            return FieldViewModel.fromCustomAndBrowser(
+              me.key,
+              me.value ?? ProtectedValue.fromString(''),
+              passBrowserField,
+            );
+          } else {
+            // Any other Kdbx string field does not have any browser config
+            // (at least until we add first class support for OTPs)
+            return FieldViewModel.fromCustomAndBrowser(me.key, me.value ?? PlainValue(''), null);
+          }
+        })
+        .where((vm) => vm.localisedCommonName.isNotEmpty)
+        .toList();
 
     for (var key in [
       KdbxKeyCommon.TITLE,
@@ -238,10 +237,10 @@ class EntryViewModel {
     return customIcon != null
         ? Image.memory(customIcon!.data, width: size, height: size, fit: BoxFit.contain)
         : Icon(
-          PredefinedIcons.iconFor(icon),
-          color: isDark ? entryColorsContrast[color] : entryColors[color],
-          size: size,
-        );
+            PredefinedIcons.iconFor(icon),
+            color: isDark ? entryColorsContrast[color] : entryColors[color],
+            size: size,
+          );
   }
 
   static String? _addBase32Padding(String? base32data) {
@@ -480,10 +479,12 @@ class EditEntryViewModel extends EntryViewModel {
     entry.androidPackageNames = androidPackageNames;
 
     final oldBinaries = entry.binaryEntries;
-    final newBinaries =
-        binaryMapEntries.where((nb) => !oldBinaries.any((ob) => ob.key == nb.key && ob.value == nb.value)).toList();
-    final removedBinaries =
-        oldBinaries.where((ob) => !binaryMapEntries.any((nb) => nb.key == ob.key && nb.value == ob.value)).toList();
+    final newBinaries = binaryMapEntries
+        .where((nb) => !oldBinaries.any((ob) => ob.key == nb.key && ob.value == nb.value))
+        .toList();
+    final removedBinaries = oldBinaries
+        .where((ob) => !binaryMapEntries.any((nb) => nb.key == ob.key && nb.value == ob.value))
+        .toList();
     for (var rb in removedBinaries) {
       entry.removeBinary(rb.key);
     }

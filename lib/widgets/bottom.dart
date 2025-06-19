@@ -115,63 +115,62 @@ class AccountDrawerWidget extends StatelessWidget {
                 (EnvironmentConfig.iapGooglePlay && KeeVaultPlatform.isAndroid) ||
                 (EnvironmentConfig.iapAppleAppStore && KeeVaultPlatform.isIOS);
             final theme = Theme.of(context);
-            final headerColor =
-                theme.brightness == Brightness.light ? theme.colorScheme.primary : theme.colorScheme.onSurface;
-            final accountActionSection =
-                (user?.email != null)
-                    ? ExpansionTile(
-                      initiallyExpanded: state is! VaultLoaded,
-                      leading: Icon(Icons.person),
-                      title: Text(emailAddress),
-                      textColor: headerColor,
-                      iconColor: headerColor,
+            final headerColor = theme.brightness == Brightness.light
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface;
+            final accountActionSection = (user?.email != null)
+                ? ExpansionTile(
+                    initiallyExpanded: state is! VaultLoaded,
+                    leading: Icon(Icons.person),
+                    title: Text(emailAddress),
+                    textColor: headerColor,
+                    iconColor: headerColor,
+                    children: [
+                      OverflowBar(
+                        alignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          OutlinedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _forgetUser(context);
+                            },
+                            child: Text(str.signout.toUpperCase()),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                : Card(
+                    clipBehavior: Clip.antiAlias,
+                    elevation: 1,
+                    child: Column(
                       children: [
+                        ListTile(
+                          title: Text(
+                            'Use your Vault on multiple devices with a Kee Vault account',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                         OverflowBar(
-                          alignment: MainAxisAlignment.spaceEvenly,
+                          alignment: MainAxisAlignment.center,
                           children: [
-                            OutlinedButton(
+                            FilledButton(
                               onPressed: () async {
                                 Navigator.pop(context);
                                 await _forgetUser(context);
                               },
-                              child: Text(str.signout.toUpperCase()),
+                              child: Text('Sign in ${registrationEnabled ? 'or Register' : ''}'.toUpperCase()),
                             ),
                           ],
                         ),
                       ],
-                    )
-                    : Card(
-                      clipBehavior: Clip.antiAlias,
-                      elevation: 1,
-                      child: Column(
-                        children: [
-                          ListTile(
-                            title: Text(
-                              'Use your Vault on multiple devices with a Kee Vault account',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          OverflowBar(
-                            alignment: MainAxisAlignment.center,
-                            children: [
-                              FilledButton(
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  await _forgetUser(context);
-                                },
-                                child: Text('Sign in ${registrationEnabled ? 'or Register' : ''}'.toUpperCase()),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
+                    ),
+                  );
             return Theme(
               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-              child:
-                  (!autofillSimpleUIMode(autoFillState))
-                      ? accountActionSection
-                      : ListTile(leading: Icon(Icons.person), title: Text(emailAddress)),
+              child: (!autofillSimpleUIMode(autoFillState))
+                  ? accountActionSection
+                  : ListTile(leading: Icon(Icons.person), title: Text(emailAddress)),
             );
           },
         );
@@ -242,15 +241,15 @@ class BottomBarWidget extends StatelessWidget {
                 centreButton != null
                     ? centreButton!
                     : SaveButtonWidget(
-                      title: str.saveVault.toUpperCase(),
-                      visible:
-                          (!vaultCubit.isAutofilling() &&
-                              !entryEditing &&
-                              loadedVaultState.vault.files.current.isDirty &&
-                              loadedVaultState is! VaultSaving &&
-                              loadedVaultState is! VaultUpdatingLocalFromRemote &&
-                              loadedVaultState is! VaultUpdatingLocalFromAutofill),
-                    ),
+                        title: str.saveVault.toUpperCase(),
+                        visible:
+                            (!vaultCubit.isAutofilling() &&
+                            !entryEditing &&
+                            loadedVaultState.vault.files.current.isDirty &&
+                            loadedVaultState is! VaultSaving &&
+                            loadedVaultState is! VaultUpdatingLocalFromRemote &&
+                            loadedVaultState is! VaultUpdatingLocalFromAutofill),
+                      ),
               ],
             ),
           ),
@@ -271,16 +270,16 @@ class VaultStatusIconWidget extends StatelessWidget {
         final icon = _buildIcon(state, str);
         return icon != null
             ? IconButton(
-              icon: icon,
-              onPressed: () async {
-                await DialogUtils.showSimpleAlertDialog(
-                  context,
-                  null,
-                  _buildDescription(state, str),
-                  routeAppend: 'vaultStatusExplanation',
-                );
-              },
-            )
+                icon: icon,
+                onPressed: () async {
+                  await DialogUtils.showSimpleAlertDialog(
+                    context,
+                    null,
+                    _buildDescription(state, str),
+                    routeAppend: 'vaultStatusExplanation',
+                  );
+                },
+              )
             : SizedBox();
       },
     );

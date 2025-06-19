@@ -36,12 +36,13 @@ class _LabelsWidgetState extends State<LabelsWidget> {
         findSuggestions: (String query) {
           if (query.isNotEmpty) {
             var lowercaseQuery = query.toLowerCase();
-            final otherMatchingTags = widget.otherKnownTags
-                .where((tag) {
-                  return tag.lowercase.contains(lowercaseQuery);
-                })
-                .toList(growable: false)
-              ..sort((a, b) => a.lowercase.indexOf(lowercaseQuery).compareTo(b.lowercase.indexOf(lowercaseQuery)));
+            final otherMatchingTags =
+                widget.otherKnownTags
+                    .where((tag) {
+                      return tag.lowercase.contains(lowercaseQuery);
+                    })
+                    .toList(growable: false)
+                  ..sort((a, b) => a.lowercase.indexOf(lowercaseQuery).compareTo(b.lowercase.indexOf(lowercaseQuery)));
             if (otherMatchingTags.followedBy(widget.tags).any((tag) => tag.lowercase == lowercaseQuery)) {
               return otherMatchingTags;
             }
@@ -89,15 +90,14 @@ class _LabelsWidgetState extends State<LabelsWidget> {
             onTap: () => state.selectSuggestion(tag),
           );
         },
-        suggestionListBuilder:
-            (context, child) => Material(
-              elevation: 4.0,
-              type: MaterialType.canvas,
-              child: Container(
-                color: theme.brightness == Brightness.dark ? Colors.grey.shade800 : theme.secondaryHeaderColor,
-                child: child,
-              ),
-            ),
+        suggestionListBuilder: (context, child) => Material(
+          elevation: 4.0,
+          type: MaterialType.canvas,
+          child: Container(
+            color: theme.brightness == Brightness.dark ? Colors.grey.shade800 : theme.secondaryHeaderColor,
+            child: child,
+          ),
+        ),
       ),
     );
   }

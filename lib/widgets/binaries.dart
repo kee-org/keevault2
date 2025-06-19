@@ -190,10 +190,9 @@ class BinaryCardWidget extends StatelessWidget {
                           final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
                           final mimeType = lookupMimeType(
                             attachment.key.key,
-                            headerBytes:
-                                bytes.length > defaultMagicNumbersMaxLength
-                                    ? Uint8List.sublistView(bytes, 0, defaultMagicNumbersMaxLength)
-                                    : null,
+                            headerBytes: bytes.length > defaultMagicNumbersMaxLength
+                                ? Uint8List.sublistView(bytes, 0, defaultMagicNumbersMaxLength)
+                                : null,
                           );
                           l.d('Sharing attachment with mimeType $mimeType');
 
@@ -243,66 +242,65 @@ class BinaryCardWidget extends StatelessWidget {
                 PopupMenuButton(
                   icon: const Icon(Icons.more_vert),
                   offset: const Offset(0, 32),
-                  itemBuilder:
-                      (context) => [
-                        PopupMenuItem(
-                          onTap: () async {
-                            WidgetsBinding.instance.addPostFrameCallback((_) async {
-                              final sm = ScaffoldMessenger.of(context);
-                              try {
-                                final attachmentSource = AttachmentSourceKdbx();
-                                final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
-                                l.d('Exporting attachment');
-                                final params = SaveFileDialogParams(data: bytes, fileName: attachment.key.key);
-                                final outputFilename = await FlutterFileDialog.saveFile(params: params);
-                                if (outputFilename == null) {
-                                  l.d('File system integration reports that the export was cancelled.');
-                                  return;
-                                }
-                                l.i('Exported attachment to $outputFilename');
-                                sm.showSnackBar(
-                                  SnackBar(
-                                    content: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [Text(str.exported)],
-                                    ),
-                                    duration: Duration(seconds: 3),
-                                  ),
-                                );
-                              } on Exception catch (e, st) {
-                                l.e('Export failed', error: e, stackTrace: st);
-                                if (e is PlatformException) {
-                                  if (e.code == 'read_external_storage_denied' && context.mounted) {
-                                    alertUserToPermissionsProblem(context, 'export');
-                                    return;
-                                  }
-                                }
-                                if (context.mounted) {
-                                  await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
-                                } else {
-                                  l.w('context was destroyed so could not notify user of previous error');
-                                }
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      onTap: () async {
+                        WidgetsBinding.instance.addPostFrameCallback((_) async {
+                          final sm = ScaffoldMessenger.of(context);
+                          try {
+                            final attachmentSource = AttachmentSourceKdbx();
+                            final bytes = await attachmentSource.readAttachmentBytes(attachment.value);
+                            l.d('Exporting attachment');
+                            final params = SaveFileDialogParams(data: bytes, fileName: attachment.key.key);
+                            final outputFilename = await FlutterFileDialog.saveFile(params: params);
+                            if (outputFilename == null) {
+                              l.d('File system integration reports that the export was cancelled.');
+                              return;
+                            }
+                            l.i('Exported attachment to $outputFilename');
+                            sm.showSnackBar(
+                              SnackBar(
+                                content: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [Text(str.exported)],
+                                ),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          } on Exception catch (e, st) {
+                            l.e('Export failed', error: e, stackTrace: st);
+                            if (e is PlatformException) {
+                              if (e.code == 'read_external_storage_denied' && context.mounted) {
+                                alertUserToPermissionsProblem(context, 'export');
+                                return;
                               }
-                            });
-                          },
-                          child: ListTile(leading: const Icon(Icons.download), title: Text(str.export)),
-                        ),
-                        if (!readOnly)
-                          PopupMenuItem(
-                            onTap: () async {
-                              WidgetsBinding.instance.addPostFrameCallback((_) async {
-                                final proceed = await DialogUtils.showConfirmDialog(
-                                  context: context,
-                                  params: ConfirmDialogParams(content: str.attachmentConfirmDelete(attachment.key.key)),
-                                );
-                                if (proceed && context.mounted) {
-                                  _deleteFile(context, attachment.key);
-                                }
-                              });
-                            },
-                            child: ListTile(leading: const Icon(Icons.delete), title: Text(str.delete)),
-                          ),
-                      ],
+                            }
+                            if (context.mounted) {
+                              await DialogUtils.showErrorDialog(context, str.exportError, str.exportErrorDetails);
+                            } else {
+                              l.w('context was destroyed so could not notify user of previous error');
+                            }
+                          }
+                        });
+                      },
+                      child: ListTile(leading: const Icon(Icons.download), title: Text(str.export)),
+                    ),
+                    if (!readOnly)
+                      PopupMenuItem(
+                        onTap: () async {
+                          WidgetsBinding.instance.addPostFrameCallback((_) async {
+                            final proceed = await DialogUtils.showConfirmDialog(
+                              context: context,
+                              params: ConfirmDialogParams(content: str.attachmentConfirmDelete(attachment.key.key)),
+                            );
+                            if (proceed && context.mounted) {
+                              _deleteFile(context, attachment.key);
+                            }
+                          });
+                        },
+                        child: ListTile(leading: const Icon(Icons.delete), title: Text(str.delete)),
+                      ),
+                  ],
                 ),
               ],
             ),

@@ -145,17 +145,16 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
           return MultiBlocProvider(
             providers: [
               BlocProvider(
-                create:
-                    (context) => VaultCubit(
-                      userRepo,
-                      quickUnlocker,
-                      RemoteVaultRepository(userService, storageService),
-                      LocalVaultRepository(quickUnlocker),
-                      entryCubit,
-                      () => autofillCubit.isAutofilling() || autofillCubit.isAutofillSaving(),
-                      generatorProfilesCubit,
-                      accountCubit,
-                    ),
+                create: (context) => VaultCubit(
+                  userRepo,
+                  quickUnlocker,
+                  RemoteVaultRepository(userService, storageService),
+                  LocalVaultRepository(quickUnlocker),
+                  entryCubit,
+                  () => autofillCubit.isAutofilling() || autofillCubit.isAutofillSaving(),
+                  generatorProfilesCubit,
+                  accountCubit,
+                ),
               ),
               BlocProvider(create: (context) => accountCubit),
               BlocProvider(create: (context) => entryCubit),
