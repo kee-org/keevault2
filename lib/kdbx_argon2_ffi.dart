@@ -15,7 +15,12 @@ class FlutterArgon2 extends Argon2 {
     final started = Stopwatch()..start();
     try {
       l.t('Starting argon2');
+      // As of 20250619 and dev environment present at that time (e.g. Flutter 3.29)
+      // All of the below implementations take 7-10 seconds to execute, with essentially all of the time taken by Dart internals and none by the actual computation such as _runArgon2. When the same code is executed from a debug session in Android studio, it works instantly.
+      //return await Isolate.run(() => _runArgon2(args), debugName: 'argon2');
       return await compute(FlutterArgon2._runArgon2, args);
+      //return await compute((args) async => Uint8List.fromList([...args.salt]), args);
+      //return await compute((args) async => Uint8List.fromList([...args]), [1, 2]);
     } finally {
       l.d('Finished argon2 in ${started.elapsedMilliseconds}ms');
     }
