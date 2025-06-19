@@ -22,7 +22,6 @@ class EntryFilters extends StatelessWidget {
             Container(
               padding: EdgeInsets.zero,
               margin: EdgeInsets.zero,
-              // color: Theme.of(context).primaryColor,
               child: TabBar(
                 labelPadding: EdgeInsets.all(0),
                 tabs: [

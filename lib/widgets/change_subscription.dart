@@ -135,7 +135,7 @@ class _ChangeSubscriptionWidgetState extends State<ChangeSubscriptionWidget> {
               alignment: Alignment.center,
               child: OutlinedButton(
                 onPressed: () async => await DialogUtils.openUrl('https://kee.pm/keevault/delete-account/'),
-                style: OutlinedButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                style: OutlinedButton.styleFrom(foregroundColor: theme.buttonTheme.colorScheme!.error),
                 child: Text(str.deleteAccount),
               ),
             ),

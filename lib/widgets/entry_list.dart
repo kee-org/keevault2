@@ -242,7 +242,7 @@ class EntryListItemWidget extends StatelessWidget {
                           final entryCubit = BlocProvider.of<EntryCubit>(context);
                           entryCubit.revertToHistoryEntry(entry, index);
                           final filterCubit = BlocProvider.of<FilterCubit>(context);
-                          filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
+                          filterCubit.reFilter(entry.file!.trimmedTags, entry.file!.body.rootGroup);
                           close(returnValue: false);
                           //TODO:f: Maybe one day we can automatically reopen the container with the updated information?
                           //   BlocProvider.of<EntryCubit>(context).startEditing(entry);
@@ -252,7 +252,7 @@ class EntryListItemWidget extends StatelessWidget {
                           final entryCubit = BlocProvider.of<EntryCubit>(context);
                           entryCubit.removeHistoryEntry(entry, index);
                           final filterCubit = BlocProvider.of<FilterCubit>(context);
-                          filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
+                          filterCubit.reFilter(entry.file!.trimmedTags, entry.file!.body.rootGroup);
                           close(returnValue: false);
                         },
                       );
@@ -271,7 +271,7 @@ class EntryListItemWidget extends StatelessWidget {
                         final filterCubit = BlocProvider.of<FilterCubit>(context);
                         await BlocProvider.of<InteractionCubit>(context).entrySaved();
                         await iam.showIfAppropriate(InAppMessageTrigger.entryChanged);
-                        filterCubit.reFilter(entry.file!.tags, entry.file!.body.rootGroup);
+                        filterCubit.reFilter(entry.file!.trimmedTags, entry.file!.body.rootGroup);
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?
                       } else {
                         entryCubit.endEditing(null);

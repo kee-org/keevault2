@@ -114,7 +114,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
           return EntryWidget(
             key: ValueKey('autofillSaveDetails'),
             savingViaAutofill: true,
-            endEditing: (bool keepChanges) => onEndEditing(keepChanges, vaultCubit, vault.files.current.tags),
+            endEditing: (bool keepChanges) => onEndEditing(keepChanges, vaultCubit, vault.files.current.trimmedTags),
             allCustomIcons: vault.files.current.body.meta.customIcons.map(
               (key, value) =>
                   MapEntry(value, Image.memory(value.data, fit: BoxFit.contain, filterQuality: FilterQuality.low)),

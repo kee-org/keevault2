@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/config/app.dart';
@@ -123,6 +124,7 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                               visible: generatorState.all[index].isUserDefined,
                               child: OverflowBar(
                                 alignment: MainAxisAlignment.start,
+                                spacing: 8.0,
                                 children: [
                                   TextButton(
                                     onPressed: () async {
@@ -180,45 +182,60 @@ class _PasswordPresetManagerWidgetState extends State<PasswordPresetManagerWidge
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  TextFormField(
-                                    onChanged: (String value) {
-                                      final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                      cubit.changeName(value);
-                                    },
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: str.name.toUpperCase(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 16.0),
+                                    child: TextFormField(
+                                      onChanged: (String value) {
+                                        final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                        cubit.changeName(value);
+                                      },
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: str.name.capitalize,
+                                      ),
                                     ),
                                   ),
                                   lengthChooser(context, generatorState.newProfile),
                                   presetCharChooser(context, generatorState.newProfile),
-                                  additionalCharIncludes(context, generatorState.newProfile, _includeTextController),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 64.0),
+                                    child: additionalCharIncludes(
+                                      context,
+                                      generatorState.newProfile,
+                                      _includeTextController,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ),
                         ),
                         extendBody: true,
-                        bottomNavigationBar: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            OutlinedButton(
-                              child: Text(str.alertCancel.toUpperCase()),
-                              onPressed: () {
-                                final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                cubit.discardNewProfile();
-                                Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
-                              },
-                            ),
-                            OutlinedButton(
-                              child: Text(str.add.toUpperCase()),
-                              onPressed: () async {
-                                final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
-                                await cubit.addNewProfile();
-                                Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
-                              },
-                            ),
-                          ],
+                        bottomNavigationBar: Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              OutlinedButton(
+                                child: Text(str.alertCancel.toUpperCase()),
+                                onPressed: () {
+                                  final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                  cubit.discardNewProfile();
+                                  Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
+                                },
+                              ),
+                              FilledButton(
+                                onPressed: generatorState.newProfile.name.isNotEmpty
+                                    ? () async {
+                                        final cubit = BlocProvider.of<GeneratorProfilesCubit>(context);
+                                        await cubit.addNewProfile();
+                                        Navigator.of(AppConfig.navigatorKey.currentContext!).pop(true);
+                                      }
+                                    : null,
+                                child: Text(str.add.toUpperCase()),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

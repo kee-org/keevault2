@@ -70,7 +70,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: TextFormField(
@@ -112,7 +112,7 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16),
+                  padding: const EdgeInsets.only(left: 16, top: 4),
                   child: FilledButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {

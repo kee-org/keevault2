@@ -171,22 +171,23 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
     );
   }
 
-  _profileChooser(BuildContext context, GeneratorProfilesEnabled generatorState) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(padding: const EdgeInsets.only(right: 12.0), child: Text(_str.preset)),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DropdownMenu<String>(
+  Widget _profileChooser(BuildContext context, GeneratorProfilesEnabled generatorState) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: 1,
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Presets', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: DropdownMenu<String>(
                     initialSelection: generatorState.current.name,
                     dropdownMenuEntries: <DropdownMenuEntry<String>>[
                       ...generatorState.enabled.map(
@@ -212,25 +213,19 @@ class _PasswordGeneratorWidgetState extends State<PasswordGeneratorWidget> with 
                       }
                     },
                   ),
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 150),
-              child: OutlinedButton(
-                onPressed: () async => await AppConfig.router.navigateTo(
-                  context,
-                  Routes.passwordPresetManager,
-                  transition: TransitionType.inFromRight,
                 ),
-                child: Text(_str.managePresets),
-              ),
+                IconButton(
+                  icon: Icon(Icons.settings, size: 24),
+                  onPressed: () async => await AppConfig.router.navigateTo(
+                    context,
+                    Routes.passwordPresetManager,
+                    transition: TransitionType.inFromRight,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -291,6 +286,9 @@ Widget lengthChooser(BuildContext context, PasswordGeneratorProfile profile) {
                     }
                   },
                   keyboardType: TextInputType.number,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  spellCheckConfiguration: SpellCheckConfiguration.disabled(),
                   controller: TextEditingController(text: profile.length.toStringAsFixed(0)),
                   //TODO: reduce the padding inside this field?
                 ),
@@ -321,6 +319,9 @@ Widget additionalCharIncludes(
               cubit.changeAdditionalChars(value);
             },
             keyboardType: TextInputType.text,
+            autocorrect: false,
+            enableSuggestions: false,
+            spellCheckConfiguration: SpellCheckConfiguration.disabled(),
             controller: controller,
             //TODO: reduce the padding inside this field?
           ),
@@ -333,84 +334,87 @@ Widget additionalCharIncludes(
 Widget presetCharChooser(BuildContext context, PasswordGeneratorProfile profile) {
   return Visibility(
     visible: profile.supportsCharacterChoosing,
-    child: Container(
-      alignment: Alignment.centerLeft,
-      child: Wrap(
-        spacing: 6.0,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        runSpacing: 0.0,
-        children: [
-          FilterChip(
-            visualDensity: VisualDensity.compact,
-            label: Text(_str.genPsUpper),
-            avatar: profile.upper ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
-            labelPadding: EdgeInsets.only(left: 2, right: 12),
-            showCheckmark: false,
-            selected: profile.upper,
-            onSelected: (bool value) => _toggleCharChooser(context, upper: value),
-            tooltip: PasswordGeneratorCharRanges.upper,
-          ),
-          FilterChip(
-            visualDensity: VisualDensity.compact,
-            label: Text(_str.genPsLower),
-            avatar: profile.lower ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
-            labelPadding: EdgeInsets.only(left: 2, right: 12),
-            showCheckmark: false,
-            selected: profile.lower,
-            onSelected: (bool value) => _toggleCharChooser(context, lower: value),
-            tooltip: PasswordGeneratorCharRanges.lower,
-          ),
-          FilterChip(
-            visualDensity: VisualDensity.compact,
-            label: Text(_str.genPsDigits),
-            avatar: profile.digits ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
-            labelPadding: EdgeInsets.only(left: 2, right: 12),
-            showCheckmark: false,
-            selected: profile.digits,
-            onSelected: (bool value) => _toggleCharChooser(context, digits: value),
-            tooltip: PasswordGeneratorCharRanges.digits,
-          ),
-          FilterChip(
-            visualDensity: VisualDensity.compact,
-            label: Text(_str.genPsSpecial),
-            avatar: profile.special ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
-            labelPadding: EdgeInsets.only(left: 2, right: 12),
-            showCheckmark: false,
-            selected: profile.special,
-            onSelected: (bool value) => _toggleCharChooser(context, special: value),
-            tooltip: PasswordGeneratorCharRanges.special,
-          ),
-          FilterChip(
-            visualDensity: VisualDensity.compact,
-            label: Text(_str.genPsBrackets),
-            avatar: profile.brackets ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
-            labelPadding: EdgeInsets.only(left: 2, right: 12),
-            showCheckmark: false,
-            selected: profile.brackets,
-            onSelected: (bool value) => _toggleCharChooser(context, brackets: value),
-            tooltip: PasswordGeneratorCharRanges.brackets,
-          ),
-          FilterChip(
-            visualDensity: VisualDensity.compact,
-            label: Text(_str.genPsHigh),
-            avatar: profile.high ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
-            labelPadding: EdgeInsets.only(left: 2, right: 12),
-            showCheckmark: false,
-            selected: profile.high,
-            onSelected: (bool value) => _toggleCharChooser(context, high: value),
-            tooltip: PasswordGeneratorCharRanges.high,
-          ),
-          FilterChip(
-            visualDensity: VisualDensity.compact,
-            label: Text(_str.genPsAmbiguous),
-            avatar: profile.ambiguous ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
-            labelPadding: EdgeInsets.only(left: 2, right: 12),
-            showCheckmark: false,
-            selected: profile.ambiguous,
-            onSelected: (bool value) => _toggleCharChooser(context, ambiguous: value),
-            tooltip: PasswordGeneratorCharRanges.ambiguous,
-          ),
-        ],
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Container(
+        alignment: Alignment.centerLeft,
+        child: Wrap(
+          spacing: 6.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runSpacing: 0.0,
+          children: [
+            FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(_str.genPsUpper),
+              avatar: profile.upper ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+              labelPadding: EdgeInsets.only(left: 2, right: 12),
+              showCheckmark: false,
+              selected: profile.upper,
+              onSelected: (bool value) => _toggleCharChooser(context, upper: value),
+              tooltip: PasswordGeneratorCharRanges.upper,
+            ),
+            FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(_str.genPsLower),
+              avatar: profile.lower ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+              labelPadding: EdgeInsets.only(left: 2, right: 12),
+              showCheckmark: false,
+              selected: profile.lower,
+              onSelected: (bool value) => _toggleCharChooser(context, lower: value),
+              tooltip: PasswordGeneratorCharRanges.lower,
+            ),
+            FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(_str.genPsDigits),
+              avatar: profile.digits ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+              labelPadding: EdgeInsets.only(left: 2, right: 12),
+              showCheckmark: false,
+              selected: profile.digits,
+              onSelected: (bool value) => _toggleCharChooser(context, digits: value),
+              tooltip: PasswordGeneratorCharRanges.digits,
+            ),
+            FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(_str.genPsSpecial),
+              avatar: profile.special ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+              labelPadding: EdgeInsets.only(left: 2, right: 12),
+              showCheckmark: false,
+              selected: profile.special,
+              onSelected: (bool value) => _toggleCharChooser(context, special: value),
+              tooltip: PasswordGeneratorCharRanges.special,
+            ),
+            FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(_str.genPsBrackets),
+              avatar: profile.brackets ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+              labelPadding: EdgeInsets.only(left: 2, right: 12),
+              showCheckmark: false,
+              selected: profile.brackets,
+              onSelected: (bool value) => _toggleCharChooser(context, brackets: value),
+              tooltip: PasswordGeneratorCharRanges.brackets,
+            ),
+            FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(_str.genPsHigh),
+              avatar: profile.high ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+              labelPadding: EdgeInsets.only(left: 2, right: 12),
+              showCheckmark: false,
+              selected: profile.high,
+              onSelected: (bool value) => _toggleCharChooser(context, high: value),
+              tooltip: PasswordGeneratorCharRanges.high,
+            ),
+            FilterChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(_str.genPsAmbiguous),
+              avatar: profile.ambiguous ? Icon(Icons.check, size: 18) : SizedBox(width: 24),
+              labelPadding: EdgeInsets.only(left: 2, right: 12),
+              showCheckmark: false,
+              selected: profile.ambiguous,
+              onSelected: (bool value) => _toggleCharChooser(context, ambiguous: value),
+              tooltip: PasswordGeneratorCharRanges.ambiguous,
+            ),
+          ],
+        ),
       ),
     ),
   );

@@ -50,7 +50,7 @@ void main() async {
           } catch (e, stackTrace) {
             l.w('Error while localising error message', error: e, stackTrace: stackTrace);
           }
-          DialogUtils.showErrorDialog(context, null, message);
+          unawaited(DialogUtils.showErrorDialog(context, null, message));
           MatomoTracker.instance.trackEvent(
             eventInfo: EventInfo(category: 'main', action: 'error', name: 'mitm'),
           );
@@ -69,7 +69,7 @@ void main() async {
           } catch (e, stackTrace) {
             l.w('Error while localising error message', error: e, stackTrace: stackTrace);
           }
-          DialogUtils.showErrorDialog(context, null, '$message : $stackTrace');
+          unawaited(DialogUtils.showErrorDialog(context, null, '$message : $stackTrace'));
           MatomoTracker.instance.trackEvent(
             eventInfo: EventInfo(category: 'main', action: 'error', name: 'wtf'),
           );

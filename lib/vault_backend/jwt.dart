@@ -90,7 +90,7 @@ class JWT {
     try {
       final keyPair = jwt.JWTKey.fromJWK(jwk);
       // If this does not throw an exception then we know the signature is valid
-      final _ = jwt.JWT.verify(sig, keyPair);
+      final _ = jwt.JWT.verify(sig, keyPair, checkHeaderType: false);
       return ClientVerificationResult(claim: claim, audience: claim.aud);
     } on jwt.JWTExpiredException {
       l.w('JWT expired. Token should therefore be ignored.');

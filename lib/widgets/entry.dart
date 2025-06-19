@@ -15,6 +15,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:keevault/model/field.dart';
@@ -278,12 +279,8 @@ class EntryWidget extends StatelessWidget {
                   key: key,
                   appBar: savingViaAutofill
                       ? AppBar(
-                          title: Image(
-                            image: AssetImage('assets/vault.png'),
-                            excludeFromSemantics: true,
-                            height: 32,
-                            color: Color.fromARGB(0xFF, 0x1A, 0x46, 0x6B),
-                          ),
+                          backgroundColor: theme.scaffoldBackgroundColor,
+                          title: Image(image: AssetImage('assets/vault.png'), excludeFromSemantics: true, height: 32),
                           centerTitle: true,
                           toolbarHeight: 48,
                           leading: IconButton(
@@ -494,7 +491,7 @@ class EntryWidget extends StatelessWidget {
                                     ),
                                     LabelsWidget(
                                       tags: entry.tags,
-                                      otherKnownTags: loadedState.vault.files.current.tags
+                                      otherKnownTags: loadedState.vault.files.current.trimmedTags
                                           .map((t) => Tag(t, true))
                                           .where((t) => !entry.tags.any((et) => et.lowercase == t.lowercase))
                                           .toList(),

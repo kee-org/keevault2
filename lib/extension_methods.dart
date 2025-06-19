@@ -70,6 +70,10 @@ extension KdbxFileKDF on KdbxFile {
     }
     return false;
   }
+
+  List<String> get trimmedTags {
+    return tags.map((tag) => tag.trim()).where((tag) => tag.isNotEmpty).toSet().toList(growable: false);
+  }
 }
 
 extension KdbxEntryColor on KdbxEntry {

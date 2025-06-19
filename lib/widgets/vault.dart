@@ -142,12 +142,8 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
               return ColouredSafeArea(
                 child: Scaffold(
                   appBar: AppBar(
-                    title: Image(
-                      image: AssetImage('assets/vault.png'),
-                      excludeFromSemantics: true,
-                      height: 48,
-                      color: theme.colorScheme.primary,
-                    ),
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    title: Image(image: AssetImage('assets/vault.png'), excludeFromSemantics: true, height: 48),
                     centerTitle: true,
                     toolbarHeight: 80,
                   ),
@@ -212,68 +208,17 @@ class _MainLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FilterCubit, FilterState>(
-      builder: (context, state) {
-        return BlocBuilder<AppSettingsCubit, AppSettingsState>(
-          builder: (context, appSettingsState) {
-            final theme = Theme.of(context);
-            final main = Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Container(
-                  height: 48.0,
-                  alignment: AlignmentDirectional.centerStart,
-                  child: DefaultTextStyle(
-                    style: TextStyle(color: theme.hintColor),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Text(_generateTitle(context, state)),
-                    ),
-                  ),
-                ),
-                Expanded(child: child),
-              ],
-            );
-            return Column(
-              children: [
-                if (!(appSettingsState as AppSettingsBasic).introShownVaultSummary)
-                  IntroVaultSummaryWidget(theme: theme),
-                Expanded(child: main),
-              ],
-            );
-          },
+    return BlocBuilder<AppSettingsCubit, AppSettingsState>(
+      builder: (context, appSettingsState) {
+        final theme = Theme.of(context);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!(appSettingsState as AppSettingsBasic).introShownVaultSummary) IntroVaultSummaryWidget(theme: theme),
+            Expanded(child: child),
+          ],
         );
       },
     );
-  }
-
-  String _generateTitle(BuildContext context, FilterState state) {
-    final str = S.of(context);
-
-    if (state is FilterActive) {
-      final bool text = state.text.isNotEmpty;
-      final bool group = state.groupUuid != state.rootGroupUuid;
-      final bool tag = state.tags.isNotEmpty;
-      final bool color = state.colors.isNotEmpty;
-
-      if (!text && !group && !tag && !color) {
-        return str.showing_all_entries;
-      } else {
-        final criteria = [
-          if (group) str.group,
-          if (text) str.text.toLowerCase(),
-          if (tag && state.tags.length > 1) str.labels.toLowerCase(),
-          if (tag && state.tags.length == 1) str.label.toLowerCase(),
-          if (color && state.colors.length > 1) str.colors.toLowerCase(),
-          if (color && state.colors.length == 1) str.color.toLowerCase(),
-        ];
-        return str.filteredByCriteria(
-          criteria.length > 2
-              ? '${criteria.getRange(0, criteria.length - 1).join(', ')} and ${criteria.last}'
-              : criteria.join(' and '),
-        );
-      }
-    }
-    return str.loading;
   }
 }
