@@ -28,7 +28,10 @@ class S {
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<S> load(Locale locale) {
-    final name = (locale.countryCode?.isEmpty ?? false) ? locale.languageCode : locale.toString();
+    final name =
+        (locale.countryCode?.isEmpty ?? false)
+            ? locale.languageCode
+            : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -79,22 +82,42 @@ class S {
 
   /// `Authenticating`
   String get authenticating {
-    return Intl.message('Authenticating', name: 'authenticating', desc: '', args: []);
+    return Intl.message(
+      'Authenticating',
+      name: 'authenticating',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Welcome {email}`
   String welcome_message(Object email) {
-    return Intl.message('Welcome $email', name: 'welcome_message', desc: '', args: [email]);
+    return Intl.message(
+      'Welcome $email',
+      name: 'welcome_message',
+      desc: '',
+      args: [email],
+    );
   }
 
   /// `Enter your email address`
   String get enter_your_email_address {
-    return Intl.message('Enter your email address', name: 'enter_your_email_address', desc: '', args: []);
+    return Intl.message(
+      'Enter your email address',
+      name: 'enter_your_email_address',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Enter your account password`
   String get enter_your_account_password {
-    return Intl.message('Enter your account password', name: 'enter_your_account_password', desc: '', args: []);
+    return Intl.message(
+      'Enter your account password',
+      name: 'enter_your_account_password',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Email`
@@ -109,7 +132,12 @@ class S {
 
   /// `This field is required`
   String get this_field_required {
-    return Intl.message('This field is required', name: 'this_field_required', desc: '', args: []);
+    return Intl.message(
+      'This field is required',
+      name: 'this_field_required',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Unlock`
@@ -139,7 +167,12 @@ class S {
 
   /// `Showing all entries`
   String get showing_all_entries {
-    return Intl.message('Showing all entries', name: 'showing_all_entries', desc: '', args: []);
+    return Intl.message(
+      'Showing all entries',
+      name: 'showing_all_entries',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Unexpected error. Sorry! Please let us know, then close and restart the app. Details: {error}`
@@ -154,12 +187,22 @@ class S {
 
   /// `Use biometrics`
   String get unlock_with_biometrics {
-    return Intl.message('Use biometrics', name: 'unlock_with_biometrics', desc: '', args: []);
+    return Intl.message(
+      'Use biometrics',
+      name: 'unlock_with_biometrics',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Do you want to keep your changes?`
   String get keep_your_changes_question {
-    return Intl.message('Do you want to keep your changes?', name: 'keep_your_changes_question', desc: '', args: []);
+    return Intl.message(
+      'Do you want to keep your changes?',
+      name: 'keep_your_changes_question',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Discard`
@@ -184,17 +227,32 @@ class S {
 
   /// `Title - reversed`
   String get sortTitleReversed {
-    return Intl.message('Title - reversed', name: 'sortTitleReversed', desc: '', args: []);
+    return Intl.message(
+      'Title - reversed',
+      name: 'sortTitleReversed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Recently updated`
   String get sortModified {
-    return Intl.message('Recently updated', name: 'sortModified', desc: '', args: []);
+    return Intl.message(
+      'Recently updated',
+      name: 'sortModified',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Least recently updated`
   String get sortModifiedReversed {
-    return Intl.message('Least recently updated', name: 'sortModifiedReversed', desc: '', args: []);
+    return Intl.message(
+      'Least recently updated',
+      name: 'sortModifiedReversed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Newest`
@@ -204,17 +262,32 @@ class S {
 
   /// `Oldest`
   String get sortCreatedReversed {
-    return Intl.message('Oldest', name: 'sortCreatedReversed', desc: '', args: []);
+    return Intl.message(
+      'Oldest',
+      name: 'sortCreatedReversed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Manage your Kee Vault account`
   String get manageAccountDetail {
-    return Intl.message('Manage your Kee Vault account', name: 'manageAccountDetail', desc: '', args: []);
+    return Intl.message(
+      'Manage your Kee Vault account',
+      name: 'manageAccountDetail',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Manage account`
   String get manageAccount {
-    return Intl.message('Manage account', name: 'manageAccount', desc: '', args: []);
+    return Intl.message(
+      'Manage account',
+      name: 'manageAccount',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Not a valid email address. Please try again.`
@@ -229,7 +302,12 @@ class S {
 
   /// `Enable Quick sign-in (biometrics)`
   String get biometricSignIn {
-    return Intl.message('Enable Quick sign-in (biometrics)', name: 'biometricSignIn', desc: '', args: []);
+    return Intl.message(
+      'Enable Quick sign-in (biometrics)',
+      name: 'biometricSignIn',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `You must change your device's Autofill provider to {appName}.`
@@ -264,7 +342,12 @@ class S {
 
   /// `Enable Autofill`
   String get enableAutofill {
-    return Intl.message('Enable Autofill', name: 'enableAutofill', desc: '', args: []);
+    return Intl.message(
+      'Enable Autofill',
+      name: 'enableAutofill',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `1. Please switch to your device's Settings app and load the "Passwords" section.\n\n2. Click on "AutoFill passwords".\n\n3. Ensure the switch at the top is enabled.\n\n4. Deselect Keychain (or other selected items) and then select "{appName}".\n\nThen switch back to this Kee Vault App and click "OK" to confirm that you are finished.\n\nFinally, double check that the status information in the Kee Vault Settings page now says that AutoFill is enabled.\n\nApologies that we can't make this easier - Apple won't allow us to help you in this situation.`
@@ -289,7 +372,12 @@ class S {
 
   /// `Open Kee Vault in your browser`
   String get openWebApp {
-    return Intl.message('Open Kee Vault in your browser', name: 'openWebApp', desc: '', args: []);
+    return Intl.message(
+      'Open Kee Vault in your browser',
+      name: 'openWebApp',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Edit your subscription, payment details or email contact preferences from the Kee Vault Account website.`
@@ -304,12 +392,22 @@ class S {
 
   /// `Device AutoFill`
   String get deviceAutoFill {
-    return Intl.message('Device AutoFill', name: 'deviceAutoFill', desc: '', args: []);
+    return Intl.message(
+      'Device AutoFill',
+      name: 'deviceAutoFill',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Quick sign-in`
   String get quickSignIn {
-    return Intl.message('Quick sign-in', name: 'quickSignIn', desc: '', args: []);
+    return Intl.message(
+      'Quick sign-in',
+      name: 'quickSignIn',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Use device biometrics or {pinName} for faster sign-in`
@@ -324,7 +422,12 @@ class S {
 
   /// `Integration settings`
   String get integrationSettings {
-    return Intl.message('Integration settings', name: 'integrationSettings', desc: '', args: []);
+    return Intl.message(
+      'Integration settings',
+      name: 'integrationSettings',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `These settings help you to refine when this entry is autofilled into other apps and websites. Some settings apply only to when you use Kee on a desktop computer and others only to specific mobile platforms (such as Android).`
@@ -339,12 +442,22 @@ class S {
 
   /// `Additional URLs to match`
   String get additionalUrlsToMatch {
-    return Intl.message('Additional URLs to match', name: 'additionalUrlsToMatch', desc: '', args: []);
+    return Intl.message(
+      'Additional URLs to match',
+      name: 'additionalUrlsToMatch',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Android app technical names to match`
   String get androidAppIdsToMatch {
-    return Intl.message('Android app technical names to match', name: 'androidAppIdsToMatch', desc: '', args: []);
+    return Intl.message(
+      'Android app technical names to match',
+      name: 'androidAppIdsToMatch',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Show this entry in Kee browser extension (desktop), mobile apps and browsers`
@@ -404,12 +517,22 @@ class S {
 
   /// `Set as default`
   String get setDefault {
-    return Intl.message('Set as default', name: 'setDefault', desc: '', args: []);
+    return Intl.message(
+      'Set as default',
+      name: 'setDefault',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Additional characters`
   String get additionalCharacters {
-    return Intl.message('Additional characters', name: 'additionalCharacters', desc: '', args: []);
+    return Intl.message(
+      'Additional characters',
+      name: 'additionalCharacters',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Preset`
@@ -419,12 +542,22 @@ class S {
 
   /// `Manage presets`
   String get managePresets {
-    return Intl.message('Manage presets', name: 'managePresets', desc: '', args: []);
+    return Intl.message(
+      'Manage presets',
+      name: 'managePresets',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Manage password presets`
   String get managePasswordPresets {
-    return Intl.message('Manage password presets', name: 'managePasswordPresets', desc: '', args: []);
+    return Intl.message(
+      'Manage password presets',
+      name: 'managePasswordPresets',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Move`
@@ -454,17 +587,32 @@ class S {
 
   /// `Enter the new name for the group`
   String get groupNameRenameExplanation {
-    return Intl.message('Enter the new name for the group', name: 'groupNameRenameExplanation', desc: '', args: []);
+    return Intl.message(
+      'Enter the new name for the group',
+      name: 'groupNameRenameExplanation',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Enter the name for the new group`
   String get groupNameNewExplanation {
-    return Intl.message('Enter the name for the new group', name: 'groupNameNewExplanation', desc: '', args: []);
+    return Intl.message(
+      'Enter the name for the new group',
+      name: 'groupNameNewExplanation',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Delete the group and all entries within it?`
   String get deleteGroupConfirm {
-    return Intl.message('Delete the group and all entries within it?', name: 'deleteGroupConfirm', desc: '', args: []);
+    return Intl.message(
+      'Delete the group and all entries within it?',
+      name: 'deleteGroupConfirm',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Permanently delete the group and all entries within it?`
@@ -489,7 +637,12 @@ class S {
 
   /// `Select the group for this entry`
   String get chooseNewParentGroupForEntry {
-    return Intl.message('Select the group for this entry', name: 'chooseNewParentGroupForEntry', desc: '', args: []);
+    return Intl.message(
+      'Select the group for this entry',
+      name: 'chooseNewParentGroupForEntry',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Select the group in which to restore this item`
@@ -504,7 +657,12 @@ class S {
 
   /// `Labels allow you to categorise your entries.`
   String get labelsExplanation {
-    return Intl.message('Labels allow you to categorise your entries.', name: 'labelsExplanation', desc: '', args: []);
+    return Intl.message(
+      'Labels allow you to categorise your entries.',
+      name: 'labelsExplanation',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Unlike Groups, each entry can be assigned more than one label.`
@@ -579,17 +737,32 @@ class S {
 
   /// `Search in these entry fields:`
   String get searchSearchIn {
-    return Intl.message('Search in these entry fields:', name: 'searchSearchIn', desc: '', args: []);
+    return Intl.message(
+      'Search in these entry fields:',
+      name: 'searchSearchIn',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Other standard fields`
   String get searchOtherStandard {
-    return Intl.message('Other standard fields', name: 'searchOtherStandard', desc: '', args: []);
+    return Intl.message(
+      'Other standard fields',
+      name: 'searchOtherStandard',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Other protected fields`
   String get searchOtherSecure {
-    return Intl.message('Other protected fields', name: 'searchOtherSecure', desc: '', args: []);
+    return Intl.message(
+      'Other protected fields',
+      name: 'searchOtherSecure',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Notes`
@@ -604,7 +777,12 @@ class S {
 
   /// `Include entry history`
   String get searchHistory {
-    return Intl.message('Include entry history', name: 'searchHistory', desc: '', args: []);
+    return Intl.message(
+      'Include entry history',
+      name: 'searchHistory',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Colours`
@@ -614,37 +792,72 @@ class S {
 
   /// `Filtered by {criteria}`
   String filteredByCriteria(Object criteria) {
-    return Intl.message('Filtered by $criteria', name: 'filteredByCriteria', desc: '', args: [criteria]);
+    return Intl.message(
+      'Filtered by $criteria',
+      name: 'filteredByCriteria',
+      desc: '',
+      args: [criteria],
+    );
   }
 
   /// `Choose an icon`
   String get chooseAnIcon {
-    return Intl.message('Choose an icon', name: 'chooseAnIcon', desc: '', args: []);
+    return Intl.message(
+      'Choose an icon',
+      name: 'chooseAnIcon',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Generate single password`
   String get generateSinglePassword {
-    return Intl.message('Generate single password', name: 'generateSinglePassword', desc: '', args: []);
+    return Intl.message(
+      'Generate single password',
+      name: 'generateSinglePassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Action needed`
   String get vaultStatusActionNeeded {
-    return Intl.message('Action needed', name: 'vaultStatusActionNeeded', desc: '', args: []);
+    return Intl.message(
+      'Action needed',
+      name: 'vaultStatusActionNeeded',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Uploading`
   String get vaultStatusUploading {
-    return Intl.message('Uploading', name: 'vaultStatusUploading', desc: '', args: []);
+    return Intl.message(
+      'Uploading',
+      name: 'vaultStatusUploading',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Saving`
   String get vaultStatusSaving {
-    return Intl.message('Saving', name: 'vaultStatusSaving', desc: '', args: []);
+    return Intl.message(
+      'Saving',
+      name: 'vaultStatusSaving',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Refreshing`
   String get vaultStatusRefreshing {
-    return Intl.message('Refreshing', name: 'vaultStatusRefreshing', desc: '', args: []);
+    return Intl.message(
+      'Refreshing',
+      name: 'vaultStatusRefreshing',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Error`
@@ -654,22 +867,42 @@ class S {
 
   /// `Save needed`
   String get vaultStatusSaveNeeded {
-    return Intl.message('Save needed', name: 'vaultStatusSaveNeeded', desc: '', args: []);
+    return Intl.message(
+      'Save needed',
+      name: 'vaultStatusSaveNeeded',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Loaded`
   String get vaultStatusLoaded {
-    return Intl.message('Loaded', name: 'vaultStatusLoaded', desc: '', args: []);
+    return Intl.message(
+      'Loaded',
+      name: 'vaultStatusLoaded',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Unknown state`
   String get vaultStatusUnknownState {
-    return Intl.message('Unknown state', name: 'vaultStatusUnknownState', desc: '', args: []);
+    return Intl.message(
+      'Unknown state',
+      name: 'vaultStatusUnknownState',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your password has changed`
   String get vaultStatusDescPasswordChanged {
-    return Intl.message('Your password has changed', name: 'vaultStatusDescPasswordChanged', desc: '', args: []);
+    return Intl.message(
+      'Your password has changed',
+      name: 'vaultStatusDescPasswordChanged',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Merging your changes from your other devices`
@@ -684,12 +917,22 @@ class S {
 
   /// `Uploading your changes`
   String get vaultStatusDescUploading {
-    return Intl.message('Uploading your changes', name: 'vaultStatusDescUploading', desc: '', args: []);
+    return Intl.message(
+      'Uploading your changes',
+      name: 'vaultStatusDescUploading',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Saving your changes`
   String get vaultStatusDescSaving {
-    return Intl.message('Saving your changes', name: 'vaultStatusDescSaving', desc: '', args: []);
+    return Intl.message(
+      'Saving your changes',
+      name: 'vaultStatusDescSaving',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Checking for changes from your other devices`
@@ -714,7 +957,12 @@ class S {
 
   /// `Your Vault is loaded and ready for use.`
   String get vaultStatusDescLoaded {
-    return Intl.message('Your Vault is loaded and ready for use.', name: 'vaultStatusDescLoaded', desc: '', args: []);
+    return Intl.message(
+      'Your Vault is loaded and ready for use.',
+      name: 'vaultStatusDescLoaded',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `If this situation does not automatically resolve itself within a minute, please check the Console Log in the Help section, report the problem and restart the app.`
@@ -729,7 +977,12 @@ class S {
 
   /// `Unlock your Vault`
   String get unlockRequired {
-    return Intl.message('Unlock your Vault', name: 'unlockRequired', desc: '', args: []);
+    return Intl.message(
+      'Unlock your Vault',
+      name: 'unlockRequired',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Try again`
@@ -739,22 +992,42 @@ class S {
 
   /// `Not signed in`
   String get notSignedIn {
-    return Intl.message('Not signed in', name: 'notSignedIn', desc: '', args: []);
+    return Intl.message(
+      'Not signed in',
+      name: 'notSignedIn',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Please re-enter your password`
   String get reenterYourPassword {
-    return Intl.message('Please re-enter your password', name: 'reenterYourPassword', desc: '', args: []);
+    return Intl.message(
+      'Please re-enter your password',
+      name: 'reenterYourPassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Reveal search options and other filters`
   String get filterTooltipClosed {
-    return Intl.message('Reveal search options and other filters', name: 'filterTooltipClosed', desc: '', args: []);
+    return Intl.message(
+      'Reveal search options and other filters',
+      name: 'filterTooltipClosed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Show matching entries`
   String get filterTooltipOpen {
-    return Intl.message('Show matching entries', name: 'filterTooltipOpen', desc: '', args: []);
+    return Intl.message(
+      'Show matching entries',
+      name: 'filterTooltipOpen',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `New profile`
@@ -764,12 +1037,22 @@ class S {
 
   /// `You need to agree to the `
   String get localOnlyAgree1 {
-    return Intl.message('You need to agree to the ', name: 'localOnlyAgree1', desc: '', args: []);
+    return Intl.message(
+      'You need to agree to the ',
+      name: 'localOnlyAgree1',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Terms of Service and Privacy Statement`
   String get localOnlyAgree2 {
-    return Intl.message('Terms of Service and Privacy Statement', name: 'localOnlyAgree2', desc: '', args: []);
+    return Intl.message(
+      'Terms of Service and Privacy Statement',
+      name: 'localOnlyAgree2',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `. We'll remember this until you uninstall the app or clear the app data. You MUST avoid clearing stored App data or you will also delete the passwords, usernames and other data you store in the app!`
@@ -784,7 +1067,12 @@ class S {
 
   /// `I understand and agree to the above`
   String get localOnlyAgree4 {
-    return Intl.message('I understand and agree to the above', name: 'localOnlyAgree4', desc: '', args: []);
+    return Intl.message(
+      'I understand and agree to the above',
+      name: 'localOnlyAgree4',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Creating`
@@ -814,7 +1102,12 @@ class S {
 
   /// `You can view the documents here:`
   String get freeUserTermsPopup3 {
-    return Intl.message('You can view the documents here:', name: 'freeUserTermsPopup3', desc: '', args: []);
+    return Intl.message(
+      'You can view the documents here:',
+      name: 'freeUserTermsPopup3',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `You will be given a further opportunity to review these documents if you later create a Kee Vault account.`
@@ -829,7 +1122,12 @@ class S {
 
   /// `Please choose a password`
   String get chooseAPassword {
-    return Intl.message('Please choose a password', name: 'chooseAPassword', desc: '', args: []);
+    return Intl.message(
+      'Please choose a password',
+      name: 'chooseAPassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Kee Vault supports one free user on your device. The passwords you store into your Vault will be held securely on only this device so you should ensure that you do not delete the App's Data and that you take regular backups.`
@@ -884,7 +1182,12 @@ class S {
 
   /// `this community forum topic`
   String get thisCommunityForumTopic {
-    return Intl.message('this community forum topic', name: 'thisCommunityForumTopic', desc: '', args: []);
+    return Intl.message(
+      'this community forum topic',
+      name: 'thisCommunityForumTopic',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `We have imported your passwords to a new Group in your Kee Vault. You may wish to rename the group or manually remove/edit the entries to resolve any duplication. You can read more about this and find more detailed instructions in `
@@ -899,12 +1202,22 @@ class S {
 
   /// `Import completed`
   String get importComplete {
-    return Intl.message('Import completed', name: 'importComplete', desc: '', args: []);
+    return Intl.message(
+      'Import completed',
+      name: 'importComplete',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Continue to your Vault`
   String get importedContinueToVault {
-    return Intl.message('Continue to your Vault', name: 'importedContinueToVault', desc: '', args: []);
+    return Intl.message(
+      'Continue to your Vault',
+      name: 'importedContinueToVault',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Export`
@@ -914,12 +1227,22 @@ class S {
 
   /// `Import / Export`
   String get importExport {
-    return Intl.message('Import / Export', name: 'importExport', desc: '', args: []);
+    return Intl.message(
+      'Import / Export',
+      name: 'importExport',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `.kdbx file (Kee Vault, KeePass, etc.)`
   String get importKdbx {
-    return Intl.message('.kdbx file (Kee Vault, KeePass, etc.)', name: 'importKdbx', desc: '', args: []);
+    return Intl.message(
+      '.kdbx file (Kee Vault, KeePass, etc.)',
+      name: 'importKdbx',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `We'll try using the same password you have used to open your current Kee Vault. If that doesn't work, you can type in the correct password in a moment.`
@@ -964,7 +1287,12 @@ class S {
 
   /// `Remember chosen filter group`
   String get rememberFilterGroup {
-    return Intl.message('Remember chosen filter group', name: 'rememberFilterGroup', desc: '', args: []);
+    return Intl.message(
+      'Remember chosen filter group',
+      name: 'rememberFilterGroup',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Show`
@@ -979,12 +1307,22 @@ class S {
 
   /// `Reset entry to this state`
   String get resetEntryToThis {
-    return Intl.message('Reset entry to this state', name: 'resetEntryToThis', desc: '', args: []);
+    return Intl.message(
+      'Reset entry to this state',
+      name: 'resetEntryToThis',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Entry history`
   String get entryHistory {
-    return Intl.message('Entry history', name: 'entryHistory', desc: '', args: []);
+    return Intl.message(
+      'Entry history',
+      name: 'entryHistory',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Old versions of this entry are listed below. If you need to revert to an older version, we will automatically add your latest saved version to this list.`
@@ -1029,17 +1367,32 @@ class S {
 
   /// `Add small attachment`
   String get addAttachment {
-    return Intl.message('Add small attachment', name: 'addAttachment', desc: '', args: []);
+    return Intl.message(
+      'Add small attachment',
+      name: 'addAttachment',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `{count} bytes`
   String sizeBytes(Object count) {
-    return Intl.message('$count bytes', name: 'sizeBytes', desc: '', args: [count]);
+    return Intl.message(
+      '$count bytes',
+      name: 'sizeBytes',
+      desc: '',
+      args: [count],
+    );
   }
 
   /// `Delete attachment`
   String get deleteAttachment {
-    return Intl.message('Delete attachment', name: 'deleteAttachment', desc: '', args: []);
+    return Intl.message(
+      'Delete attachment',
+      name: 'deleteAttachment',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Share`
@@ -1064,7 +1417,12 @@ class S {
 
   /// `Permission error`
   String get permissionError {
-    return Intl.message('Permission error', name: 'permissionError', desc: '', args: []);
+    return Intl.message(
+      'Permission error',
+      name: 'permissionError',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, we can't {action} unless you grant us permission. Please grant the permission in your settings and then try again.`
@@ -1079,12 +1437,22 @@ class S {
 
   /// `Cancel {action}`
   String cancelExportOrImport(Object action) {
-    return Intl.message('Cancel $action', name: 'cancelExportOrImport', desc: '', args: [action]);
+    return Intl.message(
+      'Cancel $action',
+      name: 'cancelExportOrImport',
+      desc: '',
+      args: [action],
+    );
   }
 
   /// `Open settings`
   String get openSettings {
-    return Intl.message('Open settings', name: 'openSettings', desc: '', args: []);
+    return Intl.message(
+      'Open settings',
+      name: 'openSettings',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, we can't {action} unless you grant us permission. Please try again.`
@@ -1099,12 +1467,22 @@ class S {
 
   /// `Export error`
   String get exportError {
-    return Intl.message('Export error', name: 'exportError', desc: '', args: []);
+    return Intl.message(
+      'Export error',
+      name: 'exportError',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Import error`
   String get importError {
-    return Intl.message('Import error', name: 'importError', desc: '', args: []);
+    return Intl.message(
+      'Import error',
+      name: 'importError',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, we were unable to export to this location. Please check that you have enabled the necessary permissions for Kee Vault to access the file. If you still have problems please report it on the community forum along with full details of your device so that we can investigate whether we can add support for your particular device in future.`
@@ -1149,22 +1527,42 @@ class S {
 
   /// `Export anyway`
   String get exportAnyway {
-    return Intl.message('Export anyway', name: 'exportAnyway', desc: '', args: []);
+    return Intl.message(
+      'Export anyway',
+      name: 'exportAnyway',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Incorrect file`
   String get incorrectFile {
-    return Intl.message('Incorrect file', name: 'incorrectFile', desc: '', args: []);
+    return Intl.message(
+      'Incorrect file',
+      name: 'incorrectFile',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Please select a KDBX file.`
   String get selectKdbxFile {
-    return Intl.message('Please select a KDBX file.', name: 'selectKdbxFile', desc: '', args: []);
+    return Intl.message(
+      'Please select a KDBX file.',
+      name: 'selectKdbxFile',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Invalid TOTP code`
   String get otpManualError {
-    return Intl.message('Invalid TOTP code', name: 'otpManualError', desc: '', args: []);
+    return Intl.message(
+      'Invalid TOTP code',
+      name: 'otpManualError',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `You did not enter a valid TOTP base32 code. Please try again.`
@@ -1179,12 +1577,22 @@ class S {
 
   /// `Time-based One Time Password`
   String get otpManualTitle {
-    return Intl.message('Time-based One Time Password', name: 'otpManualTitle', desc: '', args: []);
+    return Intl.message(
+      'Time-based One Time Password',
+      name: 'otpManualTitle',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `TOTP code (base32 format)`
   String get otpCodeLabel {
-    return Intl.message('TOTP code (base32 format)', name: 'otpCodeLabel', desc: '', args: []);
+    return Intl.message(
+      'TOTP code (base32 format)',
+      name: 'otpCodeLabel',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, your device did not allow us to open the settings for this app. Please use your device settings app to find and change the permissions settings for Kee Vault and then return here to try again.`
@@ -1204,7 +1612,12 @@ class S {
 
   /// `Add TOTP / 2FA secret`
   String get addTOTPSecret {
-    return Intl.message('Add TOTP / 2FA secret', name: 'addTOTPSecret', desc: '', args: []);
+    return Intl.message(
+      'Add TOTP / 2FA secret',
+      name: 'addTOTPSecret',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Exported`
@@ -1214,32 +1627,62 @@ class S {
 
   /// `Visit the forum`
   String get visitTheForum {
-    return Intl.message('Visit the forum', name: 'visitTheForum', desc: '', args: []);
+    return Intl.message(
+      'Visit the forum',
+      name: 'visitTheForum',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Enter a number between {x} and {y}`
   String enterNumberBetweenXAndY(Object x, Object y) {
-    return Intl.message('Enter a number between $x and $y', name: 'enterNumberBetweenXAndY', desc: '', args: [x, y]);
+    return Intl.message(
+      'Enter a number between $x and $y',
+      name: 'enterNumberBetweenXAndY',
+      desc: '',
+      args: [x, y],
+    );
   }
 
   /// `Require full password every (days)`
   String get requireFullPasswordEvery {
-    return Intl.message('Require full password every (days)', name: 'requireFullPasswordEvery', desc: '', args: []);
+    return Intl.message(
+      'Require full password every (days)',
+      name: 'requireFullPasswordEvery',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Automatically sign-in for (seconds)`
   String get automaticallySignInFor {
-    return Intl.message('Automatically sign-in for (seconds)', name: 'automaticallySignInFor', desc: '', args: []);
+    return Intl.message(
+      'Automatically sign-in for (seconds)',
+      name: 'automaticallySignInFor',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `To access your passwords please confirm it's you`
   String get confirmItsYou {
-    return Intl.message('To access your passwords please confirm it\'s you', name: 'confirmItsYou', desc: '', args: []);
+    return Intl.message(
+      'To access your passwords please confirm it\'s you',
+      name: 'confirmItsYou',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Remember your Vault password?`
   String get rememberVaultPassword {
-    return Intl.message('Remember your Vault password?', name: 'rememberVaultPassword', desc: '', args: []);
+    return Intl.message(
+      'Remember your Vault password?',
+      name: 'rememberVaultPassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Access Kee Vault faster by protecting your password with biometrics or your device {PINname}`
@@ -1259,7 +1702,12 @@ class S {
 
   /// `Share/view logs`
   String get openLogConsole {
-    return Intl.message('Share/view logs', name: 'openLogConsole', desc: '', args: []);
+    return Intl.message(
+      'Share/view logs',
+      name: 'openLogConsole',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Autofilling`
@@ -1269,17 +1717,32 @@ class S {
 
   /// `attach a file`
   String get permissionReasonAttachFile {
-    return Intl.message('attach a file', name: 'permissionReasonAttachFile', desc: '', args: []);
+    return Intl.message(
+      'attach a file',
+      name: 'permissionReasonAttachFile',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `quickly scan QR codes (barcodes)`
   String get permissionReasonScanBarcodes {
-    return Intl.message('quickly scan QR codes (barcodes)', name: 'permissionReasonScanBarcodes', desc: '', args: []);
+    return Intl.message(
+      'quickly scan QR codes (barcodes)',
+      name: 'permissionReasonScanBarcodes',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Attachment error`
   String get attachmentError {
-    return Intl.message('Attachment error', name: 'attachmentError', desc: '', args: []);
+    return Intl.message(
+      'Attachment error',
+      name: 'attachmentError',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, we were unable to attach this file. Please check that you have enabled the necessary permissions for Kee Vault to access the file. If you still have problems please report it on the community forum along with full details of your device so that we can investigate whether we can add support for your particular device in future.`
@@ -1309,32 +1772,72 @@ class S {
 
   /// `Your password entries`
   String get yourPasswordEntries {
-    return Intl.message('Your password entries', name: 'yourPasswordEntries', desc: '', args: []);
+    return Intl.message(
+      'Your password entries',
+      name: 'yourPasswordEntries',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `\nSort your entries`
   String get introSortYourEntries {
-    return Intl.message('\nSort your entries', name: 'introSortYourEntries', desc: '', args: []);
+    return Intl.message(
+      '\nSort your entries',
+      name: 'introSortYourEntries',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `\nFilter by group, label, colour and text`
   String get introFilter {
-    return Intl.message('\nFilter by group, label, colour and text', name: 'introFilter', desc: '', args: []);
+    return Intl.message(
+      '\nFilter by group, label, colour and text',
+      name: 'introFilter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Entries`
+  String get viewEntries {
+    return Intl.message(
+      'View Entries',
+      name: 'viewEntries',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Create secure password`
   String get createSecurePassword {
-    return Intl.message('Create secure password', name: 'createSecurePassword', desc: '', args: []);
+    return Intl.message(
+      'Create secure password',
+      name: 'createSecurePassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Renaming field`
   String get renamingField {
-    return Intl.message('Renaming field', name: 'renamingField', desc: '', args: []);
+    return Intl.message(
+      'Renaming field',
+      name: 'renamingField',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Enter the new name for the field`
   String get renameFieldEnterNewName {
-    return Intl.message('Enter the new name for the field', name: 'renameFieldEnterNewName', desc: '', args: []);
+    return Intl.message(
+      'Enter the new name for the field',
+      name: 'renameFieldEnterNewName',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Copy Secret`
@@ -1344,32 +1847,62 @@ class S {
 
   /// `New URL (include https://)`
   String get entryIntegrationHintNewUrl {
-    return Intl.message('New URL (include https://)', name: 'entryIntegrationHintNewUrl', desc: '', args: []);
+    return Intl.message(
+      'New URL (include https://)',
+      name: 'entryIntegrationHintNewUrl',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `New ID (e.g. com.example... )`
   String get entryIntegrationHintNewId {
-    return Intl.message('New ID (e.g. com.example... )', name: 'entryIntegrationHintNewId', desc: '', args: []);
+    return Intl.message(
+      'New ID (e.g. com.example... )',
+      name: 'entryIntegrationHintNewId',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Protected field. Click to reveal.`
   String get protectedClickToReveal {
-    return Intl.message('Protected field. Click to reveal.', name: 'protectedClickToReveal', desc: '', args: []);
+    return Intl.message(
+      'Protected field. Click to reveal.',
+      name: 'protectedClickToReveal',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Show protected field`
   String get showProtectedField {
-    return Intl.message('Show protected field', name: 'showProtectedField', desc: '', args: []);
+    return Intl.message(
+      'Show protected field',
+      name: 'showProtectedField',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Renaming preset`
   String get renamingPreset {
-    return Intl.message('Renaming preset', name: 'renamingPreset', desc: '', args: []);
+    return Intl.message(
+      'Renaming preset',
+      name: 'renamingPreset',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Enter the new name for the preset`
   String get enterNewPresetName {
-    return Intl.message('Enter the new name for the preset', name: 'enterNewPresetName', desc: '', args: []);
+    return Intl.message(
+      'Enter the new name for the preset',
+      name: 'enterNewPresetName',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Search`
@@ -1404,12 +1937,22 @@ class S {
 
   /// `Confirm changes`
   String get saveChanges {
-    return Intl.message('Confirm changes', name: 'saveChanges', desc: '', args: []);
+    return Intl.message(
+      'Confirm changes',
+      name: 'saveChanges',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Discard changes`
   String get discardChanges {
-    return Intl.message('Discard changes', name: 'discardChanges', desc: '', args: []);
+    return Intl.message(
+      'Discard changes',
+      name: 'discardChanges',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Help`
@@ -1434,12 +1977,22 @@ class S {
 
   /// `Empty Bin`
   String get menuEmptyTrash {
-    return Intl.message('Empty Bin', name: 'menuEmptyTrash', desc: '', args: []);
+    return Intl.message(
+      'Empty Bin',
+      name: 'menuEmptyTrash',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Empty Bin?`
   String get menuEmptyTrashAlert {
-    return Intl.message('Empty Bin?', name: 'menuEmptyTrashAlert', desc: '', args: []);
+    return Intl.message(
+      'Empty Bin?',
+      name: 'menuEmptyTrashAlert',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `You will not be able to get the entries back`
@@ -1494,32 +2047,62 @@ class S {
 
   /// `Pronounceable`
   String get genPresetPronounceable {
-    return Intl.message('Pronounceable', name: 'genPresetPronounceable', desc: '', args: []);
+    return Intl.message(
+      'Pronounceable',
+      name: 'genPresetPronounceable',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Medium security`
   String get genPresetMed {
-    return Intl.message('Medium security', name: 'genPresetMed', desc: '', args: []);
+    return Intl.message(
+      'Medium security',
+      name: 'genPresetMed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `High security`
   String get genPresetHigh {
-    return Intl.message('High security', name: 'genPresetHigh', desc: '', args: []);
+    return Intl.message(
+      'High security',
+      name: 'genPresetHigh',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Very high security`
   String get genPresetVeryHigh {
-    return Intl.message('Very high security', name: 'genPresetVeryHigh', desc: '', args: []);
+    return Intl.message(
+      'Very high security',
+      name: 'genPresetVeryHigh',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `4-digit PIN`
   String get genPresetPin4 {
-    return Intl.message('4-digit PIN', name: 'genPresetPin4', desc: '', args: []);
+    return Intl.message(
+      '4-digit PIN',
+      name: 'genPresetPin4',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `MAC address`
   String get genPresetMac {
-    return Intl.message('MAC address', name: 'genPresetMac', desc: '', args: []);
+    return Intl.message(
+      'MAC address',
+      name: 'genPresetMac',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Rename`
@@ -1529,27 +2112,52 @@ class S {
 
   /// `Generator Presets`
   String get genPsTitle {
-    return Intl.message('Generator Presets', name: 'genPsTitle', desc: '', args: []);
+    return Intl.message(
+      'Generator Presets',
+      name: 'genPsTitle',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Delete preset`
   String get genPsDelete {
-    return Intl.message('Delete preset', name: 'genPsDelete', desc: '', args: []);
+    return Intl.message(
+      'Delete preset',
+      name: 'genPsDelete',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Selected by default`
   String get genPsDefault {
-    return Intl.message('Selected by default', name: 'genPsDefault', desc: '', args: []);
+    return Intl.message(
+      'Selected by default',
+      name: 'genPsDefault',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Uppercase latin letters`
   String get genPsUpper {
-    return Intl.message('Uppercase latin letters', name: 'genPsUpper', desc: '', args: []);
+    return Intl.message(
+      'Uppercase latin letters',
+      name: 'genPsUpper',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Lowercase latin letters`
   String get genPsLower {
-    return Intl.message('Lowercase latin letters', name: 'genPsLower', desc: '', args: []);
+    return Intl.message(
+      'Lowercase latin letters',
+      name: 'genPsLower',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Digits`
@@ -1559,7 +2167,12 @@ class S {
 
   /// `Special symbols`
   String get genPsSpecial {
-    return Intl.message('Special symbols', name: 'genPsSpecial', desc: '', args: []);
+    return Intl.message(
+      'Special symbols',
+      name: 'genPsSpecial',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Brackets`
@@ -1569,12 +2182,22 @@ class S {
 
   /// `High ASCII characters`
   String get genPsHigh {
-    return Intl.message('High ASCII characters', name: 'genPsHigh', desc: '', args: []);
+    return Intl.message(
+      'High ASCII characters',
+      name: 'genPsHigh',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Ambiguous symbols`
   String get genPsAmbiguous {
-    return Intl.message('Ambiguous symbols', name: 'genPsAmbiguous', desc: '', args: []);
+    return Intl.message(
+      'Ambiguous symbols',
+      name: 'genPsAmbiguous',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Match case`
@@ -1599,12 +2222,22 @@ class S {
 
   /// `Revert to state`
   String get detHistoryRevert {
-    return Intl.message('Revert to state', name: 'detHistoryRevert', desc: '', args: []);
+    return Intl.message(
+      'Revert to state',
+      name: 'detHistoryRevert',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Revert to this history state?`
   String get detHistoryRevertAlert {
-    return Intl.message('Revert to this history state?', name: 'detHistoryRevertAlert', desc: '', args: []);
+    return Intl.message(
+      'Revert to this history state?',
+      name: 'detHistoryRevertAlert',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Change icon`
@@ -1619,7 +2252,12 @@ class S {
 
   /// `Delete permanently`
   String get detDelEntryPerm {
-    return Intl.message('Delete permanently', name: 'detDelEntryPerm', desc: '', args: []);
+    return Intl.message(
+      'Delete permanently',
+      name: 'detDelEntryPerm',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Group`
@@ -1659,12 +2297,22 @@ class S {
 
   /// `Enter code manually`
   String get detSetupOtpManualButton {
-    return Intl.message('Enter code manually', name: 'detSetupOtpManualButton', desc: '', args: []);
+    return Intl.message(
+      'Enter code manually',
+      name: 'detSetupOtpManualButton',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `QR code scan error`
   String get detOtpQrError {
-    return Intl.message('QR code scan error', name: 'detOtpQrError', desc: '', args: []);
+    return Intl.message(
+      'QR code scan error',
+      name: 'detOtpQrError',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, we could not read the QR code, please try once again or contact the app authors with error details.`
@@ -1679,7 +2327,12 @@ class S {
 
   /// `Wrong QR code`
   String get detOtpQrWrong {
-    return Intl.message('Wrong QR code', name: 'detOtpQrWrong', desc: '', args: []);
+    return Intl.message(
+      'Wrong QR code',
+      name: 'detOtpQrWrong',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your QR code was successfully scanned but it doesn't contain one-time password data.`
@@ -1719,12 +2372,22 @@ class S {
 
   /// `Default`
   String get setGenTitlebarStyleDefault {
-    return Intl.message('Default', name: 'setGenTitlebarStyleDefault', desc: '', args: []);
+    return Intl.message(
+      'Default',
+      name: 'setGenTitlebarStyleDefault',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Show entries from all subgroups`
   String get setGenShowSubgroups {
-    return Intl.message('Show entries from all subgroups', name: 'setGenShowSubgroups', desc: '', args: []);
+    return Intl.message(
+      'Show entries from all subgroups',
+      name: 'setGenShowSubgroups',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Passwords don't match, please type them again`
@@ -1754,7 +2417,12 @@ class S {
 
   /// `Existing User`
   String get existingUser {
-    return Intl.message('Existing User', name: 'existingUser', desc: '', args: []);
+    return Intl.message(
+      'Existing User',
+      name: 'existingUser',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Register`
@@ -1764,7 +2432,12 @@ class S {
 
   /// `Create my Vault`
   String get createVault {
-    return Intl.message('Create my Vault', name: 'createVault', desc: '', args: []);
+    return Intl.message(
+      'Create my Vault',
+      name: 'createVault',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Choose a secure password to protect your Kee Vault. There are no "requirements" so just make it as strong as you can. Only you will know this password - it never leaves your device. It can not be reset so you must not forget it, but you can change it when you're signed in to Kee Vault.`
@@ -1779,27 +2452,52 @@ class S {
 
   /// `New password`
   String get newPassword {
-    return Intl.message('New password', name: 'newPassword', desc: '', args: []);
+    return Intl.message(
+      'New password',
+      name: 'newPassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `New password (please repeat)`
   String get newPasswordRepeat {
-    return Intl.message('New password (please repeat)', name: 'newPasswordRepeat', desc: '', args: []);
+    return Intl.message(
+      'New password (please repeat)',
+      name: 'newPasswordRepeat',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Password (please repeat)`
   String get passwordRepeat {
-    return Intl.message('Password (please repeat)', name: 'passwordRepeat', desc: '', args: []);
+    return Intl.message(
+      'Password (please repeat)',
+      name: 'passwordRepeat',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Change email preferences`
   String get changeEmailPrefs {
-    return Intl.message('Change email preferences', name: 'changeEmailPrefs', desc: '', args: []);
+    return Intl.message(
+      'Change email preferences',
+      name: 'changeEmailPrefs',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Change or Cancel Subscription`
   String get changeCancelSubscription {
-    return Intl.message('Change or Cancel Subscription', name: 'changeCancelSubscription', desc: '', args: []);
+    return Intl.message(
+      'Change or Cancel Subscription',
+      name: 'changeCancelSubscription',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Cancellation notes: If you cancel your subscription, once your current subscription term ends, we will delete your account in a way that protects your data at all times. After some time, your Kee Vault data will be permanently deleted so you must make sure that you have exported the latest copy of your data before you cancel your subscription. To continue using the app as a free user, you must first export your data to a KDBX file, then uninstall and reinstall the app. You can then import the exported KDBX file once you start using the app again as a free user. We recommend you plan carefully to minimise your risk of data loss.`
@@ -1824,12 +2522,22 @@ class S {
 
   /// `Delete Account`
   String get deleteAccount {
-    return Intl.message('Delete Account', name: 'deleteAccount', desc: '', args: []);
+    return Intl.message(
+      'Delete Account',
+      name: 'deleteAccount',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your Subscription`
   String get yourSubscription {
-    return Intl.message('Your Subscription', name: 'yourSubscription', desc: '', args: []);
+    return Intl.message(
+      'Your Subscription',
+      name: 'yourSubscription',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `You are not signed in so we cannot proceed. Try returning to the app home page or kill and re-open the app if you are having trouble reaching the sign-in screen again.`
@@ -1894,7 +2602,12 @@ class S {
 
   /// `Minimum accuracy for a URL match`
   String get minURLMatchAccuracy {
-    return Intl.message('Minimum accuracy for a URL match', name: 'minURLMatchAccuracy', desc: '', args: []);
+    return Intl.message(
+      'Minimum accuracy for a URL match',
+      name: 'minURLMatchAccuracy',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Text`
@@ -1919,12 +2632,22 @@ class S {
 
   /// `Protect field`
   String get protectField {
-    return Intl.message('Protect field', name: 'protectField', desc: '', args: []);
+    return Intl.message(
+      'Protect field',
+      name: 'protectField',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Unprotect field`
   String get unprotectField {
-    return Intl.message('Unprotect field', name: 'unprotectField', desc: '', args: []);
+    return Intl.message(
+      'Unprotect field',
+      name: 'unprotectField',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Apply`
@@ -1934,12 +2657,22 @@ class S {
 
   /// `Saving...`
   String get saveExplainerAlertTitle {
-    return Intl.message('Saving...', name: 'saveExplainerAlertTitle', desc: '', args: []);
+    return Intl.message(
+      'Saving...',
+      name: 'saveExplainerAlertTitle',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Create new entry`
   String get createNewEntry {
-    return Intl.message('Create new entry', name: 'createNewEntry', desc: '', args: []);
+    return Intl.message(
+      'Create new entry',
+      name: 'createNewEntry',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Entry saved. Make changes below if you want and then click "Done" below.`
@@ -1959,12 +2692,22 @@ class S {
 
   /// `Offer to save passwords`
   String get offerToSave {
-    return Intl.message('Offer to save passwords', name: 'offerToSave', desc: '', args: []);
+    return Intl.message(
+      'Offer to save passwords',
+      name: 'offerToSave',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Subscription expired`
   String get subscriptionExpired {
-    return Intl.message('Subscription expired', name: 'subscriptionExpired', desc: '', args: []);
+    return Intl.message(
+      'Subscription expired',
+      name: 'subscriptionExpired',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your subscription or trial period has ended. Provide up to date payment details and re-enable your subscription on the Kee Vault Account Management web site.`
@@ -1999,7 +2742,12 @@ class S {
 
   /// `Restart subscription`
   String get restartSubscription {
-    return Intl.message('Restart subscription', name: 'restartSubscription', desc: '', args: []);
+    return Intl.message(
+      'Restart subscription',
+      name: 'restartSubscription',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Welcome back to Kee Vault. You can enable a new 30 day free trial to see what has improved since you first created your Kee Vault account.`
@@ -2014,7 +2762,12 @@ class S {
 
   /// `Start free trial`
   String get startFreeTrial {
-    return Intl.message('Start free trial', name: 'startFreeTrial', desc: '', args: []);
+    return Intl.message(
+      'Start free trial',
+      name: 'startFreeTrial',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, we weren't able to restart your trial now. Please try again later and ask for help on the community forum if the problem continues.`
@@ -2029,7 +2782,12 @@ class S {
 
   /// `All done!`
   String get startNewTrialSuccess {
-    return Intl.message('All done!', name: 'startNewTrialSuccess', desc: '', args: []);
+    return Intl.message(
+      'All done!',
+      name: 'startNewTrialSuccess',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `We take pride in how we protect your privacy and security, particularly in comparison to other password management services, so we highlight the most important information right here.`
@@ -2134,7 +2892,12 @@ class S {
 
   /// `Want to hear about new features?`
   String get bannerMsg1TitleA {
-    return Intl.message('Want to hear about new features?', name: 'bannerMsg1TitleA', desc: '', args: []);
+    return Intl.message(
+      'Want to hear about new features?',
+      name: 'bannerMsg1TitleA',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Want to hear about new features and how to register for automatic backups and access from your other devices?`
@@ -2159,47 +2922,92 @@ class S {
 
   /// `You can review the full policy here:`
   String get prcRegistrationPrivacy2 {
-    return Intl.message('You can review the full policy here:', name: 'prcRegistrationPrivacy2', desc: '', args: []);
+    return Intl.message(
+      'You can review the full policy here:',
+      name: 'prcRegistrationPrivacy2',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sign up to receive emails`
   String get prcRegistrationSignUpButton {
-    return Intl.message('Sign up to receive emails', name: 'prcRegistrationSignUpButton', desc: '', args: []);
+    return Intl.message(
+      'Sign up to receive emails',
+      name: 'prcRegistrationSignUpButton',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Remind me...`
   String get bannerReminderDelayRemindMe {
-    return Intl.message('Remind me...', name: 'bannerReminderDelayRemindMe', desc: '', args: []);
+    return Intl.message(
+      'Remind me...',
+      name: 'bannerReminderDelayRemindMe',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `in 3 days`
   String get bannerReminderDelay3days {
-    return Intl.message('in 3 days', name: 'bannerReminderDelay3days', desc: '', args: []);
+    return Intl.message(
+      'in 3 days',
+      name: 'bannerReminderDelay3days',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `in 3 weeks`
   String get bannerReminderDelay3weeks {
-    return Intl.message('in 3 weeks', name: 'bannerReminderDelay3weeks', desc: '', args: []);
+    return Intl.message(
+      'in 3 weeks',
+      name: 'bannerReminderDelay3weeks',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `in 3 months`
   String get bannerReminderDelay3months {
-    return Intl.message('in 3 months', name: 'bannerReminderDelay3months', desc: '', args: []);
+    return Intl.message(
+      'in 3 months',
+      name: 'bannerReminderDelay3months',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `never`
   String get bannerReminderDelayNever {
-    return Intl.message('never', name: 'bannerReminderDelayNever', desc: '', args: []);
+    return Intl.message(
+      'never',
+      name: 'bannerReminderDelayNever',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Privacy Statement`
   String get privacyStatement {
-    return Intl.message('Privacy Statement', name: 'privacyStatement', desc: '', args: []);
+    return Intl.message(
+      'Privacy Statement',
+      name: 'privacyStatement',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Yes please`
   String get alertYesPlease {
-    return Intl.message('Yes please', name: 'alertYesPlease', desc: '', args: []);
+    return Intl.message(
+      'Yes please',
+      name: 'alertYesPlease',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Sorry, we weren't able to register your email address now. Please check that you have a good network connection and try again or ask for help on the community forum if the problem continues.`
@@ -2304,7 +3112,12 @@ class S {
 
   /// `Welcome to Kee Vault`
   String get welcomeToKeeVault {
-    return Intl.message('Welcome to Kee Vault', name: 'welcomeToKeeVault', desc: '', args: []);
+    return Intl.message(
+      'Welcome to Kee Vault',
+      name: 'welcomeToKeeVault',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again.`
@@ -2339,7 +3152,12 @@ class S {
 
   /// `Start account reset`
   String get startAccountReset {
-    return Intl.message('Start account reset', name: 'startAccountReset', desc: '', args: []);
+    return Intl.message(
+      'Start account reset',
+      name: 'startAccountReset',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with {email}`
@@ -2354,7 +3172,12 @@ class S {
 
   /// `Agree and check account status`
   String get agreeAndCheckAccountStatus {
-    return Intl.message('Agree and check account status', name: 'agreeAndCheckAccountStatus', desc: '', args: []);
+    return Intl.message(
+      'Agree and check account status',
+      name: 'agreeAndCheckAccountStatus',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `The "Big Tech" companies prohibit us from directly linking to the account registration page on our website.`
@@ -2369,7 +3192,12 @@ class S {
 
   /// `Change Password`
   String get changePassword {
-    return Intl.message('Change Password', name: 'changePassword', desc: '', args: []);
+    return Intl.message(
+      'Change Password',
+      name: 'changePassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Change the password you use to sign in to Kee Vault`
@@ -2384,17 +3212,32 @@ class S {
 
   /// `First, enter your current password.`
   String get enterOldPassword {
-    return Intl.message('First, enter your current password.', name: 'enterOldPassword', desc: '', args: []);
+    return Intl.message(
+      'First, enter your current password.',
+      name: 'enterOldPassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Current Password`
   String get currentPassword {
-    return Intl.message('Current Password', name: 'currentPassword', desc: '', args: []);
+    return Intl.message(
+      'Current Password',
+      name: 'currentPassword',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Current password is not correct`
   String get currentPasswordNotCorrect {
-    return Intl.message('Current password is not correct', name: 'currentPasswordNotCorrect', desc: '', args: []);
+    return Intl.message(
+      'Current password is not correct',
+      name: 'currentPasswordNotCorrect',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Password changed. Use it when you next unlock Kee Vault.`
@@ -2409,12 +3252,22 @@ class S {
 
   /// `View documentation`
   String get viewDocumentation {
-    return Intl.message('View documentation', name: 'viewDocumentation', desc: '', args: []);
+    return Intl.message(
+      'View documentation',
+      name: 'viewDocumentation',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Please enter your password`
   String get biometricsMaybeExpired {
-    return Intl.message('Please enter your password', name: 'biometricsMaybeExpired', desc: '', args: []);
+    return Intl.message(
+      'Please enter your password',
+      name: 'biometricsMaybeExpired',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your biometrics/{PINname} access needs refreshing so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your full password. You can adjust this amount of time in the Settings once you're signed in but to help protect you against data loss, you can't avoid entering your password forever.`
@@ -2459,12 +3312,22 @@ class S {
 
   /// `Password strength`
   String get passwordStrength {
-    return Intl.message('Password strength', name: 'passwordStrength', desc: '', args: []);
+    return Intl.message(
+      'Password strength',
+      name: 'passwordStrength',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your device stopped us opening that resource`
   String get urlOpenFailed {
-    return Intl.message('Your device stopped us opening that resource', name: 'urlOpenFailed', desc: '', args: []);
+    return Intl.message(
+      'Your device stopped us opening that resource',
+      name: 'urlOpenFailed',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Nearly there. Your subscription is being processed and we are setting up your account. This usually takes a few seconds but can take longer at busy times. We'll keep trying for a minute so don't close the app or lock your phone before then.`
@@ -2479,7 +3342,12 @@ class S {
 
   /// `Email verification`
   String get emailVerification {
-    return Intl.message('Email verification', name: 'emailVerification', desc: '', args: []);
+    return Intl.message(
+      'Email verification',
+      name: 'emailVerification',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Please verify your email address. When you registered we sent you a verification link to {email}. Please now follow the instructions in that email. If you can't find it, you can request that we send a new one.`
@@ -2494,7 +3362,12 @@ class S {
 
   /// `Resend the verification link`
   String get resendVerification {
-    return Intl.message('Resend the verification link', name: 'resendVerification', desc: '', args: []);
+    return Intl.message(
+      'Resend the verification link',
+      name: 'resendVerification',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `When your email address is successfully verified you can click the button below to continue your sign-in.`
@@ -2519,12 +3392,22 @@ class S {
 
   /// `Open in browser`
   String get openInBrowser {
-    return Intl.message('Open in browser', name: 'openInBrowser', desc: '', args: []);
+    return Intl.message(
+      'Open in browser',
+      name: 'openInBrowser',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Continue signing in`
   String get continueSigningIn {
-    return Intl.message('Continue signing in', name: 'continueSigningIn', desc: '', args: []);
+    return Intl.message(
+      'Continue signing in',
+      name: 'continueSigningIn',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `No longer have access to your email address?`
@@ -2539,7 +3422,12 @@ class S {
 
   /// `Change email address`
   String get changeEmail {
-    return Intl.message('Change email address', name: 'changeEmail', desc: '', args: []);
+    return Intl.message(
+      'Change email address',
+      name: 'changeEmail',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Your email address has a crucial role in the advanced security protections Kee Vault offers. Changing it securely is a far more complex task than for most of the places you might wish to change it. We are happy to finally offer this feature to you but please read the information carefully and don't proceed when you are in a rush.`
@@ -2554,12 +3442,22 @@ class S {
 
   /// `Your new email address will:`
   String get changeEmailInfo2 {
-    return Intl.message('Your new email address will:', name: 'changeEmailInfo2', desc: '', args: []);
+    return Intl.message(
+      'Your new email address will:',
+      name: 'changeEmailInfo2',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `become your new sign-in ID`
   String get changeEmailInfo2a {
-    return Intl.message('become your new sign-in ID', name: 'changeEmailInfo2a', desc: '', args: []);
+    return Intl.message(
+      'become your new sign-in ID',
+      name: 'changeEmailInfo2a',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `need to be verified to confirm it belongs to you`
@@ -2574,7 +3472,12 @@ class S {
 
   /// `We recommend that you:`
   String get changeEmailInfo3 {
-    return Intl.message('We recommend that you:', name: 'changeEmailInfo3', desc: '', args: []);
+    return Intl.message(
+      'We recommend that you:',
+      name: 'changeEmailInfo3',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `1) Click the Cancel button below, sign in to Kee Vault again, Export your Vault to a KDBX file and store it somewhere safe as a backup.`
@@ -2639,17 +3542,32 @@ class S {
 
   /// `Current email address`
   String get currentEmailAddress {
-    return Intl.message('Current email address', name: 'currentEmailAddress', desc: '', args: []);
+    return Intl.message(
+      'Current email address',
+      name: 'currentEmailAddress',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `New email address`
   String get newEmailAddress {
-    return Intl.message('New email address', name: 'newEmailAddress', desc: '', args: []);
+    return Intl.message(
+      'New email address',
+      name: 'newEmailAddress',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Email address changed`
   String get emailChanged {
-    return Intl.message('Email address changed', name: 'emailChanged', desc: '', args: []);
+    return Intl.message(
+      'Email address changed',
+      name: 'emailChanged',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `You may lose data if you are signed in on any other devices now. Please cancel (press back) and then sign out of all other devices, including the Kee Vault 1 web app. Then wait a minute and start this process again.`
