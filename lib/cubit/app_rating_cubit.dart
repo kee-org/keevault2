@@ -49,17 +49,16 @@ class AppRatingCubit extends Cubit<AppRatingState> {
             },
           ),
           TextButton(
-            onPressed:
-                stars != null && stars > 0
-                    ? () async {
-                      final starInt = stars.round();
-                      trackEvent('rated', value: starInt);
-                      await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
-                      if (!context.mounted) return;
-                      Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
-                      unawaited(starInt < 5 ? showForumDialog(starInt) : showStoreLoadDialog());
-                    }
-                    : null,
+            onPressed: stars != null && stars > 0
+                ? () async {
+                    final starInt = stars.round();
+                    trackEvent('rated', value: starInt);
+                    await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
+                    if (!context.mounted) return;
+                    Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
+                    unawaited(starInt < 5 ? showForumDialog(starInt) : showStoreLoadDialog());
+                  }
+                : null,
             child: Text('CONTINUE'),
           ),
         ];
@@ -72,10 +71,9 @@ class AppRatingCubit extends Cubit<AppRatingState> {
         messagePadding: EdgeInsets.only(bottom: 20),
       ),
       starRatingOptions: StarRatingOptions(initialRating: initialStars.toDouble()),
-      onDismissed:
-          () => _rateMyApp.callEvent(
-            RateMyAppEventType.laterButtonPressed,
-          ), // Called when the user dismissed the dialog (either by taping outside or by pressing the "back" button).
+      onDismissed: () => _rateMyApp.callEvent(
+        RateMyAppEventType.laterButtonPressed,
+      ), // Called when the user dismissed the dialog (either by taping outside or by pressing the "back" button).
     );
   }
 

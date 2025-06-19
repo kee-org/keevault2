@@ -141,63 +141,57 @@ class _AccountEmailNotVerifiedWidgetState extends State<AccountEmailNotVerifiedW
                   ),
                 ),
                 OutlinedButton(
-                  onPressed:
-                      disableResending
-                          ? null
-                          : () async {
-                            await resendEmail();
-                          },
-                  child:
-                      resending
-                          ? Container(
-                            width: 24,
-                            height: 24,
-                            padding: const EdgeInsets.all(2.0),
-                            child: const CircularProgressIndicator(strokeWidth: 3),
-                          )
-                          : Text(str.resendVerification),
+                  onPressed: disableResending
+                      ? null
+                      : () async {
+                          await resendEmail();
+                        },
+                  child: resending
+                      ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(strokeWidth: 3),
+                        )
+                      : Text(str.resendVerification),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(str.signInAgainWhenVerified, textAlign: TextAlign.center),
                 ),
                 FilledButton(
-                  onPressed:
-                      disableRefreshing
-                          ? null
-                          : () async {
-                            await refreshUserAndTokens();
-                          },
-                  child:
-                      refreshing
-                          ? Container(
-                            width: 24,
-                            height: 24,
-                            padding: const EdgeInsets.all(2.0),
-                            child: const CircularProgressIndicator(strokeWidth: 3),
-                          )
-                          : Text(str.continueSigningIn),
+                  onPressed: disableRefreshing
+                      ? null
+                      : () async {
+                          await refreshUserAndTokens();
+                        },
+                  child: refreshing
+                      ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(strokeWidth: 3),
+                        )
+                      : Text(str.continueSigningIn),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(str.noLongerHaveAccessToUnverifiedEmail, textAlign: TextAlign.center),
                 ),
                 OutlinedButton(
-                  onPressed:
-                      disableRefreshing
-                          ? null
-                          : () {
-                            startEmailChange();
-                          },
-                  child:
-                      refreshing
-                          ? Container(
-                            width: 24,
-                            height: 24,
-                            padding: const EdgeInsets.all(2.0),
-                            child: const CircularProgressIndicator(strokeWidth: 3),
-                          )
-                          : Text(str.changeEmail),
+                  onPressed: disableRefreshing
+                      ? null
+                      : () {
+                          startEmailChange();
+                        },
+                  child: refreshing
+                      ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(strokeWidth: 3),
+                        )
+                      : Text(str.changeEmail),
                 ),
               ],
             ),

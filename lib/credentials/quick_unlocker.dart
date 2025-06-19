@@ -47,16 +47,15 @@ class QuickUnlocker {
     return val;
   }
 
-  Future<BiometricStorageFile> _storageFile() =>
-      _storageFileCached ??= BiometricStorage().getStorage(
-        storageFileName,
-        forceInit: true,
-        options: StorageFileInitOptions(
-          authenticationValidityDurationSeconds: authGracePeriod,
-          androidBiometricOnly: false,
-          iosAccessGroupPlistKey: iosAccessGroupPlistKey,
-        ),
-      );
+  Future<BiometricStorageFile> _storageFile() => _storageFileCached ??= BiometricStorage().getStorage(
+    storageFileName,
+    forceInit: true,
+    options: StorageFileInitOptions(
+      authenticationValidityDurationSeconds: authGracePeriod,
+      androidBiometricOnly: false,
+      iosAccessGroupPlistKey: iosAccessGroupPlistKey,
+    ),
+  );
 
   // In 2023 we changed the user string to be the user ID rather than emailHashed. Since we didn't change
   // any existing user's ID and they used to default to emailHashed anyway, this will keep working.

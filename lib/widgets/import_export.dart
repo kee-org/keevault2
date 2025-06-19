@@ -68,55 +68,52 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final theme = Theme.of(context);
     final str = S.of(context);
     final timeOfDeath = (_localFreeKdbxImportedAt?.toLocal() ?? DateTime.now()).add(Duration(days: 90));
-    final freeVaultWidgets =
-        (_localFreeKdbxExists ?? false) && _localFreeKdbxImportedAt != null
-            ? [
-              Divider(),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                child: Text('Free Vault (local only)', style: theme.textTheme.headlineMedium),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-                child: Card(
-                  clipBehavior: Clip.antiAlias,
-                  elevation: 6,
-                  child: Column(
-                    children: [
-                      ListTile(
-                        title: Text(
-                          'We found an old Vault from the time when you were using Kee Vault as a free user.',
+    final freeVaultWidgets = (_localFreeKdbxExists ?? false) && _localFreeKdbxImportedAt != null
+        ? [
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+              child: Text('Free Vault (local only)', style: theme.textTheme.headlineMedium),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                elevation: 6,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text('We found an old Vault from the time when you were using Kee Vault as a free user.'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                      child: Text(
+                        'It is due to be automatically destroyed soon after ${Jiffy.parseFromDateTime(timeOfDeath).yMMMMEEEEd} ${Jiffy.parseFromDateTime(timeOfDeath).jm}.',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                      child: Text(
+                        'You can export it in KDBX format or force it to be destroyed immediately, only if you are certain that it contains no important information which has yet to be exported or imported into your current Vault.',
+                      ),
+                    ),
+                    OverflowBar(
+                      alignment: MainAxisAlignment.end,
+                      children: [
+                        FilledButton(onPressed: () => {_exportFreeKdbx(context)}, child: Text(str.export)),
+                        FilledButton(
+                          onPressed: () => {_deleteFreeKdbx(context)},
+                          style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
+                          child: Text(str.detDelEntryPerm),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                        child: Text(
-                          'It is due to be automatically destroyed soon after ${Jiffy.parseFromDateTime(timeOfDeath).yMMMMEEEEd} ${Jiffy.parseFromDateTime(timeOfDeath).jm}.',
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                        child: Text(
-                          'You can export it in KDBX format or force it to be destroyed immediately, only if you are certain that it contains no important information which has yet to be exported or imported into your current Vault.',
-                        ),
-                      ),
-                      OverflowBar(
-                        alignment: MainAxisAlignment.end,
-                        children: [
-                          FilledButton(onPressed: () => {_exportFreeKdbx(context)}, child: Text(str.export)),
-                          FilledButton(
-                            onPressed: () => {_deleteFreeKdbx(context)},
-                            style: FilledButton.styleFrom(backgroundColor: theme.buttonTheme.colorScheme!.error),
-                            child: Text(str.detDelEntryPerm),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ]
-            : [];
+            ),
+          ]
+        : [];
     return TraceableWidget(
       actionName: 'ImportExport',
       child: BlocBuilder<VaultCubit, VaultState>(

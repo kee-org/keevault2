@@ -185,45 +185,43 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                           Align(
                             alignment: Alignment.center,
                             child: FilledButton(
-                              onPressed:
-                                  saving
-                                      ? null
-                                      : () async {
-                                        final navigator = Navigator.of(context);
-                                        final sm = ScaffoldMessenger.of(context);
-                                        if (_formKey.currentState!.validate()) {
+                              onPressed: saving
+                                  ? null
+                                  : () async {
+                                      final navigator = Navigator.of(context);
+                                      final sm = ScaffoldMessenger.of(context);
+                                      if (_formKey.currentState!.validate()) {
+                                        setState(() {
+                                          saving = true;
+                                        });
+                                        _formKey.currentState!.save();
+                                        try {
+                                          await changePassword(submittedValue!);
                                           setState(() {
-                                            saving = true;
+                                            saving = false;
                                           });
-                                          _formKey.currentState!.save();
-                                          try {
-                                            await changePassword(submittedValue!);
-                                            setState(() {
-                                              saving = false;
-                                            });
-                                            sm.showSnackBar(
-                                              SnackBar(
-                                                content: Text(str.passwordChanged),
-                                                duration: Duration(seconds: 8),
-                                              ),
-                                            );
-                                            navigator.pop();
-                                          } finally {
-                                            setState(() {
-                                              saving = false;
-                                            });
-                                          }
+                                          sm.showSnackBar(
+                                            SnackBar(
+                                              content: Text(str.passwordChanged),
+                                              duration: Duration(seconds: 8),
+                                            ),
+                                          );
+                                          navigator.pop();
+                                        } finally {
+                                          setState(() {
+                                            saving = false;
+                                          });
                                         }
-                                      },
-                              child:
-                                  saving
-                                      ? Container(
-                                        width: 24,
-                                        height: 24,
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: const CircularProgressIndicator(strokeWidth: 3),
-                                      )
-                                      : Text(str.changePassword),
+                                      }
+                                    },
+                              child: saving
+                                  ? Container(
+                                      width: 24,
+                                      height: 24,
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: const CircularProgressIndicator(strokeWidth: 3),
+                                    )
+                                  : Text(str.changePassword),
                             ),
                           ),
                         ],

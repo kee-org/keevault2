@@ -105,8 +105,8 @@ class AccountWrapperState extends State<AccountWrapperWidget> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: TextButton(
-                        onPressed:
-                            () async => await ResetAccountPromptDialog(emailAddress: state.user.email!).show(context),
+                        onPressed: () async =>
+                            await ResetAccountPromptDialog(emailAddress: state.user.email!).show(context),
                         child: Text(str.forgotPasswordOrCheckAccount, textAlign: TextAlign.center),
                       ),
                     ),

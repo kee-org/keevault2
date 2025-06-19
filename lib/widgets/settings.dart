@@ -148,12 +148,11 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
             accountChildren.add(
               SimpleSettingsTile(
                 title: str.changeEmailPrefs,
-                onTap:
-                    () async => await AppConfig.router.navigateTo(
-                      context,
-                      Routes.changeEmailPrefs,
-                      transition: TransitionType.inFromRight,
-                    ),
+                onTap: () async => await AppConfig.router.navigateTo(
+                  context,
+                  Routes.changeEmailPrefs,
+                  transition: TransitionType.inFromRight,
+                ),
               ),
             );
 
@@ -168,12 +167,11 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
             accountChildren.add(
               SimpleSettingsTile(
                 title: str.changeCancelSubscription,
-                onTap:
-                    () async => await AppConfig.router.navigateTo(
-                      context,
-                      Routes.changeSubscription,
-                      transition: TransitionType.inFromRight,
-                    ),
+                onTap: () async => await AppConfig.router.navigateTo(
+                  context,
+                  Routes.changeSubscription,
+                  transition: TransitionType.inFromRight,
+                ),
               ),
             );
           }
@@ -268,17 +266,16 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                       children: [
                         Visibility(
                           visible: autofillState is AutofillAvailable,
-                          child:
-                              autofillState is AutofillAvailable
-                                  ? SettingsContainer(
-                                    children: [
-                                      AutofillStatusWidget(
-                                        isEnabled: autofillState.enabled,
-                                        isDeviceQuickUnlockEnabled: _isDeviceQuickUnlockEnabled,
-                                      ),
-                                    ],
-                                  )
-                                  : Container(),
+                          child: autofillState is AutofillAvailable
+                              ? SettingsContainer(
+                                  children: [
+                                    AutofillStatusWidget(
+                                      isEnabled: autofillState.enabled,
+                                      isDeviceQuickUnlockEnabled: _isDeviceQuickUnlockEnabled,
+                                    ),
+                                  ],
+                                )
+                              : Container(),
                         ),
                       ],
                     ),
@@ -292,12 +289,11 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                         SimpleSettingsTile(
                           title: str.genPsTitle,
                           subtitle: str.managePasswordPresets,
-                          onTap:
-                              () async => await AppConfig.router.navigateTo(
-                                context,
-                                Routes.passwordPresetManager,
-                                transition: TransitionType.inFromRight,
-                              ),
+                          onTap: () async => await AppConfig.router.navigateTo(
+                            context,
+                            Routes.passwordPresetManager,
+                            transition: TransitionType.inFromRight,
+                          ),
                         ),
                         SwitchSettingsTile(
                           settingKey: 'expandGroups',

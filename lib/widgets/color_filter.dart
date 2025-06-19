@@ -32,10 +32,9 @@ class ColorFilterWidget extends StatelessWidget {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           alignment: WrapAlignment.center,
                           runSpacing: 16.0,
-                          children:
-                              EntryColor.values
-                                  .map((c) => colorBlock(c, filterState.colors.contains(c), theme, context))
-                                  .toList(),
+                          children: EntryColor.values
+                              .map((c) => colorBlock(c, filterState.colors.contains(c), theme, context))
+                              .toList(),
                         ),
                       ),
                     ),

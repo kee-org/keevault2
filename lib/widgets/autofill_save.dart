@@ -47,16 +47,15 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
       newEntry = vaultCubit.createEntry(group: vault.files.current.body.rootGroup);
     });
 
-    final appId =
-        autofillState.androidMetadata.packageNames.isNotEmpty ? autofillState.androidMetadata.packageNames.first : '';
-    final webDomain =
-        autofillState.androidMetadata.webDomains.isNotEmpty
-            ? autofillState.androidMetadata.webDomains.first.domain
-            : '';
-    final scheme =
-        autofillState.androidMetadata.webDomains.isNotEmpty
-            ? autofillState.androidMetadata.webDomains.first.scheme
-            : null;
+    final appId = autofillState.androidMetadata.packageNames.isNotEmpty
+        ? autofillState.androidMetadata.packageNames.first
+        : '';
+    final webDomain = autofillState.androidMetadata.webDomains.isNotEmpty
+        ? autofillState.androidMetadata.webDomains.first.domain
+        : '';
+    final scheme = autofillState.androidMetadata.webDomains.isNotEmpty
+        ? autofillState.androidMetadata.webDomains.first.scheme
+        : null;
 
     if (webDomain.isNotEmpty) {
       newEntry!.addAutofillUrl(webDomain, scheme);

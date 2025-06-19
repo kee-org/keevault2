@@ -103,10 +103,9 @@ class EntryCubit extends Cubit<EntryState> {
     final entry = (state as EntryLoaded).entry;
     final newList = entry.fields.toList();
     final uniqueName = findUniqueFieldName(newList, field.fieldKey!);
-    field =
-        uniqueName == field.fieldKey!
-            ? field
-            : field.copyWith(browserModel: field.browserModel!.copyWith(name: uniqueName));
+    field = uniqueName == field.fieldKey!
+        ? field
+        : field.copyWith(browserModel: field.browserModel!.copyWith(name: uniqueName));
     newList.add(field);
     final updated = entry.copyWith(fields: newList, isDirty: true);
     emit(EntryLoaded(updated));
@@ -156,10 +155,9 @@ class EntryCubit extends Cubit<EntryState> {
     final currentField = entry.fields[fieldIndex];
 
     final updatedFieldName = findUniqueFieldName(newList, newName);
-    final updatedField =
-        currentField.fieldStorage == FieldStorage.JSON
-            ? currentField.copyWith(browserModel: currentField.browserModel!.copyWith(name: updatedFieldName))
-            : currentField.copyWith(key: KdbxKey(updatedFieldName), name: updatedFieldName);
+    final updatedField = currentField.fieldStorage == FieldStorage.JSON
+        ? currentField.copyWith(browserModel: currentField.browserModel!.copyWith(name: updatedFieldName))
+        : currentField.copyWith(key: KdbxKey(updatedFieldName), name: updatedFieldName);
 
     newList.replaceRange(fieldIndex, fieldIndex + 1, [updatedField]);
     final updated = entry.copyWith(fields: newList, isDirty: true);

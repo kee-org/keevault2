@@ -126,11 +126,10 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
                     TextSpan(
                       text: str.localOnlyAgree2,
                       style: theme.textTheme.bodyMedium!.copyWith(color: mainColor, fontWeight: FontWeight.bold),
-                      recognizer:
-                          TapGestureRecognizer()
-                            ..onTap = () async {
-                              await FreeUserTermsDialog().show(context);
-                            },
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          await FreeUserTermsDialog().show(context);
+                        },
                     ),
                     TextSpan(text: str.localOnlyAgree3),
                   ],
@@ -149,15 +148,14 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
               },
             ),
             FilledButton(
-              onPressed:
-                  _userAgreed
-                      ? () async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          await widget.onSubmit(submittedValue!);
-                        }
+              onPressed: _userAgreed
+                  ? () async {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        await widget.onSubmit(submittedValue!);
                       }
-                      : null,
+                    }
+                  : null,
               child: Text(str.createVault),
             ),
           ],

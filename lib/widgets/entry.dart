@@ -60,12 +60,10 @@ class EntryWidget extends StatelessWidget {
     final iconPicked = await showDialog(
       barrierDismissible: true,
       context: context,
-      builder:
-          (BuildContext context) => IconChooser(
-            customIcons: allCustomIcons,
-            iconColor:
-                Theme.of(context).brightness == Brightness.dark ? entryColorsContrast[color] : entryColors[color],
-          ),
+      builder: (BuildContext context) => IconChooser(
+        customIcons: allCustomIcons,
+        iconColor: Theme.of(context).brightness == Brightness.dark ? entryColorsContrast[color] : entryColors[color],
+      ),
     );
     if (iconPicked != null) {
       cubit.changeIcon(iconPicked is KdbxIcon ? iconPicked : null, iconPicked is KdbxCustomIcon ? iconPicked : null);
@@ -278,63 +276,62 @@ class EntryWidget extends StatelessWidget {
               return ColouredSafeArea(
                 child: Scaffold(
                   key: key,
-                  appBar:
-                      savingViaAutofill
-                          ? AppBar(
-                            title: Image(
-                              image: AssetImage('assets/vault.png'),
-                              excludeFromSemantics: true,
-                              height: 32,
-                              color: Color.fromARGB(0xFF, 0x1A, 0x46, 0x6B),
-                            ),
-                            centerTitle: true,
-                            toolbarHeight: 48,
-                            leading: IconButton(
-                              iconSize: 24,
-                              icon: Icon(Icons.arrow_back),
-                              onPressed: () async => await SystemNavigator.pop(),
-                            ),
-                          )
-                          : AppBar(
-                            actions: [
-                              Visibility(
-                                visible: onDelete != null,
-                                child: IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () {
-                                    onDelete!();
-                                  },
-                                ),
-                              ),
-                              OpenContainer<bool>(
-                                key: ValueKey('history view icon container'),
-                                tappable: false,
-                                closedShape: RoundedRectangleBorder(),
-                                closedElevation: 0,
-                                closedColor: Colors.transparent,
-                                transitionType: ContainerTransitionType.fade,
-                                transitionDuration: const Duration(milliseconds: 300),
-                                openBuilder: (context, close) {
-                                  return EntryHistoryWidget(
-                                    key: ValueKey('history view'),
-                                    revertTo: revertTo,
-                                    deleteAt: deleteAt,
-                                  );
-                                },
-                                closedBuilder: (context, open) {
-                                  return Visibility(
-                                    visible: entry.history.isNotEmpty,
-                                    child: IconButton(
-                                      icon: Icon(Icons.history),
-                                      onPressed: () {
-                                        open();
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
+                  appBar: savingViaAutofill
+                      ? AppBar(
+                          title: Image(
+                            image: AssetImage('assets/vault.png'),
+                            excludeFromSemantics: true,
+                            height: 32,
+                            color: Color.fromARGB(0xFF, 0x1A, 0x46, 0x6B),
                           ),
+                          centerTitle: true,
+                          toolbarHeight: 48,
+                          leading: IconButton(
+                            iconSize: 24,
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () async => await SystemNavigator.pop(),
+                          ),
+                        )
+                      : AppBar(
+                          actions: [
+                            Visibility(
+                              visible: onDelete != null,
+                              child: IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  onDelete!();
+                                },
+                              ),
+                            ),
+                            OpenContainer<bool>(
+                              key: ValueKey('history view icon container'),
+                              tappable: false,
+                              closedShape: RoundedRectangleBorder(),
+                              closedElevation: 0,
+                              closedColor: Colors.transparent,
+                              transitionType: ContainerTransitionType.fade,
+                              transitionDuration: const Duration(milliseconds: 300),
+                              openBuilder: (context, close) {
+                                return EntryHistoryWidget(
+                                  key: ValueKey('history view'),
+                                  revertTo: revertTo,
+                                  deleteAt: deleteAt,
+                                );
+                              },
+                              closedBuilder: (context, open) {
+                                return Visibility(
+                                  visible: entry.history.isNotEmpty,
+                                  child: IconButton(
+                                    icon: Icon(Icons.history),
+                                    onPressed: () {
+                                      open();
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                   body: PopScope(
                     canPop: !entry.isDirty,
                     onPopInvokedWithResult: (bool didPop, Object? result) async {
@@ -344,20 +341,19 @@ class EntryWidget extends StatelessWidget {
                       final result = await showDialog(
                         routeSettings: RouteSettings(),
                         context: context,
-                        builder:
-                            (context) => AlertDialog(
-                              title: Text(str.keep_your_changes_question),
-                              actions: <Widget>[
-                                OutlinedButton(
-                                  child: Text(str.keep.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(true),
-                                ),
-                                OutlinedButton(
-                                  child: Text(str.discard.toUpperCase()),
-                                  onPressed: () => Navigator.of(context).pop(false),
-                                ),
-                              ],
+                        builder: (context) => AlertDialog(
+                          title: Text(str.keep_your_changes_question),
+                          actions: <Widget>[
+                            OutlinedButton(
+                              child: Text(str.keep.toUpperCase()),
+                              onPressed: () => Navigator.of(context).pop(true),
                             ),
+                            OutlinedButton(
+                              child: Text(str.discard.toUpperCase()),
+                              onPressed: () => Navigator.of(context).pop(false),
+                            ),
+                          ],
+                        ),
                       );
                       if (result != null) {
                         endEditing(result);
@@ -379,19 +375,19 @@ class EntryWidget extends StatelessWidget {
                                     !savingViaAutofill
                                         ? const SizedBox(height: 8)
                                         : Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Padding(
-                                                padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
-                                                child: Text(
-                                                  str.autofillNewEntryMakeChangesThenDone,
-                                                  style: theme.textTheme.bodyLarge,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
+                                                  child: Text(
+                                                    str.autofillNewEntryMakeChangesThenDone,
+                                                    style: theme.textTheme.bodyLarge,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
+                                            ],
+                                          ),
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
@@ -404,20 +400,19 @@ class EntryWidget extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 4),
                                         Expanded(
-                                          child:
-                                              entry.fields
-                                                  .take(1)
-                                                  .map(
-                                                    (f) => EntryField(
-                                                      fieldType: FieldType.string,
-                                                      key: ValueKey(f.fieldKey ?? 'first field of a corrupt entry'),
-                                                      entry: entry,
-                                                      field: f,
-                                                      onDelete: () => {},
-                                                      onChangeIcon: () => changeIcon(context, entry.color),
-                                                    ),
-                                                  )
-                                                  .first,
+                                          child: entry.fields
+                                              .take(1)
+                                              .map(
+                                                (f) => EntryField(
+                                                  fieldType: FieldType.string,
+                                                  key: ValueKey(f.fieldKey ?? 'first field of a corrupt entry'),
+                                                  entry: entry,
+                                                  field: f,
+                                                  onDelete: () => {},
+                                                  onChangeIcon: () => changeIcon(context, entry.color),
+                                                ),
+                                              )
+                                              .first,
                                         ),
                                       ],
                                     ),
@@ -433,12 +428,11 @@ class EntryWidget extends StatelessWidget {
                                             return Text(str.openError + str.errorCorruptField);
                                           }
                                           return EntryField(
-                                            fieldType:
-                                                f.isTotp
-                                                    ? FieldType.otp
-                                                    : f.isCheckbox
-                                                    ? FieldType.checkbox
-                                                    : FieldType.string,
+                                            fieldType: f.isTotp
+                                                ? FieldType.otp
+                                                : f.isCheckbox
+                                                ? FieldType.checkbox
+                                                : FieldType.string,
                                             key: ValueKey(key),
                                             entry: entry,
                                             field: f,
@@ -453,13 +447,13 @@ class EntryWidget extends StatelessWidget {
                                     ...entry.binaryMapEntries.isEmpty
                                         ? []
                                         : entry.binaryMapEntries.map((e) {
-                                          return BinaryCardWidget(
-                                            key: ValueKey('${e.key.key}-${e.value.valueHashCode}'),
-                                            entry: entry,
-                                            attachment: e,
-                                            readOnly: false,
-                                          );
-                                        }),
+                                            return BinaryCardWidget(
+                                              key: ValueKey('${e.key.key}-${e.value.valueHashCode}'),
+                                              entry: entry,
+                                              attachment: e,
+                                              readOnly: false,
+                                            );
+                                          }),
                                     Divider(indent: 16, endIndent: 16),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
@@ -500,11 +494,10 @@ class EntryWidget extends StatelessWidget {
                                     ),
                                     LabelsWidget(
                                       tags: entry.tags,
-                                      otherKnownTags:
-                                          loadedState.vault.files.current.tags
-                                              .map((t) => Tag(t, true))
-                                              .where((t) => !entry.tags.any((et) => et.lowercase == t.lowercase))
-                                              .toList(),
+                                      otherKnownTags: loadedState.vault.files.current.tags
+                                          .map((t) => Tag(t, true))
+                                          .where((t) => !entry.tags.any((et) => et.lowercase == t.lowercase))
+                                          .toList(),
                                     ),
                                     Row(
                                       children: [

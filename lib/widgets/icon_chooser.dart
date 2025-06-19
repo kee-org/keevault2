@@ -59,22 +59,21 @@ class _IconChooserState extends State<IconChooser> {
               onTap: () {
                 Navigator.pop(context, item.key is int ? KdbxIcon.values[item.key] : item.key as KdbxCustomIcon);
               },
-              child:
-                  item.value is IconData
-                      ? Icon(item.value, size: widget.iconSize, color: widget.iconColor)
-                      : Container(
-                        height: imageSize,
-                        width: imageSize,
-                        constraints: BoxConstraints(maxWidth: imageSize, minWidth: imageSize),
-                        child: Center(
-                          child: Container(
-                            height: imageSize,
-                            width: imageSize,
-                            constraints: BoxConstraints(maxWidth: imageSize, minWidth: imageSize),
-                            child: (item.value as Image),
-                          ),
+              child: item.value is IconData
+                  ? Icon(item.value, size: widget.iconSize, color: widget.iconColor)
+                  : Container(
+                      height: imageSize,
+                      width: imageSize,
+                      constraints: BoxConstraints(maxWidth: imageSize, minWidth: imageSize),
+                      child: Center(
+                        child: Container(
+                          height: imageSize,
+                          width: imageSize,
+                          constraints: BoxConstraints(maxWidth: imageSize, minWidth: imageSize),
+                          child: (item.value as Image),
                         ),
                       ),
+                    ),
             );
           },
         ),

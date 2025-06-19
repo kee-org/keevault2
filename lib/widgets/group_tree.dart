@@ -65,7 +65,9 @@ class GroupTreeWidget extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(child: GroupTreeListWidget(nodes: nodes, selectedGroupUuid: selectedGroup)),
+                        Expanded(
+                          child: GroupTreeListWidget(nodes: nodes, selectedGroupUuid: selectedGroup),
+                        ),
                         if (binNodes != null)
                           Container(
                             decoration: BoxDecoration(
@@ -103,23 +105,22 @@ class GroupTreeWidget extends StatelessWidget {
 }
 
 List<Node<GroupData>> kdbxGroupToNodes(KdbxGroup group, int depth, bool Function(KdbxGroup) filter) {
-  final nodes =
-      group.groups.values
-          .where((subgroup) => filter(subgroup))
-          .map(
-            (subgroup) => Node<GroupData>(
-              key: subgroup.uuid.uuid,
-              label: subgroup.name.get() ?? '[no name]',
-              data: GroupData(
-                uuid: subgroup.uuid.uuid,
-                isDeleted: subgroup.isInRecycleBin,
-                isMovable: !subgroup.isInRecycleBin,
-              ),
-              expanded: depth < 6,
-              children: kdbxGroupToNodes(subgroup, depth + 1, filter),
-            ),
-          )
-          .toList();
+  final nodes = group.groups.values
+      .where((subgroup) => filter(subgroup))
+      .map(
+        (subgroup) => Node<GroupData>(
+          key: subgroup.uuid.uuid,
+          label: subgroup.name.get() ?? '[no name]',
+          data: GroupData(
+            uuid: subgroup.uuid.uuid,
+            isDeleted: subgroup.isInRecycleBin,
+            isMovable: !subgroup.isInRecycleBin,
+          ),
+          expanded: depth < 6,
+          children: kdbxGroupToNodes(subgroup, depth + 1, filter),
+        ),
+      )
+      .toList();
   return nodes;
 }
 
@@ -231,16 +232,15 @@ class _GroupTreeListWidgetState extends State<GroupTreeListWidget> {
                   node.label,
                   softWrap: node.isParent ? theme.parentLabelOverflow == null : theme.labelOverflow == null,
                   overflow: node.isParent ? theme.parentLabelOverflow : theme.labelOverflow,
-                  style:
-                      node.isParent
-                          ? theme.parentLabelStyle.copyWith(
-                            fontWeight: theme.parentLabelStyle.fontWeight,
-                            color: isSelected ? theme.colorScheme.onPrimary : theme.parentLabelStyle.color,
-                          )
-                          : theme.labelStyle.copyWith(
-                            fontWeight: theme.labelStyle.fontWeight,
-                            color: isSelected ? theme.colorScheme.onPrimary : null,
-                          ),
+                  style: node.isParent
+                      ? theme.parentLabelStyle.copyWith(
+                          fontWeight: theme.parentLabelStyle.fontWeight,
+                          color: isSelected ? theme.colorScheme.onPrimary : theme.parentLabelStyle.color,
+                        )
+                      : theme.labelStyle.copyWith(
+                          fontWeight: theme.labelStyle.fontWeight,
+                          color: isSelected ? theme.colorScheme.onPrimary : null,
+                        ),
                 ),
               ),
             ],

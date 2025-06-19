@@ -84,23 +84,27 @@ class EntryListHeaderWidget extends StatelessWidget {
       builder: (context, state) {
         if (state is AutofillRequested) {
           final theme = Theme.of(context);
-          final String appId =
-              state.androidMetadata.packageNames.isNotEmpty ? state.androidMetadata.packageNames.first : '';
-          final webDomain =
-              state.androidMetadata.webDomains.isNotEmpty ? state.androidMetadata.webDomains.first.domain : '';
+          final String appId = state.androidMetadata.packageNames.isNotEmpty
+              ? state.androidMetadata.packageNames.first
+              : '';
+          final webDomain = state.androidMetadata.webDomains.isNotEmpty
+              ? state.androidMetadata.webDomains.first.domain
+              : '';
 
           final messageTarget = [
             TextSpan(text: 'Select an entry to fill into ', style: theme.textTheme.bodyMedium),
             webDomain != ''
-                ? TextSpan(text: webDomain, style: theme.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold))
+                ? TextSpan(
+                    text: webDomain,
+                    style: theme.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                  )
                 : TextSpan(text: 'the app described below', style: theme.textTheme.bodyMedium),
             TextSpan(text: '.', style: theme.textTheme.bodyMedium),
           ];
           final messageOutcome = TextSpan(
-            text:
-                state.forceInteractive
-                    ? " We'll add it to the list of matches for this ${webDomain != '' ? 'site' : 'app'}."
-                    : " We'll remember next time.",
+            text: state.forceInteractive
+                ? " We'll add it to the list of matches for this ${webDomain != '' ? 'site' : 'app'}."
+                : " We'll remember next time.",
             style: theme.textTheme.bodyMedium,
           );
 
@@ -163,33 +167,25 @@ class EntryListItemWidget extends StatelessWidget {
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder:
-                              (context) => PopScope(
-                                canPop: false,
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 48,
-                                    height: 48,
-                                    child: LoadingSpinner(tooltip: str.autofilling),
-                                  ),
-                                ),
-                              ),
+                          builder: (context) => PopScope(
+                            canPop: false,
+                            child: Center(
+                              child: SizedBox(width: 48, height: 48, child: LoadingSpinner(tooltip: str.autofilling)),
+                            ),
+                          ),
                         ),
                       );
 
                       // Save app id or domain for future matching purposes
-                      final appId =
-                          autoFillState.androidMetadata.packageNames.isNotEmpty
-                              ? autoFillState.androidMetadata.packageNames.first
-                              : '';
-                      final webDomain =
-                          autoFillState.androidMetadata.webDomains.isNotEmpty
-                              ? autoFillState.androidMetadata.webDomains.first.domain
-                              : '';
-                      final scheme =
-                          autoFillState.androidMetadata.webDomains.isNotEmpty
-                              ? autoFillState.androidMetadata.webDomains.first.scheme
-                              : null;
+                      final appId = autoFillState.androidMetadata.packageNames.isNotEmpty
+                          ? autoFillState.androidMetadata.packageNames.first
+                          : '';
+                      final webDomain = autoFillState.androidMetadata.webDomains.isNotEmpty
+                          ? autoFillState.androidMetadata.webDomains.first.domain
+                          : '';
+                      final scheme = autoFillState.androidMetadata.webDomains.isNotEmpty
+                          ? autoFillState.androidMetadata.webDomains.first.scheme
+                          : null;
 
                       await vaultCubit.addAutofillPersistentQueueItem({
                         'domain': webDomain,
@@ -293,15 +289,14 @@ class EntryListItemWidget extends StatelessWidget {
                         isThreeLine: true,
                         subtitle: Text('${entryListItemVM.username}\n${entryListItemVM.domain ?? ''}'),
                         leading: entryListItemVM.getIcon(32, Theme.of(context).brightness == Brightness.dark),
-                        trailing:
-                            url != null
-                                ? IconButton(
-                                  icon: Icon(Icons.open_in_new),
-                                  onPressed: () async {
-                                    await DialogUtils.openUrl(url);
-                                  },
-                                )
-                                : null,
+                        trailing: url != null
+                            ? IconButton(
+                                icon: Icon(Icons.open_in_new),
+                                onPressed: () async {
+                                  await DialogUtils.openUrl(url);
+                                },
+                              )
+                            : null,
                         onTap: () {
                           FocusScope.of(context).unfocus();
                           BlocProvider.of<EntryCubit>(context).startEditing(entry);

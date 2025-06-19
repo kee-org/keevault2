@@ -63,7 +63,10 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(padding: const EdgeInsets.all(16.0), child: Text(widget.reason, style: theme.textTheme.titleLarge)),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(widget.reason, style: theme.textTheme.titleLarge),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -78,10 +81,9 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                       border: OutlineInputBorder(),
                       hintText: str.enter_your_account_password,
                       labelText: str.password,
-                      errorText:
-                          widget.showError
-                              ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
-                              : null,
+                      errorText: widget.showError
+                          ? (widget.quStatus == QUStatus.mapAvailable ? str.biometricsMaybeExpired : str.tryAgain)
+                          : null,
                       suffixIcon: IconButton(
                         icon: Icon(password1Obscured ? Icons.visibility : Icons.visibility_off),
                         onPressed: () {
@@ -126,23 +128,23 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
           ),
           widget.showError && widget.quStatus == QUStatus.mapAvailable
               ? Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(str.biometricsErrorExplanation(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN')),
-              )
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(str.biometricsErrorExplanation(KeeVaultPlatform.isIOS ? 'Passcode' : 'PIN')),
+                )
               : SizedBox.shrink(),
           _showBiometricSigninButton
               ? Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    if (!await widget.forceBiometric!()) {
-                      l.w('Failed to force biometric signin');
-                    }
-                  },
-                  label: Text(str.unlock_with_biometrics),
-                  icon: Icon(Icons.fingerprint),
-                ),
-              )
+                  padding: const EdgeInsets.all(16.0),
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      if (!await widget.forceBiometric!()) {
+                        l.w('Failed to force biometric signin');
+                      }
+                    },
+                    label: Text(str.unlock_with_biometrics),
+                    icon: Icon(Icons.fingerprint),
+                  ),
+                )
               : SizedBox.shrink(),
         ],
       ),

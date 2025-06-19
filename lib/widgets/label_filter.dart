@@ -50,23 +50,21 @@ class LabelFilterWidget extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 alignment: WrapAlignment.center,
                                 runSpacing: 8.0,
-                                children:
-                                    vaultState.vault.files.current.tags.map((tag) {
-                                      final isSelected = filterState.tags.contains(tag.toLowerCase());
-                                      return FilterChip(
-                                        visualDensity: VisualDensity.standard,
-                                        label: Text(tag),
-                                        avatar:
-                                            isSelected ? const Icon(Icons.check, size: 18) : const SizedBox(width: 24),
-                                        labelPadding: const EdgeInsets.only(left: 2, right: 12),
-                                        showCheckmark: false,
-                                        selected: isSelected,
-                                        onSelected: (bool _) {
-                                          final cubit = BlocProvider.of<FilterCubit>(context);
-                                          cubit.toggleTag(tag);
-                                        },
-                                      );
-                                    }).toList(),
+                                children: vaultState.vault.files.current.tags.map((tag) {
+                                  final isSelected = filterState.tags.contains(tag.toLowerCase());
+                                  return FilterChip(
+                                    visualDensity: VisualDensity.standard,
+                                    label: Text(tag),
+                                    avatar: isSelected ? const Icon(Icons.check, size: 18) : const SizedBox(width: 24),
+                                    labelPadding: const EdgeInsets.only(left: 2, right: 12),
+                                    showCheckmark: false,
+                                    selected: isSelected,
+                                    onSelected: (bool _) {
+                                      final cubit = BlocProvider.of<FilterCubit>(context);
+                                      cubit.toggleTag(tag);
+                                    },
+                                  );
+                                }).toList(),
                               ),
                             ),
                           ),

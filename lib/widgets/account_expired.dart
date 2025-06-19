@@ -61,85 +61,83 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
               if (state is AccountTrialRestartFinished) {
                 return state.success
                     ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(str.startNewTrialSuccess),
-                        FilledButton(
-                          onPressed: () async {
-                            final accountCubit = BlocProvider.of<AccountCubit>(context);
-                            BlocProvider.of<VaultCubit>(context).signout();
-                            await accountCubit.signout();
-                            await AppConfig.router.navigateTo(
-                              AppConfig.navigatorKey.currentContext!,
-                              Routes.root,
-                              clearStack: true,
-                            );
-                          },
-                          child: Text(str.signin),
-                        ),
-                      ],
-                    )
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(str.startNewTrialSuccess),
+                          FilledButton(
+                            onPressed: () async {
+                              final accountCubit = BlocProvider.of<AccountCubit>(context);
+                              BlocProvider.of<VaultCubit>(context).signout();
+                              await accountCubit.signout();
+                              await AppConfig.router.navigateTo(
+                                AppConfig.navigatorKey.currentContext!,
+                                Routes.root,
+                                clearStack: true,
+                              );
+                            },
+                            child: Text(str.signin),
+                          ),
+                        ],
+                      )
                     : Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(str.startNewTrialError, style: theme.textTheme.bodyLarge),
-                        FilledButton(
-                          onPressed: () async {
-                            final accountCubit = BlocProvider.of<AccountCubit>(context);
-                            BlocProvider.of<VaultCubit>(context).signout();
-                            await accountCubit.signout();
-                            await AppConfig.router.navigateTo(
-                              AppConfig.navigatorKey.currentContext!,
-                              Routes.root,
-                              clearStack: true,
-                            );
-                          },
-                          child: Text(str.signout),
-                        ),
-                      ],
-                    );
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(str.startNewTrialError, style: theme.textTheme.bodyLarge),
+                          FilledButton(
+                            onPressed: () async {
+                              final accountCubit = BlocProvider.of<AccountCubit>(context);
+                              BlocProvider.of<VaultCubit>(context).signout();
+                              await accountCubit.signout();
+                              await AppConfig.router.navigateTo(
+                                AppConfig.navigatorKey.currentContext!,
+                                Routes.root,
+                                clearStack: true,
+                              );
+                            },
+                            child: Text(str.signout),
+                          ),
+                        ],
+                      );
               } else if (state is AccountExpired) {
                 final userEmail = state.user.email;
                 final loading = state is AccountTrialRestartStarted;
                 if (state.user.subscriptionSource == AccountSubscriptionSource.chargeBee) {
                   return widget.trialAvailable
                       ? FilledButton.icon(
-                        onPressed:
-                            loading
-                                ? null
-                                : () async {
+                          onPressed: loading
+                              ? null
+                              : () async {
                                   final accountCubit = BlocProvider.of<AccountCubit>(context);
                                   await accountCubit.restartTrial();
                                 },
-                        label: Text(str.startFreeTrial),
-                        icon:
-                            loading
-                                ? Container(
+                          label: Text(str.startFreeTrial),
+                          icon: loading
+                              ? Container(
                                   width: 24,
                                   height: 24,
                                   padding: const EdgeInsets.all(2.0),
                                   child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
                                 )
-                                : Icon(Icons.favorite),
-                      )
+                              : Icon(Icons.favorite),
+                        )
                       : TextButton.icon(
-                        icon: Text(str.restartSubscription),
-                        label: Icon(Icons.open_in_new),
-                        onPressed: () async {
-                          final accountCubit = BlocProvider.of<AccountCubit>(context);
-                          final vaultCubit = BlocProvider.of<VaultCubit>(context);
-                          await DialogUtils.openUrl(
-                            EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount',
-                          );
-                          vaultCubit.signout();
-                          await accountCubit.signout();
-                          await AppConfig.router.navigateTo(
-                            AppConfig.navigatorKey.currentContext!,
-                            Routes.root,
-                            clearStack: true,
-                          );
-                        },
-                      );
+                          icon: Text(str.restartSubscription),
+                          label: Icon(Icons.open_in_new),
+                          onPressed: () async {
+                            final accountCubit = BlocProvider.of<AccountCubit>(context);
+                            final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                            await DialogUtils.openUrl(
+                              EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount',
+                            );
+                            vaultCubit.signout();
+                            await accountCubit.signout();
+                            await AppConfig.router.navigateTo(
+                              AppConfig.navigatorKey.currentContext!,
+                              Routes.root,
+                              clearStack: true,
+                            );
+                          },
+                        );
                 } else if (registrationEnabled &&
                     (state.user.subscriptionSource == AccountSubscriptionSource.googlePlay ||
                         state.user.subscriptionSource == AccountSubscriptionSource.appleAppStore ||

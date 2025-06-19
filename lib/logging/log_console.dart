@@ -109,18 +109,17 @@ class LogConsoleState extends State<LogConsole> {
   }
 
   void _refreshFilter() {
-    var newFilteredBuffer =
-        _renderedBuffer.where((it) {
-          var logLevelMatches = it.level.index >= _filterLevel.index;
-          if (!logLevelMatches) {
-            return false;
-          } else if (_filterController.text.isNotEmpty) {
-            var filterText = _filterController.text.toLowerCase();
-            return it.lowerCaseText.contains(filterText);
-          } else {
-            return true;
-          }
-        }).toList();
+    var newFilteredBuffer = _renderedBuffer.where((it) {
+      var logLevelMatches = it.level.index >= _filterLevel.index;
+      if (!logLevelMatches) {
+        return false;
+      } else if (_filterController.text.isNotEmpty) {
+        var filterText = _filterController.text.toLowerCase();
+        return it.lowerCaseText.contains(filterText);
+      } else {
+        return true;
+      }
+    }).toList();
     setState(() {
       _filteredBuffer = newFilteredBuffer;
     });
@@ -139,7 +138,11 @@ class LogConsoleState extends State<LogConsole> {
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[_buildTopBar(dark), Expanded(child: _buildLogContent(dark)), _buildBottomBar(dark)],
+          children: <Widget>[
+            _buildTopBar(dark),
+            Expanded(child: _buildLogContent(dark)),
+            _buildBottomBar(dark),
+          ],
         ),
       ),
       floatingActionButton: AnimatedOpacity(
@@ -250,15 +253,14 @@ class LogConsoleState extends State<LogConsole> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: OutlinedButton.icon(
-                  icon:
-                      sharing
-                          ? Container(
-                            width: 24,
-                            height: 24,
-                            padding: const EdgeInsets.all(2.0),
-                            child: const CircularProgressIndicator(strokeWidth: 3),
-                          )
-                          : const Icon(Icons.share),
+                  icon: sharing
+                      ? Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(strokeWidth: 3),
+                        )
+                      : const Icon(Icons.share),
                   label: const Text('Share'),
                   onPressed: sharing ? null : startShareLogs,
                 ),
@@ -508,7 +510,10 @@ class LogConsoleState extends State<LogConsole> {
   }
 
   TextSpan createSpan(String text, Level level) {
-    return TextSpan(text: text, style: TextStyle(color: colorForLevel(level)));
+    return TextSpan(
+      text: text,
+      style: TextStyle(color: colorForLevel(level)),
+    );
   }
 
   colorForLevel(Level level) {

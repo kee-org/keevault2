@@ -44,10 +44,10 @@ class EntryField extends StatefulWidget {
       // Ignoring because I can't work out why this can be a problem
       // ignore: no_logic_in_create_state
       fieldType == FieldType.otp
-          ? _OtpEntryFieldState()
-          : fieldType == FieldType.checkbox
-          ? _SwitchEntryFieldState()
-          : _EntryTextFieldState();
+      ? _OtpEntryFieldState()
+      : fieldType == FieldType.checkbox
+      ? _SwitchEntryFieldState()
+      : _EntryTextFieldState();
 }
 
 class _SwitchEntryFieldState extends _EntryFieldState {
@@ -403,10 +403,9 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
     return true;
   }
 
-  Widget _buildEntryFieldEditor() =>
-      _isValueObscured && widget.field.textValue.isEmpty == false
-          ? _buildObscuredEntryFieldEditor()
-          : _buildStringEntryFieldEditor();
+  Widget _buildEntryFieldEditor() => _isValueObscured && widget.field.textValue.isEmpty == false
+      ? _buildObscuredEntryFieldEditor()
+      : _buildStringEntryFieldEditor();
 
   Widget _buildObscuredEntryFieldEditor() {
     return ObscuredEntryFieldEditor(
@@ -428,12 +427,11 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
   Widget _buildStringEntryFieldEditor() {
     return StringEntryFieldEditor(
       onChange: (value) {
-        final StringValue? newValue =
-            value == null
-                ? null
-                : _isProtected
-                ? ProtectedValue.fromString(value)
-                : PlainValue(value);
+        final StringValue? newValue = value == null
+            ? null
+            : _isProtected
+            ? ProtectedValue.fromString(value)
+            : PlainValue(value);
         final cubit = BlocProvider.of<EntryCubit>(context);
         if (widget.field.fieldStorage == FieldStorage.JSON) {
           if (widget.field.browserModel!.value == value) {
@@ -562,10 +560,9 @@ class _OtpEntryFieldState extends _EntryTextFieldState {
   }
 
   @override
-  Widget _buildEntryFieldEditor() =>
-      _errorMessage != null
-          ? Text('$_errorMessage')
-          : OtpFieldEntryEditor(period: _period, elapsed: _elapsed, otpCode: _currentOtp);
+  Widget _buildEntryFieldEditor() => _errorMessage != null
+      ? Text('$_errorMessage')
+      : OtpFieldEntryEditor(period: _period, elapsed: _elapsed, otpCode: _currentOtp);
 
   @override
   Future<void> _handleMenuEntrySelected(BuildContext context, EntryAction entryAction) async {

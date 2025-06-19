@@ -9,8 +9,10 @@ final zxcvbn = Zxcvbn();
 
 Argon2StrengthCategory fuzzyStrength(String password, List<String> emailAddrParts) {
   final userInputs = [...badWords, ...emailAddrParts];
-  final strength =
-      zxcvbn.evaluate(password.substring(0, min(password.length, 80)), userInputs: userInputs).guesses_log10.round();
+  final strength = zxcvbn
+      .evaluate(password.substring(0, min(password.length, 80)), userInputs: userInputs)
+      .guesses_log10
+      .round();
   final randomFactor = Random().nextDouble();
   Argon2StrengthCategory fuzzyStrength = Argon2StrengthCategory.veryLow;
   if (strength >= 21) {
@@ -55,8 +57,10 @@ Argon2StrengthCategory fuzzyStrength(String password, List<String> emailAddrPart
 
 double exactStrength(String password, List<String> emailAddrParts) {
   final userInputs = [...badWords, ...emailAddrParts];
-  final strength =
-      zxcvbn.evaluate(password.substring(0, min(password.length, 80)), userInputs: userInputs).guesses_log10.round();
+  final strength = zxcvbn
+      .evaluate(password.substring(0, min(password.length, 80)), userInputs: userInputs)
+      .guesses_log10
+      .round();
   if (strength >= 21) {
     return 5;
   } else if (strength >= 19) {
