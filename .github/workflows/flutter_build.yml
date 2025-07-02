@@ -13,18 +13,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
-      GRADLE_OPTS: "-Xmx4096m"
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      # - name: Ninja
-      #   uses: lukka/get-cmake@5f6e04f5267c8133f1273bf2103583fc72c46b17
-      #   with:
-      #     cmakeVersion: "3.22.1"
-        #  ninjaVersion: "^1.11.1"
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -76,6 +67,7 @@ jobs:
 
       - name: Build Android App Bundle
         env:
+          GRADLE_OPTS: -Xmx6144m
           KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
         run: flutter build appbundle --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
 
@@ -121,7 +113,7 @@ jobs:
       - name: Choose xcode version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.2'
+          xcode-version: '16.4'
 
       - name: Build iOS Flutter App
         run: flutter build ios --config-only --release --no-codesign --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_NAME_SUFFIX= --dart-define KEEVAULT_ID_SUFFIX= --dart-define IAP_APPLE_APP_STORE=yes
