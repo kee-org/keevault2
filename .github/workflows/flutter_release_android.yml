@@ -15,12 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ninja
-        uses: lukka/get-cmake@5f6e04f5267c8133f1273bf2103583fc72c46b17
-        with:
-          cmakeVersion: "~3.18.0"
-        #  ninjaVersion: "^1.11.1"
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -79,6 +73,7 @@ jobs:
 
       - name: Build Android App APK for beta cloud service
         env:
+          GRADLE_OPTS: -Xmx6144m
           KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_BETA_KEYSTORE_PASSWORD }}
         run: flutter build apk --dart-define KEEVAULT_STAGE=beta --dart-define KEEVAULT_CHANNEL=sideload
 
@@ -100,6 +95,7 @@ jobs:
       - name: Build Android App Bundle
         if: ${{ !endsWith( github.event.release.tag_name, '_android_betaonly' ) }}
         env:
+          GRADLE_OPTS: -Xmx6144m
           KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD: ${{ secrets.KEEVAULT_ANDROID_PLAY_KEYSTORE_PASSWORD }}
         run: flutter build appbundle --dart-define KEEVAULT_STAGE=prod --dart-define KEEVAULT_CHANNEL=play --dart-define IAP_GOOGLE_PLAY=yes
 
