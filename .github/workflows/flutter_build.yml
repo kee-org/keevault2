@@ -13,6 +13,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      GRADLE_OPTS: "-Xmx4096m"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
