@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.4.0+57
+version: 2.5.0+58
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
@@ -88,10 +88,7 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
-  matomo_tracker:
-    git:
-      url: https://github.com/Floating-Dartists/matomo-tracker
-      ref: 9b77b227ee3622914ba0527870045275ea7c4b48 # >5.1.0
+  matomo_tracker: ^6.0.0
   
   file_picker: ^10.1.9
   zxcvbn: ^1.0.0

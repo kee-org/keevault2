@@ -1,0 +1,4 @@
+* Upgraded app appearance to match latest UI design guidelines (Material 3)
+* Filter configuration now slides in from left rather than being revealed underneath the list of entries
+* Fixed a few minor bugs along the way
+* Updated Flutter and other dependencies
