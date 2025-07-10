@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:keevault/config/platform.dart';
 import '../generated/l10n.dart';
 import 'free_user_dialog.dart';
 import 'password_strength.dart';
@@ -49,6 +50,8 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
                 controller: _password,
                 obscureText: password1Obscured,
                 enableSuggestions: false,
+                autofillHints: KeeVaultPlatform.isIOS ? [AutofillHints.oneTimeCode] : null,
+                spellCheckConfiguration: SpellCheckConfiguration.disabled(),
                 autocorrect: false,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -86,6 +89,8 @@ class _VaultLocalOnlyCreateWidgetState extends State<VaultLocalOnlyCreateWidget>
               child: TextFormField(
                 controller: _confirmPassword,
                 obscureText: password2Obscured,
+                autofillHints: KeeVaultPlatform.isIOS ? [AutofillHints.oneTimeCode] : null,
+                spellCheckConfiguration: SpellCheckConfiguration.disabled(),
                 enableSuggestions: false,
                 autocorrect: false,
                 decoration: InputDecoration(

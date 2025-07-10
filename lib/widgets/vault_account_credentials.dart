@@ -170,6 +170,8 @@ class _VaultAccountCredentialsWidgetState extends State<VaultAccountCredentialsW
                             await registerOrSignin(value);
                           }
                         },
+                        autofillHints: [AutofillHints.email],
+                        spellCheckConfiguration: SpellCheckConfiguration.disabled(),
                         autofocus: false,
                         autocorrect: false,
                         enableSuggestions: false,
