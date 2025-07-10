@@ -75,8 +75,10 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
                 Expanded(
                   child: TextFormField(
                     obscureText: password1Obscured,
+                    autofillHints: KeeVaultPlatform.isIOS ? [AutofillHints.oneTimeCode] : null,
                     enableSuggestions: false,
                     autocorrect: false,
+                    spellCheckConfiguration: SpellCheckConfiguration.disabled(),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: str.enter_your_account_password,
