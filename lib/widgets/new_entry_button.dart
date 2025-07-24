@@ -1,7 +1,9 @@
 import 'package:animations/animations.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/cubit/autocomplete_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
@@ -54,11 +56,16 @@ class NewEntryButton extends StatelessWidget {
               onClosed: (bool? keepChanges) async {
                 final entryCubit = BlocProvider.of<EntryCubit>(context);
                 final iam = InAppMessengerWidget.of(context);
-                if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
+                final entry = (entryCubit.state as EntryLoaded).entry;
+                if ((keepChanges == null || keepChanges) && entry.isDirty) {
                   entryCubit.endCreating(currentFile);
                   final filterCubit = BlocProvider.of<FilterCubit>(context);
+                  final autocompleteCubit = BlocProvider.of<AutocompleteCubit>(context);
                   await BlocProvider.of<InteractionCubit>(context).entrySaved();
                   await iam.showIfAppropriate(InAppMessageTrigger.entryChanged);
+                  autocompleteCubit.addUsername(
+                    entry.fields.firstWhereOrNull((e) => e.key == KdbxKeyCommon.USER_NAME)?.textValue.trim() ?? '',
+                  );
                   filterCubit.reFilter(currentFile.trimmedTags, currentFile.body.rootGroup);
                 } else {
                   entryCubit.endCreating(null);

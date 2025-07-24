@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/cubit/account_cubit.dart';
+import 'package:keevault/cubit/autocomplete_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
@@ -79,6 +80,9 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
       entryCubit.endEditing(newEntry);
 
       final filterCubit = BlocProvider.of<FilterCubit>(context);
+      final autocompleteCubit = BlocProvider.of<AutocompleteCubit>(context);
+
+      autocompleteCubit.addUsername(newEntry?.getString(KdbxKeyCommon.USER_NAME)?.getText().trim() ?? '');
 
       // We skip remote upload for now because it could take a long time
       // and interrupt the user's priority task for too long.

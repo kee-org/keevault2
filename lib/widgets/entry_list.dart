@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/cubit/autocomplete_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
@@ -269,7 +270,9 @@ class EntryListItemWidget extends StatelessWidget {
                       if ((keepChanges == null || keepChanges) && (entryCubit.state as EntryLoaded).entry.isDirty) {
                         entryCubit.endEditing(entry);
                         final filterCubit = BlocProvider.of<FilterCubit>(context);
+                        final autocompleteCubit = BlocProvider.of<AutocompleteCubit>(context);
                         await BlocProvider.of<InteractionCubit>(context).entrySaved();
+                        autocompleteCubit.addUsername(entry.getString(KdbxKeyCommon.USER_NAME)?.getText().trim() ?? '');
                         await iam.showIfAppropriate(InAppMessageTrigger.entryChanged);
                         filterCubit.reFilter(entry.file!.trimmedTags, entry.file!.body.rootGroup);
                         //TODO:f: A separate cubit to track state of ELIVMs might provide better performance and scroll position stability than recreating them all from scratch every time we re-filter?

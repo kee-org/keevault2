@@ -27,6 +27,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:keevault/generated/l10n.dart';
 
 import 'account_cubit.dart';
+import 'autocomplete_cubit.dart';
 
 part 'vault_state.dart';
 
@@ -37,6 +38,7 @@ class VaultCubit extends Cubit<VaultState> {
   final QuickUnlocker _qu;
   final EntryCubit _entryCubit;
   final GeneratorProfilesCubit _generatorProfilesCubit;
+  final AutocompleteCubit _autocompleteCubit;
   PersistentQueue? _persistentQueueAfAssociations;
   final bool Function() isAutofilling;
   bool autoFillMergeAttemptDue = true;
@@ -51,6 +53,7 @@ class VaultCubit extends Cubit<VaultState> {
     this.isAutofilling,
     this._generatorProfilesCubit,
     this._accountCubit,
+    this._autocompleteCubit,
   ) : super(const VaultInitial());
 
   LocalVaultFile? get currentVaultFile {
@@ -70,6 +73,10 @@ class VaultCubit extends Cubit<VaultState> {
         flushTimeout: const Duration(days: 10000),
       );
     }
+  }
+
+  void _updateAutocompleteUsernames(KdbxFile kdbxFile) {
+    _autocompleteCubit.setUsernames(kdbxFile.allUsernames);
   }
 
   Future<void> _applyAutofillPersistentQueueItems(List<dynamic> list, LinkedHashMap<String, KdbxEntry> entries) async {
@@ -285,6 +292,7 @@ class VaultCubit extends Cubit<VaultState> {
     bool immediateRemoteRefresh = true,
     required bool safe,
   }) async {
+    _updateAutocompleteUsernames(vault.files.current);
     if (user?.subscriptionStatus == AccountSubscriptionStatus.expired ||
         user?.subscriptionStatus == AccountSubscriptionStatus.freeTrialAvailable) {
       return;
@@ -1195,6 +1203,8 @@ class VaultCubit extends Cubit<VaultState> {
         vault,
         applyAndConsumePendingAutofillAssociations,
       );
+      // Update autocomplete usernames after save so we remove any stale ones
+      _updateAutocompleteUsernames(mergedOrCurrentVaultFile.files.current);
       //TODO:f: Sync with iOS shared credentials keychain (also in other places like merge from autofill and refresh)
       // if (KeeVaultPlatform.isIOS) {
       //   final entries = mergedOrCurrentVaultFile.files.current.body.rootGroup

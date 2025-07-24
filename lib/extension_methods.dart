@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:typed_data';
-
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
@@ -12,7 +11,6 @@ import 'package:keevault/config/platform.dart';
 import 'package:keevault/kdf_cache.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 import 'package:argon2_ffi_base/argon2_ffi_base.dart';
-
 import 'colors.dart';
 
 extension StringExt on String {
@@ -25,6 +23,19 @@ extension StringExt on String {
   }
 
   String prepend(String prefix) => '$prefix$this';
+}
+
+extension KdbxFileUsernames on KdbxFile {
+  /// Returns all unique, non-empty usernames in the database.
+  List<String> get allUsernames {
+    final entries = body.rootGroup.getAllEntriesExceptBin().values;
+    final usernames = entries
+        .map((e) => e.getString(KdbxKeyCommon.USER_NAME)?.getText().trim() ?? '')
+        .where((u) => u.isNotEmpty)
+        .toSet()
+        .toList(growable: false);
+    return usernames;
+  }
 }
 
 extension StringToInt on String {

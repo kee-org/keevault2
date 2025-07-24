@@ -27,6 +27,7 @@ import '../vault_backend/user.dart';
 import '../vault_backend/user_service.dart';
 import '../cubit/account_cubit.dart';
 import '../cubit/vault_cubit.dart';
+import '../cubit/autocomplete_cubit.dart';
 import '../generated/l10n.dart';
 import 'package:fluro/fluro.dart';
 import '../config/app.dart';
@@ -55,6 +56,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   final entryCubit = EntryCubit();
   final generatorProfilesCubit = GeneratorProfilesCubit();
   final autofillCubit = AutofillCubit();
+  final autocompleteCubit = AutocompleteCubit();
   late UserRepository userRepo;
   late AccountCubit accountCubit;
 
@@ -154,6 +156,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                   () => autofillCubit.isAutofilling() || autofillCubit.isAutofillSaving(),
                   generatorProfilesCubit,
                   accountCubit,
+                  autocompleteCubit,
                 ),
               ),
               BlocProvider(create: (context) => accountCubit),
@@ -164,6 +167,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
               BlocProvider(create: (context) => generatorProfilesCubit),
               BlocProvider(create: (context) => InteractionCubit()),
               BlocProvider(create: (context) => AppRatingCubit()),
+              BlocProvider(create: (context) => autocompleteCubit),
             ],
             child: InAppMessengerWidget(
               appSettingsState: appSettingsState,

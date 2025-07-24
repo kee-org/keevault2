@@ -8,6 +8,7 @@ import 'package:kdbx/kdbx.dart' hide FieldType;
 import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
+import 'package:keevault/cubit/autocomplete_cubit.dart';
 
 import 'package:clock/clock.dart';
 import 'package:keevault/model/field.dart';
@@ -171,6 +172,17 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
   void initState() {
     super.initState();
     _focusNode.addListener(_focusNodeChanged);
+
+    final isUsernameField = widget.field.key?.key == KdbxKeyCommon.KEY_USER_NAME;
+    if (isUsernameField) {
+      _focusNode.addListener(() {
+        if (_focusNode.hasFocus) {
+          _updateAutocompleteSuggestions(context);
+        } else {
+          _removeAutocompleteOverlay();
+        }
+      });
+    }
     _initController();
   }
 
@@ -184,10 +196,137 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
     _controller = TextEditingController(text: widget.field.textValue);
   }
 
+  OverlayEntry? _autocompleteOverlay;
+  List<String> _filteredUsernames = [];
+  bool _showAutocomplete = false;
+
+  void _showAutocompleteOverlay(BuildContext context) {
+    if (_autocompleteOverlay != null) {
+      _removeAutocompleteOverlay();
+    }
+    final overlay = Overlay.of(context);
+    // Find the RenderBox of the TextFormField
+    final box = _formFieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final offset = box?.localToGlobal(Offset.zero) ?? Offset.zero;
+    final width = box?.size.width ?? 300;
+    _autocompleteOverlay = OverlayEntry(
+      builder: (context) => Positioned(
+        left: offset.dx,
+        top: offset.dy + (box?.size.height ?? 56),
+        width: width,
+        child: Material(
+          elevation: 4.0,
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.4),
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              itemCount: _filteredUsernames.length,
+              itemBuilder: (context, index) {
+                final option = _filteredUsernames[index];
+                return ListTile(
+                  title: Text(option),
+                  onTap: () {
+                    setState(() {
+                      _controller.text = option;
+                      _controller.selection = TextSelection.fromPosition(TextPosition(offset: option.length));
+                      _showAutocomplete = false;
+                      _filteredUsernames = [];
+                      _removeAutocompleteOverlay();
+                      _focusNode.unfocus();
+                      _onUsernameChanged(option);
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    overlay.insert(_autocompleteOverlay!);
+  }
+
+  void _removeAutocompleteOverlay() {
+    _autocompleteOverlay?.remove();
+    _autocompleteOverlay = null;
+  }
+
+  void _updateAutocompleteSuggestions(BuildContext context) {
+    final cubit = BlocProvider.of<AutocompleteCubit>(context, listen: false);
+    final usernamesState = cubit.state;
+    List<String> usernames = [];
+    if (usernamesState is AutocompleteUsernamesLoaded) {
+      usernames = usernamesState.usernames;
+    }
+    final input = _controller.text.trim();
+    if (_focusNode.hasFocus) {
+      if (input.isEmpty) {
+        _filteredUsernames = usernames;
+      } else {
+        final lcInput = input.toLowerCase();
+        _filteredUsernames = usernames.where((u) => u != lcInput && u.toLowerCase().contains(lcInput)).toList();
+      }
+      _showAutocomplete = _filteredUsernames.isNotEmpty;
+    } else {
+      _showAutocomplete = false;
+      _filteredUsernames = [];
+    }
+    if (_showAutocomplete) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showAutocompleteOverlay(context));
+    } else {
+      _removeAutocompleteOverlay();
+    }
+  }
+
+  _onUsernameChanged(value) {
+    _updateAutocompleteSuggestions(context);
+    final StringValue? newValue = value == null
+        ? null
+        : _isProtected
+        ? ProtectedValue.fromString(value)
+        : PlainValue(value);
+    final cubit = BlocProvider.of<EntryCubit>(context);
+    if (widget.field.fieldStorage == FieldStorage.JSON) {
+      if (widget.field.browserModel!.value == value) {
+        // Flutter can call onChange when no changes have occurred!
+        return;
+      }
+      cubit.updateField(
+        null,
+        widget.field.browserModel!.name,
+        value: newValue,
+        browserModel: widget.field.browserModel!.copyWith(value: value),
+      );
+    } else {
+      if (widget.field.value.getText() == value) {
+        // Flutter can call onChange when no changes have occurred!
+        return;
+      }
+      cubit.updateField(widget.field.key, null, value: newValue);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     l.d('building ${widget.key} ($_isValueObscured)');
     final str = S.of(context);
+    final isUsernameField = widget.field.key?.key == KdbxKeyCommon.KEY_USER_NAME;
+    Widget fieldEditor;
+    if (isUsernameField) {
+      fieldEditor = StringEntryFieldEditor(
+        onChange: _onUsernameChanged,
+        fieldKey: widget.field.key,
+        controller: _controller,
+        formFieldKey: _formFieldKey,
+        focusNode: _focusNode,
+        delegate: this,
+        field: widget.field,
+      );
+    } else {
+      fieldEditor = _buildEntryFieldEditor();
+    }
     return Dismissible(
       key: ValueKey(widget.field.key),
       background: Container(
@@ -215,7 +354,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: <Widget>[
-            Expanded(child: _buildEntryFieldEditor()),
+            Expanded(child: fieldEditor),
             Container(
               width: 48,
               height: 48,
@@ -234,6 +373,12 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
   }
 
   void _focusNodeChanged() {
+    // // For username field, trigger loading suggestions when focused
+    // final isUsernameField = widget.field.key?.key == KdbxKeyCommon.KEY_USER_NAME;
+    // if (isUsernameField && _focusNode.hasFocus) {
+    //   final autocompleteCubit = BlocProvider.of<AutocompleteCubit>(context, listen: false);
+    //   autocompleteCubit.loadUsernames();
+    // }
     if (!_isProtected) {
       return;
     }
@@ -464,6 +609,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
   @override
   void dispose() {
     l.d('EntryFieldState.dispose() - ${widget.key} (${widget.field.key})');
+    _removeAutocompleteOverlay();
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
