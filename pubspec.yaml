@@ -44,7 +44,7 @@ dependencies:
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
-      ref: api34
+      ref: master
   flutter_autofill_service: ^0.20.0
     # git:
     #   url: https://github.com/kee-org/flutter_autofill_service.git
@@ -80,7 +80,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-
+  app_links: ^6.4.0
   flutter_persistent_queue:
     git:
       url: https://github.com/kee-org/flutter_persistent_queue
@@ -151,8 +151,6 @@ dependency_overrides:
   #   path: ../barcode_scan2/
   # receive_intent:
   #   path: ../receive_intent/
-  # share_plus:
-  #   path: ../plus_plugins/packages/share_plus/share_plus/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
