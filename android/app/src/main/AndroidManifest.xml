@@ -27,9 +27,22 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+              <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- App Links for deep link support -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="keevault.pm" />
+                <data android:host="app-beta.kee.pm" />
+                <data android:host="app-dev.kee.pm" />
+                <!--TODO: specific strings for each build stage/varient AND accept only requests that match expected URL patterns ... -->
+                <data android:fragmentPrefix="dest=" /> <!-- only for API 35+ .. .what happens to older devices? -->
             </intent-filter>
         </activity>
         <activity

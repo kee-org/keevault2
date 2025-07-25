@@ -16,6 +16,7 @@ class Routes {
   static String changeEmailPrefs = '/change_email_prefs';
   static String changeSubscription = '/change_subscription';
   static String createAccount = '/create_account/:email';
+  static String deepLinkEcho = '/deep_link_echo';
 
   static void configureRoutes(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -36,5 +37,6 @@ class Routes {
     router.define(changeEmailPrefs, handler: changeEmailPrefsHandler);
     router.define(changeSubscription, handler: changeSubscriptionHandler);
     router.define(createAccount, handler: createAccountHandler);
+    router.define(deepLinkEcho, handler: deepLinkEchoHandler);
   }
 }

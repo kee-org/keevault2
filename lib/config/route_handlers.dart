@@ -13,7 +13,21 @@ import '../widgets/blocking_overlay.dart';
 import '../widgets/change_email_prefs.dart';
 import '../widgets/change_password.dart';
 import '../widgets/root.dart' as kv_root;
+import 'package:keevault/widgets/root.dart' as kv_root;
+import 'package:keevault/screens/deep_link_echo_screen.dart';
 
+var deepLinkEchoHandler = Handler(
+  handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+    // Accepts params via Fluro route, but expects navigation with arguments.
+    final args = ModalRoute.of(context!)?.settings.arguments;
+    if (args is Map<String, dynamic>) {
+      final parsedParams = args['params'] as Map<String, String>? ?? {};
+      final rawUrl = args['rawUrl'] as String?;
+      return DeepLinkEchoScreen(params: parsedParams, rawUrl: rawUrl);
+    }
+    return DeepLinkEchoScreen(params: {}, rawUrl: null);
+  },
+);
 var rootHandler = Handler(
   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
     return const kv_root.RootWidget();

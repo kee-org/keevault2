@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/payment_service.dart';
 import 'package:keevault/widgets/dialog_utils.dart';
+import 'package:app_links/app_links.dart';
+import 'package:keevault/utils/deep_link_utils.dart';
+import 'package:keevault/config/routes.dart';
 import 'package:logger/logger.dart';
 import 'package:matomo_tracker/matomo_tracker.dart' hide Level;
 import 'package:public_suffix/public_suffix.dart';
@@ -38,6 +41,30 @@ void main() async {
       DefaultSuffixRules.initFromString(suffixList);
       l.i('Initialized PSL');
       runApp(KeeVaultApp(navigatorKey: navigatorKey));
+
+      // Deep link handling
+      final appLinks = AppLinks();
+      appLinks.uriLinkStream.listen((Uri uri) {
+        final fragment = uri.fragment;
+        final host = uri.host;
+        final validHosts = ['keevault.pm', 'app-beta.kee.pm', 'app-dev.kee.pm'];
+        if (validHosts.contains(host) && fragment.isNotEmpty) {
+          final params = parseKeeVaultFragment(fragment);
+          if (params != null) {
+            navigatorKey.currentState?.pushNamed(
+              Routes.deepLinkEcho,
+              arguments: {'params': params, 'rawUrl': uri.toString()},
+            );
+            return;
+          }
+        }
+        // If not valid, do nothing (let browser handle)
+        //TODO: above is bullshit? May need to relaunch a new Intent via a plugin on Android like:
+        // Pass the URL to the default browser
+        // Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
+        // startActivity(browserIntent);
+        // Unknown how iOS will behave but probably irrelevant since we control the links we accept from the web hosted file anyway.
+      });
     },
     (dynamic error, StackTrace stackTrace) {
       if (error is KeeLoginFailedMITMException) {
