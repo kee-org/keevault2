@@ -166,11 +166,14 @@ T? enumFromString<T>(Iterable<T> values, String value) {
   return values.firstWhereOrNull((type) => type.toString().split('.').last == value);
 }
 
-extension KVPurchasedItem on PurchasedItem {
+extension KVPurchasedItem on Purchase {
   String get keeVaultSubscriptionId {
-    final prefix = purchaseStateAndroid != null ? 'gp_' : 'ap_';
+    final prefix = this is PurchaseAndroid ? 'gp_' : 'ap_';
     if (KeeVaultPlatform.isIOS) {
       // Apple does not give us the information needed to derive this information
+      //TODO:f: maybe now available in purchaseToken with StoreKit2 but we already
+      // have implemented support for the ID to be changed upon receiving the real
+      // ID from the server so not likely to be worth changing this.
       return prefix;
     }
     return prefix + (purchaseToken ?? '');

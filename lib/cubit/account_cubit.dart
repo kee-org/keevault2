@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:kdbx/kdbx.dart';
-import 'package:keevault/config/platform.dart';
-import 'package:keevault/payment_service.dart';
 import 'package:keevault/user_repository.dart';
 import 'package:keevault/vault_backend/account_verification_status.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
@@ -95,26 +93,22 @@ class AccountCubit extends Cubit<AccountState> {
   }
 
   Future<bool> subscriptionSuccess(
-    PurchasedItem purchasedItem,
+    Purchase purchasedItem,
     bool isAndroid,
     Future<void> Function() ensureRemoteCreated,
     Future<void> Function() finishTransaction,
   ) async {
     try {
-      if (purchasedItem.purchaseToken == null && purchasedItem.transactionReceipt == null) {
+      if (purchasedItem.purchaseToken == null) {
         emit(
           AccountSubscribeError(
             currentUser,
-            'Unexpected error associating your subscription - we found no purchaseToken and no transactionReceipt',
+            'Unexpected error associating your subscription - we found no purchaseToken',
           ),
         );
         return false;
       }
-      final success = await _userRepo.associate(
-        currentUser,
-        isAndroid ? 2 : 3,
-        purchasedItem.purchaseToken ?? purchasedItem.transactionReceipt!,
-      );
+      final success = await _userRepo.associate(currentUser, isAndroid ? 2 : 3, purchasedItem.purchaseToken!);
       if (success) {
         // Our association request was successful but we rely on the subscription
         // provider to respond too. Ideally we'd set up a websocket to receive an
@@ -301,25 +295,6 @@ class AccountCubit extends Cubit<AccountState> {
     await _userRepo.setQuickUnlockUser(user);
     emitAuthenticatedOrExpiredOrUnvalidated(user);
 
-    final psi = PaymentService.instance;
-    await psi.ensureReady();
-    if (KeeVaultPlatform.isIOS &&
-        user.subscriptionStatus == AccountSubscriptionStatus.current &&
-        psi.activePurchaseItem != null &&
-        (user.subscriptionId?.startsWith('ap_') ?? false)) {
-      // It's impossible to know what the expected subscriptionId is because apple don't
-      // give us the originaltransactionid unless it is a pointless restoration operation
-      // to a new phone. So all subscription renewals would sit in the queue forever while
-      // we have no way to know that we have dealt with them. Thus we just accept that
-      // everything is probably fine as long as the user has a subscription from the App Store.
-      // Maybe a problem for subscription restarts after an expiry. User's subscription ID
-      // is going to stay the same even after expiry but then a new one should come along
-      // with a whole new original transaction id... or not, if there is some reuse during
-      // grace periods, etc. But surely in all other cases, any valid app store subscription
-      // id associated with a user that has a non-expired set of authentication tokens is
-      // going to be just a renewal operation that we can ignore because we handle it server-side.
-      await psi.finishTransaction(psi.activePurchaseItem!);
-    }
     l.d('sign in complete');
     return user;
   }

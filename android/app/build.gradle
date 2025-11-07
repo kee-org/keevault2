@@ -1,6 +1,6 @@
 plugins {
     id "com.android.application"
-    id 'org.jetbrains.kotlin.android' version '2.1.20'
+    id 'org.jetbrains.kotlin.android' version '2.3.0'
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -82,7 +82,7 @@ kotlin {
 }
 
 android {
-    compileSdk 35
+    compileSdk 36
 
     compileOptions {
         sourceCompatibility = 17
@@ -123,6 +123,9 @@ android {
         ndk.debugSymbolLevel = symbolLevel
         testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
+
+        // Required for flutter_inapp_purchase: Select Google Play platform
+        missingDimensionStrategy 'platform', 'play'
     }
 
     testOptions {
