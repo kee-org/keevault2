@@ -88,7 +88,7 @@ class UserRepository {
 
   // If user has submitted same subscription ID again, they'll just get stuck here
   // for ages and be told to try later. not ideal but not unsafe
-  Future<User?> waitUntilValidSubscription(User user, PurchasedItem purchasedItem) async {
+  Future<User?> waitUntilValidSubscription(User user, Purchase purchasedItem) async {
     for (final delay in [3, 4, 6, 10, 10, 15, 20]) {
       await Future.delayed(Duration(seconds: delay));
       try {
