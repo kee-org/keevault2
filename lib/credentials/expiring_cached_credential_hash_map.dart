@@ -10,7 +10,7 @@ class ExpiringCachedCredentialHashMap {
 
   Map<String, dynamic> toJson() => _map.map((u, c) => MapEntry(u, c.toJson()));
 
-  update(String user, ExpiringCachedCredentials? creds) {
+  void update(String user, ExpiringCachedCredentials? creds) {
     if (creds == null) {
       _map.remove(user);
     } else {

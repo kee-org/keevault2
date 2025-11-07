@@ -98,7 +98,7 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                                 label: Icon(Icons.open_in_new),
                                 onPressed: () async {
                                   await DialogUtils.openUrl(
-                                    EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount',
+                                    '${EnvironmentConfig.webUrl}/#pfEmail=$userEmail,dest=manageAccount',
                                   );
                                 },
                               ),
@@ -131,7 +131,7 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
                               label: Icon(Icons.open_in_new),
                               onPressed: () async {
                                 await DialogUtils.openUrl(
-                                  EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=signin',
+                                  '${EnvironmentConfig.webUrl}/#pfEmail=$userEmail,dest=signin',
                                 );
                               },
                             ),

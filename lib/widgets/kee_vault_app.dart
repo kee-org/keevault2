@@ -60,7 +60,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
   late UserRepository userRepo;
   late AccountCubit accountCubit;
 
-  onTokensChange(User user) {
+  void onTokensChange(User user) {
     // A lot of background operations can result in updated information about the
     // user's authentication status or subscription status being changed (via requests
     // like refresh which end up changing the authentication tokens and features
@@ -128,7 +128,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
         }
         final mode = intent?.extra?['autofill_mode'];
         if (mode?.startsWith('/autofill') ?? false) {
-          BlocProvider.of<AutofillCubit>(navContext).refresh();
+          unawaited(BlocProvider.of<AutofillCubit>(navContext).refresh());
         }
       },
       onError: (err) {

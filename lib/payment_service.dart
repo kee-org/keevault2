@@ -46,22 +46,22 @@ class PaymentService {
   }
 
   /// view can subscribe to _errorListeners using this method
-  addToErrorListeners(Function(String) callback) {
+  void addToErrorListeners(Function(String) callback) {
     _errorListeners.add(callback);
   }
 
   /// view can cancel to _errorListeners using this method
-  removeFromErrorListeners(Function(String) callback) {
+  void removeFromErrorListeners(Function(String) callback) {
     _errorListeners.remove(callback);
   }
 
   /// view can subscribe to _purchasedListeners using this method
-  addToPurchasedListeners(Function(PurchasedItem) callback) {
+  void addToPurchasedListeners(Function(PurchasedItem) callback) {
     _purchasedListeners.add(callback);
   }
 
   /// view can cancel to _purchasedListeners using this method
-  removeFromPurchasedListeners(Function(PurchasedItem) callback) {
+  void removeFromPurchasedListeners(Function(PurchasedItem) callback) {
     _purchasedListeners.remove(callback);
   }
 

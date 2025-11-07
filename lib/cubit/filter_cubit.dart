@@ -10,7 +10,7 @@ part 'filter_state.dart';
 class FilterCubit extends Cubit<FilterState> {
   FilterCubit() : super(FilterInitial());
 
-  reset() {
+  void reset() {
     emit(FilterInitial());
   }
 

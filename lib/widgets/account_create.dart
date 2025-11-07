@@ -156,7 +156,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     blockingOverlay.hide();
   }
 
-  initialiseIAP() async {
+  Future<void> initialiseIAP() async {
     final accountCubit = BlocProvider.of<AccountCubit>(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final blockingOverlay = BlockingOverlay.of(context);
@@ -690,7 +690,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     return false;
   }
 
-  subscribeUser(User user) async {
+  Future<void> subscribeUser(User user) async {
     final accountCubit = BlocProvider.of<AccountCubit>(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final str = S.of(context);
@@ -733,7 +733,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     }
   }
 
-  registerAccount(String email, String password, bool marketingEmails) async {
+  Future<void> registerAccount(String email, String password, bool marketingEmails) async {
     final blockingOverlay = BlockingOverlay.of(context);
     blockingOverlay.show(null, Duration(seconds: 1));
     final accountCubit = BlocProvider.of<AccountCubit>(context);
@@ -758,7 +758,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     await subscribeUser(user);
   }
 
-  resubscriptionNeededReason(AccountAuthenticated state) {
+  String resubscriptionNeededReason(AccountAuthenticated state) {
     if (state is AccountSubscribeError) {
       return 'Could not subscribe you this time. Please try again. Reason: ${(state).message}';
     }
@@ -771,7 +771,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     return 'Your account is enabled but you have no active subscription. That could happen for a variety of reasons but is easy to fix - just hit the button below and follow any steps your Subscription Provider presents.';
   }
 
-  isRenewalMode(AccountAuthenticated state) {
+  bool isRenewalMode(AccountAuthenticated state) {
     if (state is AccountSubscribeError) {
       return false;
     }

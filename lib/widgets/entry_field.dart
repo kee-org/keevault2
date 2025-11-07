@@ -280,7 +280,7 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
     }
   }
 
-  _onUsernameChanged(value) {
+  void _onUsernameChanged(String? value) {
     _updateAutocompleteSuggestions(context);
     final StringValue? newValue = value == null
         ? null

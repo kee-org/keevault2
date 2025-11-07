@@ -160,14 +160,14 @@ extension DioHelperHandleException on DioException {
   }
 }
 
-String? enumToString(o) => o?.toString().split('.').last;
+String? enumToString(Enum? o) => o?.toString().split('.').last;
 
 T? enumFromString<T>(Iterable<T> values, String value) {
   return values.firstWhereOrNull((type) => type.toString().split('.').last == value);
 }
 
 extension KVPurchasedItem on PurchasedItem {
-  get keeVaultSubscriptionId {
+  String get keeVaultSubscriptionId {
     final prefix = purchaseStateAndroid != null ? 'gp_' : 'ap_';
     if (KeeVaultPlatform.isIOS) {
       // Apple does not give us the information needed to derive this information

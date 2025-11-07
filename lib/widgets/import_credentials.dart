@@ -81,11 +81,11 @@ class ImportCredentialsWidget extends StatelessWidget {
     );
   }
 
-  _skipImport(BuildContext context, LocalVaultFile destination) async {
+  Future<void> _skipImport(BuildContext context, LocalVaultFile destination) async {
     await BlocProvider.of<VaultCubit>(context).skipLocalFreeKdbxImport(destination);
   }
 
-  _cancelImport(BuildContext context, LocalVaultFile destination) async {
+  Future<void> _cancelImport(BuildContext context, LocalVaultFile destination) async {
     await BlocProvider.of<VaultCubit>(context).emitVaultLoaded(destination, null, safe: false);
   }
 }

@@ -43,7 +43,7 @@ class _ChangeEmailPrefsWidgetState extends State<ChangeEmailPrefsWidget> {
                   label: Icon(Icons.open_in_new),
                   onPressed: () async {
                     await DialogUtils.openUrl(
-                      EnvironmentConfig.webUrl + '/#pfEmail=${accountState.user.email},dest=manageAccount',
+                      '${EnvironmentConfig.webUrl}/#pfEmail=${accountState.user.email},dest=manageAccount',
                     );
                   },
                 ),

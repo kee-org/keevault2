@@ -17,7 +17,7 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   static const _autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
 
-  refresh() async {
+  Future<void> refresh() async {
     if (KeeVaultPlatform.isIOS) {
       final iosAutofillStatus = await _autoFillMethodChannel.invokeMethod('getAutofillStatus');
       final iosAvailable = iosAutofillStatus > 0;
@@ -85,7 +85,7 @@ class AutofillCubit extends Cubit<AutofillState> {
     emit(AutofillAvailable(enabled));
   }
 
-  Future<void> setSavingPreference(value) async {
+  Future<void> setSavingPreference(bool value) async {
     final prefs = await AutofillService().preferences;
     await AutofillService().setPreferences(
       AutofillPreferences(
@@ -96,7 +96,7 @@ class AutofillCubit extends Cubit<AutofillState> {
     );
   }
 
-  Future<void> setDebugEnabledPreference(value) async {
+  Future<void> setDebugEnabledPreference(bool value) async {
     if (KeeVaultPlatform.isIOS) {
       final iosAutofillEnableDebug =
           await _autoFillMethodChannel.invokeMethod<bool>('setDebugEnabled', <String, dynamic>{
@@ -118,7 +118,7 @@ class AutofillCubit extends Cubit<AutofillState> {
     }
   }
 
-  Future<void> setIMEIntegrationPreference(value) async {
+  Future<void> setIMEIntegrationPreference(bool value) async {
     final prefs = await AutofillService().preferences;
     await AutofillService().setPreferences(
       AutofillPreferences(enableDebug: prefs.enableDebug, enableSaving: prefs.enableSaving, enableIMERequests: value),

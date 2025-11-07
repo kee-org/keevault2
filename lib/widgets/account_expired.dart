@@ -127,7 +127,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
                             final accountCubit = BlocProvider.of<AccountCubit>(context);
                             final vaultCubit = BlocProvider.of<VaultCubit>(context);
                             await DialogUtils.openUrl(
-                              EnvironmentConfig.webUrl + '/#pfEmail=$userEmail,dest=manageAccount',
+                              '${EnvironmentConfig.webUrl}/#pfEmail=$userEmail,dest=manageAccount',
                             );
                             vaultCubit.signout();
                             await accountCubit.signout();
@@ -183,7 +183,7 @@ class _AccountExpiredWidgetState extends State<AccountExpiredWidget> {
     );
   }
 
-  expiryMessageForSubscriptionSource(AccountSubscriptionSource subscriptionSource, S str) {
+  String expiryMessageForSubscriptionSource(AccountSubscriptionSource subscriptionSource, S str) {
     if (subscriptionSource == AccountSubscriptionSource.chargeBee) {
       return str.subscriptionExpiredDetails;
     }

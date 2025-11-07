@@ -421,6 +421,6 @@ void toggleBottomDrawerVisibility(BuildContext context) {
   );
 }
 
-_removeKeyboardFocus(BuildContext context) {
+void _removeKeyboardFocus(BuildContext context) {
   FocusScope.of(context).unfocus();
 }

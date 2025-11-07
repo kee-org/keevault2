@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:keevault/credentials/quick_unlocker.dart';
@@ -37,10 +39,10 @@ class _VaultPasswordCredentialsWidgetState extends State<VaultPasswordCredential
   @override
   void initState() {
     super.initState();
-    _detectBiometrics();
+    unawaited(_detectBiometrics());
   }
 
-  _detectBiometrics() async {
+  Future<void> _detectBiometrics() async {
     final hide =
         widget.forceBiometric == null ||
         widget.quStatus == QUStatus.mapAvailable ||
