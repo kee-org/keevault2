@@ -31,8 +31,8 @@ class EntryListItemViewModel {
   final EntryColor? color;
 
   //TODO:f Look for KeeFormField text items if no username exists
-  get usernameCustom => entry.getString(KdbxKeyCommon.USER_NAME)?.getText().trim() ?? '';
-  get username => usernameCustom;
+  String get usernameCustom => entry.getString(KdbxKeyCommon.USER_NAME)?.getText().trim() ?? '';
+  dynamic get username => usernameCustom;
 
   static List<String> _createGroupNames(KdbxGroup group) =>
       group.breadcrumbs.map((e) => e.name.get()).whereNotNull().toList();
@@ -443,7 +443,7 @@ class EditEntryViewModel extends EntryViewModel {
   static List<String> _createGroupNames(KdbxGroup group) =>
       group.breadcrumbs.map((g) => g.name.get()).whereNotNull().toList();
 
-  commit(KdbxEntry entry) {
+  void commit(KdbxEntry entry) {
     final Map<KdbxKey, StringValue> newFields = {};
     final List<Field> jsonFields = [];
 

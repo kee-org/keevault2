@@ -33,7 +33,7 @@ class LocalVaultRepository {
     return KdbxFormat(KeeVaultKdfCache(), FlutterArgon2());
   }
 
-  getStorageDirectory() async {
+  Future<Directory> getStorageDirectory() async {
     if (KeeVaultPlatform.isIOS) {
       final path = await _autoFillMethodChannel.invokeMethod('getAppGroupDirectory');
       return Directory(path);
@@ -257,7 +257,7 @@ class LocalVaultRepository {
     return false;
   }
 
-  remove(User user) async {
+  Future<void> remove(User user) async {
     final directory = await getStorageDirectory();
     final file = File('${directory.path}/${user.idB64url}/current.kdbx');
     final stagedFile = File('${directory.path}/${user.idB64url}/staged.kdbx');

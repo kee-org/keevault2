@@ -102,7 +102,7 @@ class _ResetAccountPromptDialogState extends State<ResetAccountPromptDialog> wit
                 label: Icon(Icons.open_in_new),
                 onPressed: () async {
                   final navigator = Navigator.of(context);
-                  await DialogUtils.openUrl(EnvironmentConfig.webUrl + '/#dest=resetPassword');
+                  await DialogUtils.openUrl('${EnvironmentConfig.webUrl}/#dest=resetPassword');
                   navigator.pop(true);
                 },
               ),

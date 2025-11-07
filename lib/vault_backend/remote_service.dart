@@ -44,7 +44,7 @@ class RemoteService {
 
   RemoteService._(this._name, this._dio);
 
-  factory RemoteService(stage, name) {
+  factory RemoteService(Stage? stage, String name) {
     var endpoint = endpoints[stage]![name]!;
     var options = BaseOptions(
       baseUrl: endpoint,

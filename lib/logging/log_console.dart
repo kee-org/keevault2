@@ -424,7 +424,7 @@ class LogConsoleState extends State<LogConsole> {
   }
 
   //TODO:f: deduplicate
-  getStorageDirectory() async {
+  Future<Directory> getStorageDirectory() async {
     const autoFillMethodChannel = MethodChannel('com.keevault.keevault/autofill');
     if (KeeVaultPlatform.isIOS) {
       final path = await autoFillMethodChannel.invokeMethod('getAppGroupDirectory');
@@ -516,7 +516,7 @@ class LogConsoleState extends State<LogConsole> {
     );
   }
 
-  colorForLevel(Level level) {
+  Color? colorForLevel(Level level) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     switch (level) {
       case Level.fatal:

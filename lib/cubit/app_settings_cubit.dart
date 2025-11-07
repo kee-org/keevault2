@@ -62,7 +62,7 @@ class AppSettingsCubit extends Cubit<AppSettingsState> {
     emit((state as AppSettingsBasic).copyWith(iamAutofillDisabled: newMessageState));
   }
 
-  Future<void> iamDisplayed(iamName) async {
+  Future<void> iamDisplayed(String iamName) async {
     switch (iamName) {
       case 'iamEmailSignup':
         await _iamEmailSignupDisplayed();

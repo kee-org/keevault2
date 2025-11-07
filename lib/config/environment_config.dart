@@ -7,7 +7,7 @@ class EnvironmentConfig {
   static const iapAppleAppStore = bool.hasEnvironment('IAP_APPLE_APP_STORE');
   static const iapGooglePlay = bool.hasEnvironment('IAP_GOOGLE_PLAY');
 
-  static get webUrl {
+  static String get webUrl {
     switch (stage) {
       case 'dev':
         return 'https://app-dev.kee.pm';

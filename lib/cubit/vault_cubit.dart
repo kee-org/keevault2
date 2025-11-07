@@ -325,7 +325,7 @@ class VaultCubit extends Cubit<VaultState> {
     }
   }
 
-  emitError(String message, {bool toast = false, bool forceNotLoaded = false}) {
+  void emitError(String message, {bool toast = false, bool forceNotLoaded = false}) {
     if (!forceNotLoaded && state is VaultLoaded) {
       emit(VaultBackgroundError((state as VaultLoaded).vault, message, toast));
     } else {
@@ -333,7 +333,7 @@ class VaultCubit extends Cubit<VaultState> {
     }
   }
 
-  emitKeeMissingPrimaryDBExceptionError() {
+  void emitKeeMissingPrimaryDBExceptionError() {
     const message =
         "Couldn't find your Kee Vault. Probably there is an incomplete account reset in progress. Please close this app and sign in to Kee Vault using a different device or your web browser. Once you can see your vault there, save it, sign out and then open this app again and everything should be working.";
     l.e(message);

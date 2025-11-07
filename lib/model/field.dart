@@ -181,7 +181,7 @@ class FieldViewModel {
 
   //TODO:f If necessary, call this as part of creating a new browserModel when user first enables browser integration on the field (or creates a new field full stop if we will always default to enabling browser integration)
   // ignore: unused_element
-  _getBrowserFieldDisplayName() {
+  String? _getBrowserFieldDisplayName() {
     if (key == KdbxKeyCommon.PASSWORD) {
       return 'KeePass password';
     } else if (key == KdbxKeyCommon.USER_NAME) {

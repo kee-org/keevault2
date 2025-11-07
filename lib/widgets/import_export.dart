@@ -212,7 +212,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     );
   }
 
-  _import(BuildContext context, VaultLoaded vaultState) async {
+  Future<void> _import(BuildContext context, VaultLoaded vaultState) async {
     final str = S.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
 
@@ -279,7 +279,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     }
   }
 
-  _export(BuildContext context, VaultLoaded state) async {
+  Future<void> _export(BuildContext context, VaultLoaded state) async {
     final str = S.of(context);
     final sm = ScaffoldMessenger.of(context);
 
@@ -336,7 +336,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     }
   }
 
-  _exportFreeKdbx(BuildContext context) async {
+  Future<void> _exportFreeKdbx(BuildContext context) async {
     final str = S.of(context);
     final sm = ScaffoldMessenger.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
@@ -386,7 +386,7 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     }
   }
 
-  _deleteFreeKdbx(BuildContext context) async {
+  Future<void> _deleteFreeKdbx(BuildContext context) async {
     final str = S.of(context);
     final sm = ScaffoldMessenger.of(context);
     final vaultCubit = BlocProvider.of<VaultCubit>(context);

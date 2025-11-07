@@ -61,4 +61,6 @@ ios/Runner.ipa
 .fvm/
 
 # Remove after Flutter 3.29 bug is fixed
-android/app/.cxx/
+#android/app/.cxx/
+
+ios/build/ios/XCBuildData/

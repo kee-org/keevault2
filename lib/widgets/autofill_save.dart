@@ -73,7 +73,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
     BlocProvider.of<EntryCubit>(context).startEditing(newEntry!, startDirty: false);
   }
 
-  onEndEditing(bool keepChanges, VaultCubit vaultCubit, List<String> tags) async {
+  Future<void> onEndEditing(bool keepChanges, VaultCubit vaultCubit, List<String> tags) async {
     final entryCubit = BlocProvider.of<EntryCubit>(context);
     final autofillCubit = BlocProvider.of<AutofillCubit>(context);
     if (keepChanges && (entryCubit.state as EntryLoaded).entry.isDirty) {

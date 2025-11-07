@@ -54,7 +54,7 @@ class EntryCubit extends Cubit<EntryState> {
     );
   }
 
-  update({
+  void update({
     KdbxUuid? uuid,
     bool isDirty = true,
     KdbxGroup? group,
@@ -78,7 +78,7 @@ class EntryCubit extends Cubit<EntryState> {
     emit(EntryLoaded(updated));
   }
 
-  updateGroupByUUID({required String uuid}) {
+  void updateGroupByUUID({required String uuid}) {
     final entry = (state as EntryLoaded).entry;
     try {
       final newGroup = entry.group.file!.findGroupByUuid(KdbxUuid(uuid));
@@ -96,7 +96,7 @@ class EntryCubit extends Cubit<EntryState> {
     emit(EntryLoaded(updated));
   }
 
-  addField(FieldViewModel field) {
+  void addField(FieldViewModel field) {
     if (field.fieldKey == null) {
       throw Exception('Invalid field parameter supplied to addField.');
     }
@@ -124,7 +124,7 @@ class EntryCubit extends Cubit<EntryState> {
     return newName;
   }
 
-  removeField(FieldViewModel field) {
+  void removeField(FieldViewModel field) {
     final entry = (state as EntryLoaded).entry;
     final newList = entry.fields.toList();
     newList.remove(field);
@@ -132,7 +132,7 @@ class EntryCubit extends Cubit<EntryState> {
     emit(EntryLoaded(updated));
   }
 
-  renameField(KdbxKey? key, String? oldBrowserDisplayName, String newName) {
+  void renameField(KdbxKey? key, String? oldBrowserDisplayName, String newName) {
     final entry = (state as EntryLoaded).entry;
     int fieldIndex;
 
@@ -164,7 +164,7 @@ class EntryCubit extends Cubit<EntryState> {
     emit(EntryLoaded(updated));
   }
 
-  updateField(
+  void updateField(
     KdbxKey? key,
     String? oldBrowserDisplayName, {
     bool isDirty = true,
