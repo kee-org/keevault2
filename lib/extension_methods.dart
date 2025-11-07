@@ -166,13 +166,57 @@ T? enumFromString<T>(Iterable<T> values, String value) {
   return values.firstWhereOrNull((type) => type.toString().split('.').last == value);
 }
 
-extension KVPurchasedItem on PurchasedItem {
+extension KVPurchasedItem on Purchase {
   String get keeVaultSubscriptionId {
-    final prefix = purchaseStateAndroid != null ? 'gp_' : 'ap_';
+    final prefix = this is PurchaseAndroid ? 'gp_' : 'ap_';
     if (KeeVaultPlatform.isIOS) {
       // Apple does not give us the information needed to derive this information
+      //TODO:f: maybe now available in purchaseToken with StoreKit2 but we already
+      // have implemented support for the ID to be changed upon receiving the real
+      // ID from the server so not likely to be worth changing this.
       return prefix;
     }
     return prefix + (purchaseToken ?? '');
   }
+}
+
+ActiveSubscription purchaseAsActiveSubscription(Purchase purchase) {
+  // Map platform-specific fields
+  final bool? autoRenewing = purchase is PurchaseAndroid ? purchase.autoRenewingAndroid : null;
+  final String? basePlanId = purchase is PurchaseAndroid ? purchase.currentPlanId : null;
+  final String? environmentIOS = purchase is PurchaseIOS ? purchase.environmentIOS : null;
+  final double? expirationDateIOS = purchase is PurchaseIOS ? purchase.expirationDateIOS : null;
+  final RenewalInfoIOS? renewalInfoIOS = purchase is PurchaseIOS ? purchase.renewalInfoIOS : null;
+
+  // Calculate daysUntilExpirationIOS and willExpireSoon for iOS
+  double? daysUntilExpirationIOS;
+  bool? willExpireSoon;
+  if (expirationDateIOS != null) {
+    final expirationDate = DateTime.fromMillisecondsSinceEpoch(expirationDateIOS.toInt());
+    final now = DateTime.now();
+    final daysUntilExpiration = expirationDate.difference(now).inDays;
+    daysUntilExpirationIOS = daysUntilExpiration.toDouble();
+    // Consider subscription expiring soon if < 7 days remaining
+    willExpireSoon = daysUntilExpiration > 0 && daysUntilExpiration < 7;
+  }
+
+  // Create ActiveSubscription from Purchase
+  return ActiveSubscription(
+    productId: purchase.productId,
+    transactionId: purchase.transactionIdFor ?? purchase.purchaseToken ?? '',
+    purchaseToken: purchase.purchaseToken,
+    transactionDate: purchase.transactionDate is String
+        ? double.tryParse(purchase.transactionDate as String) ?? 0.0
+        : (purchase.transactionDate as num?)?.toDouble() ?? 0.0,
+    isActive: purchase.purchaseState == PurchaseState.Purchased,
+    autoRenewingAndroid: autoRenewing,
+    basePlanIdAndroid: basePlanId,
+    currentPlanId: purchase.currentPlanId,
+    daysUntilExpirationIOS: daysUntilExpirationIOS,
+    environmentIOS: environmentIOS,
+    expirationDateIOS: expirationDateIOS,
+    renewalInfoIOS: renewalInfoIOS,
+    purchaseTokenAndroid: purchase is PurchaseAndroid ? purchase.purchaseToken : null,
+    willExpireSoon: willExpireSoon,
+  );
 }

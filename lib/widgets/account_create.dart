@@ -5,9 +5,11 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_inapp_purchase/modules.dart';
+//import 'package:flutter_inapp_purchase/modules.dart';
+import 'package:flutter_inapp_purchase/types.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/config/platform.dart';
+import 'package:keevault/extension_methods.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 
 import 'package:keevault/vault_backend/user.dart';
@@ -25,7 +27,7 @@ import 'coloured_safe_area_widget.dart';
 import 'subscriber_terms_dialog.dart';
 
 class IapDetails {
-  List<IAPItem> products;
+  List<ProductSubscription> products;
   int offerTokenIndex;
   bool trialAvailable;
   String? formattedPrice;
@@ -64,7 +66,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
 
   String? registrationErrorMessage;
 
-  Function(PurchasedItem)? purchaseListenerCallback;
+  Function(Purchase)? purchaseListenerCallback;
 
   @override
   void initState() {
@@ -95,7 +97,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
   }
 
   Future<void> handlePurchaseItem(
-    PurchasedItem item,
+    Purchase item,
     bool isAndroid,
     BlockingOverlayState blockingOverlay,
     AccountCubit accountCubit,
@@ -161,7 +163,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
     final blockingOverlay = BlockingOverlay.of(context);
     final iapReady = await PaymentService.instance.ensureReady();
-    List<IAPItem> prods = [];
+    List<ProductSubscription> prods = [];
 
     attachIapListeners() {
       PaymentService.instance.addToErrorListeners((msg) {
@@ -169,21 +171,23 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
         blockingOverlay.hide();
       });
       purchaseListenerCallback = (item) async {
-        if (item.purchaseToken == null && item.transactionReceipt == null) {
+        if (item.purchaseToken == null) {
           return;
         }
         if (accountCubit.state is AccountSubscribing) {
           final str = S.current;
           await handlePurchaseItem(
             item,
-            item.purchaseStateAndroid != null,
+            item.platform == IapPlatform.Android,
             blockingOverlay,
             accountCubit,
             vaultCubit,
             str,
           );
         } else {
-          // We're not expecting this purchase so we will defer it until the user has navigated to a point where we can do something useful with it (e.g. either creating a new account or exiting and signing in again with fresh authentication tokens)
+          // We're not expecting this purchase so we will defer it until the user has
+          // navigated to a point where we can do something useful with it (e.g. either
+          // creating a new account or exiting and signing in again with fresh authentication tokens)
           PaymentService.instance.deferPurchaseItem(item);
         }
       };
@@ -200,25 +204,32 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
             iap = IapDetails(
               products: prods,
               offerTokenIndex: -1,
-              trialAvailable: true, // Apple don't permit us to know this information so we show the more general text
-              formattedPrice: prods[0].localizedPrice,
+              trialAvailable:
+                  true, // Apple don't permit us to know this information so we show the more general text. //TODO:f: maybe possible now with Storekit2?
+              formattedPrice: prods[0].displayPrice,
             );
           });
           return;
         }
         if (KeeVaultPlatform.isAndroid) {
-          final trialProductIndex =
-              prods[0].subscriptionOffersAndroid?.indexWhere((o) => o.offerId == 'supporter-yearly-trial') ?? -1;
+          final prodSub = prods[0] as ProductSubscriptionAndroid;
+          final trialProductIndex = prodSub.subscriptionOfferDetailsAndroid.indexWhere(
+            (o) => o.offerId == 'supporter-yearly-trial',
+          );
           final selectedProductIndex = trialProductIndex >= 0
               ? trialProductIndex
-              : prods[0].subscriptionOffersAndroid?.indexWhere((o) => o.basePlanId == 'supporter-yearly') ?? -1;
+              : prodSub.subscriptionOfferDetailsAndroid.indexWhere((o) => o.basePlanId == 'supporter-yearly');
           final selectedProduct = selectedProductIndex >= 0
-              ? (prods[0].subscriptionOffersAndroid![selectedProductIndex])
+              ? (prodSub.subscriptionOfferDetailsAndroid[selectedProductIndex])
               : null;
 
           if (selectedProduct != null) {
-            final pricingIndex = selectedProduct.pricingPhases?.indexWhere((p) => p.recurrenceMode == 1) ?? -1;
-            final price = pricingIndex >= 0 ? selectedProduct.pricingPhases![pricingIndex].formattedPrice : null;
+            final pricingIndex = selectedProduct.pricingPhases.pricingPhaseList.indexWhere(
+              (p) => p.recurrenceMode == 1,
+            );
+            final price = pricingIndex >= 0
+                ? selectedProduct.pricingPhases.pricingPhaseList[pricingIndex].formattedPrice
+                : null;
             attachIapListeners();
 
             setState(() {
