@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
-import 'package:keevault/extension_methods.dart';
 import 'package:keevault/logging/logger.dart';
 import './config/platform.dart';
 
@@ -289,7 +288,7 @@ class PaymentService {
         ),
         useAlternativeBilling: null,
       ));
-      await FlutterInappPurchase.instance.requestPurchase(subsProps!);
+      await FlutterInappPurchase.instance.requestPurchase(subsProps);
     }
     //TODO: ios
   }

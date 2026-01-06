@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:kdbx/kdbx.dart';
-import 'package:keevault/config/platform.dart';
-import 'package:keevault/payment_service.dart';
 import 'package:keevault/user_repository.dart';
 import 'package:keevault/vault_backend/account_verification_status.dart';
 import 'package:keevault/vault_backend/exceptions.dart';

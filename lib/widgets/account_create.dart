@@ -5,11 +5,9 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:flutter_inapp_purchase/modules.dart';
 import 'package:flutter_inapp_purchase/types.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/config/platform.dart';
-import 'package:keevault/extension_methods.dart';
 import 'package:keevault/vault_backend/exceptions.dart';
 
 import 'package:keevault/vault_backend/user.dart';
