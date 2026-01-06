@@ -45,10 +45,10 @@ dependencies:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
       ref: master
-  flutter_autofill_service: ^0.20.0
-    # git:
-    #   url: https://github.com/kee-org/flutter_autofill_service.git
-    #   ref: master
+  flutter_autofill_service: #^0.21.0
+    git:
+      url: https://github.com/kee-org/flutter_autofill_service.git
+      ref: api36
   bloc: ^9.1.0
   flutter_bloc: ^9.1.1
   fluro: ^2.0.5
@@ -110,10 +110,7 @@ dependencies:
   argon2_ffi_base: ^1.1.1
   uuid: ^4.5.2
   clock: ^1.1.2
-  flutter_inapp_purchase: ^7.1.0
-    # git:
-    #   url: https://github.com/kee-org/flutter_inapp_purchase
-    #   ref: main
+  flutter_inapp_purchase: ^7.2.0
   sensitive_clipboard: 
     git:
       url: https://github.com/kee-org/sensitive_clipboard

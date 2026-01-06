@@ -355,11 +355,12 @@ packages:
   flutter_autofill_service:
     dependency: "direct main"
     description:
-      name: flutter_autofill_service
-      sha256: "54f520588a1fb6cdfd90d1d0424c06d28ee334c6ab62239927491767f8754aa1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.20.0"
+      path: "."
+      ref: api36
+      resolved-ref: "191f0c5f186fc349437fb511551249ac6a4c62f8"
+      url: "https://github.com/kee-org/flutter_autofill_service.git"
+    source: git
+    version: "0.21.0"
   flutter_bloc:
     dependency: "direct main"
     description:
@@ -389,10 +390,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_inapp_purchase
-      sha256: "3cf8d037e54129c412922390ce215653147e05e10de61e56ae96a33107769e19"
+      sha256: e392f84a2f3aa2ccf71cd1a432beb0dbc5c062cc6bc755c2966c606e6a671281
       url: "https://pub.dev"
     source: hosted
-    version: "7.1.15"
+    version: "7.2.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:

@@ -123,6 +123,9 @@ android {
         ndk.debugSymbolLevel = symbolLevel
         testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
+
+        // Required for flutter_inapp_purchase: Select Google Play platform
+        missingDimensionStrategy 'platform', 'play'
     }
 
     testOptions {
