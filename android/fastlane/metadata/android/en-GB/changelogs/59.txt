@@ -1,2 +1,3 @@
-* 
-* Updated Flutter and other dependencies
+* New autocomplete feature on the Username field - select from previously used usernames to speed up the creation of new entries with common usernames such as your primary email address.
+* Updated Flutter and other dependencies.
+* Improved performance on newer Android devices (by supporting 16K Android memory page size).
