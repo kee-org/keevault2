@@ -292,4 +292,17 @@ class PaymentService {
       await FlutterInappPurchase.instance.requestPurchase(subsProps);
     }
   }
+
+  Future isEligibleForIntroOfferIOS() async {
+    try {
+      // We send the subscription group ID as documented. Unfortunately other
+      // documentation says we need to use a subscription product ID instead so we may
+      // still be unable to report an accurate free trial eligibility status to the
+      // user.
+      final isEligible = await FlutterInappPurchase.instance.isEligibleForIntroOfferIOS('21222841');
+      return isEligible;
+    } on Exception {
+      return true;
+    }
+  }
 }
