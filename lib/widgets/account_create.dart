@@ -198,12 +198,13 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
         if (KeeVaultPlatform.isIOS) {
           attachIapListeners();
 
+          final isTrialAvailable = await PaymentService.instance.isEligibleForIntroOfferIOS();
+
           setState(() {
             iap = IapDetails(
               products: prods,
               offerTokenIndex: -1,
-              trialAvailable:
-                  true, // Apple don't permit us to know this information so we show the more general text. //TODO:f: maybe possible now with Storekit2?
+              trialAvailable: isTrialAvailable,
               formattedPrice: prods[0].displayPrice,
             );
           });

@@ -273,23 +273,23 @@ class PaymentService {
           ? item.subscriptionOfferDetailsAndroid[offerTokenIndex]
           : null;
       final subsProps = RequestPurchaseProps.subs((
-        ios: null, // RequestSubscriptionIosProps(sku: item.id),
+        ios: null,
         android: RequestSubscriptionAndroidProps(
           skus: [item.id],
           subscriptionOffers: offer != null
-              ? [
-                  AndroidSubscriptionOfferInput(
-                    offerToken: offer.offerToken,
-                    sku: offer
-                        .offerId!, //TODO: is this correct? check openiap specs - maybe needs to be the broader item sku but problable correct.
-                  ),
-                ]
+              ? [AndroidSubscriptionOfferInput(offerToken: offer.offerToken, sku: item.id)]
               : null,
         ),
         useAlternativeBilling: null,
       ));
       await FlutterInappPurchase.instance.requestPurchase(subsProps);
+    } else if (item is ProductSubscriptionIOS) {
+      final subsProps = RequestPurchaseProps.subs((
+        ios: RequestSubscriptionIosProps(sku: item.id),
+        android: null,
+        useAlternativeBilling: null,
+      ));
+      await FlutterInappPurchase.instance.requestPurchase(subsProps);
     }
-    //TODO: ios
   }
 }
