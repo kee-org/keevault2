@@ -3,9 +3,11 @@ KEEVAULT_CHANNEL=default
 
 // These values are our usual defaults unless we need to debug IAP which gets
 // messy due to Apple limitations regarding bundle IDs, provisioning profiles, etc.
-KEEVAULT_NAME_SUFFIX=(d)
-KEEVAULT_ID_SUFFIX=.dev
+//KEEVAULT_NAME_SUFFIX=(d)
+//KEEVAULT_ID_SUFFIX=.dev
 
 // To hack a way to debug IAP locally, use these values instead:
-//KEEVAULT_NAME_SUFFIX=(i)
-//KEEVAULT_ID_SUFFIX=
+KEEVAULT_NAME_SUFFIX=(i)
+KEEVAULT_ID_SUFFIX=
+
+//TODO: revert above hack

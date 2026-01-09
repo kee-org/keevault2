@@ -785,13 +785,15 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = X53276L247;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = X53276L247;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = KeeVaultAutofill/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Kee Vault Autofill$(KEEVAULT_NAME_SUFFIX)";
+				INFOPLIST_KEY_CFBundleDisplayName = "Kee Vault Autofill(d)";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -802,9 +804,10 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.keevault.keevault.dev.autofill;
+				PRODUCT_BUNDLE_IDENTIFIER = com.keevault.keevault.autofill;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.keevault.keevault.dev.autofill";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.keevault.keevault.autofill";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -831,7 +834,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = KeeVaultAutofill/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Kee Vault Autofill$(KEEVAULT_NAME_SUFFIX)";
+				INFOPLIST_KEY_CFBundleDisplayName = "Kee Vault Autofill(d)";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -870,7 +873,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = KeeVaultAutofill/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Kee Vault Autofill$(KEEVAULT_NAME_SUFFIX)";
+				INFOPLIST_KEY_CFBundleDisplayName = "Kee Vault Autofill(d)";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1087,10 +1090,13 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = X53276L247;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = X53276L247;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1106,9 +1112,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.keevault.keevault$(KEEVAULT_ID_SUFFIX)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.keevault.keevault;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.keevault.keevault.dev";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.keevault.keevault";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
