@@ -1,0 +1,5 @@
+* New autocomplete feature on the Username field - select from previously used usernames to speed up the creation of new entries with common usernames such as your primary email address.
+* Improved AutoFill behaviour in some apps and websites.
+* Entries saved via AutoFill will now sometimes have the app's actual name prefilled in the title.
+* Updated Flutter and other dependencies.
+* Improved performance on newer Android devices (by supporting 16K Android memory page size).
