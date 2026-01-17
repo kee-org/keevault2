@@ -77,7 +77,7 @@ class ColorFilterWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24.0),
         color: color,
-        boxShadow: [BoxShadow(color: color.withOpacity(0.8), offset: Offset(1.0, 2.0), blurRadius: 2.0)],
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.8), offset: Offset(1.0, 2.0), blurRadius: 2.0)],
       ),
       child: Material(
         color: Colors.transparent,
