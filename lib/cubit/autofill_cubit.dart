@@ -128,6 +128,7 @@ class AutofillCubit extends Cubit<AutofillState> {
   Future<bool> autofillWithList(LocalVaultFile vault) async {
     final androidMetadata = (state as AutofillRequested).androidMetadata;
     if (shouldIgnoreRequest(androidMetadata)) {
+      l.d('ignoring autofillWithList request');
       await AutofillService().resultWithDatasets(null);
       return true;
     }

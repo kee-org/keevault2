@@ -355,9 +355,11 @@ packages:
   flutter_autofill_service:
     dependency: "direct main"
     description:
-      path: "../flutter_autofill_service"
-      relative: true
-    source: path
+      path: "."
+      ref: api36
+      resolved-ref: "55538f1870abbef1f67f4617a1e4670ee9df13f6"
+      url: "https://github.com/kee-org/flutter_autofill_service.git"
+    source: git
     version: "0.21.0"
   flutter_bloc:
     dependency: "direct main"

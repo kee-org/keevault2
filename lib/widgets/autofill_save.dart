@@ -38,6 +38,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
     }
     final username = autofillState.androidMetadata.saveInfo!.username;
     final password = autofillState.androidMetadata.saveInfo!.password;
+    final appName = autofillState.androidMetadata.saveInfo!.appName ?? '';
     //TODO:f: expose value of save compat mode to Entry widget:
     //final isCompatMode = autofillState.androidMetadata.saveInfo!.isCompatMode;
 
@@ -60,13 +61,18 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
 
     if (webDomain.isNotEmpty) {
       newEntry!.addAutofillUrl(webDomain, scheme);
-      newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(webDomain));
     } else if (appId.isNotEmpty) {
       newEntry!.addAndroidPackageName(appId);
-      newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(appId));
-    } else {
-      newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue('[untitled]'));
     }
+
+    final newTitle = appName.isNotEmpty
+        ? appName
+        : webDomain.isNotEmpty
+        ? webDomain
+        : appId.isNotEmpty
+        ? appId
+        : '[untitled]';
+    newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(newTitle));
 
     username?.let((it) => newEntry!.setString(KdbxKeyCommon.USER_NAME, PlainValue(it)));
     password?.let((it) => newEntry!.setString(KdbxKeyCommon.PASSWORD, PlainValue(it)));
