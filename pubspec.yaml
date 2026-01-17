@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 2.6.0+59
 
 environment:
-  sdk: '>=3.9.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -36,11 +36,11 @@ dependencies:
       ref: keevault
 
   package_info_plus: ^9.0.0
-  shared_preferences: ^2.5.3 # at least 2.3.4 for security patch
+  shared_preferences: ^2.5.3
   flutter_settings_screens:
     git:
       url: https://github.com/Juggler98/flutter_settings_screens.git
-      ref: 52ac240b7ae0cf48b723818ee233565fd562bc13 # 0.3.4 is incompatible with MD2
+      ref: 52ac240b7ae0cf48b723818ee233565fd562bc13
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
