@@ -60,13 +60,16 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
 
     if (webDomain.isNotEmpty) {
       newEntry!.addAutofillUrl(webDomain, scheme);
-      newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(webDomain));
     } else if (appId.isNotEmpty) {
       newEntry!.addAndroidPackageName(appId);
-      newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(appId));
-    } else {
-      newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue('[untitled]'));
     }
+
+    final newTitle = webDomain.isNotEmpty
+        ? webDomain
+        : appId.isNotEmpty
+        ? appId
+        : '[untitled]';
+    newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(newTitle));
 
     username?.let((it) => newEntry!.setString(KdbxKeyCommon.USER_NAME, PlainValue(it)));
     password?.let((it) => newEntry!.setString(KdbxKeyCommon.PASSWORD, PlainValue(it)));
