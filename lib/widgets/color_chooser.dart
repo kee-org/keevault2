@@ -23,7 +23,7 @@ class ColorChooser extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
         color: color,
-        boxShadow: [BoxShadow(color: color.withOpacity(0.8), offset: Offset(1.0, 2.0), blurRadius: 3.0)],
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.8), offset: Offset(1.0, 2.0), blurRadius: 3.0)],
       ),
       child: Material(
         color: Colors.transparent,

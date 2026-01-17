@@ -754,7 +754,7 @@ class ObscuredEntryFieldEditor extends StatelessWidget {
             labelText: field.name ?? field.key?.key,
             prefixIcon: field.icon != null ? Icon(field.icon) : null,
           ),
-          child: Text('*anythIng*', style: TextStyle(color: color.withOpacity(0), fontSize: 16)),
+          child: Text('*anythIng*', style: TextStyle(color: color.withValues(alpha: 0), fontSize: 16)),
         ),
         Positioned.fill(
           top: 12,

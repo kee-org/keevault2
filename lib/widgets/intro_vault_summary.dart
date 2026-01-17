@@ -36,7 +36,7 @@ class _IntroVaultSummaryWidgetState extends State<IntroVaultSummaryWidget> with 
         filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: widget.theme.canvasColor.withOpacity(0.75)),
+          decoration: BoxDecoration(color: widget.theme.canvasColor.withValues(alpha: 0.75)),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
             child: Column(

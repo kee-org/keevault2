@@ -35,7 +35,7 @@ dependencies:
       url: https://github.com/kee-org/biometric_storage.git
       ref: keevault
 
-  package_info_plus: ^8.3.1
+  package_info_plus: ^9.0.0
   shared_preferences: ^2.5.3 # at least 2.3.4 for security patch
   flutter_settings_screens:
     git:
@@ -93,7 +93,7 @@ dependencies:
   zxcvbn: ^1.0.0
   flutter_rating_bar: ^4.0.1
   mime: ^2.0.0
-  share_plus: ^11.1.0
+  share_plus: ^12.0.1
   path: ^1.9.0 #flutter sdk always lags behind so upgrade this only when needed
   permission_handler: ^12.0.1
   flutter_file_dialog: ^3.0.2
@@ -121,7 +121,7 @@ dependencies:
       url: https://github.com/kee-org/RateMyApp
       ref: api34
   archive: ^4.0.7
-  device_info_plus: ^11.5.0
+  device_info_plus: ^12.3.0
   barcode_scan2: ^4.6.0
   flex_color_scheme: ^8.3.1
   # barcode_scan2:
