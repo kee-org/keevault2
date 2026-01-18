@@ -365,7 +365,7 @@ packages:
     description:
       path: "."
       ref: api36
-      resolved-ref: "55538f1870abbef1f67f4617a1e4670ee9df13f6"
+      resolved-ref: f2026df9616618ebffe86cca704a82ba452e0491
       url: "https://github.com/kee-org/flutter_autofill_service.git"
     source: git
     version: "0.21.0"

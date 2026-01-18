@@ -64,3 +64,4 @@ ios/Runner.ipa
 #android/app/.cxx/
 
 ios/build/ios/XCBuildData/
+android/app/local.properties
