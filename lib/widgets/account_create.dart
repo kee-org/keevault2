@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inapp_purchase/types.dart';
 import 'package:kdbx/kdbx.dart';
@@ -174,14 +174,7 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
         }
         if (accountCubit.state is AccountSubscribing) {
           final str = S.current;
-          await handlePurchaseItem(
-            item,
-            item.platform == IapPlatform.Android,
-            blockingOverlay,
-            accountCubit,
-            vaultCubit,
-            str,
-          );
+          await handlePurchaseItem(item, item.store == IapStore.Google, blockingOverlay, accountCubit, vaultCubit, str);
         } else {
           // We're not expecting this purchase so we will defer it until the user has
           // navigated to a point where we can do something useful with it (e.g. either
@@ -212,22 +205,17 @@ class _AccountCreateWidgetState extends State<AccountCreateWidget> {
         }
         if (KeeVaultPlatform.isAndroid) {
           final prodSub = prods[0] as ProductSubscriptionAndroid;
-          final trialProductIndex = prodSub.subscriptionOfferDetailsAndroid.indexWhere(
-            (o) => o.offerId == 'supporter-yearly-trial',
-          );
+          final trialProductIndex = prodSub.subscriptionOffers.indexWhere((o) => o.id == 'supporter-yearly-trial');
           final selectedProductIndex = trialProductIndex >= 0
               ? trialProductIndex
-              : prodSub.subscriptionOfferDetailsAndroid.indexWhere((o) => o.basePlanId == 'supporter-yearly');
-          final selectedProduct = selectedProductIndex >= 0
-              ? (prodSub.subscriptionOfferDetailsAndroid[selectedProductIndex])
-              : null;
+              : prodSub.subscriptionOffers.indexWhere((o) => o.basePlanIdAndroid == 'supporter-yearly');
+          final selectedProduct = selectedProductIndex >= 0 ? (prodSub.subscriptionOffers[selectedProductIndex]) : null;
 
           if (selectedProduct != null) {
-            final pricingIndex = selectedProduct.pricingPhases.pricingPhaseList.indexWhere(
-              (p) => p.recurrenceMode == 1,
-            );
+            final pricingIndex =
+                selectedProduct.pricingPhasesAndroid?.pricingPhaseList.indexWhere((p) => p.recurrenceMode == 1) ?? -1;
             final price = pricingIndex >= 0
-                ? selectedProduct.pricingPhases.pricingPhaseList[pricingIndex].formattedPrice
+                ? selectedProduct.pricingPhasesAndroid!.pricingPhaseList[pricingIndex].formattedPrice
                 : null;
             attachIapListeners();
 

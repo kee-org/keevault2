@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:keevault/cubit/app_settings_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
@@ -176,12 +175,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                 onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
                 child: MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  localizationsDelegates: const [
-                    S.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
+                  localizationsDelegates: const [S.delegate, GlobalMaterialLocalizations.delegate],
                   navigatorKey: widget.navigatorKey,
                   supportedLocales: S.delegate.supportedLocales,
                   title: 'Kee Vault',

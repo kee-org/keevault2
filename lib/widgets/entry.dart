@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:animations/animations.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jiffy/jiffy.dart';
@@ -79,16 +79,16 @@ class EntryWidget extends StatelessWidget {
   Future<void> _attachFile(BuildContext context) async {
     final str = S.of(context);
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any, withData: true);
-      final cleanupFuture = FilePicker.platform.clearTemporaryFiles();
+      final result = await FilePicker.pickFile(type: FileType.any);
+      final cleanupFuture = FilePicker.clearTemporaryFiles();
 
-      final bytes = result?.files.firstOrNull?.bytes;
+      final bytes = await result?.readAsBytes();
       if (bytes == null) {
         // User canceled the picker
         await cleanupFuture;
         return;
       }
-      final fileName = result?.files.firstOrNull?.name ?? UuidUtil.createNonCryptoUuid();
+      final fileName = result?.name ?? UuidUtil.createNonCryptoUuid();
       if (context.mounted) {
         await _attachFileContent(context, fileName, bytes);
       }

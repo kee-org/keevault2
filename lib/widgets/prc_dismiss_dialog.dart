@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'dialog_utils.dart';
 import 'package:keevault/generated/l10n.dart';
 

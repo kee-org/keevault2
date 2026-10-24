@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/logging/logger.dart';

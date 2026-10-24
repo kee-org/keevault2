@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_persistent_queue/flutter_persistent_queue.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:kdbx/kdbx.dart';

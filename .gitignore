@@ -60,8 +60,8 @@ ios/Runner.ipa
 # FVM Version Cache
 .fvm/
 
-# Remove after Flutter 3.29 bug is fixed
-#android/app/.cxx/
-
 ios/build/ios/XCBuildData/
 android/app/local.properties
+android/app/.cxx/
+android/app/build/
+ios/Flutter/ephemeral/

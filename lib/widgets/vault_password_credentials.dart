@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:keevault/credentials/quick_unlocker.dart';
 import '../config/platform.dart';

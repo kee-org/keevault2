@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:keevault/vault_file.dart';
 import 'package:keevault/widgets/dialog_utils.dart';
 import '../cubit/account_cubit.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/vault_cubit.dart';
 import '../generated/l10n.dart';

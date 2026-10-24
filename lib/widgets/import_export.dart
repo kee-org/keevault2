@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jiffy/jiffy.dart';
@@ -217,22 +217,21 @@ class _ImportExportWidgetState extends State<ImportExportWidget> {
     final vaultCubit = BlocProvider.of<VaultCubit>(context);
 
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFile(
         type: FileType.any,
         //TODO:f: restrict to kdbx files when file picker library supports this
         //type: FileType.custom,
         //allowedExtensions: ['kdbx'],
-        withData: true,
       );
-      final cleanupFuture = FilePicker.platform.clearTemporaryFiles();
+      final cleanupFuture = FilePicker.clearTemporaryFiles();
 
-      final bytes = result?.files.firstOrNull?.bytes;
+      final bytes = await result?.readAsBytes();
       if (bytes == null) {
         // User canceled the picker
         await cleanupFuture;
         return;
       }
-      final extension = result?.files.firstOrNull?.extension;
+      final extension = result?.extension;
       if (extension != 'kdbx') {
         l.w('${str.incorrectFile} ${str.selectKdbxFile}');
         if (context.mounted) {

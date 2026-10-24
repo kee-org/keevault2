@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:keevault/config/app.dart';
 import 'package:keevault/widgets/dialog_utils.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';

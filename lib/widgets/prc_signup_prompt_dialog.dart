@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:keevault/widgets/prc_privacy_dialog.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import '../config/environment_config.dart';

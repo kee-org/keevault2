@@ -263,26 +263,21 @@ class PaymentService {
 
   Future<void> buyProduct(ProductSubscription item, int offerTokenIndex) async {
     if (item is ProductSubscriptionAndroid) {
-      final offer = (offerTokenIndex >= 0 && item.subscriptionOfferDetailsAndroid.length > offerTokenIndex)
-          ? item.subscriptionOfferDetailsAndroid[offerTokenIndex]
+      final offer = (offerTokenIndex >= 0 && item.subscriptionOffers.length > offerTokenIndex)
+          ? item.subscriptionOffers[offerTokenIndex]
           : null;
       final subsProps = RequestPurchaseProps.subs((
-        ios: null,
-        android: RequestSubscriptionAndroidProps(
+        apple: null,
+        google: RequestSubscriptionAndroidProps(
           skus: [item.id],
-          subscriptionOffers: offer != null
-              ? [AndroidSubscriptionOfferInput(offerToken: offer.offerToken, sku: item.id)]
+          subscriptionOffers: offer?.offerTokenAndroid != null
+              ? [AndroidSubscriptionOfferInput(offerToken: offer!.offerTokenAndroid!, sku: item.id)]
               : null,
         ),
-        useAlternativeBilling: null,
       ));
       await FlutterInappPurchase.instance.requestPurchase(subsProps);
     } else if (item is ProductSubscriptionIOS) {
-      final subsProps = RequestPurchaseProps.subs((
-        ios: RequestSubscriptionIosProps(sku: item.id),
-        android: null,
-        useAlternativeBilling: null,
-      ));
+      final subsProps = RequestPurchaseProps.subs((apple: RequestSubscriptionIosProps(sku: item.id), google: null));
       await FlutterInappPurchase.instance.requestPurchase(subsProps);
     }
   }

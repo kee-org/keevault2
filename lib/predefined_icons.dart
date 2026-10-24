@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kdbx/kdbx.dart';
 
 class PredefinedIcons {
-  static const icons = <IconData>[
+  static const icons = [
     FontAwesomeIcons.key,
     FontAwesomeIcons.globe,
     FontAwesomeIcons.triangleExclamation,
@@ -77,10 +77,10 @@ class PredefinedIcons {
   ];
 
   static IconData iconFor(KdbxIcon icon) {
-    return icons[icon.index];
+    return icons[icon.index].data;
   }
 
   static IconData iconForGroup(KdbxIcon icon) {
-    return icons[icon.index];
+    return icons[icon.index].data;
   }
 }

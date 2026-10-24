@@ -1,5 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:keevault/config/platform.dart';
 import '../generated/l10n.dart';
 import 'free_user_dialog.dart';

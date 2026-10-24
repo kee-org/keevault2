@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:keevault/generated/l10n.dart';
 import 'package:keevault/widgets/text_filter.dart';
 import 'color_filter.dart';
