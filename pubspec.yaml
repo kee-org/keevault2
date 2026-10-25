@@ -40,7 +40,7 @@ dependencies:
   flutter_settings_screens:
     git:
       url: https://github.com/Juggler98/flutter_settings_screens.git
-      ref: 52ac240b7ae0cf48b723818ee233565fd562bc13
+      ref: 1641bd5809e2da91a32aee5f56cc163990073419
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
@@ -68,7 +68,7 @@ dependencies:
   flutter_treeview:
     git:
       url: https://github.com/kee-org/flutter_treeview.git
-      ref: 2d8b123b1a0404c93434b46e4a3e29fe7621c65d
+      ref: 9cc99d5cd199383f2bfe659ffeb39823b764e1d1
   flutter_chips_input:
     git:
       url: https://github.com/kee-org/flutter_chips_input.git
@@ -96,10 +96,10 @@ dependencies:
   flutter_file_dialog: ^3.3.3
   base32: ^2.2.0
   flutter_speed_dial: ^7.0.0
-  receive_intent: #^0.2.7
+  receive_intent: #^0.3.0
     git:
       url: https://github.com/daadu/receive_intent
-      ref: master
+      ref: 6316821b66b0e45ec8ba5a9f447b30f156731c71
   platform: ^3.1.6
   email_validator: ^3.0.0
   convert: ^3.1.2
@@ -118,8 +118,8 @@ dependencies:
   #     url: https://github.com/kee-org/barcode_scan2
   #     ref: main
 
-  material_ui: any
-  cupertino_ui: any
+  material_ui: ^1.8.0
+  cupertino_ui: ^1.1.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -134,12 +134,6 @@ dependency_overrides:
   #   path: ../kdbx.dart/
   flutter_autofill_service:
     path: ../flutter_autofill_service/
-  flutter_chips_input:
-    path: ../flutter_chips_input/
-  # receive_intent:
-  #   path: ../receive_intent/
-  flutter_treeview:
-    path: ../flutter_treeview/
   argon2_ffi:
     path: ../argon2_ffi/
 

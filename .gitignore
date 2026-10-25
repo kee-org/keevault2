@@ -65,3 +65,4 @@ android/app/local.properties
 android/app/.cxx/
 android/app/build/
 ios/Flutter/ephemeral/
+android/build/

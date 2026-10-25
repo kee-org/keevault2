@@ -237,113 +237,100 @@ class _SettingsWidgetState extends State<SettingsWidget> with TraceableClientMix
         return BlocBuilder<AutofillCubit, AutofillState>(
           builder: (context, autofillState) {
             return ColouredSafeArea(
-              child: Theme(
-                data: Theme.of(context).copyWith(scaffoldBackgroundColor: Theme.of(context).canvasColor),
-                child: SettingsScreen(
-                  title: str.settings,
-                  children: [
-                    SettingsGroup(
-                      title: str.setGenTheme,
-                      children: [
-                        RadioSettingsTile<String>(
-                          title: str.setGenTheme,
-                          showTitles: false,
-                          settingKey: 'theme',
-                          values: <String, String>{
-                            'sys': str.setGenTitlebarStyleDefault,
-                            'lt': str.setGenThemeLt,
-                            'dk': str.setGenThemeDk,
-                          },
-                          selected: 'sys',
-                          onChange: (String value) {
-                            BlocProvider.of<AppSettingsCubit>(context).changeTheme(value);
-                          },
+              child: SettingsScreen(
+                title: str.settings,
+                children: [
+                  SettingsGroup(
+                    title: str.setGenTheme,
+                    children: [
+                      RadioSettingsTile<String>(
+                        title: str.setGenTheme,
+                        showTitles: false,
+                        settingKey: 'theme',
+                        values: <String, String>{
+                          'sys': str.setGenTitlebarStyleDefault,
+                          'lt': str.setGenThemeLt,
+                          'dk': str.setGenThemeDk,
+                        },
+                        selected: 'sys',
+                        onChange: (String value) {
+                          BlocProvider.of<AppSettingsCubit>(context).changeTheme(value);
+                        },
+                      ),
+                    ],
+                  ),
+                  SettingsGroup(
+                    title: str.deviceAutoFill,
+                    children: [
+                      Visibility(
+                        visible: autofillState is AutofillAvailable,
+                        child: autofillState is AutofillAvailable
+                            ? SettingsContainer(
+                                children: [
+                                  AutofillStatusWidget(
+                                    isEnabled: autofillState.enabled,
+                                    isDeviceQuickUnlockEnabled: _isDeviceQuickUnlockEnabled,
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                      ),
+                    ],
+                  ),
+                  SettingsGroup(
+                    title: str.quickSignIn,
+                    children: [BiometricSettingWidget(isEnabledOnDevice: _isDeviceQuickUnlockEnabled)],
+                  ),
+                  SettingsGroup(
+                    title: str.menuSetGeneral,
+                    children: [
+                      SimpleSettingsTile(
+                        title: str.genPsTitle,
+                        subtitle: str.managePasswordPresets,
+                        onTap: () async => await AppConfig.router.navigateTo(
+                          context,
+                          Routes.passwordPresetManager,
+                          transition: TransitionType.inFromRight,
                         ),
-                      ],
-                    ),
-                    SettingsGroup(
-                      title: str.deviceAutoFill,
-                      children: [
-                        Visibility(
-                          visible: autofillState is AutofillAvailable,
-                          child: autofillState is AutofillAvailable
-                              ? SettingsContainer(
-                                  children: [
-                                    AutofillStatusWidget(
-                                      isEnabled: autofillState.enabled,
-                                      isDeviceQuickUnlockEnabled: _isDeviceQuickUnlockEnabled,
-                                    ),
-                                  ],
-                                )
-                              : Container(),
-                        ),
-                      ],
-                    ),
-                    SettingsGroup(
-                      title: str.quickSignIn,
-                      children: [BiometricSettingWidget(isEnabledOnDevice: _isDeviceQuickUnlockEnabled)],
-                    ),
-                    SettingsGroup(
-                      title: str.menuSetGeneral,
-                      children: [
-                        SimpleSettingsTile(
-                          title: str.genPsTitle,
-                          subtitle: str.managePasswordPresets,
-                          onTap: () async => await AppConfig.router.navigateTo(
-                            context,
-                            Routes.passwordPresetManager,
-                            transition: TransitionType.inFromRight,
-                          ),
-                        ),
-                        SwitchSettingsTile(
-                          activeColor: theme.colorScheme.inversePrimary,
-                          settingKey: 'expandGroups',
-                          title: str.setGenShowSubgroups,
-                          defaultValue: true,
-                          onChange: (showChildren) {
-                            BlocProvider.of<FilterCubit>(context).changeChildGroupInclusion(showChildren);
-                          },
-                        ),
-                        //TODO:f: Need to store group in DB so this should really be a DB-specific setting.
-                        // SwitchSettingsTile(
-                        //   settingKey: 'rememberFilterGroup',
-                        //   title: str.rememberFilterGroup,
-                        //   defaultValue: false,
-                        // ),
-                        SimpleSettingsTile(
-                          title: 'Access / Recovery',
-                          child: Theme(
-                            data: Theme.of(context).copyWith(scaffoldBackgroundColor: Theme.of(context).canvasColor),
-                            child: SettingsScreen(title: 'Access / Recovery', children: <Widget>[...accessChildren]),
-                          ),
-                        ),
-                        SimpleSettingsTile(
-                          title: 'Account / Subscription',
-                          child: Theme(
-                            data: Theme.of(context).copyWith(scaffoldBackgroundColor: Theme.of(context).canvasColor),
-                            child: SettingsScreen(
-                              title: 'Account / Subscription',
-                              children: <Widget>[...accountChildren],
-                            ),
-                          ),
-                        ),
+                      ),
+                      SwitchSettingsTile(
+                        settingKey: 'expandGroups',
+                        title: str.setGenShowSubgroups,
+                        defaultValue: true,
+                        onChange: (showChildren) {
+                          BlocProvider.of<FilterCubit>(context).changeChildGroupInclusion(showChildren);
+                        },
+                      ),
+                      //TODO:f: Need to store group in DB so this should really be a DB-specific setting.
+                      // SwitchSettingsTile(
+                      //   settingKey: 'rememberFilterGroup',
+                      //   title: str.rememberFilterGroup,
+                      //   defaultValue: false,
+                      // ),
+                      SimpleSettingsTile(
+                        title: 'Access / Recovery',
+                        child: SettingsScreen(title: 'Access / Recovery', children: <Widget>[...accessChildren]),
+                      ),
+                      SimpleSettingsTile(
+                        title: 'Account / Subscription',
+                        child: SettingsScreen(title: 'Account / Subscription', children: <Widget>[...accountChildren]),
+                      ),
 
-                        BlocBuilder<AppRatingCubit, AppRatingState>(
-                          builder: (context, appRatingState) {
-                            return SimpleSettingsTile(
-                              enabled: appRatingState is AppRatingReady,
-                              title: 'Provide Feedback',
-                              onTap: () async {
-                                final arc = BlocProvider.of<AppRatingCubit>(context);
-                                await arc.showRatingDialog(context);
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      BlocBuilder<AppRatingCubit, AppRatingState>(
+                        builder: (context, appRatingState) {
+                          return SimpleSettingsTile(
+                            enabled: appRatingState is AppRatingReady,
+                            title: 'Provide Feedback',
+                            onTap: () async {
+                              final arc = BlocProvider.of<AppRatingCubit>(context);
+                              await arc.showRatingDialog(context);
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
             );
           },
@@ -428,7 +415,6 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
                 visible: !KeeVaultPlatform.isIOS,
                 replacement: Column(children: quickUnlockSettings),
                 child: SwitchSettingsTile(
-                  activeColor: theme.colorScheme.inversePrimary,
                   settingKey: 'biometrics-enabled',
                   title: str.biometricSignIn,
                   onChange: (value) async {
@@ -555,7 +541,6 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
               Visibility(
                 visible: widget.isEnabled && KeeVaultPlatform.isAndroid,
                 child: SwitchSettingsTile(
-                  activeColor: theme.colorScheme.inversePrimary,
                   settingKey: 'autofillServiceEnableSaving',
                   title: str.offerToSave,
                   defaultValue: true,
@@ -573,7 +558,6 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
                 visible:
                     widget.isEnabled && KeeVaultPlatform.isAndroid && (_androidDeviceInfo?.version.sdkInt ?? 0) >= 31,
                 child: SwitchSettingsTile(
-                  activeColor: theme.colorScheme.inversePrimary,
                   settingKey: 'autofillServiceEnableIMEIntegration',
                   title: 'Show in keyboard',
                   subtitle: 'experimental feature',

@@ -23,6 +23,7 @@ void main() async {
 
   await runZonedGuarded<Future<void>>(
     () async {
+      Settings.platform = TargetPlatform.android;
       await Settings.init(cacheProvider: SharePreferenceCache());
       await MatomoTracker.instance.initialize(
         siteId: '7',

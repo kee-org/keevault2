@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart' show FaIconData;
 import 'package:material_ui/material_ui.dart';
 import 'package:kdbx/kdbx.dart';
 import '../predefined_icons.dart';
@@ -59,8 +60,8 @@ class _IconChooserState extends State<IconChooser> {
               onTap: () {
                 Navigator.pop(context, item.key is int ? KdbxIcon.values[item.key] : item.key as KdbxCustomIcon);
               },
-              child: item.value is IconData
-                  ? Icon(item.value, size: widget.iconSize, color: widget.iconColor)
+              child: item.value is FaIconData
+                  ? Icon((item.value as FaIconData).data, size: widget.iconSize, color: widget.iconColor)
                   : Container(
                       height: imageSize,
                       width: imageSize,

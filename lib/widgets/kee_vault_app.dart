@@ -175,7 +175,7 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                 onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
                 child: MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  localizationsDelegates: const [S.delegate, GlobalMaterialLocalizations.delegate],
+                  localizationsDelegates: const [S.delegate, ...GlobalMaterialLocalizations.delegates],
                   navigatorKey: widget.navigatorKey,
                   supportedLocales: S.delegate.supportedLocales,
                   title: 'Kee Vault',
@@ -185,6 +185,10 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
                   onGenerateRoute: AppConfig.router.generator,
                   initialRoute: '/',
                   navigatorObservers: [matomoObserver],
+                  builder: (BuildContext context, Widget? child) {
+                    // This prevents third-party dependency runtime crashes. TODO: Review in mid-2027.
+                    return MaterialUiCompatibilityBridge(child: child!);
+                  },
                 ),
               ),
             ),

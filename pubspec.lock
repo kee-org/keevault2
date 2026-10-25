@@ -416,9 +416,11 @@ packages:
   flutter_chips_input:
     dependency: "direct main"
     description:
-      path: "../flutter_chips_input"
-      relative: true
-    source: path
+      path: "."
+      ref: master
+      resolved-ref: "362da50239760cdfcfaf01eed6359400dc1cda85"
+      url: "https://github.com/kee-org/flutter_chips_input.git"
+    source: git
     version: "3.0.0+4"
   flutter_file_dialog:
     dependency: "direct main"
@@ -432,10 +434,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_inapp_purchase
-      sha256: "40dd41bdb3e865171538efede5b2ad549350eccbaebbaf6648febd5f5f347f71"
+      sha256: b27a4e39d73651fe74262f37f853a3533915681d4c94e5decf6bfd5b14a2ab09
       url: "https://pub.dev"
     source: hosted
-    version: "11.1.0"
+    version: "11.2.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -486,8 +488,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "52ac240b7ae0cf48b723818ee233565fd562bc13"
-      resolved-ref: "52ac240b7ae0cf48b723818ee233565fd562bc13"
+      ref: "1641bd5809e2da91a32aee5f56cc163990073419"
+      resolved-ref: "1641bd5809e2da91a32aee5f56cc163990073419"
       url: "https://github.com/Juggler98/flutter_settings_screens.git"
     source: git
     version: "0.3.4"
@@ -507,9 +509,11 @@ packages:
   flutter_treeview:
     dependency: "direct main"
     description:
-      path: "../flutter_treeview"
-      relative: true
-    source: path
+      path: "."
+      ref: "9cc99d5cd199383f2bfe659ffeb39823b764e1d1"
+      resolved-ref: "9cc99d5cd199383f2bfe659ffeb39823b764e1d1"
+      url: "https://github.com/kee-org/flutter_treeview.git"
+    source: git
     version: "2.0.0"
   flutter_web_plugins:
     dependency: transitive
@@ -1010,8 +1014,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "2c0bc50e8b066f423ff260aba2948172ab72e932"
+      ref: "6316821b66b0e45ec8ba5a9f447b30f156731c71"
+      resolved-ref: "6316821b66b0e45ec8ba5a9f447b30f156731c71"
       url: "https://github.com/daadu/receive_intent"
     source: git
     version: "0.2.8"
