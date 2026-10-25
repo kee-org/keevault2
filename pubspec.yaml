@@ -44,8 +44,11 @@ dependencies:
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
-      ref: master
-  flutter_autofill_service: ^0.22.0
+      ref: agp9
+  flutter_autofill_service:
+    git:
+      url: https://github.com/kee-org/flutter_autofill_service.git
+      ref: flutter-3.47
   bloc: ^9.2.1
   flutter_bloc: ^9.1.1
   fluro: ^2.0.5
@@ -132,10 +135,10 @@ dev_dependencies:
 dependency_overrides:
   # kdbx:
   #   path: ../kdbx.dart/
-  flutter_autofill_service:
-    path: ../flutter_autofill_service/
-  argon2_ffi:
-    path: ../argon2_ffi/
+  # flutter_autofill_service:
+  #   path: ../flutter_autofill_service/
+  # argon2_ffi:
+  #   path: ../argon2_ffi/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
