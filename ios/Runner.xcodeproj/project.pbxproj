@@ -11,6 +11,7 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
+		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 		8B253A0D28BE667A00AA6762 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B253A0C28BE667A00AA6762 /* AuthenticationServices.framework */; };
 		8B253A1328BE694600AA6762 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B253A0C28BE667A00AA6762 /* AuthenticationServices.framework */; };
 		8B253A1628BE694600AA6762 /* CredentialProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B253A1528BE694600AA6762 /* CredentialProviderViewController.swift */; };
@@ -93,6 +94,7 @@
 		720B5E844BC18787D558768C /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		8052DA9A3BEC88E2288301B3 /* Pods-Runner-RunnerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.release.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		8B253A0A28942AA000AA6762 /* KeeVault-defaults.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "KeeVault-defaults.xcconfig"; path = "Flutter/KeeVault-defaults.xcconfig"; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				8BAB06C02A0D486700F8759A /* StoreKit.framework in Frameworks */,
 				8B253A0D28BE667A00AA6762 /* AuthenticationServices.framework in Frameworks */,
 				CB99B9856EC33EF985D3B1A9 /* Pods_Runner.framework in Frameworks */,
@@ -199,6 +202,7 @@
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
+				78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */,
 				8B253A2428BF6E0100AA6762 /* Debug-autofill.xcconfig */,
 				8B253A2528BF6E0100AA6762 /* Release-autofill.xcconfig */,
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
@@ -313,7 +317,6 @@
 				8BE5C69E2A3F8C1E0013856C /* Resources */,
 				DE3599ACE908595EF90359B0 /* [CP] Embed Pods Frameworks */,
 				8BE5C6AD2A3F928A0013856C /* xcode_backend embed_and_thin */,
-				694CA39CBC5B3880865BAAC5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -338,7 +341,6 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				FF23F4DC409BF04CA9EF8E1D /* [CP] Embed Pods Frameworks */,
-				284FECD7F90F2667384034A3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -346,6 +348,9 @@
 				8B253A1D28BE694600AA6762 /* PBXTargetDependency */,
 			);
 			name = Runner;
+			packageProductDependencies = (
+				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
+			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
@@ -383,6 +388,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
 				8BB2225628F5B39C00693094 /* XCRemoteSwiftPackageReference "SwiftDomainParser" */,
 				8BB2225928F6F27A00693094 /* XCRemoteSwiftPackageReference "PunycodeSwift" */,
 				8B2842EC2AF9172300C8D2D6 /* XCRemoteSwiftPackageReference "Puppy" */,
@@ -429,23 +435,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		284FECD7F90F2667384034A3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -482,23 +471,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		694CA39CBC5B3880865BAAC5 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8BE5C6AC2A3F921A0013856C /* xcode_backend build */ = {
@@ -1196,6 +1168,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		8B2842EC2AF9172300C8D2D6 /* XCRemoteSwiftPackageReference "Puppy" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1232,6 +1211,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
 		8B2842ED2AF9172300C8D2D6 /* Puppy */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B2842EC2AF9172300C8D2D6 /* XCRemoteSwiftPackageReference "Puppy" */;

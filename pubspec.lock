@@ -52,9 +52,11 @@ packages:
   argon2_ffi:
     dependency: "direct main"
     description:
-      path: "../argon2_ffi"
-      relative: true
-    source: path
+      path: "."
+      ref: agp9
+      resolved-ref: da4bb43b0d154ec060ab08c2a9cb1740596357db
+      url: "https://github.com/kee-org/argon2_ffi.git"
+    source: git
     version: "2.0.1"
   argon2_ffi_base:
     dependency: "direct main"
@@ -401,9 +403,11 @@ packages:
   flutter_autofill_service:
     dependency: "direct main"
     description:
-      path: "../flutter_autofill_service"
-      relative: true
-    source: path
+      path: "."
+      ref: "flutter-3.47"
+      resolved-ref: "17d30501a473a2a64254237e7664e1428ef28212"
+      url: "https://github.com/kee-org/flutter_autofill_service.git"
+    source: git
     version: "0.22.0"
   flutter_bloc:
     dependency: "direct main"
