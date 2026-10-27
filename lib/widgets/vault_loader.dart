@@ -161,8 +161,8 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
           final interactionContext = BlocProvider.of<InteractionCubit>(context);
           if (autofillState is AutofillRequested && autofillState.enabled) {
             if (!autofillState.forceInteractive) {
-              final matchFound = await BlocProvider.of<AutofillCubit>(context).autofillWithList(state.vault);
-              if (matchFound) {
+              final askUser = await BlocProvider.of<AutofillCubit>(context).autofillWithList(state.vault);
+              if (!askUser) {
                 return;
               }
             }

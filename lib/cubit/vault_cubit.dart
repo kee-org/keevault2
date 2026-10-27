@@ -90,7 +90,8 @@ class VaultCubit extends Cubit<VaultState> {
 
       if (domain?.isNotEmpty ?? false) {
         entry.addAutofillUrl(domain, scheme);
-      } else if (appId?.isNotEmpty ?? false) {
+      }
+      if (appId?.isNotEmpty ?? false) {
         entry.addAndroidPackageName(appId);
       }
     }
