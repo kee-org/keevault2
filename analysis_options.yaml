@@ -41,6 +41,10 @@ analyzer:
     - lib/phonetic.dart
     - lib/generated_plugin_registrant.dart
     - integration_test/** # until Patrol is no longer bundled with release code
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
 
 formatter:
   page_width: 120

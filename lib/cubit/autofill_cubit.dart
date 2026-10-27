@@ -133,7 +133,7 @@ class AutofillCubit extends Cubit<AutofillState> {
       return true;
     }
 
-    final matchingEntries = _findMatches(androidMetadata, vault.files.current);
+    final matchingEntries = AutofillCubit.findMatchingEntries(androidMetadata, vault.files.current.body.rootGroup.getAllEntries(enterRecycleBin: false).values, vault.files.current);
     if (matchingEntries.isNotEmpty) {
       // Limited to 10 results due to Android Parcelable bugs. Totally arbitrary but we have to start somewhere.
       // Autofill library may further reduce the number if the device IME requests fewer than 11 results
@@ -148,25 +148,25 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   bool shouldIgnoreRequest(AutofillMetadata androidMetadata) {
     bool ignoreRequest = false;
-    if (androidMetadata.packageNames.length > 1) {
-      l.e(
-        "Multiple package names found for autofill. We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed names.",
-      );
+    if ((androidMetadata.appId?.isNotEmpty ?? false) && !androidMetadata.appIdTrusted) {
+      l.w('Untrusted package name found for autofill (${androidMetadata.appId}).');
       ignoreRequest = true;
     }
     if (androidMetadata.webDomains.length > 1) {
       l.e(
-        "Multiple domains found for autofill. We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed domains.",
+        "Multiple domains found for autofill (${androidMetadata.webDomains.map((d) => d.domain).join(', ')}). We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed domains.",
       );
       ignoreRequest = true;
     }
-    if ((androidMetadata.webDomains.firstOrNull?.domain.isEmpty ?? true) &&
-        (androidMetadata.packageNames.firstOrNull?.isEmpty ?? true)) {
+    if (androidMetadata.isWebOrigin && !androidMetadata.dalVerified) {
+      l.w('Supplied domain could not be verified as trusted by any method. We will ignore this autofill request.');
+      ignoreRequest = true;
+    }
+    if ((androidMetadata.webDomains.firstOrNull?.domain.isEmpty ?? true) && (androidMetadata.appId?.isEmpty ?? true)) {
       l.w('Supplied domain is empty and no packageName was found. We will ignore this autofill request.');
       ignoreRequest = true;
     }
-    if (androidMetadata.packageNames.firstOrNull != null &&
-        _excludedPackages.contains(androidMetadata.packageNames.firstOrNull)) {
+    if (androidMetadata.appId != null && _excludedPackages.contains(androidMetadata.appId)) {
       l.i('Supplied packageName is on our exclude list. We will ignore this autofill request.');
       ignoreRequest = true;
     }
@@ -174,10 +174,11 @@ class AutofillCubit extends Cubit<AutofillState> {
   }
 
   PwDataset entryToPwDataset(KdbxEntry entry) {
+    final id = entry.uuid.uuid;
     final title = entry.getString(KdbxKeyCommon.TITLE)?.getText() ?? 'untitled entry';
     final username = entry.getString(KdbxKeyCommon.USER_NAME)?.getText() ?? '';
     final pwd = entry.getString(KdbxKeyCommon.PASSWORD)?.getText() ?? '';
-    return PwDataset(label: title, username: username, password: pwd);
+    return PwDataset(id: id, label: title, username: username, password: pwd);
   }
 
   void autofillInstantly(KdbxEntry entry) async {
@@ -203,100 +204,8 @@ class AutofillCubit extends Cubit<AutofillState> {
     'com.oneplus.applocker',
   };
 
-  List<KdbxEntry> _findMatches(AutofillMetadata androidMetadata, KdbxFile current) {
-    if (androidMetadata.webDomains.isEmpty) {
-      return _findMatchesByPackageName(androidMetadata, current);
-    } else {
-      return _findMatchesByDomain(androidMetadata, current);
-    }
-  }
-
-  List<KdbxEntry> _findMatchesByPackageName(AutofillMetadata androidMetadata, KdbxFile current) {
-    final matches = <KdbxEntry>[];
-    matches.addAll(
-      current.body.rootGroup
-          .getAllEntries(enterRecycleBin: false)
-          .values
-          .where(
-            (entry) =>
-                !entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide) &&
-                entry.androidPackageNames.any((pn) => androidMetadata.packageNames.contains(pn)),
-          ),
-    );
-    return matches;
-  }
-
-  List<KdbxEntry> _findMatchesByDomain(AutofillMetadata androidMetadata, KdbxFile current) {
-    // Android only provides us with the host and scheme (in 9+) so compared to Kee,
-    // we can't apply the same level of control over which entries we consider a match.
-    // Old versions of Android don't tell us the scheme so we have to assume it is
-    // https otherwise we'll rarely be able to match any entries.
-    final requestedUrl = urls.parse(
-      "${androidMetadata.webDomains.firstOrNull?.scheme ?? 'https'}://${androidMetadata.webDomains.firstOrNull?.domain ?? ''}"
-          .trim(),
-    );
-
-    // Apparently Android never supplies us with a port so this is the best we can do
-    final hostname = requestedUrl?.publicSuffixUrl.sourceUrl.host;
-
-    final registrableDomain = requestedUrl?.publicSuffixUrl.domain;
-    final scheme = requestedUrl?.publicSuffixUrl.sourceUrl.scheme;
-
-    final matches = <KdbxEntry>[];
-
-    if (hostname == null || registrableDomain == null || scheme == null) {
-      l.e(
-        "Android supplied a WebDomain we can't understand. Please report the exact web page you encounter this error on so we can see if it is possible to add support for autofilling this in future.",
-      );
-      return matches;
-    }
-    final matchAccuracyDomainOverride = MatchAccuracy.values.singleWhereOrNull(
-      (val) => val.name == current.body.meta.browserSettings.matchedURLAccuracyOverrides[registrableDomain],
-    );
-
-    matches.addAll(
-      current.body.rootGroup.getAllEntries(enterRecycleBin: false).values.where((entry) {
-        if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
-          return false;
-        }
-        bool isAMatch = false;
-        var minimumMatchAccuracy =
-            matchAccuracyDomainOverride ??
-            entry.browserSettings.matcherConfigs
-                .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
-                ?.urlMatchMethod ??
-            MatchAccuracy.Domain;
-
-        final matchPatterns = entry.browserSettings.includeUrls.toList();
-        final primaryUrlString = entry.getString(KdbxKeyCommon.URL)?.getText();
-
-        if (primaryUrlString != null) {
-          matchPatterns.add(primaryUrlString);
-        }
-        for (var pattern in matchPatterns) {
-          if (urlsMatch(pattern, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
-            isAMatch = true;
-            break;
-          }
-        }
-
-        if (isAMatch) {
-          for (var pattern in entry.browserSettings.excludeUrls) {
-            if (urlsMatch(pattern, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
-              isAMatch = false;
-              break;
-            }
-          }
-        }
-
-        return isAMatch;
-      }),
-    );
-    return matches;
-  }
-
   @visibleForTesting
-  bool urlsMatch(
+  static bool urlsMatch(
     Pattern pattern,
     MatchAccuracy minimumMatchAccuracy,
     String scheme,
@@ -340,6 +249,135 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   bool isAutofilling() => state is AutofillRequested;
   bool isAutofillSaving() => state is AutofillSaving;
+
+  // Shared matching logic used by both automatic autofill and manual entry list selection
+  static List<KdbxEntry> findMatchingEntries(
+    AutofillMetadata metadata,
+    Iterable<KdbxEntry> entries,
+    KdbxFile? vaultFile,
+  ) {
+    if (metadata.webDomains.isNotEmpty) {
+      return _findMatchesByDomain(metadata, entries, vaultFile);
+    } else if (metadata.appId != null && metadata.appId!.isNotEmpty) {
+      return _findMatchesByPackageName(metadata, entries);
+    }
+    return [];
+  }
+
+  static List<KdbxEntry> _findMatchesByPackageName(
+    AutofillMetadata metadata,
+    Iterable<KdbxEntry> entries,
+  ) {
+    final appId = metadata.appId!;
+    return entries.where((entry) {
+      if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
+        return false;
+      }
+      return entry.androidPackageNames.any((pn) => appId.contains(pn));
+    }).toList();
+  }
+
+  static List<KdbxEntry> _findMatchesByDomain(
+    AutofillMetadata metadata,
+    Iterable<KdbxEntry> entries,
+    KdbxFile? vaultFile,
+  ) {
+    final requestedUrl = urls.parse(
+      "${metadata.webDomains.firstOrNull?.scheme ?? 'https'}://${metadata.webDomains.firstOrNull?.domain ?? ''}".trim(),
+    );
+
+    if (requestedUrl == null) return [];
+
+    final hostname = requestedUrl.publicSuffixUrl.sourceUrl.host;
+    final registrableDomain = requestedUrl.publicSuffixUrl.domain;
+    final scheme = requestedUrl.publicSuffixUrl.sourceUrl.scheme;
+
+    if (hostname == null || registrableDomain == null || scheme == null) {
+      return [];
+    }
+
+    // Check for domain-specific match accuracy override from vault metadata
+    final matchAccuracyDomainOverride = vaultFile != null
+        ? MatchAccuracy.values.singleWhereOrNull(
+            (val) => val.name == vaultFile.body.meta.browserSettings.matchedURLAccuracyOverrides[registrableDomain],
+          )
+        : null;
+
+    return entries.where((entry) {
+      if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
+        return false;
+      }
+      bool isAMatch = false;
+      var minimumMatchAccuracy =
+          matchAccuracyDomainOverride ??
+          entry.browserSettings.matcherConfigs
+              .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
+              ?.urlMatchMethod ??
+          MatchAccuracy.Domain;
+
+      final matchPatterns = <String>[];
+      for (final p in entry.browserSettings.includeUrls) {
+        if (p is String) matchPatterns.add(p);
+      }
+      final primaryUrlString = entry.getString(KdbxKeyCommon.URL)?.getText();
+
+      if (primaryUrlString != null) {
+        matchPatterns.add(primaryUrlString);
+      }
+      for (final String pattern in matchPatterns) {
+        if (_urlsMatch(pattern, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
+          isAMatch = true;
+          break;
+        }
+      }
+
+      if (isAMatch) {
+        for (final p in entry.browserSettings.excludeUrls) {
+          if (p is String) {
+            if (_urlsMatch(p, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
+              isAMatch = false;
+              break;
+            }
+          }
+        }
+      }
+
+      return isAMatch;
+    }).toList();
+  }
+
+  static bool _urlsMatch(
+    String pattern,
+    MatchAccuracy minimumMatchAccuracy,
+    String scheme,
+    String hostname,
+    String registrableDomain,
+  ) {
+    final testUrl = urls.parse(pattern.trim());
+    if (testUrl == null) {
+      // If the user has not supplied a valid URL, we cannot safely permit it to match anything
+      return false;
+    }
+    if (scheme == 'http' && testUrl.publicSuffixUrl.sourceUrl.scheme == 'https') {
+      // Prevent matching secure URLs in entries with an insecure version of the website but not vice-versa
+      return false;
+    }
+
+    // If user has requested Exact, we use Hostname matching instead since it is stricter than Domain, but unfortunately
+    // we don't have the required information from Android to be able to perform the exact match the user requested.
+    Pattern testValue;
+    if (minimumMatchAccuracy == MatchAccuracy.Domain) {
+      testValue = testUrl.publicSuffixUrl.domain ?? testUrl.publicSuffixUrl.sourceUrl.host;
+    } else {
+      testValue = testUrl.publicSuffixUrl.sourceUrl.host;
+    }
+
+    if (minimumMatchAccuracy == MatchAccuracy.Domain) {
+      return testValue.allMatches(registrableDomain).firstOrNull != null;
+    } else {
+      return testValue.allMatches(hostname).firstOrNull != null;
+    }
+  }
 
   // top-level entrylist should only be displayed if above is false, otherwise display the editing page for the new entry we are going to save
 }

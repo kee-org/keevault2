@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/cubit/account_cubit.dart';
@@ -26,6 +26,8 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
   String get actionName => widget.toStringShort();
 
   KdbxEntry? newEntry;
+  bool _trusted = false;
+
   @override
   void initState() {
     l.t('_AutofillSaveWidgetState.initState');
@@ -48,9 +50,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
       newEntry = vaultCubit.createEntry(group: vault.files.current.body.rootGroup);
     });
 
-    final appId = autofillState.androidMetadata.packageNames.isNotEmpty
-        ? autofillState.androidMetadata.packageNames.first
-        : '';
+    final appId = autofillState.androidMetadata.appId?.isNotEmpty ?? false ? autofillState.androidMetadata.appId! : '';
     final webDomain = autofillState.androidMetadata.webDomains.isNotEmpty
         ? autofillState.androidMetadata.webDomains.first.domain
         : '';
@@ -58,9 +58,13 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
         ? autofillState.androidMetadata.webDomains.first.scheme
         : null;
 
-    if (webDomain.isNotEmpty) {
+    _trusted =
+        (appId.isEmpty || autofillState.androidMetadata.appIdTrusted) &&
+        !(autofillState.androidMetadata.isWebOrigin && !autofillState.androidMetadata.dalVerified);
+
+    if (webDomain.isNotEmpty && _trusted) {
       newEntry!.addAutofillUrl(webDomain, scheme);
-    } else if (appId.isNotEmpty) {
+    } else if (appId.isNotEmpty && _trusted) {
       newEntry!.addAndroidPackageName(appId);
     }
 
@@ -74,6 +78,23 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
     username?.let((it) => newEntry!.setString(KdbxKeyCommon.USER_NAME, PlainValue(it)));
     password?.let((it) => newEntry!.setString(KdbxKeyCommon.PASSWORD, PlainValue(it)));
     BlocProvider.of<EntryCubit>(context).startEditing(newEntry!, startDirty: false);
+
+    if (!_trusted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Not trusted'),
+            content: Text(
+              'The app or website requesting this save could not be verified as trustworthy. '
+              'Please double check it is legitimate before saving your credentials.',
+            ),
+            actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text('OK'))],
+          ),
+        );
+      });
+    }
   }
 
   Future<void> onEndEditing(bool keepChanges, VaultCubit vaultCubit, List<String> tags) async {
@@ -97,6 +118,17 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
       filterCubit.reFilter(tags, vaultCubit.currentVaultFile!.files.current.body.rootGroup);
     } else {
       entryCubit.endEditing(null);
+
+      // Do not auto-save newly created entries when the supplied app id or
+      // web domain could not be verified as trustworthy, since it may be
+      // spoofed. Remove the dangling entry so it is not persisted.
+      if (!_trusted) {
+        try {
+          vaultCubit.currentVaultFile?.files.current.deleteEntry(newEntry!, true);
+        } catch (_) {}
+        await autofillCubit.finishSaving();
+        return;
+      }
 
       // Save even without request to keep changes because the newly created
       // entry has yet to be saved.

@@ -3,15 +3,19 @@ import AuthenticationServices
 import Flutter
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
-        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+
+    func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+        GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+
         let autofillChannel = FlutterMethodChannel(name: "com.keevault.keevault/autofill",
-                                                   binaryMessenger: controller.binaryMessenger)
+                                                   binaryMessenger: engineBridge.applicationRegistrar.messenger())
         autofillChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             // This method is invoked on the UI thread.
@@ -93,9 +97,6 @@ import Flutter
                 result(FlutterMethodNotImplemented)
             }
         })
-        
-        GeneratedPluginRegistrant.register(with: self)
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 }
 

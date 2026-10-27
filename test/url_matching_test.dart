@@ -9,13 +9,12 @@ Future<void> main() async {
   var suffixList = await rootBundle.loadString('assets/public_suffix_list.dat');
   DefaultSuffixRules.initFromString(suffixList);
   group('Url matching', () {
-    final cubit = AutofillCubit();
     test('minimum domain match with correct domain succeeds', () async {
-      final result = cubit.urlsMatch('https://www.test.com', MatchAccuracy.Domain, 'https', 'www.test.com', 'test.com');
+      final result = AutofillCubit.urlsMatch('https://www.test.com', MatchAccuracy.Domain, 'https', 'www.test.com', 'test.com');
       expect(result, true);
     });
     test('minimum domain match with incorrect domain fails', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com',
         MatchAccuracy.Domain,
         'https',
@@ -25,7 +24,7 @@ Future<void> main() async {
       expect(result, false);
     });
     test('minimum hostname match with correct hostname succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com',
         MatchAccuracy.Hostname,
         'https',
@@ -35,7 +34,7 @@ Future<void> main() async {
       expect(result, true);
     });
     test('minimum hostname match with incorrect hostname fails', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com',
         MatchAccuracy.Hostname,
         'https',
@@ -45,7 +44,7 @@ Future<void> main() async {
       expect(result, false);
     });
     test('minimum hostname match with incorrect domain fails', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com',
         MatchAccuracy.Hostname,
         'https',
@@ -55,7 +54,7 @@ Future<void> main() async {
       expect(result, false);
     });
     test('minimum domain match with incorrect hostname succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com',
         MatchAccuracy.Domain,
         'https',
@@ -65,16 +64,16 @@ Future<void> main() async {
       expect(result, true);
     });
     test('mismatched scheme on https page succeeds', () async {
-      final result = cubit.urlsMatch('http://www.test.com', MatchAccuracy.Domain, 'https', 'www.test.com', 'test.com');
+      final result = AutofillCubit.urlsMatch('http://www.test.com', MatchAccuracy.Domain, 'https', 'www.test.com', 'test.com');
       expect(result, true);
     });
     test('mismatched scheme on http page fails', () async {
-      final result = cubit.urlsMatch('https://www.test.com', MatchAccuracy.Domain, 'http', 'www.test.com', 'test.com');
+      final result = AutofillCubit.urlsMatch('https://www.test.com', MatchAccuracy.Domain, 'http', 'www.test.com', 'test.com');
       expect(result, false);
     });
 
     test('minimum domain match with port included succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com:1234',
         MatchAccuracy.Domain,
         'https',
@@ -84,11 +83,11 @@ Future<void> main() async {
       expect(result, true);
     });
     test('minimum domain match with IPv4 and port succeeds', () async {
-      final result = cubit.urlsMatch('https://1.2.3.4:1234', MatchAccuracy.Domain, 'https', '1.2.3.4', '1.2.3.4');
+      final result = AutofillCubit.urlsMatch('https://1.2.3.4:1234', MatchAccuracy.Domain, 'https', '1.2.3.4', '1.2.3.4');
       expect(result, true);
     });
     test('minimum domain match with IPv6 and port succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:1234',
         MatchAccuracy.Domain,
         'https',
@@ -104,7 +103,7 @@ Future<void> main() async {
     });
 
     test('minimum domain match with path and correct domain succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com/path',
         MatchAccuracy.Domain,
         'https',
@@ -114,7 +113,7 @@ Future<void> main() async {
       expect(result, true);
     });
     test('minimum hostname match with path and correct hostname succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://www.test.com/path',
         MatchAccuracy.Domain,
         'https',
@@ -125,7 +124,7 @@ Future<void> main() async {
     });
 
     test('minimum domain match with private hostname, path and correct hostname succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://localmachine/path',
         MatchAccuracy.Domain,
         'https',
@@ -135,7 +134,7 @@ Future<void> main() async {
       expect(result, true);
     });
     test('minimum hostname match with private hostname, path and correct hostname succeeds', () async {
-      final result = cubit.urlsMatch(
+      final result = AutofillCubit.urlsMatch(
         'https://localmachine/path',
         MatchAccuracy.Hostname,
         'https',

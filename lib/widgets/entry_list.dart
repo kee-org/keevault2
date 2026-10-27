@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/cubit/autocomplete_cubit.dart';
@@ -12,6 +12,7 @@ import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:keevault/widgets/entry.dart';
 import 'package:keevault/widgets/in_app_messenger.dart';
+import 'package:flutter_autofill_service/flutter_autofill_service.dart' show AutofillMetadata;
 import '../config/app.dart';
 import '../config/routes.dart';
 import '../cubit/account_cubit.dart';
@@ -33,19 +34,29 @@ class EntryListWidget extends StatelessWidget {
       builder: (context, state) {
         final comparator = (state as SortedState).comparator;
         return BlocBuilder<FilterCubit, FilterState>(
-          builder: (context, state) {
+          builder: (context, filterState) {
             final str = S.of(context);
             final List<Widget> listItems = [];
             listItems.add(EntryListHeaderWidget());
-            if (state is FilterActive) {
+
+            // Check if we're in autofill mode to potentially show matching entries
+            final autofillState = BlocProvider.of<AutofillCubit>(context).state;
+            final bool isAutofillMode = autofillState is AutofillRequested;
+
+            if (filterState is FilterActive) {
               final filterCubit = BlocProvider.of<FilterCubit>(context);
               final vaultCubit = BlocProvider.of<VaultCubit>(context);
-              final group = vaultCubit.findGroupByUuidOrRoot(state.groupUuid);
-              final entries = state.includeChildGroups ? group.getAllEntriesExceptBin().values : group.entries.values;
+              final group = vaultCubit.findGroupByUuidOrRoot(filterState.groupUuid);
+              final entries = filterState.includeChildGroups
+                  ? group.getAllEntriesExceptBin().values
+                  : group.entries.values;
 
               // This won't catch every case where there are no entries in the Vault
               // but will work for the most important (first-time view of a new KDBX file) and is fast.
-              final emptyVault = entries.isEmpty && state.groupUuid == state.rootGroupUuid && state.includeChildGroups;
+              final emptyVault =
+                  entries.isEmpty &&
+                  filterState.groupUuid == filterState.rootGroupUuid &&
+                  filterState.includeChildGroups;
               if (emptyVault) {
                 return Column(
                   children: [
@@ -61,17 +72,60 @@ class EntryListWidget extends StatelessWidget {
                 );
               }
 
-              listItems.addAll(
-                entries
-                    .where((entry) => filterCubit.entryMatches(entry))
-                    .sorted(comparator)
-                    .map((e) => EntryListItemWidget(uuid: e.uuid.uuid)),
-              );
+              final sortedEntries = entries.where((entry) => filterCubit.entryMatches(entry)).sorted(comparator);
+
+              if (isAutofillMode) {
+                final autofillRequested = autofillState;
+                final matchingEntries = _findMatchingEntries(
+                  autofillRequested.androidMetadata,
+                  sortedEntries,
+                  vaultCubit,
+                );
+                final matchingUuids = matchingEntries.map((e) => e.uuid.uuid).toSet();
+                final nonMatchingEntries = sortedEntries.where((e) => !matchingUuids.contains(e.uuid.uuid)).toList();
+
+                if (matchingEntries.isNotEmpty) {
+                  listItems.add(_buildSectionHeader(str.autofillMatchingEntries));
+                  listItems.addAll(matchingEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
+                  listItems.add(_buildSectionSeparator());
+                }
+
+                if (nonMatchingEntries.isNotEmpty) {
+                  listItems.add(_buildSectionHeader(str.autofillAllEntries));
+                  listItems.addAll(nonMatchingEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
+                }
+              } else {
+                // Normal mode - just show all entries
+                listItems.addAll(sortedEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
+              }
             }
             return ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, children: listItems);
           },
         );
       },
+    );
+  }
+
+  // Find entries that match the autofill request (by appId or domain)
+  // Uses shared logic from AutofillCubit to ensure consistency with automatic autofill
+  List<KdbxEntry> _findMatchingEntries(AutofillMetadata metadata, List<KdbxEntry> entries, VaultCubit vaultCubit) {
+    return AutofillCubit.findMatchingEntries(metadata, entries, vaultCubit.currentVaultFile?.files.current);
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
+      ),
+    );
+  }
+
+  Widget _buildSectionSeparator() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Divider(thickness: 2, height: 1),
     );
   }
 }
@@ -85,9 +139,8 @@ class EntryListHeaderWidget extends StatelessWidget {
       builder: (context, state) {
         if (state is AutofillRequested) {
           final theme = Theme.of(context);
-          final String appId = state.androidMetadata.packageNames.isNotEmpty
-              ? state.androidMetadata.packageNames.first
-              : '';
+          final str = S.of(context);
+          final String appId = (state.androidMetadata.appId?.isNotEmpty ?? false) ? state.androidMetadata.appId! : '';
           final webDomain = state.androidMetadata.webDomains.isNotEmpty
               ? state.androidMetadata.webDomains.first.domain
               : '';
@@ -113,15 +166,84 @@ class EntryListHeaderWidget extends StatelessWidget {
 
           //TODO:f skip subtitle for known browser IDs
           final subTitle = appId.isNotEmpty ? Text('Filling into this app: $appId') : null;
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: ListTile(
-              tileColor: theme.brightness == Brightness.dark ? Colors.deepOrange.shade900 : Colors.deepOrange.shade100,
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              title: Padding(padding: EdgeInsets.only(bottom: 10), child: message),
-              subtitle: subTitle,
+
+          final List<Widget> headerWidgets = [];
+
+          // Warning 1: App is not a known official app or browser
+          if (webDomain.isNotEmpty && !state.androidMetadata.dalVerified) {
+            headerWidgets.add(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: theme.colorScheme.error, width: 1),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          str.autofillWarningNotOfficialApp,
+                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+
+          // Warning 2: App ID is not trusted
+          if (appId.isNotEmpty && !state.androidMetadata.appIdTrusted) {
+            headerWidgets.add(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: theme.colorScheme.error, width: 1),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          str.autofillWarningAppIdNotTrusted,
+                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+
+          headerWidgets.add(
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: ListTile(
+                tileColor: theme.brightness == Brightness.dark
+                    ? Colors.deepOrange.shade900
+                    : Colors.deepOrange.shade100,
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                title: Padding(padding: EdgeInsets.only(bottom: 10), child: message),
+                subtitle: subTitle,
+              ),
             ),
           );
+
+          return Column(children: headerWidgets);
         } else {
           return SizedBox.shrink();
         }
@@ -178,9 +300,7 @@ class EntryListItemWidget extends StatelessWidget {
                       );
 
                       // Save app id or domain for future matching purposes
-                      final appId = autoFillState.androidMetadata.packageNames.isNotEmpty
-                          ? autoFillState.androidMetadata.packageNames.first
-                          : '';
+                      final appId = autoFillState.androidMetadata.appId ?? '';
                       final webDomain = autoFillState.androidMetadata.webDomains.isNotEmpty
                           ? autoFillState.androidMetadata.webDomains.first.domain
                           : '';

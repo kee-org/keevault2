@@ -1,5 +1,5 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:keevault/config/platform.dart';
 import '../config/environment_config.dart';
 import '../generated/l10n.dart';

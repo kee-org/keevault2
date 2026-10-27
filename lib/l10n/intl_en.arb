@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "loading": "Loading",
   "downloading": "Downloading",
   "opening": "Opening",
@@ -396,5 +397,9 @@
   "currentEmailAddress": "Current email address",
   "newEmailAddress": "New email address",
   "emailChanged": "Email address changed",
-  "changePasswordWarning": "You may lose data if you are signed in on any other devices now. Please cancel (press back) and then sign out of all other devices, including the Kee Vault 1 web app. Then wait a minute and start this process again."
+  "changePasswordWarning": "You may lose data if you are signed in on any other devices now. Please cancel (press back) and then sign out of all other devices, including the Kee Vault 1 web app. Then wait a minute and start this process again.",
+  "autofillWarningNotOfficialApp": "The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below",
+  "autofillWarningAppIdNotTrusted": "We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below",
+  "autofillMatchingEntries": "Matching entries for this app/site",
+  "autofillAllEntries": "All entries"
 }

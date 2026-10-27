@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keevault/cubit/app_settings_cubit.dart';
 import 'package:keevault/generated/l10n.dart';
