@@ -1,6 +1,5 @@
 plugins {
     id "com.android.application"
-    id 'org.jetbrains.kotlin.android' version '2.3.0'
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -77,12 +76,8 @@ def nameSuffix = stages[dartEnvironmentVariables.KEEVAULT_STAGE].nameSuffix + ch
 def symbolLevel = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].symbolLevel
 def chosenSigningConfig = channels[dartEnvironmentVariables.KEEVAULT_CHANNEL].signingConfig
 
-kotlin {
-    jvmToolchain(17)
-}
-
 android {
-    compileSdk 36
+    compileSdk 37
 
     compileOptions {
         sourceCompatibility = 17
@@ -114,7 +109,7 @@ android {
     defaultConfig {
         applicationId "com.keevault.keevault"
         applicationIdSuffix idSuffix
-        minSdkVersion 29
+        minSdkVersion 29 //TODO: 33
         targetSdk 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -123,9 +118,10 @@ android {
         ndk.debugSymbolLevel = symbolLevel
         testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
+    }
 
-        // Required for flutter_inapp_purchase: Select Google Play platform
-        missingDimensionStrategy 'platform', 'play'
+    buildFeatures {
+        resValues = true
     }
 
     testOptions {
@@ -148,7 +144,13 @@ android {
     }
     namespace 'com.keevault.keevault'
 
-    ndkVersion "28.1.13356709"
+//    ndkVersion "28.2.13676358"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
 }
 
 flutter {
@@ -159,5 +161,6 @@ dependencies {
     implementation 'org.tinylog:tinylog-api:2.6.2'
     implementation 'org.tinylog:tinylog-impl:2.6.2'
     implementation 'org.tinylog:slf4j-tinylog:2.6.2'
+ //   implementation 'io.github.hyochan.openiap:openiap-google:4.0.5'
     androidTestUtil "androidx.test:orchestrator:1.5.0"
 }

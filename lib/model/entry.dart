@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:path/path.dart' as path;
 import 'package:base32/base32.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/urls.dart';

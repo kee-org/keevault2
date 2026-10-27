@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/payment_service.dart';
@@ -23,6 +23,7 @@ void main() async {
 
   await runZonedGuarded<Future<void>>(
     () async {
+      Settings.platform = TargetPlatform.android;
       await Settings.init(cacheProvider: SharePreferenceCache());
       await MatomoTracker.instance.initialize(
         siteId: '7',
