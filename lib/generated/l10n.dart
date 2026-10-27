@@ -3580,21 +3580,31 @@ class S {
     );
   }
 
-  /// `The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below`
+  /// `The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below.`
   String get autofillWarningNotOfficialApp {
     return Intl.message(
-      'The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below',
+      'The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below.',
       name: 'autofillWarningNotOfficialApp',
       desc: '',
       args: [],
     );
   }
 
-  /// `We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below`
+  /// `We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below.`
   String get autofillWarningAppIdNotTrusted {
     return Intl.message(
-      'We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below',
+      'We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below.',
       name: 'autofillWarningAppIdNotTrusted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Additionally, it claims to be associated with the website below but it is not a known official app for this website (and not a known web browser). Please double check the app is legitimate before you select an entry below.`
+  String get autofillWarningNotOfficialAppAndIdUntrusted {
+    return Intl.message(
+      'We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Additionally, it claims to be associated with the website below but it is not a known official app for this website (and not a known web browser). Please double check the app is legitimate before you select an entry below.',
+      name: 'autofillWarningNotOfficialAppAndIdUntrusted',
       desc: '',
       args: [],
     );

@@ -140,10 +140,15 @@ class EntryListHeaderWidget extends StatelessWidget {
         if (state is AutofillRequested) {
           final theme = Theme.of(context);
           final str = S.of(context);
-          final String appId = (state.androidMetadata.appId?.isNotEmpty ?? false) ? state.androidMetadata.appId! : '';
+          final autofillCubit = BlocProvider.of<AutofillCubit>(context);
+          final String appId = state.androidMetadata.appId ?? '';
           final webDomain = state.androidMetadata.webDomains.isNotEmpty
               ? state.androidMetadata.webDomains.first.domain
               : '';
+          final bool appIdTrusted = autofillCubit.isAppIdTrusted(state.androidMetadata);
+          final bool webDomainTrusted = autofillCubit.isWebDomainTrusted(state.androidMetadata);
+          final bool hasAppId = appId.isNotEmpty;
+          final bool hasWebDomain = webDomain.isNotEmpty;
 
           final messageTarget = [
             TextSpan(text: 'Select an entry to fill into ', style: theme.textTheme.bodyMedium),
@@ -155,80 +160,76 @@ class EntryListHeaderWidget extends StatelessWidget {
                 : TextSpan(text: 'the app described below', style: theme.textTheme.bodyMedium),
             TextSpan(text: '.', style: theme.textTheme.bodyMedium),
           ];
-          final messageOutcome = TextSpan(
-            text: state.forceInteractive
-                ? " We'll add it to the list of matches for this ${webDomain != '' ? 'site' : 'app'}."
-                : " We'll remember next time.",
-            style: theme.textTheme.bodyMedium,
-          );
+
+          // Build outcome message based on what we'll actually save
+          String outcomeText;
+          if (hasAppId && appIdTrusted) {
+            outcomeText = state.forceInteractive
+                ? " We'll add it to the list of matches for this app."
+                : " We'll remember this app next time.";
+          } else if (hasWebDomain && webDomainTrusted) {
+            outcomeText = state.forceInteractive
+                ? " We'll add it to the list of matches for this site."
+                : " We'll remember this site next time.";
+          } else {
+            outcomeText = " We'll ask each time to keep your password secure.";
+          }
+
+          final messageOutcome = TextSpan(text: outcomeText, style: theme.textTheme.bodyMedium);
 
           final message = RichText(text: TextSpan(children: <TextSpan>[...messageTarget, messageOutcome]));
 
-          //TODO:f skip subtitle for known browser IDs
           final subTitle = appId.isNotEmpty ? Text('Filling into this app: $appId') : null;
 
           final List<Widget> headerWidgets = [];
 
-          // Warning 1: App is not a known official app or browser
-          if (webDomain.isNotEmpty && !state.androidMetadata.dalVerified) {
+          // Single combined warning banner (red) - matches orange banner style
+          String? warning;
+          if (hasWebDomain && !webDomainTrusted && hasAppId && !appIdTrusted) {
+            warning = str.autofillWarningNotOfficialAppAndIdUntrusted;
+          } else if (hasAppId && !appIdTrusted) {
+            warning = str.autofillWarningAppIdNotTrusted;
+          } else if (hasWebDomain && !webDomainTrusted) {
+            warning = str.autofillWarningNotOfficialApp;
+          }
+
+          // if (warnings.isNotEmpty) {
+          //   headerWidgets.add(
+          //     Padding(
+          //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          //       child: Container(
+          //         padding: const EdgeInsets.all(12),
+          //         decoration: BoxDecoration(color: theme.colorScheme.errorContainer),
+          //         child: Row(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             const SizedBox(width: 12),
+          //             Expanded(
+          //               child: Text(
+          //                 warnings.join('\n\n'),
+          //                 style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   );
+          // }
+
+          if (warning != null) {
             headerWidgets.add(
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: theme.colorScheme.error, width: 1),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error, size: 24),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          str.autofillWarningNotOfficialApp,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
-                        ),
-                      ),
-                    ],
-                  ),
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: ListTile(
+                  tileColor: theme.colorScheme.errorContainer,
+                  textColor: theme.colorScheme.onErrorContainer,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  title: Padding(padding: EdgeInsets.only(bottom: 10), child: Text(warning)),
                 ),
               ),
             );
           }
-
-          // Warning 2: App ID is not trusted
-          if (appId.isNotEmpty && !state.androidMetadata.appIdTrusted) {
-            headerWidgets.add(
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: theme.colorScheme.error, width: 1),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error, size: 24),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          str.autofillWarningAppIdNotTrusted,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-
           headerWidgets.add(
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -274,7 +275,6 @@ class EntryListItemWidget extends StatelessWidget {
             return BlocBuilder<AutofillCubit, AutofillState>(
               builder: (context, autoFillState) {
                 if (autoFillState is AutofillRequested) {
-                  final autofillCubit = BlocProvider.of<AutofillCubit>(context);
                   return ListTile(
                     key: ValueKey('autofill$uuid'),
                     title: Text(entryListItemVM.label),
@@ -299,7 +299,8 @@ class EntryListItemWidget extends StatelessWidget {
                         ),
                       );
 
-                      // Save app id or domain for future matching purposes
+                      // Save app id or domain for future matching purposes - only if trusted
+                      final autofillCubit = BlocProvider.of<AutofillCubit>(context);
                       final appId = autoFillState.androidMetadata.appId ?? '';
                       final webDomain = autoFillState.androidMetadata.webDomains.isNotEmpty
                           ? autoFillState.androidMetadata.webDomains.first.domain
@@ -307,13 +308,18 @@ class EntryListItemWidget extends StatelessWidget {
                       final scheme = autoFillState.androidMetadata.webDomains.isNotEmpty
                           ? autoFillState.androidMetadata.webDomains.first.scheme
                           : null;
+                      final appIdTrusted = autofillCubit.isAppIdTrusted(autoFillState.androidMetadata);
+                      final webDomainTrusted = autofillCubit.isWebDomainTrusted(autoFillState.androidMetadata);
 
-                      await vaultCubit.addAutofillPersistentQueueItem({
-                        'domain': webDomain,
-                        'scheme': scheme,
-                        'entry': uuid,
-                        'appId': appId,
-                      });
+                      // Only save trusted components
+                      if (webDomain.isNotEmpty && webDomainTrusted || appId.isNotEmpty && appIdTrusted) {
+                        await vaultCubit.addAutofillPersistentQueueItem({
+                          'domain': webDomainTrusted ? webDomain : '',
+                          'scheme': webDomainTrusted ? scheme : null,
+                          'entry': uuid,
+                          'appId': appIdTrusted ? appId : '',
+                        });
+                      }
 
                       // Android doesn't support returning a single result for automatic fill in response to
                       //the initial authentication request for matching entries. It's not ideal for the user but

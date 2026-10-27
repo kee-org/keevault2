@@ -120,11 +120,15 @@ class MessageLookup extends MessageLookupByLibrary {
       " You need to add a Passcode, FaceId or TouchId to your device too!",
     ),
     "autofillWarningAppIdNotTrusted": MessageLookupByLibrary.simpleMessage(
-      "We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below",
+      "We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below.",
     ),
     "autofillWarningNotOfficialApp": MessageLookupByLibrary.simpleMessage(
-      "The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below",
+      "The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below.",
     ),
+    "autofillWarningNotOfficialAppAndIdUntrusted":
+        MessageLookupByLibrary.simpleMessage(
+          "We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Additionally, it claims to be associated with the website below but it is not a known official app for this website (and not a known web browser). Please double check the app is legitimate before you select an entry below.",
+        ),
     "autofilling": MessageLookupByLibrary.simpleMessage("Autofilling"),
     "automaticallySignInFor": MessageLookupByLibrary.simpleMessage(
       "Automatically sign-in for (seconds)",

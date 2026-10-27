@@ -28,7 +28,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
   KdbxEntry? newEntry;
   bool _trusted = false;
 
-  @override
+@override
   void initState() {
     l.t('_AutofillSaveWidgetState.initState');
     super.initState();
@@ -50,6 +50,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
       newEntry = vaultCubit.createEntry(group: vault.files.current.body.rootGroup);
     });
 
+    final autofillCubit = BlocProvider.of<AutofillCubit>(context);
     final appId = autofillState.androidMetadata.appId?.isNotEmpty ?? false ? autofillState.androidMetadata.appId! : '';
     final webDomain = autofillState.androidMetadata.webDomains.isNotEmpty
         ? autofillState.androidMetadata.webDomains.first.domain
@@ -57,22 +58,22 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
     final scheme = autofillState.androidMetadata.webDomains.isNotEmpty
         ? autofillState.androidMetadata.webDomains.first.scheme
         : null;
+    final appIdTrusted = autofillCubit.isAppIdTrusted(autofillState.androidMetadata);
+    final webDomainTrusted = autofillCubit.isWebDomainTrusted(autofillState.androidMetadata);
 
-    _trusted =
-        (appId.isEmpty || autofillState.androidMetadata.appIdTrusted) &&
-        !(autofillState.androidMetadata.isWebOrigin && !autofillState.androidMetadata.dalVerified);
+    _trusted = (appId.isEmpty || appIdTrusted) && (webDomain.isEmpty || webDomainTrusted) && autofillState.androidMetadata.webDomains.length <= 1;
 
-    if (webDomain.isNotEmpty && _trusted) {
+    if (webDomain.isNotEmpty && webDomainTrusted) {
       newEntry!.addAutofillUrl(webDomain, scheme);
-    } else if (appId.isNotEmpty && _trusted) {
+    } else if (appId.isNotEmpty && appIdTrusted) {
       newEntry!.addAndroidPackageName(appId);
     }
 
     final newTitle = webDomain.isNotEmpty
         ? webDomain
         : appId.isNotEmpty
-        ? appId
-        : '[untitled]';
+            ? appId
+            : '[untitled]';
     newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(newTitle));
 
     username?.let((it) => newEntry!.setString(KdbxKeyCommon.USER_NAME, PlainValue(it)));
