@@ -17,6 +17,7 @@ import 'import_credentials.dart';
 import 'loading_spinner.dart';
 import 'vault_password_credentials.dart';
 import '../generated/l10n.dart';
+import '../logging/logger.dart';
 
 class VaultLoaderWidget extends StatefulWidget {
   const VaultLoaderWidget({super.key});
@@ -160,12 +161,13 @@ class VaultLoaderState extends State<VaultLoaderWidget> {
           final filterContext = BlocProvider.of<FilterCubit>(context);
           final interactionContext = BlocProvider.of<InteractionCubit>(context);
           if (autofillState is AutofillRequested && autofillState.enabled) {
-            if (!autofillState.forceInteractive) {
-              final askUser = await BlocProvider.of<AutofillCubit>(context).autofillWithList(state.vault);
-              if (!askUser) {
-                return;
-              }
+            final autofillCubit = BlocProvider.of<AutofillCubit>(context);
+            if (autofillState.target.excluded) {
+              l.i('Requesting app is on our exclude list. We will decline this autofill request.');
+              await autofillCubit.cancelFill();
+              return;
             }
+            autofillCubit.prepareMatches(state.vault);
           }
           filterContext.start(
             state.vault.files.current.body.rootGroup.uuid.uuid,

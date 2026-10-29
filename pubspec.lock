@@ -406,7 +406,7 @@ packages:
       path: "../flutter_autofill_service"
       relative: true
     source: path
-    version: "0.22.0"
+    version: "0.23.0"
   flutter_bloc:
     dependency: "direct main"
     description:

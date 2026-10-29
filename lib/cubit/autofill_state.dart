@@ -19,8 +19,23 @@ class AutofillModeActive extends AutofillAvailable {
 }
 
 class AutofillRequested extends AutofillModeActive {
-  final bool forceInteractive;
-  AutofillRequested(this.forceInteractive, AutofillMetadata androidMetadata) : super(androidMetadata);
+  final AutofillTarget target;
+
+  /// null until the vault is open
+  final AutofillMatches? matches;
+
+  /// The user's choice to also link an unverified website to the entry they pick (only offered inside a verified app)
+  final bool linkUnverifiedDomain;
+
+  AutofillRequested(this.target, AutofillMetadata androidMetadata, {this.matches, this.linkUnverifiedDomain = false})
+    : super(androidMetadata);
+
+  AutofillRequested copyWith({AutofillMatches? matches, bool? linkUnverifiedDomain}) => AutofillRequested(
+    target,
+    androidMetadata,
+    matches: matches ?? this.matches,
+    linkUnverifiedDomain: linkUnverifiedDomain ?? this.linkUnverifiedDomain,
+  );
 }
 
 class AutofillSaving extends AutofillModeActive {

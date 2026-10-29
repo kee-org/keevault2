@@ -12,7 +12,9 @@ import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
 import 'package:keevault/widgets/entry.dart';
 import 'package:keevault/widgets/in_app_messenger.dart';
-import 'package:flutter_autofill_service/flutter_autofill_service.dart' show AutofillMetadata;
+import 'package:keevault/autofill_matching.dart';
+import 'package:keevault/widgets/autofill_match_badge.dart';
+import 'package:keevault/widgets/autofill_target_card.dart';
 import '../config/app.dart';
 import '../config/routes.dart';
 import '../cubit/account_cubit.dart';
@@ -25,100 +27,142 @@ import 'package:keevault/extension_methods.dart';
 import 'package:keevault/generated/l10n.dart';
 import 'dialog_utils.dart';
 
+/// Rebuild the list only when the request or its matches change, not for every state change (e.g. the "also link" switch)
+bool _autofillListNeedsRebuild(AutofillState previous, AutofillState current) {
+  if (previous is AutofillRequested && current is AutofillRequested) {
+    return previous.target != current.target || previous.matches != current.matches;
+  }
+  return previous.runtimeType != current.runtimeType;
+}
+
 class EntryListWidget extends StatelessWidget {
   const EntryListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SortCubit, SortState>(
-      builder: (context, state) {
-        final comparator = (state as SortedState).comparator;
-        return BlocBuilder<FilterCubit, FilterState>(
-          builder: (context, filterState) {
-            final str = S.of(context);
-            final List<Widget> listItems = [];
-            listItems.add(EntryListHeaderWidget());
+    return BlocBuilder<AutofillCubit, AutofillState>(
+      buildWhen: _autofillListNeedsRebuild,
+      builder: (context, autofillState) => BlocBuilder<SortCubit, SortState>(
+        builder: (context, state) {
+          final comparator = (state as SortedState).comparator;
+          return BlocBuilder<FilterCubit, FilterState>(
+            builder: (context, filterState) {
+              final str = S.of(context);
+              final List<Widget> listItems = [];
+              listItems.add(EntryListHeaderWidget());
 
-            // Check if we're in autofill mode to potentially show matching entries
-            final autofillState = BlocProvider.of<AutofillCubit>(context).state;
-            final bool isAutofillMode = autofillState is AutofillRequested;
+              if (filterState is FilterActive) {
+                final filterCubit = BlocProvider.of<FilterCubit>(context);
+                final vaultCubit = BlocProvider.of<VaultCubit>(context);
+                final group = vaultCubit.findGroupByUuidOrRoot(filterState.groupUuid);
+                final entries = filterState.includeChildGroups
+                    ? group.getAllEntriesExceptBin().values
+                    : group.entries.values;
 
-            if (filterState is FilterActive) {
-              final filterCubit = BlocProvider.of<FilterCubit>(context);
-              final vaultCubit = BlocProvider.of<VaultCubit>(context);
-              final group = vaultCubit.findGroupByUuidOrRoot(filterState.groupUuid);
-              final entries = filterState.includeChildGroups
-                  ? group.getAllEntriesExceptBin().values
-                  : group.entries.values;
-
-              // This won't catch every case where there are no entries in the Vault
-              // but will work for the most important (first-time view of a new KDBX file) and is fast.
-              final emptyVault =
-                  entries.isEmpty &&
-                  filterState.groupUuid == filterState.rootGroupUuid &&
-                  filterState.includeChildGroups;
-              if (emptyVault) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(str.noEntriesCreateNewInstruction, style: Theme.of(context).textTheme.bodyLarge),
-                    ),
-                    OutlinedButton(
-                      child: Text(str.import),
-                      onPressed: () async => await AppConfig.router.navigateTo(context, Routes.importExport),
-                    ),
-                  ],
-                );
-              }
-
-              final sortedEntries = entries.where((entry) => filterCubit.entryMatches(entry)).sorted(comparator);
-
-              if (isAutofillMode) {
-                final autofillRequested = autofillState;
-                final matchingEntries = _findMatchingEntries(
-                  autofillRequested.androidMetadata,
-                  sortedEntries,
-                  vaultCubit,
-                );
-                final matchingUuids = matchingEntries.map((e) => e.uuid.uuid).toSet();
-                final nonMatchingEntries = sortedEntries.where((e) => !matchingUuids.contains(e.uuid.uuid)).toList();
-
-                if (matchingEntries.isNotEmpty) {
-                  listItems.add(_buildSectionHeader(str.autofillMatchingEntries));
-                  listItems.addAll(matchingEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
-                  listItems.add(_buildSectionSeparator());
+                // This won't catch every case where there are no entries in the Vault
+                // but will work for the most important (first-time view of a new KDBX file) and is fast.
+                final emptyVault =
+                    entries.isEmpty &&
+                    filterState.groupUuid == filterState.rootGroupUuid &&
+                    filterState.includeChildGroups;
+                if (emptyVault) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(str.noEntriesCreateNewInstruction, style: Theme.of(context).textTheme.bodyLarge),
+                      ),
+                      OutlinedButton(
+                        child: Text(str.import),
+                        onPressed: () async => await AppConfig.router.navigateTo(context, Routes.importExport),
+                      ),
+                    ],
+                  );
                 }
 
-                if (nonMatchingEntries.isNotEmpty) {
-                  listItems.add(_buildSectionHeader(str.autofillAllEntries));
-                  listItems.addAll(nonMatchingEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
+                final sortedEntries = entries.where((entry) => filterCubit.entryMatches(entry)).sorted(comparator);
+
+                if (autofillState is AutofillRequested) {
+                  listItems.addAll(_buildAutofillSections(context, str, autofillState, sortedEntries));
+                } else {
+                  // Normal mode - just show all entries
+                  listItems.addAll(sortedEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
                 }
-              } else {
-                // Normal mode - just show all entries
-                listItems.addAll(sortedEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
               }
-            }
-            return ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, children: listItems);
-          },
-        );
-      },
+              return ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, children: listItems);
+            },
+          );
+        },
+      ),
     );
   }
 
-  // Find entries that match the autofill request (by appId or domain)
-  // Uses shared logic from AutofillCubit to ensure consistency with automatic autofill
-  List<KdbxEntry> _findMatchingEntries(AutofillMetadata metadata, List<KdbxEntry> entries, VaultCubit vaultCubit) {
-    return AutofillCubit.findMatchingEntries(metadata, entries, vaultCubit.currentVaultFile?.files.current);
+  List<Widget> _buildAutofillSections(
+    BuildContext context,
+    S str,
+    AutofillRequested autofillState,
+    List<KdbxEntry> sortedEntries,
+  ) {
+    final theme = Theme.of(context);
+    final target = autofillState.target;
+    final matches = autofillState.matches ?? AutofillMatches.empty;
+    final targetName = target.displayName ?? str.autofillUnknownTarget;
+
+    // Entries arrive in the user's sort order. Matches are then ordered by tier, keeping that order within a tier.
+    final matchedEntries = sortedEntries.where((e) => matches[e.uuid.uuid] != null).toList();
+    mergeSort(
+      matchedEntries,
+      compare: (a, b) => matches[a.uuid.uuid]!.tier.index.compareTo(matches[b.uuid.uuid]!.tier.index),
+    );
+    final otherEntries = sortedEntries.where((e) => matches[e.uuid.uuid] == null).toList();
+
+    final items = <Widget>[];
+    if (matchedEntries.isNotEmpty) {
+      items.add(_buildSectionHeader(theme, str.autofillMatchesHeader(targetName, matchedEntries.length)));
+      items.addAll(matchedEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
+      items.add(_buildSectionSeparator());
+    } else if (!matches.isEmpty) {
+      items.add(_buildMutedLine(theme, str.autofillMatchesHiddenBySearch));
+    } else {
+      items.add(_buildMutedLine(theme, str.autofillNoMatches(targetName)));
+    }
+
+    if (otherEntries.isNotEmpty) {
+      items.add(
+        _buildSectionHeader(
+          theme,
+          str.autofillOtherEntries,
+          helper: target.hasVerifiedSignal
+              ? str.autofillOtherEntriesLinkedHint(targetName)
+              : str.autofillOtherEntriesCautionHint(targetName),
+        ),
+      );
+      items.addAll(otherEntries.map((e) => EntryListItemWidget(uuid: e.uuid.uuid)));
+    }
+    return items;
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(ThemeData theme, String title, {String? helper}) {
+    final color = theme.colorScheme.onSurfaceVariant;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: color),
+          ),
+          if (helper != null) Text(helper, style: theme.textTheme.bodySmall?.copyWith(color: color)),
+        ],
       ),
+    );
+  }
+
+  Widget _buildMutedLine(ThemeData theme, String text) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Text(text, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
     );
   }
 
@@ -130,6 +174,7 @@ class EntryListWidget extends StatelessWidget {
   }
 }
 
+/// The target card and any warnings about it, shown above the list while choosing an entry to autofill
 class EntryListHeaderWidget extends StatelessWidget {
   const EntryListHeaderWidget({super.key});
 
@@ -137,117 +182,16 @@ class EntryListHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AutofillCubit, AutofillState>(
       builder: (context, state) {
-        if (state is AutofillRequested) {
-          final theme = Theme.of(context);
-          final str = S.of(context);
-          final autofillCubit = BlocProvider.of<AutofillCubit>(context);
-          final String appId = state.androidMetadata.appId ?? '';
-          final webDomain = state.androidMetadata.webDomains.isNotEmpty
-              ? state.androidMetadata.webDomains.first.domain
-              : '';
-          final bool appIdTrusted = autofillCubit.isAppIdTrusted(state.androidMetadata);
-          final bool webDomainTrusted = autofillCubit.isWebDomainTrusted(state.androidMetadata);
-          final bool hasAppId = appId.isNotEmpty;
-          final bool hasWebDomain = webDomain.isNotEmpty;
-
-          final messageTarget = [
-            TextSpan(text: 'Select an entry to fill into ', style: theme.textTheme.bodyMedium),
-            webDomain != ''
-                ? TextSpan(
-                    text: webDomain,
-                    style: theme.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                  )
-                : TextSpan(text: 'the app described below', style: theme.textTheme.bodyMedium),
-            TextSpan(text: '.', style: theme.textTheme.bodyMedium),
-          ];
-
-          // Build outcome message based on what we'll actually save
-          String outcomeText;
-          if (hasAppId && appIdTrusted) {
-            outcomeText = state.forceInteractive
-                ? " We'll add it to the list of matches for this app."
-                : " We'll remember this app next time.";
-          } else if (hasWebDomain && webDomainTrusted) {
-            outcomeText = state.forceInteractive
-                ? " We'll add it to the list of matches for this site."
-                : " We'll remember this site next time.";
-          } else {
-            outcomeText = " We'll ask each time to keep your password secure.";
-          }
-
-          final messageOutcome = TextSpan(text: outcomeText, style: theme.textTheme.bodyMedium);
-
-          final message = RichText(text: TextSpan(children: <TextSpan>[...messageTarget, messageOutcome]));
-
-          final subTitle = appId.isNotEmpty ? Text('Filling into this app: $appId') : null;
-
-          final List<Widget> headerWidgets = [];
-
-          // Single combined warning banner (red) - matches orange banner style
-          String? warning;
-          if (hasWebDomain && !webDomainTrusted && hasAppId && !appIdTrusted) {
-            warning = str.autofillWarningNotOfficialAppAndIdUntrusted;
-          } else if (hasAppId && !appIdTrusted) {
-            warning = str.autofillWarningAppIdNotTrusted;
-          } else if (hasWebDomain && !webDomainTrusted) {
-            warning = str.autofillWarningNotOfficialApp;
-          }
-
-          // if (warnings.isNotEmpty) {
-          //   headerWidgets.add(
-          //     Padding(
-          //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          //       child: Container(
-          //         padding: const EdgeInsets.all(12),
-          //         decoration: BoxDecoration(color: theme.colorScheme.errorContainer),
-          //         child: Row(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             const SizedBox(width: 12),
-          //             Expanded(
-          //               child: Text(
-          //                 warnings.join('\n\n'),
-          //                 style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   );
-          // }
-
-          if (warning != null) {
-            headerWidgets.add(
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: ListTile(
-                  tileColor: theme.colorScheme.errorContainer,
-                  textColor: theme.colorScheme.onErrorContainer,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  title: Padding(padding: EdgeInsets.only(bottom: 10), child: Text(warning)),
-                ),
-              ),
-            );
-          }
-          headerWidgets.add(
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: ListTile(
-                tileColor: theme.brightness == Brightness.dark
-                    ? Colors.deepOrange.shade900
-                    : Colors.deepOrange.shade100,
-                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                title: Padding(padding: EdgeInsets.only(bottom: 10), child: message),
-                subtitle: subTitle,
-              ),
+        if (state is! AutofillRequested) return const SizedBox.shrink();
+        return Column(
+          children: [
+            AutofillTargetCard(state: state),
+            AutofillConcernBanners(
+              target: state.target,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
             ),
-          );
-
-          return Column(children: headerWidgets);
-        } else {
-          return SizedBox.shrink();
-        }
+          ],
+        );
       },
     );
   }
@@ -273,16 +217,33 @@ class EntryListItemWidget extends StatelessWidget {
           if (entry != null && vaultCubit.currentVaultFile != null) {
             var entryListItemVM = EntryListItemViewModel(entry);
             return BlocBuilder<AutofillCubit, AutofillState>(
+              buildWhen: _autofillListNeedsRebuild,
               builder: (context, autoFillState) {
                 if (autoFillState is AutofillRequested) {
+                  final match = autoFillState.matches?[uuid];
                   return ListTile(
                     key: ValueKey('autofill$uuid'),
                     title: Text(entryListItemVM.label),
                     isThreeLine: true,
                     subtitle: Text('${entryListItemVM.username}\n${entryListItemVM.domain ?? ''}'),
                     leading: entryListItemVM.getIcon(32, Theme.of(context).brightness == Brightness.dark),
+                    trailing: match != null ? AutofillMatchBadge(match: match, target: autoFillState.target) : null,
                     onTap: () async {
                       final navigator = Navigator.of(context);
+                      final autofillCubit = BlocProvider.of<AutofillCubit>(context);
+                      if (autoFillState.target.requiresConfirmation) {
+                        final confirmed = await DialogUtils.showConfirmDialog(
+                          context: context,
+                          params: ConfirmDialogParams(
+                            title: str.autofillConfirmUnverifiedTitle,
+                            content: str.autofillConfirmUnverifiedBody,
+                            positiveButtonText: str.alertOk,
+                            negativeButtonText: str.alertCancel,
+                          ),
+                        );
+                        if (!confirmed || !context.mounted) return;
+                      }
+
                       // We may display a loading spinner if the autofill process takes
                       // long enough for the dialog to render but in many cases we'll
                       // be fast enough that it's won't finish animating in to view.
@@ -299,39 +260,18 @@ class EntryListItemWidget extends StatelessWidget {
                         ),
                       );
 
-                      // Save app id or domain for future matching purposes - only if trusted
-                      final autofillCubit = BlocProvider.of<AutofillCubit>(context);
-                      final appId = autoFillState.androidMetadata.appId ?? '';
-                      final webDomain = autoFillState.androidMetadata.webDomains.isNotEmpty
-                          ? autoFillState.androidMetadata.webDomains.first.domain
-                          : '';
-                      final scheme = autoFillState.androidMetadata.webDomains.isNotEmpty
-                          ? autoFillState.androidMetadata.webDomains.first.scheme
-                          : null;
-                      final appIdTrusted = autofillCubit.isAppIdTrusted(autoFillState.androidMetadata);
-                      final webDomainTrusted = autofillCubit.isWebDomainTrusted(autoFillState.androidMetadata);
-
-                      // Only save trusted components
-                      if (webDomain.isNotEmpty && webDomainTrusted || appId.isNotEmpty && appIdTrusted) {
-                        await vaultCubit.addAutofillPersistentQueueItem({
-                          'domain': webDomainTrusted ? webDomain : '',
-                          'scheme': webDomainTrusted ? scheme : null,
-                          'entry': uuid,
-                          'appId': appIdTrusted ? appId : '',
-                        });
+                      try {
+                        // The switch can change after this tile was built so read the latest value
+                        final latest = autofillCubit.state;
+                        await autofillCubit.fillWithEntry(
+                          entry,
+                          vaultCubit,
+                          linkUnverifiedDomain: latest is AutofillRequested && latest.linkUnverifiedDomain,
+                        );
+                      } finally {
+                        // The plugin finishes the activity so this only clears the spinner if it is still alive
+                        navigator.pop();
                       }
-
-                      // Android doesn't support returning a single result for automatic fill in response to
-                      //the initial authentication request for matching entries. It's not ideal for the user but
-                      // we can only return the single item as a list, for them to click on again to actually
-                      // perform the fill they've asked for.
-                      if (autoFillState.forceInteractive) {
-                        autofillCubit.autofillInstantly(entry);
-                      } else {
-                        autofillCubit.autofillWithListOfOneEntry(entry);
-                      }
-
-                      navigator.pop();
                     },
                   );
                 } else {

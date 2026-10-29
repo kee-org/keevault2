@@ -3580,51 +3580,436 @@ class S {
     );
   }
 
-  /// `The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below.`
-  String get autofillWarningNotOfficialApp {
+  /// `Fill into`
+  String get autofillFillInto {
     return Intl.message(
-      'The app is asking for your credentials to the website listed below but it is not a known official app for this website and not a known web browser. Please double check the app is legitimate before you select an entry below.',
-      name: 'autofillWarningNotOfficialApp',
+      'Fill into',
+      name: 'autofillFillInto',
       desc: '',
       args: [],
     );
   }
 
-  /// `We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below.`
-  String get autofillWarningAppIdNotTrusted {
+  /// `Unknown app or website`
+  String get autofillUnknownTarget {
     return Intl.message(
-      'We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Please double check the app is legitimate before you select an entry below.',
-      name: 'autofillWarningAppIdNotTrusted',
+      'Unknown app or website',
+      name: 'autofillUnknownTarget',
       desc: '',
       args: [],
     );
   }
 
-  /// `We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Additionally, it claims to be associated with the website below but it is not a known official app for this website (and not a known web browser). Please double check the app is legitimate before you select an entry below.`
-  String get autofillWarningNotOfficialAppAndIdUntrusted {
+  /// `Verified`
+  String get autofillChipVerified {
     return Intl.message(
-      'We are not confident that the app identifier listed below is really the ID for the app you are about to share your credentials with. Additionally, it claims to be associated with the website below but it is not a known official app for this website (and not a known web browser). Please double check the app is legitimate before you select an entry below.',
-      name: 'autofillWarningNotOfficialAppAndIdUntrusted',
+      'Verified',
+      name: 'autofillChipVerified',
       desc: '',
       args: [],
     );
   }
 
-  /// `Matching entries for this app/site`
-  String get autofillMatchingEntries {
+  /// `Android told us directly which app is asking for your details, so this can't be faked by what the app displays on screen.`
+  String get autofillChipVerifiedAppHint {
     return Intl.message(
-      'Matching entries for this app/site',
-      name: 'autofillMatchingEntries',
+      'Android told us directly which app is asking for your details, so this can\'t be faked by what the app displays on screen.',
+      name: 'autofillChipVerifiedAppHint',
       desc: '',
       args: [],
     );
   }
 
-  /// `All entries`
-  String get autofillAllEntries {
+  /// `Android or a browser we recognise has confirmed that this website address is genuine, so it can't be faked by what the page displays.`
+  String get autofillChipVerifiedSiteHint {
     return Intl.message(
-      'All entries',
-      name: 'autofillAllEntries',
+      'Android or a browser we recognise has confirmed that this website address is genuine, so it can\'t be faked by what the page displays.',
+      name: 'autofillChipVerifiedSiteHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not verified`
+  String get autofillChipNotVerified {
+    return Intl.message(
+      'Not verified',
+      name: 'autofillChipNotVerified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not the app's site`
+  String get autofillChipNotAppsSite {
+    return Intl.message(
+      'Not the app\'s site',
+      name: 'autofillChipNotAppsSite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unrecognised browser`
+  String get autofillChipUnrecognisedBrowser {
+    return Intl.message(
+      'Unrecognised browser',
+      name: 'autofillChipUnrecognisedBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `in {appId}`
+  String autofillInApp(Object appId) {
+    return Intl.message(
+      'in $appId',
+      name: 'autofillInApp',
+      desc: '',
+      args: [appId],
+    );
+  }
+
+  /// `Matches are listed first. Tap any entry to fill it.`
+  String get autofillListedFirstHint {
+    return Intl.message(
+      'Matches are listed first. Tap any entry to fill it.',
+      name: 'autofillListedFirstHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We'll link your choice to this site for next time.`
+  String get autofillWillLinkSite {
+    return Intl.message(
+      'We\'ll link your choice to this site for next time.',
+      name: 'autofillWillLinkSite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We'll link your choice to this app for next time.`
+  String get autofillWillLinkApp {
+    return Intl.message(
+      'We\'ll link your choice to this app for next time.',
+      name: 'autofillWillLinkApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We'll link your choice to this app and site for next time.`
+  String get autofillWillLinkAppAndSite {
+    return Intl.message(
+      'We\'ll link your choice to this app and site for next time.',
+      name: 'autofillWillLinkAppAndSite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We won't link your choice to this target because we can't verify it.`
+  String get autofillWontLink {
+    return Intl.message(
+      'We won\'t link your choice to this target because we can\'t verify it.',
+      name: 'autofillWontLink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Also link {domain}`
+  String autofillAlsoLinkDomain(Object domain) {
+    return Intl.message(
+      'Also link $domain',
+      name: 'autofillAlsoLinkDomain',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `Cancel`
+  String get autofillCancel {
+    return Intl.message('Cancel', name: 'autofillCancel', desc: '', args: []);
+  }
+
+  /// `Matching entries for {target} ({count})`
+  String autofillMatchesHeader(Object target, Object count) {
+    return Intl.message(
+      'Matching entries for $target ($count)',
+      name: 'autofillMatchesHeader',
+      desc: '',
+      args: [target, count],
+    );
+  }
+
+  /// `No entries are linked to {target} yet.`
+  String autofillNoMatches(Object target) {
+    return Intl.message(
+      'No entries are linked to $target yet.',
+      name: 'autofillNoMatches',
+      desc: '',
+      args: [target],
+    );
+  }
+
+  /// `Your filter is hiding the entries that match this app or site.`
+  String get autofillMatchesHiddenBySearch {
+    return Intl.message(
+      'Your filter is hiding the entries that match this app or site.',
+      name: 'autofillMatchesHiddenBySearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other entries`
+  String get autofillOtherEntries {
+    return Intl.message(
+      'Other entries',
+      name: 'autofillOtherEntries',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not linked to {target} yet.`
+  String autofillOtherEntriesLinkedHint(Object target) {
+    return Intl.message(
+      'Not linked to $target yet.',
+      name: 'autofillOtherEntriesLinkedHint',
+      desc: '',
+      args: [target],
+    );
+  }
+
+  /// `Not linked to {target}. Check carefully before choosing one.`
+  String autofillOtherEntriesCautionHint(Object target) {
+    return Intl.message(
+      'Not linked to $target. Check carefully before choosing one.',
+      name: 'autofillOtherEntriesCautionHint',
+      desc: '',
+      args: [target],
+    );
+  }
+
+  /// `App and site match`
+  String get autofillBadgeAppAndSiteMatch {
+    return Intl.message(
+      'App and site match',
+      name: 'autofillBadgeAppAndSiteMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App match`
+  String get autofillBadgeAppMatch {
+    return Intl.message(
+      'App match',
+      name: 'autofillBadgeAppMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exact match`
+  String get autofillBadgeExactMatch {
+    return Intl.message(
+      'Exact match',
+      name: 'autofillBadgeExactMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Domain match`
+  String get autofillBadgeDomainMatch {
+    return Intl.message(
+      'Domain match',
+      name: 'autofillBadgeDomainMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unverified`
+  String get autofillBadgeUnverified {
+    return Intl.message(
+      'Unverified',
+      name: 'autofillBadgeUnverified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Linked to {appId} and saved for {host}`
+  String autofillBadgeTooltipAppAndSite(Object appId, Object host) {
+    return Intl.message(
+      'Linked to $appId and saved for $host',
+      name: 'autofillBadgeTooltipAppAndSite',
+      desc: '',
+      args: [appId, host],
+    );
+  }
+
+  /// `Linked to {appId}`
+  String autofillBadgeTooltipApp(Object appId) {
+    return Intl.message(
+      'Linked to $appId',
+      name: 'autofillBadgeTooltipApp',
+      desc: '',
+      args: [appId],
+    );
+  }
+
+  /// `Also saved for {host}, which this app doesn't own.`
+  String autofillBadgeTooltipAlsoSavedForUnowned(Object host) {
+    return Intl.message(
+      'Also saved for $host, which this app doesn\'t own.',
+      name: 'autofillBadgeTooltipAlsoSavedForUnowned',
+      desc: '',
+      args: [host],
+    );
+  }
+
+  /// `Saved for {host}`
+  String autofillBadgeTooltipExact(Object host) {
+    return Intl.message(
+      'Saved for $host',
+      name: 'autofillBadgeTooltipExact',
+      desc: '',
+      args: [host],
+    );
+  }
+
+  /// `Saved for {host}, a different address on the same domain`
+  String autofillBadgeTooltipDomain(Object host) {
+    return Intl.message(
+      'Saved for $host, a different address on the same domain',
+      name: 'autofillBadgeTooltipDomain',
+      desc: '',
+      args: [host],
+    );
+  }
+
+  /// `Saved for {host}, but we couldn't verify the app asking for it`
+  String autofillBadgeTooltipUnverifiedSite(Object host) {
+    return Intl.message(
+      'Saved for $host, but we couldn\'t verify the app asking for it',
+      name: 'autofillBadgeTooltipUnverifiedSite',
+      desc: '',
+      args: [host],
+    );
+  }
+
+  /// `Linked to {appId}, but we couldn't reliably identify this app`
+  String autofillBadgeTooltipUnverifiedApp(Object appId) {
+    return Intl.message(
+      'Linked to $appId, but we couldn\'t reliably identify this app',
+      name: 'autofillBadgeTooltipUnverifiedApp',
+      desc: '',
+      args: [appId],
+    );
+  }
+
+  /// `This app is showing a page from {domain}, which Android could not confirm it owns. That's normal for apps that use a separate sign-in service, but it is also how a fake app would look. Entries linked to this app are marked as matches. Entries linked only to {domain} are marked Unverified.`
+  String autofillWarningDomainNotOwnedByApp(Object domain) {
+    return Intl.message(
+      'This app is showing a page from $domain, which Android could not confirm it owns. That\'s normal for apps that use a separate sign-in service, but it is also how a fake app would look. Entries linked to this app are marked as matches. Entries linked only to $domain are marked Unverified.',
+      name: 'autofillWarningDomainNotOwnedByApp',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `This browser isn't one we recognise, so we can't confirm the page really is {domain}. Check the app before filling.`
+  String autofillWarningUnrecognisedBrowser(Object domain) {
+    return Intl.message(
+      'This browser isn\'t one we recognise, so we can\'t confirm the page really is $domain. Check the app before filling.',
+      name: 'autofillWarningUnrecognisedBrowser',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `We could not reliably identify this app. The ID shown is a best guess. Check the app is genuine before filling.`
+  String get autofillWarningAppIdFromTitle {
+    return Intl.message(
+      'We could not reliably identify this app. The ID shown is a best guess. Check the app is genuine before filling.',
+      name: 'autofillWarningAppIdFromTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This app shows web content that this version of Android cannot verify. Only entries linked to the app are shown as matches.`
+  String get autofillWarningWebContentNotVerifiable {
+    return Intl.message(
+      'This app shows web content that this version of Android cannot verify. Only entries linked to the app are shown as matches.',
+      name: 'autofillWarningWebContentNotVerifiable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This page contains content from several websites, so we can't tell which one will receive your details.`
+  String get autofillWarningMultipleDomains {
+    return Intl.message(
+      'This page contains content from several websites, so we can\'t tell which one will receive your details.',
+      name: 'autofillWarningMultipleDomains',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android did not tell us which app or website is asking.`
+  String get autofillWarningNoIdentity {
+    return Intl.message(
+      'Android did not tell us which app or website is asking.',
+      name: 'autofillWarningNoIdentity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fill into an unidentified target?`
+  String get autofillConfirmUnverifiedTitle {
+    return Intl.message(
+      'Fill into an unidentified target?',
+      name: 'autofillConfirmUnverifiedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We can't tell which app or website will receive your details. Only continue if you are sure you want to share this entry with whatever is asking for it.`
+  String get autofillConfirmUnverifiedBody {
+    return Intl.message(
+      'We can\'t tell which app or website will receive your details. Only continue if you are sure you want to share this entry with whatever is asking for it.',
+      name: 'autofillConfirmUnverifiedBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not trusted`
+  String get autofillNotTrustedTitle {
+    return Intl.message(
+      'Not trusted',
+      name: 'autofillNotTrustedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The app or website requesting this save could not be fully verified as trustworthy. Please double check it is legitimate before saving your credentials.`
+  String get autofillSaveNotTrustedBody {
+    return Intl.message(
+      'The app or website requesting this save could not be fully verified as trustworthy. Please double check it is legitimate before saving your credentials.',
+      name: 'autofillSaveNotTrustedBody',
       desc: '',
       args: [],
     );
