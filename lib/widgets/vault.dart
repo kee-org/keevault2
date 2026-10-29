@@ -159,7 +159,7 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
               if (autofillState is AutofillSaving) {
                 return AutofillSaveWidget();
               } else {
-                return Scaffold(
+                final scaffold = Scaffold(
                   appBar: vaultTopBarWidget(context),
                   body: _MainLayer(child: EntryListWidget()),
                   drawer: Drawer(
@@ -170,6 +170,17 @@ class _VaultWidgetState extends State<VaultWidget> with WidgetsBindingObserver {
                   floatingActionButton: NewEntryButton(currentFile: state.vault.files.current),
                   floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
                 );
+                if (autofillState is AutofillRequested) {
+                  // System back declines the request explicitly, in the same way as the Cancel button
+                  return PopScope(
+                    canPop: false,
+                    onPopInvokedWithResult: (didPop, _) {
+                      if (!didPop) unawaited(BlocProvider.of<AutofillCubit>(context).cancelFill());
+                    },
+                    child: scaffold,
+                  );
+                }
+                return scaffold;
               }
             } else {
               return Text('Invalid Vault state');

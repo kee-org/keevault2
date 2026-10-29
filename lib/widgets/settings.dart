@@ -560,7 +560,6 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
                 child: SwitchSettingsTile(
                   settingKey: 'autofillServiceEnableIMEIntegration',
                   title: 'Show in keyboard',
-                  subtitle: 'experimental feature',
                   defaultValue: true,
                   onChange: (value) async {
                     // We assume the autofill preference's SharedPreferences feature
@@ -569,6 +568,20 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
                     // user will have to toggle the switch a couple of times to
                     // resync and fix any broken behaviour.
                     await BlocProvider.of<AutofillCubit>(context).setIMEIntegrationPreference(value);
+                  },
+                ),
+              ),
+              Visibility(
+                visible:
+                    widget.isEnabled && KeeVaultPlatform.isAndroid && (_androidDeviceInfo?.version.sdkInt ?? 0) >= 33,
+                child: SwitchSettingsTile(
+                  settingKey: 'autofillServiceEnableFillDialog',
+                  title: 'Overlay dialog',
+                  subtitle: 'experimental feature',
+                  defaultValue: true,
+                  onChange: (value) async {
+                    // See comment above regarding keeping the plugin's preference in sync.
+                    await BlocProvider.of<AutofillCubit>(context).setFillDialogPreference(value);
                   },
                 ),
               ),

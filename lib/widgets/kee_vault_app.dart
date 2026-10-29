@@ -115,25 +115,35 @@ class KeeVaultAppState extends State<KeeVaultApp> with WidgetsBindingObserver, T
     _receiveIntentSubscription = ri.ReceiveIntent.receivedIntentStream.listen(
       (ri.Intent? intent) {
         l.d('Received intent: $intent');
-        final navigator = widget.navigatorKey.currentState;
-        final navContext = navigator?.overlay?.context;
-        if (navContext == null) {
-          l.e('Nav context unexpectedly missing. Autofill navigation is likely to fail in strange ways.');
-          return;
-        }
-        if (!navContext.mounted) {
-          l.e('Nav context unexpectedly unmounted. Autofill navigation is likely to fail in strange ways.');
-          return;
-        }
-        final mode = intent?.extra?['autofill_mode'];
-        if (mode?.startsWith('/autofill') ?? false) {
-          unawaited(BlocProvider.of<AutofillCubit>(navContext).refresh());
-        }
+        _handleAutofillIntent(intent);
       },
       onError: (err) {
         l.e('intent error: $err');
       },
     );
+
+    final initialIntent = await ri.ReceiveIntent.getInitialIntent();
+    if (initialIntent != null && initialIntent.isNotNull) {
+      l.d('Received initial intent: $initialIntent');
+      _handleAutofillIntent(initialIntent);
+    }
+  }
+
+  void _handleAutofillIntent(ri.Intent? intent) {
+    final navigator = widget.navigatorKey.currentState;
+    final navContext = navigator?.overlay?.context;
+    if (navContext == null) {
+      l.e('Nav context unexpectedly missing. Autofill navigation is likely to fail in strange ways.');
+      return;
+    }
+    if (!navContext.mounted) {
+      l.e('Nav context unexpectedly unmounted. Autofill navigation is likely to fail in strange ways.');
+      return;
+    }
+    final mode = intent?.extra?['autofill_mode'];
+    if (mode?.startsWith('/autofill') ?? false) {
+      unawaited(BlocProvider.of<AutofillCubit>(navContext).refresh());
+    }
   }
 
   // This widget is the root of your application.

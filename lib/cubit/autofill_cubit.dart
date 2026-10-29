@@ -1,20 +1,16 @@
-import 'dart:io' show InternetAddress;
-
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_autofill_service/flutter_autofill_service.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/logging/logger.dart';
-import 'package:collection/collection.dart';
 
+import '../autofill_matching.dart';
 import '../config/platform.dart';
-import '../urls.dart';
 import '../vault_file.dart';
+import 'vault_cubit.dart';
 
 part 'autofill_state.dart';
-
-enum AutofillDecision { ignore, refer, proceed }
 
 class AutofillCubit extends Cubit<AutofillState> {
   AutofillCubit() : super(AutofillInitial());
@@ -41,6 +37,8 @@ class AutofillCubit extends Cubit<AutofillState> {
       return;
     }
 
+    await ensureInAppSelectionPreferences();
+
     bool autofillRequested = await AutofillService().fillRequestedAutomatic;
     bool autofillForceInteractive = await AutofillService().fillRequestedInteractive;
     final androidMetadata = await AutofillService().autofillMetadata;
@@ -66,7 +64,60 @@ class AutofillCubit extends Cubit<AutofillState> {
 
     // we only call this cubit's function if we have some sort of intent relating to the
     // autofill service so we can now assume the user is asking for us to autofill another app/site
-    emit(AutofillRequested(autofillForceInteractive, androidMetadata));
+    l.d('Autofill requested. automatic: $autofillRequested, interactive: $autofillForceInteractive');
+    emit(AutofillRequested(AutofillTarget.fromMetadata(androidMetadata), androidMetadata));
+
+    // A later request can arrive while the vault is already open, in which case nothing else will trigger matching.
+    final vault = _vaultForMatching;
+    if (vault != null) prepareMatches(vault);
+  }
+
+  LocalVaultFile? _vaultForMatching;
+
+  /// Works out which entries match the current request. The vault cannot change while autofilling (refresh is skipped
+  /// and entries cannot be created) so the result stays valid for the whole request.
+  void prepareMatches(LocalVaultFile vault) {
+    final s = state;
+    if (s is! AutofillRequested) return;
+    _vaultForMatching = vault;
+    final file = vault.files.current;
+    final matches = AutofillMatches.compute(
+      s.target,
+      file.body.rootGroup.getAllEntries(enterRecycleBin: false).values,
+      file,
+    );
+    emit(s.copyWith(matches: matches));
+  }
+
+  void setLinkUnverifiedDomain(bool value) {
+    final s = state;
+    if (s is AutofillRequested) emit(s.copyWith(linkUnverifiedDomain: value));
+  }
+
+  /// One path for every selection, whether the entry matched or came from elsewhere in the vault.
+  Future<void> fillWithEntry(KdbxEntry entry, VaultCubit vaultCubit, {required bool linkUnverifiedDomain}) async {
+    final s = state;
+    if (s is! AutofillRequested) return;
+    final association = s.target.associationFor(
+      entry.uuid.uuid,
+      s.matches?[entry.uuid.uuid],
+      linkUnverifiedDomain: linkUnverifiedDomain,
+    );
+    if (association != null) await vaultCubit.addAutofillPersistentQueueItem(association);
+    final ds = entryToPwDataset(entry);
+    final ok = await AutofillService().resultWithDataset(
+      id: ds.id,
+      label: ds.label,
+      username: ds.username,
+      password: ds.password,
+    );
+    l.d('resultWithDataset $ok');
+  }
+
+  /// Declines the request without filling anything. Android still offers the locked suggestion afterwards.
+  Future<void> cancelFill() async {
+    final ok = await AutofillService().resultWithDatasets(null);
+    l.d('resultWithDatasets(null) $ok');
   }
 
   Future<void> finishSaving() async {
@@ -91,13 +142,7 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   Future<void> setSavingPreference(bool value) async {
     final prefs = await AutofillService().preferences;
-    await AutofillService().setPreferences(
-      AutofillPreferences(
-        enableDebug: prefs.enableDebug,
-        enableSaving: value,
-        enableIMERequests: prefs.enableIMERequests,
-      ),
-    );
+    await AutofillService().setPreferences(prefs.copyWith(enableSaving: value));
   }
 
   Future<void> setDebugEnabledPreference(bool value) async {
@@ -112,94 +157,32 @@ class AutofillCubit extends Cubit<AutofillState> {
       }
     } else {
       final prefs = await AutofillService().preferences;
-      await AutofillService().setPreferences(
-        AutofillPreferences(
-          enableDebug: value,
-          enableSaving: prefs.enableSaving,
-          enableIMERequests: prefs.enableIMERequests,
-        ),
-      );
+      await AutofillService().setPreferences(prefs.copyWith(enableDebug: value));
     }
   }
 
   Future<void> setIMEIntegrationPreference(bool value) async {
     final prefs = await AutofillService().preferences;
-    await AutofillService().setPreferences(
-      AutofillPreferences(enableDebug: prefs.enableDebug, enableSaving: prefs.enableSaving, enableIMERequests: value),
-    );
+    await AutofillService().setPreferences(prefs.copyWith(enableIMERequests: value));
   }
 
-  Future<bool> autofillWithList(LocalVaultFile vault) async {
-    final androidMetadata = (state as AutofillRequested).androidMetadata;
-    final trust = determineTrustLevel(androidMetadata);
-    if (trust == AutofillDecision.ignore) {
-      l.d('ignoring autofillWithList request');
-      await AutofillService().resultWithDatasets(null);
-      return false;
-    } else if (trust == AutofillDecision.refer) {
-      l.d('deferring autofill decision to the user');
-      return true;
-    }
-
-    final matchingEntries = AutofillCubit.findMatchingEntries(
-      androidMetadata,
-      vault.files.current.body.rootGroup.getAllEntries(enterRecycleBin: false).values,
-      vault.files.current,
-    );
-    if (matchingEntries.isNotEmpty) {
-      // Limited to 10 results due to Android Parcelable bugs. Totally arbitrary but we have to start somewhere.
-      // Autofill library may further reduce the number if the device IME requests fewer than 11 results
-      final datasets = matchingEntries.take(10).map(entryToPwDataset).toList();
-      final response = await AutofillService().resultWithDatasets(datasets);
-      l.d('resultWithDatasets $response');
-      return false; // kinda pointless since Android will kill us shortly but meh
-    } else {
-      return true;
-    }
+  Future<void> setFillDialogPreference(bool value) async {
+    final prefs = await AutofillService().preferences;
+    await AutofillService().setPreferences(prefs.copyWith(enableFillDialog: value));
   }
 
-  AutofillDecision determineTrustLevel(AutofillMetadata androidMetadata) {
-    if (androidMetadata.appId?.isNotEmpty ?? false) {
-      if (_excludedPackages.contains(androidMetadata.appId)) {
-        l.i('Supplied packageName is on our exclude list. We will ignore this autofill request.');
-        return AutofillDecision.ignore;
-      }
-      if (!androidMetadata.appIdTrusted) {
-        l.w('Untrusted package name found for autofill (${androidMetadata.appId}).');
-        return AutofillDecision.refer;
-      }
-      return AutofillDecision.proceed;
+  bool _inAppSelectionPreferencesEnsured = false;
+
+  /// Kee Vault always uses the plugin's select-in-app flow (one locked suggestion that opens our own entry picker).
+  /// The service reads preferences on every fill request so this takes effect from the first request after the
+  /// app has run once following an upgrade. Requests made before then use the legacy flow, which we also handle.
+  Future<void> ensureInAppSelectionPreferences() async {
+    if (_inAppSelectionPreferencesEnsured) return;
+    final prefs = await AutofillService().preferences;
+    if (!prefs.useInAppSelection || !prefs.useEphemeralDataset) {
+      await AutofillService().setPreferences(prefs.copyWith(useInAppSelection: true, useEphemeralDataset: true));
     }
-
-    if (androidMetadata.isWebOrigin) {
-      if (androidMetadata.webDomains.length > 1) {
-        l.e(
-          "Multiple domains found for autofill (${androidMetadata.webDomains.map((d) => d.domain).join(', ')}). We will ignore this autofill request because we don't know why this can happen or whether we can trust the claimed domains.",
-        );
-        return AutofillDecision.ignore;
-      }
-      if (!androidMetadata.dalVerified) {
-        l.w('Supplied domain could not be verified as trusted by any method. We will ignore this autofill request.');
-        return AutofillDecision.refer;
-      }
-
-      return AutofillDecision.proceed;
-    }
-    l.w('Supplied domain is empty and no packageName was found. We will ignore this autofill request.');
-    return AutofillDecision.ignore;
-  }
-
-  bool isAppIdTrusted(AutofillMetadata androidMetadata) {
-    final appId = androidMetadata.appId;
-    if (appId == null || appId.isEmpty) return false;
-    if (_excludedPackages.contains(appId)) return false;
-    return androidMetadata.appIdTrusted;
-  }
-
-  bool isWebDomainTrusted(AutofillMetadata androidMetadata) {
-    if (!androidMetadata.isWebOrigin) return false;
-    if (androidMetadata.webDomains.length > 1) return false;
-    return androidMetadata.dalVerified;
+    _inAppSelectionPreferencesEnsured = true;
   }
 
   PwDataset entryToPwDataset(KdbxEntry entry) {
@@ -210,174 +193,6 @@ class AutofillCubit extends Cubit<AutofillState> {
     return PwDataset(id: id, label: title, username: username, password: pwd);
   }
 
-  void autofillInstantly(KdbxEntry entry) async {
-    final dataset = entryToPwDataset(entry);
-    final response = await AutofillService().resultWithDataset(
-      label: dataset.label,
-      username: dataset.username,
-      password: dataset.password,
-    );
-    l.d('resultWithDataset $response');
-  }
-
-  void autofillWithListOfOneEntry(KdbxEntry entry) async {
-    final dataset = entryToPwDataset(entry);
-    final response = await AutofillService().resultWithDatasets([dataset]);
-    l.d('resultWithDatasets $response');
-  }
-
-  static final Set<String> _excludedPackages = <String>{
-    'com.keevault.keevault',
-    'android',
-    'com.android.settings',
-    'com.oneplus.applocker',
-  };
-
-  @visibleForTesting
-  static bool urlsMatch(
-    Pattern pattern,
-    MatchAccuracy minimumMatchAccuracy,
-    String scheme,
-    String hostname,
-    String registrableDomain,
-  ) {
-    Pattern testValue;
-    var compareHostname = minimumMatchAccuracy != MatchAccuracy.Domain;
-    if (pattern is String) {
-      final testUrl = urls.parse(pattern.trim());
-      if (testUrl == null) {
-        // If the user has not supplied a valid URL, we cannot safely permit it to match anything
-        return false;
-      }
-      if (scheme == 'http' && testUrl.publicSuffixUrl.sourceUrl.scheme == 'https') {
-        // Prevent matching secure URLs in entries with an insecure version of the website but not vice-versa
-        return false;
-      }
-
-      // If user has requested Exact, we use Hostname matching instead since it is stricter than Domain, but unfortunately
-      // we don't have the required information from Android to be able to perform the exact match the user requested.
-      final host = testUrl.publicSuffixUrl.sourceUrl.host;
-      if (minimumMatchAccuracy == MatchAccuracy.Domain && !_isIpAddress(host)) {
-        testValue = testUrl.publicSuffixUrl.domain ?? host;
-      } else {
-        // IP addresses have no registrable domain (the public suffix list would treat 1.2.3.4 as domain "3.4")
-        // so they must always be compared in full.
-        compareHostname = true;
-        testValue = host;
-      }
-    } else {
-      testValue = pattern;
-    }
-
-    final requestValue = compareHostname ? hostname : registrableDomain;
-    if (testValue is String) {
-      // Must be equality, not String.allMatches which finds substrings (e.g. bank.com within evilbank.com)
-      return testValue.toLowerCase() == requestValue.toLowerCase();
-    }
-    return testValue.allMatches(requestValue).firstOrNull != null;
-  }
-
-  static bool _isIpAddress(String host) {
-    final unbracketed = host.startsWith('[') && host.endsWith(']') ? host.substring(1, host.length - 1) : host;
-    return InternetAddress.tryParse(unbracketed) != null;
-  }
-
   bool isAutofilling() => state is AutofillRequested;
   bool isAutofillSaving() => state is AutofillSaving;
-
-  // Shared matching logic used by both automatic autofill and manual entry list selection
-  static List<KdbxEntry> findMatchingEntries(
-    AutofillMetadata metadata,
-    Iterable<KdbxEntry> entries,
-    KdbxFile? vaultFile,
-  ) {
-    //TODO: Why not search for both at the same time? regression?! no. existing bug.
-    if (metadata.appId != null && metadata.appId!.isNotEmpty) {
-      return _findMatchesByPackageName(metadata, entries);
-    } else if (metadata.webDomains.isNotEmpty) {
-      return _findMatchesByDomain(metadata, entries, vaultFile);
-    }
-    return [];
-  }
-
-  static List<KdbxEntry> _findMatchesByPackageName(AutofillMetadata metadata, Iterable<KdbxEntry> entries) {
-    final appId = metadata.appId!;
-    return entries.where((entry) {
-      if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
-        return false;
-      }
-      return entry.androidPackageNames.contains(appId);
-    }).toList();
-  }
-
-  static List<KdbxEntry> _findMatchesByDomain(
-    AutofillMetadata metadata,
-    Iterable<KdbxEntry> entries,
-    KdbxFile? vaultFile,
-  ) {
-    final requestedUrl = urls.parse(
-      "${metadata.webDomains.firstOrNull?.scheme ?? 'https'}://${metadata.webDomains.firstOrNull?.domain ?? ''}".trim(),
-    );
-
-    if (requestedUrl == null) return [];
-
-    final hostname = requestedUrl.publicSuffixUrl.sourceUrl.host;
-    final registrableDomain = requestedUrl.publicSuffixUrl.domain;
-    final scheme = requestedUrl.publicSuffixUrl.sourceUrl.scheme;
-
-    if (hostname == null || registrableDomain == null || scheme == null) {
-      return [];
-    }
-
-    // Check for domain-specific match accuracy override from vault metadata
-    final matchAccuracyDomainOverride = vaultFile != null
-        ? MatchAccuracy.values.singleWhereOrNull(
-            (val) => val.name == vaultFile.body.meta.browserSettings.matchedURLAccuracyOverrides[registrableDomain],
-          )
-        : null;
-
-    return entries.where((entry) {
-      if (entry.browserSettings.matcherConfigs.any((mc) => mc.matcherType == EntryMatcherType.Hide)) {
-        return false;
-      }
-      bool isAMatch = false;
-      var minimumMatchAccuracy =
-          matchAccuracyDomainOverride ??
-          entry.browserSettings.matcherConfigs
-              .firstWhereOrNull((mc) => mc.matcherType == EntryMatcherType.Url)
-              ?.urlMatchMethod ??
-          MatchAccuracy.Domain;
-
-      final matchPatterns = <String>[];
-      for (final p in entry.browserSettings.includeUrls) {
-        if (p is String) matchPatterns.add(p);
-      }
-      final primaryUrlString = entry.getString(KdbxKeyCommon.URL)?.getText();
-
-      if (primaryUrlString != null) {
-        matchPatterns.add(primaryUrlString);
-      }
-      for (final String pattern in matchPatterns) {
-        if (urlsMatch(pattern, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
-          isAMatch = true;
-          break;
-        }
-      }
-
-      if (isAMatch) {
-        for (final p in entry.browserSettings.excludeUrls) {
-          if (p is String) {
-            if (urlsMatch(p, minimumMatchAccuracy, scheme, hostname, registrableDomain)) {
-              isAMatch = false;
-              break;
-            }
-          }
-        }
-      }
-
-      return isAMatch;
-    }).toList();
-  }
-
-  // top-level entrylist should only be displayed if above is false, otherwise display the editing page for the new entry we are going to save
 }

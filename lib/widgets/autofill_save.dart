@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/autofill_matching.dart';
 import 'package:keevault/cubit/account_cubit.dart';
 import 'package:keevault/cubit/autocomplete_cubit.dart';
 import 'package:keevault/cubit/autofill_cubit.dart';
@@ -8,6 +9,8 @@ import 'package:keevault/cubit/entry_cubit.dart';
 import 'package:keevault/cubit/filter_cubit.dart';
 import 'package:keevault/cubit/vault_cubit.dart';
 import 'package:keevault/extension_methods.dart';
+import 'package:keevault/generated/l10n.dart';
+import 'package:keevault/widgets/autofill_target_card.dart';
 import 'package:keevault/widgets/loading_spinner.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import '../logging/logger.dart';
@@ -28,7 +31,7 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
   KdbxEntry? newEntry;
   bool _trusted = false;
 
-@override
+  @override
   void initState() {
     l.t('_AutofillSaveWidgetState.initState');
     super.initState();
@@ -50,30 +53,22 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
       newEntry = vaultCubit.createEntry(group: vault.files.current.body.rootGroup);
     });
 
-    final autofillCubit = BlocProvider.of<AutofillCubit>(context);
-    final appId = autofillState.androidMetadata.appId?.isNotEmpty ?? false ? autofillState.androidMetadata.appId! : '';
-    final webDomain = autofillState.androidMetadata.webDomains.isNotEmpty
-        ? autofillState.androidMetadata.webDomains.first.domain
-        : '';
-    final scheme = autofillState.androidMetadata.webDomains.isNotEmpty
-        ? autofillState.androidMetadata.webDomains.first.scheme
-        : null;
-    final appIdTrusted = autofillCubit.isAppIdTrusted(autofillState.androidMetadata);
-    final webDomainTrusted = autofillCubit.isWebDomainTrusted(autofillState.androidMetadata);
+    // Same per-signal rules as when filling. A browser's id is never an app identity so is never recorded.
+    // An unverified website is not recorded here: the user can still add it by editing the URL on this screen.
+    final target = AutofillTarget.fromMetadata(autofillState.androidMetadata);
+    final verifiedApp = target.app?.trust == SignalTrust.verified ? target.app : null;
+    final verifiedWeb = target.web?.trust == SignalTrust.verified ? target.web : null;
 
-    _trusted = (appId.isEmpty || appIdTrusted) && (webDomain.isEmpty || webDomainTrusted) && autofillState.androidMetadata.webDomains.length <= 1;
+    _trusted = target.hasVerifiedSignal && target.concerns.isEmpty;
 
-    if (webDomain.isNotEmpty && webDomainTrusted) {
-      newEntry!.addAutofillUrl(webDomain, scheme);
-    } else if (appId.isNotEmpty && appIdTrusted) {
-      newEntry!.addAndroidPackageName(appId);
+    if (verifiedWeb != null) {
+      newEntry!.addAutofillUrl(verifiedWeb.domain.domain, verifiedWeb.domain.scheme);
+    }
+    if (verifiedApp != null) {
+      newEntry!.addAndroidPackageName(verifiedApp.appId);
     }
 
-    final newTitle = webDomain.isNotEmpty
-        ? webDomain
-        : appId.isNotEmpty
-            ? appId
-            : '[untitled]';
+    final newTitle = verifiedWeb?.domain.domain ?? verifiedApp?.appId ?? target.displayName ?? '[untitled]';
     newEntry!.setString(KdbxKeyCommon.TITLE, PlainValue(newTitle));
 
     username?.let((it) => newEntry!.setString(KdbxKeyCommon.USER_NAME, PlainValue(it)));
@@ -85,14 +80,24 @@ class _AutofillSaveWidgetState extends State<AutofillSaveWidget> with TraceableC
         if (!mounted) return;
         showDialog<void>(
           context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('Not trusted'),
-            content: Text(
-              'The app or website requesting this save could not be verified as trustworthy. '
-              'Please double check it is legitimate before saving your credentials.',
-            ),
-            actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text('OK'))],
-          ),
+          builder: (ctx) {
+            final str = S.of(ctx);
+            return AlertDialog(
+              title: Text(str.autofillNotTrustedTitle),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(str.autofillSaveNotTrustedBody),
+                    const SizedBox(height: 12),
+                    AutofillConcernBanners(target: target),
+                  ],
+                ),
+              ),
+              actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(str.alertOk))],
+            );
+          },
         );
       });
     }
