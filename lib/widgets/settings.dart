@@ -352,7 +352,6 @@ class _BiometricSettingWidgetState extends State<BiometricSettingWidget> {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    final theme = Theme.of(context);
     final quickUnlockSettings = [
       TextInputSettingsTile(
         title: str.automaticallySignInFor,
@@ -497,7 +496,6 @@ class _AutofillStatusWidgetState extends State<AutofillStatusWidget> {
   @override
   Widget build(BuildContext context) {
     final str = S.of(context);
-    final theme = Theme.of(context);
 
     return Column(
       children: [

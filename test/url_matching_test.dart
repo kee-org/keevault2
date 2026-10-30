@@ -5,6 +5,10 @@ import 'package:keevault/autofill_matching.dart';
 import 'package:public_suffix/public_suffix.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+/// As Kee Vault's release build would see it
+AutofillTarget fromMetadata(AutofillMetadata metadata, {String ownPackageName = 'com.keevault.keevault'}) =>
+    AutofillTarget.fromMetadata(metadata, ownPackageName: ownPackageName);
+
 Future<void> main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   var suffixList = await rootBundle.loadString('assets/public_suffix_list.dat');
@@ -227,11 +231,10 @@ Future<void> main() async {
     }
 
     List<KdbxEntry> match(String domain, {String scheme = 'https'}) => AutofillMatches.compute(
-      AutofillTarget.fromMetadata(
+      fromMetadata(
         AutofillMetadata(
-          webDomains: {AutofillWebDomain(scheme: scheme, domain: domain)},
+          webDomains: {AutofillWebDomain(scheme: scheme, domain: domain, dalVerified: true, focused: true)},
           isWebOrigin: true,
-          dalVerified: true,
           saveInfo: null,
         ),
       ),
@@ -318,14 +321,13 @@ Future<void> main() async {
       entry.setString(KdbxKeyCommon.URL, PlainValue('https://login.bank.com'));
       file.body.rootGroup.addEntry(entry);
       file.body.meta.browserSettings.matchedURLAccuracyOverrides['bank.com'] = MatchAccuracy.Hostname.name;
-      final target = AutofillTarget.fromMetadata(
+      final target = fromMetadata(
         AutofillMetadata(
           appId: 'com.android.chrome',
+          appIdSource: AppIdSource.component,
           appIsBrowser: true,
-          appIdTrusted: true,
-          webDomains: {AutofillWebDomain(scheme: 'https', domain: 'www.bank.com')},
+          webDomains: {AutofillWebDomain(scheme: 'https', domain: 'www.bank.com', dalVerified: true, focused: true)},
           isWebOrigin: true,
-          dalVerified: true,
           saveInfo: null,
         ),
       );

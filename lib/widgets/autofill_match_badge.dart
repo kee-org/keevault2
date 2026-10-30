@@ -1,3 +1,4 @@
+import 'package:flutter_autofill_service/flutter_autofill_service.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../autofill_matching.dart';
@@ -58,7 +59,11 @@ class AutofillMatchBadge extends StatelessWidget {
         background = scheme.errorContainer;
         foreground = scheme.onErrorContainer;
         tooltip = match.webMatched != null
-            ? str.autofillBadgeTooltipUnverifiedSite(host)
+            ? (target.web?.domain.userSelected ?? false)
+                  ? str.autofillBadgeTooltipUnverifiedSiteUserSelected(host)
+                  : str.autofillBadgeTooltipUnverifiedSite(host)
+            : target.app?.source == AppIdSource.viewNode
+            ? str.autofillBadgeTooltipSelfReportedApp(appId)
             : str.autofillBadgeTooltipUnverifiedApp(appId);
     }
 

@@ -24,83 +24,132 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(domain) => "Also link ${domain}";
 
-  static String m2(host) =>
+  static String m2(domains) =>
+      "On a page that also shows ${domains} (these won\'t be filled)";
+
+  static String m3(domains, count) =>
+      "On a page that also shows ${domains} and ${count} more (these won\'t be filled)";
+
+  static String m4(host) =>
       "Also saved for ${host}, which this app doesn\'t own.";
 
-  static String m3(appId) => "Linked to ${appId}";
+  static String m5(appId) => "Linked to ${appId}";
 
-  static String m4(appId, host) => "Linked to ${appId} and saved for ${host}";
+  static String m6(appId, host) => "Linked to ${appId} and saved for ${host}";
 
-  static String m5(host) =>
+  static String m7(host) =>
       "Saved for ${host}, a different address on the same domain";
 
-  static String m6(host) => "Saved for ${host}";
+  static String m8(host) => "Saved for ${host}";
 
-  static String m7(appId) =>
+  static String m9(appId) =>
+      "Linked to ${appId}, but that ID was reported by the app itself so it could be fake";
+
+  static String m10(appId) =>
       "Linked to ${appId}, but we couldn\'t reliably identify this app";
 
-  static String m8(host) =>
+  static String m11(host) =>
       "Saved for ${host}, but we couldn\'t verify the app asking for it";
 
-  static String m9(appId) => "in ${appId}";
+  static String m12(host) =>
+      "Saved for ${host}. You let this app open ${host} links, but Android hasn\'t confirmed it owns that site.";
 
-  static String m10(target, count) =>
+  static String m13(appId) => "in an app that says it is ${appId}";
+
+  static String m14(host, appId) =>
+      "This entry is saved for ${host}, but Android couldn\'t confirm that ${appId} owns that website. A fake app could show a copy of the site to collect your details. Only continue if you trust this app.";
+
+  static String m15(target) =>
+      "We couldn\'t verify that ${target} is genuine. Only continue if you are sure you want to share this entry with it.";
+
+  static String m16(focused, other) =>
+      "Your details will go to ${focused}, not ${other}. Entries saved only for ${other} aren\'t matched.";
+
+  static String m17(appId) => "in ${appId}";
+
+  static String m18(target, count) =>
       "Matching entries for ${target} (${count})";
 
-  static String m11(target) => "No entries are linked to ${target} yet.";
+  static String m19(target) => "No entries are linked to ${target} yet.";
 
-  static String m12(target) =>
+  static String m20(target) =>
       "Not linked to ${target}. Check carefully before choosing one.";
 
-  static String m13(target) => "Not linked to ${target} yet.";
+  static String m21(target) => "Not linked to ${target} yet.";
 
-  static String m14(domain) =>
+  static String m22(appId) =>
+      "This app reported its own ID (${appId}) because Android didn\'t supply one. A fake app could report any ID, so the new entry won\'t be linked to it.";
+
+  static String m23(domain) =>
+      "This app is showing a page from ${domain}, which Android could not confirm it owns. That\'s normal for apps that use a separate sign-in service, but it is also how a fake app would look. The new entry will be linked to this app but not to ${domain}.";
+
+  static String m24(domain) =>
+      "Android didn\'t tell us which app is showing ${domain}, so we can\'t confirm the page is genuine. The new entry won\'t be linked to ${domain}.";
+
+  static String m25(domain) =>
+      "You allowed this app to open ${domain} links, but Android hasn\'t confirmed the app owns ${domain}. Any app can ask you to change that setting, so the new entry won\'t be linked to ${domain}.";
+
+  static String m26(domain) =>
+      "This browser isn\'t one we recognise, so we can\'t confirm the page really is ${domain}. The new entry won\'t be linked to ${domain}.";
+
+  static String m27(appId) =>
+      "This app reported its own ID (${appId}) because Android didn\'t supply one. A fake app could report any ID, so check it is genuine before filling.";
+
+  static String m28(domain) =>
       "This app is showing a page from ${domain}, which Android could not confirm it owns. That\'s normal for apps that use a separate sign-in service, but it is also how a fake app would look. Entries linked to this app are marked as matches. Entries linked only to ${domain} are marked Unverified.";
 
-  static String m15(domain) =>
+  static String m29(domain) =>
+      "Android didn\'t tell us which app is showing ${domain}, so we can\'t confirm the page is genuine.";
+
+  static String m30(domain) =>
+      "You allowed this app to open ${domain} links, but Android hasn\'t confirmed the app owns ${domain}. Any app can ask you to change that setting, so it isn\'t proof the page is genuine.";
+
+  static String m31(domain) =>
       "This browser isn\'t one we recognise, so we can\'t confirm the page really is ${domain}. Check the app before filling.";
 
-  static String m16(PINname) =>
+  static String m32(domains) => "Web content from ${domains}";
+
+  static String m33(PINname) =>
       "Your biometrics/${PINname} access needs refreshing so please enter your Kee Vault password above. This is usually because it has been quite a while since you last entered your full password. You can adjust this amount of time in the Settings once you\'re signed in but to help protect you against data loss, you can\'t avoid entering your password forever.";
 
-  static String m17(PINname) =>
+  static String m34(PINname) =>
       "Access Kee Vault faster by protecting your password with biometrics or your device ${PINname}";
 
-  static String m18(action) => "Cancel ${action}";
+  static String m35(action) => "Cancel ${action}";
 
-  static String m19(name) => "Select the new parent for the \"${name}\" group";
+  static String m36(name) => "Select the new parent for the \"${name}\" group";
 
-  static String m20(appName) =>
+  static String m37(appName) =>
       "1. Please switch to your device\'s Settings app and load the \"Passwords\" section.\n\n2. Click on \"AutoFill passwords\".\n\n3. Ensure the switch at the top is enabled.\n\n4. Deselect Keychain (or other selected items) and then select \"${appName}\".\n\nThen switch back to this Kee Vault App and click \"OK\" to confirm that you are finished.\n\nFinally, double check that the status information in the Kee Vault Settings page now says that AutoFill is enabled.\n\nApologies that we can\'t make this easier - Apple won\'t allow us to help you in this situation.";
 
-  static String m21(appName) =>
+  static String m38(appName) =>
       "You must change your device\'s Autofill provider to ${appName}.";
 
-  static String m22(x, y) => "Enter a number between ${x} and ${y}";
+  static String m39(x, y) => "Enter a number between ${x} and ${y}";
 
-  static String m23(criteria) => "Filtered by ${criteria}";
+  static String m40(criteria) => "Filtered by ${criteria}";
 
-  static String m24(action) =>
+  static String m41(action) =>
       "Sorry, we can\'t ${action} unless you grant us permission. Please try again.";
 
-  static String m25(action) =>
+  static String m42(action) =>
       "Sorry, we can\'t ${action} unless you grant us permission. Please grant the permission in your settings and then try again.";
 
-  static String m26(email) =>
+  static String m43(email) =>
       "You can click the button below to agree to receive occasional marketing emails from us and allow us to check the status of any Kee Vault account associated with ${email}";
 
-  static String m27(pinName) =>
+  static String m44(pinName) =>
       "Use device biometrics or ${pinName} for faster sign-in";
 
-  static String m28(count) => "${count} bytes";
+  static String m45(count) => "${count} bytes";
 
-  static String m29(error) =>
+  static String m46(error) =>
       "Unexpected error. Sorry! Please let us know, then close and restart the app. Details: ${error}";
 
-  static String m30(email) =>
+  static String m47(email) =>
       "Please verify your email address. When you registered we sent you a verification link to ${email}. Please now follow the instructions in that email. If you can\'t find it, you can request that we send a new one.";
 
-  static String m31(email) => "Welcome ${email}";
+  static String m48(email) => "Welcome ${email}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -145,6 +194,8 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "authenticating": MessageLookupByLibrary.simpleMessage("Authenticating"),
     "autofillAlsoLinkDomain": m1,
+    "autofillAlsoOnPage": m2,
+    "autofillAlsoOnPageMore": m3,
     "autofillBadgeAppAndSiteMatch": MessageLookupByLibrary.simpleMessage(
       "App and site match",
     ),
@@ -155,22 +206,43 @@ class MessageLookup extends MessageLookupByLibrary {
     "autofillBadgeExactMatch": MessageLookupByLibrary.simpleMessage(
       "Exact match",
     ),
-    "autofillBadgeTooltipAlsoSavedForUnowned": m2,
-    "autofillBadgeTooltipApp": m3,
-    "autofillBadgeTooltipAppAndSite": m4,
-    "autofillBadgeTooltipDomain": m5,
-    "autofillBadgeTooltipExact": m6,
-    "autofillBadgeTooltipUnverifiedApp": m7,
-    "autofillBadgeTooltipUnverifiedSite": m8,
+    "autofillBadgeTooltipAlsoSavedForUnowned": m4,
+    "autofillBadgeTooltipApp": m5,
+    "autofillBadgeTooltipAppAndSite": m6,
+    "autofillBadgeTooltipDomain": m7,
+    "autofillBadgeTooltipExact": m8,
+    "autofillBadgeTooltipSelfReportedApp": m9,
+    "autofillBadgeTooltipUnverifiedApp": m10,
+    "autofillBadgeTooltipUnverifiedSite": m11,
+    "autofillBadgeTooltipUnverifiedSiteUserSelected": m12,
     "autofillBadgeUnverified": MessageLookupByLibrary.simpleMessage(
       "Unverified",
     ),
     "autofillCancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "autofillChipBestGuess": MessageLookupByLibrary.simpleMessage("Best guess"),
+    "autofillChipBestGuessHint": MessageLookupByLibrary.simpleMessage(
+      "Android didn\'t tell us which app this is, so this ID is a best guess from the window title, which the app controls.",
+    ),
+    "autofillChipCantCheck": MessageLookupByLibrary.simpleMessage(
+      "Can\'t check",
+    ),
+    "autofillChipLinkSettingOnly": MessageLookupByLibrary.simpleMessage(
+      "Link setting only",
+    ),
+    "autofillChipLinkSettingOnlyHint": MessageLookupByLibrary.simpleMessage(
+      "You let this app open links for this website, but Android hasn\'t confirmed that the app owns it.",
+    ),
     "autofillChipNotAppsSite": MessageLookupByLibrary.simpleMessage(
       "Not the app\'s site",
     ),
     "autofillChipNotVerified": MessageLookupByLibrary.simpleMessage(
       "Not verified",
+    ),
+    "autofillChipReportedByApp": MessageLookupByLibrary.simpleMessage(
+      "Reported by app",
+    ),
+    "autofillChipReportedByAppHint": MessageLookupByLibrary.simpleMessage(
+      "Android didn\'t tell us which app this is, so this is the ID the app reported about itself. Any app can report any ID.",
     ),
     "autofillChipUnrecognisedBrowser": MessageLookupByLibrary.simpleMessage(
       "Unrecognised browser",
@@ -182,60 +254,119 @@ class MessageLookup extends MessageLookupByLibrary {
     "autofillChipVerifiedSiteHint": MessageLookupByLibrary.simpleMessage(
       "Android or a browser we recognise has confirmed that this website address is genuine, so it can\'t be faked by what the page displays.",
     ),
+    "autofillChipWontBeFilled": MessageLookupByLibrary.simpleMessage(
+      "Won\'t be filled",
+    ),
+    "autofillClaimsToBeApp": m13,
     "autofillConfirmUnverifiedBody": MessageLookupByLibrary.simpleMessage(
       "We can\'t tell which app or website will receive your details. Only continue if you are sure you want to share this entry with whatever is asking for it.",
     ),
+    "autofillConfirmUnverifiedSiteMatchBody": m14,
+    "autofillConfirmUnverifiedTargetBody": m15,
+    "autofillConfirmUnverifiedTargetTitle":
+        MessageLookupByLibrary.simpleMessage(
+          "Fill into an unverified app or website?",
+        ),
     "autofillConfirmUnverifiedTitle": MessageLookupByLibrary.simpleMessage(
       "Fill into an unidentified target?",
     ),
+    "autofillEmbeddedSiteHint": m16,
     "autofillEnabled": MessageLookupByLibrary.simpleMessage(
       "Kee Vault is correctly set as your device\'s Autofill provider.",
     ),
     "autofillFillInto": MessageLookupByLibrary.simpleMessage("Fill into"),
-    "autofillInApp": m9,
+    "autofillInApp": m17,
     "autofillListedFirstHint": MessageLookupByLibrary.simpleMessage(
       "Matches are listed first. Tap any entry to fill it.",
     ),
-    "autofillMatchesHeader": m10,
+    "autofillMatchesHeader": m18,
     "autofillMatchesHiddenBySearch": MessageLookupByLibrary.simpleMessage(
       "Your filter is hiding the entries that match this app or site.",
     ),
-    "autofillNewEntryMakeChangesThenDone": MessageLookupByLibrary.simpleMessage(
-      "Entry saved. Make changes below if you want and then click \"Done\" below.",
-    ),
-    "autofillNoMatches": m11,
-    "autofillNotTrustedTitle": MessageLookupByLibrary.simpleMessage(
-      "Not trusted",
-    ),
+    "autofillNoMatches": m19,
     "autofillOtherEntries": MessageLookupByLibrary.simpleMessage(
       "Other entries",
     ),
-    "autofillOtherEntriesCautionHint": m12,
-    "autofillOtherEntriesLinkedHint": m13,
+    "autofillOtherEntriesCautionHint": m20,
+    "autofillOtherEntriesLinkedHint": m21,
     "autofillRequiresQU": MessageLookupByLibrary.simpleMessage(
       " You need to add a Passcode, FaceId or TouchId to your device too!",
     ),
-    "autofillSaveNotTrustedBody": MessageLookupByLibrary.simpleMessage(
-      "The app or website requesting this save could not be fully verified as trustworthy. Please double check it is legitimate before saving your credentials.",
+    "autofillSaveEntryQuestion": MessageLookupByLibrary.simpleMessage(
+      "Do you want to save this new entry?",
     ),
+    "autofillSaveHeaderPartlyTrusted": MessageLookupByLibrary.simpleMessage(
+      "This entry has not been saved. Kee Vault could not fully verify the app or website that asked to save it, so only the parts that could be verified have been linked to this entry. Only tap Save if you are sure it is genuine.",
+    ),
+    "autofillSaveHeaderTrusted": MessageLookupByLibrary.simpleMessage(
+      "Check the new entry below, then tap Save to add it to your vault. It has not been saved yet.",
+    ),
+    "autofillSaveHeaderUntrusted": MessageLookupByLibrary.simpleMessage(
+      "This entry has not been saved. Kee Vault could not verify the app or website that asked to save it, so it has not been linked to this entry. Only tap Save if you are sure it is genuine.",
+    ),
+    "autofillSaveSameValueNotice": MessageLookupByLibrary.simpleMessage(
+      "Android reported the same value for the username and password. Check both before saving.",
+    ),
+    "autofillSaveWarningAppIdFromTitle": MessageLookupByLibrary.simpleMessage(
+      "Android didn\'t tell us which app this is. We could only guess from the window title, which the app controls, so the new entry won\'t be linked to any app.",
+    ),
+    "autofillSaveWarningAppIdSelfReported": m22,
+    "autofillSaveWarningDomainNotOwnedByApp": m23,
+    "autofillSaveWarningDomainUncheckable": m24,
+    "autofillSaveWarningDomainUserSelectedOnly": m25,
+    "autofillSaveWarningFocusedDomainUnknown":
+        MessageLookupByLibrary.simpleMessage(
+          "We can\'t tell which website these details were entered on, so the new entry won\'t be linked to any website.",
+        ),
+    "autofillSaveWarningFocusedDomainUnknownApp":
+        MessageLookupByLibrary.simpleMessage(
+          "This app also shows web content. The new entry will be linked to the app only, not to any of the websites.",
+        ),
+    "autofillSaveWarningNoIdentity": MessageLookupByLibrary.simpleMessage(
+      "Android did not tell us which app or website is asking to save these details, so the new entry won\'t be linked to either.",
+    ),
+    "autofillSaveWarningUnrecognisedBrowser": m26,
+    "autofillSaveWarningWebContentNotVerifiable":
+        MessageLookupByLibrary.simpleMessage(
+          "This app shows web content that this version of Android cannot verify, so the new entry won\'t be linked to any website.",
+        ),
+    "autofillSaveWarningWebContentNotVerifiableBrowser":
+        MessageLookupByLibrary.simpleMessage(
+          "This version of Android can\'t tell us which website this browser is showing, so the new entry won\'t be linked to any website.",
+        ),
     "autofillUnknownTarget": MessageLookupByLibrary.simpleMessage(
       "Unknown app or website",
     ),
     "autofillWarningAppIdFromTitle": MessageLookupByLibrary.simpleMessage(
-      "We could not reliably identify this app. The ID shown is a best guess. Check the app is genuine before filling.",
+      "Android didn\'t tell us which app this is. The ID shown is a best guess from the window title, which the app controls. Check the app is genuine before filling.",
     ),
-    "autofillWarningDomainNotOwnedByApp": m14,
-    "autofillWarningMultipleDomains": MessageLookupByLibrary.simpleMessage(
-      "This page contains content from several websites, so we can\'t tell which one will receive your details.",
+    "autofillWarningAppIdSelfReported": m27,
+    "autofillWarningDomainNotOwnedByApp": m28,
+    "autofillWarningDomainUncheckable": m29,
+    "autofillWarningDomainUserSelectedOnly": m30,
+    "autofillWarningFocusedDomainUnknown": MessageLookupByLibrary.simpleMessage(
+      "We can\'t tell which website you are filling in, so fields on these web pages won\'t be filled.",
     ),
+    "autofillWarningFocusedDomainUnknownApp":
+        MessageLookupByLibrary.simpleMessage(
+          "This app also shows web content. Only the app\'s own fields will be filled, not the web pages.",
+        ),
     "autofillWarningNoIdentity": MessageLookupByLibrary.simpleMessage(
       "Android did not tell us which app or website is asking.",
     ),
-    "autofillWarningUnrecognisedBrowser": m15,
+    "autofillWarningUnrecognisedBrowser": m31,
     "autofillWarningWebContentNotVerifiable":
         MessageLookupByLibrary.simpleMessage(
           "This app shows web content that this version of Android cannot verify. Only entries linked to the app are shown as matches.",
         ),
+    "autofillWarningWebContentNotVerifiableBrowser":
+        MessageLookupByLibrary.simpleMessage(
+          "This version of Android can\'t tell us which website this browser is showing, so no entries are shown as matches. Check the address bar before filling.",
+        ),
+    "autofillWebContentFrom": m32,
+    "autofillWebContentUnidentified": MessageLookupByLibrary.simpleMessage(
+      "Web content from an unidentified website",
+    ),
     "autofillWillLinkApp": MessageLookupByLibrary.simpleMessage(
       "We\'ll link your choice to this app for next time.",
     ),
@@ -286,12 +417,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "biometricSignIn": MessageLookupByLibrary.simpleMessage(
       "Enable Quick sign-in (biometrics)",
     ),
-    "biometricsErrorExplanation": m16,
+    "biometricsErrorExplanation": m33,
     "biometricsMaybeExpired": MessageLookupByLibrary.simpleMessage(
       "Please enter your password",
     ),
-    "biometricsStoreDescription": m17,
-    "cancelExportOrImport": m18,
+    "biometricsStoreDescription": m34,
+    "cancelExportOrImport": m35,
     "changeCancelSubscription": MessageLookupByLibrary.simpleMessage(
       "Change or Cancel Subscription",
     ),
@@ -346,7 +477,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "chooseNewParentGroupForEntry": MessageLookupByLibrary.simpleMessage(
       "Select the group for this entry",
     ),
-    "chooseNewParentGroupForGroup": m19,
+    "chooseNewParentGroupForGroup": m36,
     "chooseRestoreGroup": MessageLookupByLibrary.simpleMessage(
       "Select the group in which to restore this item",
     ),
@@ -426,7 +557,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "discard": MessageLookupByLibrary.simpleMessage("Discard"),
     "discardChanges": MessageLookupByLibrary.simpleMessage("Discard changes"),
     "domain": MessageLookupByLibrary.simpleMessage("Domain"),
-    "done": MessageLookupByLibrary.simpleMessage("Done"),
     "downloading": MessageLookupByLibrary.simpleMessage("Downloading"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
     "emailChanged": MessageLookupByLibrary.simpleMessage(
@@ -439,13 +569,13 @@ class MessageLookup extends MessageLookupByLibrary {
       "Email verification",
     ),
     "enableAutofill": MessageLookupByLibrary.simpleMessage("Enable Autofill"),
-    "enableAutofillIosInstructions": m20,
-    "enableAutofillRequired": m21,
+    "enableAutofillIosInstructions": m37,
+    "enableAutofillRequired": m38,
     "enabled": MessageLookupByLibrary.simpleMessage("Enabled"),
     "enterNewPresetName": MessageLookupByLibrary.simpleMessage(
       "Enter the new name for the preset",
     ),
-    "enterNumberBetweenXAndY": m22,
+    "enterNumberBetweenXAndY": m39,
     "enterOldPassword": MessageLookupByLibrary.simpleMessage(
       "First, enter your current password.",
     ),
@@ -505,7 +635,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "filterTooltipOpen": MessageLookupByLibrary.simpleMessage(
       "Show matching entries",
     ),
-    "filteredByCriteria": m23,
+    "filteredByCriteria": m40,
     "footerTitleGen": MessageLookupByLibrary.simpleMessage("Generate"),
     "forgotPasswordOrCheckAccount": MessageLookupByLibrary.simpleMessage(
       "Forgot your password or unsure if you have a Kee Vault account?",
@@ -757,8 +887,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "permanentlyDeleteGroupConfirm": MessageLookupByLibrary.simpleMessage(
       "Permanently delete the group and all entries within it?",
     ),
-    "permissionDeniedError": m24,
-    "permissionDeniedPermanentlyError": m25,
+    "permissionDeniedError": m41,
+    "permissionDeniedPermanentlyError": m42,
     "permissionError": MessageLookupByLibrary.simpleMessage("Permission error"),
     "permissionReasonAttachFile": MessageLookupByLibrary.simpleMessage(
       "attach a file",
@@ -784,7 +914,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "prcRegistrationSuccess": MessageLookupByLibrary.simpleMessage(
       "Success! Please check your emails soon to confirm that you want to receive updates from us.",
     ),
-    "prcSignupOrAccountStatusCheck": m26,
+    "prcSignupOrAccountStatusCheck": m43,
     "preset": MessageLookupByLibrary.simpleMessage("Preset"),
     "privacyStatement": MessageLookupByLibrary.simpleMessage(
       "Privacy Statement",
@@ -797,7 +927,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Protected field. Click to reveal.",
     ),
     "quickSignIn": MessageLookupByLibrary.simpleMessage("Quick sign-in"),
-    "quickSignInExplainer": m27,
+    "quickSignInExplainer": m44,
     "reenterYourPassword": MessageLookupByLibrary.simpleMessage(
       "Please re-enter your password",
     ),
@@ -922,7 +1052,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "signin": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signout": MessageLookupByLibrary.simpleMessage("Sign out"),
-    "sizeBytes": m28,
+    "sizeBytes": m45,
     "sortCreated": MessageLookupByLibrary.simpleMessage("Newest"),
     "sortCreatedReversed": MessageLookupByLibrary.simpleMessage("Oldest"),
     "sortModified": MessageLookupByLibrary.simpleMessage("Recently updated"),
@@ -975,7 +1105,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "title": MessageLookupByLibrary.simpleMessage("title"),
     "tryAgain": MessageLookupByLibrary.simpleMessage("Try again"),
-    "unexpected_error": m29,
+    "unexpected_error": m46,
     "unlock": MessageLookupByLibrary.simpleMessage("Unlock"),
     "unlockRequired": MessageLookupByLibrary.simpleMessage("Unlock your Vault"),
     "unlock_with_biometrics": MessageLookupByLibrary.simpleMessage(
@@ -1031,7 +1161,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vaultTooLarge": MessageLookupByLibrary.simpleMessage(
       "Your Kee Vault is too large to save and sync to other devices. Delete some large file attachments, empty the bin, etc. and then try again.",
     ),
-    "verificationRequest": m30,
+    "verificationRequest": m47,
     "viewDocumentation": MessageLookupByLibrary.simpleMessage(
       "View documentation",
     ),
@@ -1041,7 +1171,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "welcomeToKeeVault": MessageLookupByLibrary.simpleMessage(
       "Welcome to Kee Vault",
     ),
-    "welcome_message": m31,
+    "welcome_message": m48,
     "willTrySamePasswordFirst": MessageLookupByLibrary.simpleMessage(
       "We\'ll try using the same password you have used to open your current Kee Vault. If that doesn\'t work, you can type in the correct password in a moment.",
     ),

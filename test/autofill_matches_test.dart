@@ -5,6 +5,10 @@ import 'package:kdbx/kdbx.dart';
 import 'package:keevault/autofill_matching.dart';
 import 'package:public_suffix/public_suffix.dart';
 
+/// As Kee Vault's release build would see it
+AutofillTarget fromMetadata(AutofillMetadata metadata, {String ownPackageName = 'com.keevault.keevault'}) =>
+    AutofillTarget.fromMetadata(metadata, ownPackageName: ownPackageName);
+
 Future<void> main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   DefaultSuffixRules.initFromString(await rootBundle.loadString('assets/public_suffix_list.dat'));
@@ -56,27 +60,37 @@ Future<void> main() async {
   });
 
   AutofillMatches compute(AutofillMetadata metadata) =>
-      AutofillMatches.compute(AutofillTarget.fromMetadata(metadata), file.body.rootGroup.getAllEntries().values, file);
+      AutofillMatches.compute(fromMetadata(metadata), file.body.rootGroup.getAllEntries().values, file);
 
   Map<String, AutofillMatchTier> tiers(AutofillMatches m) => {
     for (final match in m.ordered) match.entry.getString(KdbxKeyCommon.TITLE)!.getText(): match.tier,
   };
 
+  /// [domains] all get [dal] and, if there is exactly one, it is the focused one. Use [webDomains] for anything more
+  /// specific.
   AutofillMetadata md({
     String? appId,
-    bool trusted = true,
+    AppIdSource source = AppIdSource.component,
     bool browser = false,
     List<String> domains = const [],
-    bool? dal,
-  }) => AutofillMetadata(
-    appId: appId,
-    appIdTrusted: trusted,
-    appIsBrowser: browser,
-    webDomains: {for (final d in domains) AutofillWebDomain(scheme: 'https', domain: d)},
-    isWebOrigin: domains.isNotEmpty,
-    dalVerified: dal ?? domains.isEmpty,
-    saveInfo: null,
-  );
+    bool dal = false,
+    List<AutofillWebDomain>? webDomains,
+  }) {
+    final all =
+        webDomains ??
+        [
+          for (final d in domains)
+            AutofillWebDomain(scheme: 'https', domain: d, dalVerified: dal, focused: domains.length == 1),
+        ];
+    return AutofillMetadata(
+      appId: appId,
+      appIdSource: appId == null ? AppIdSource.none : source,
+      appIsBrowser: browser,
+      webDomains: all.toSet(),
+      isWebOrigin: all.isNotEmpty,
+      saveInfo: null,
+    );
+  }
 
   group('browser request', () {
     test('matches by URL only; a browser package name on an entry never matches', () {
@@ -121,7 +135,7 @@ Future<void> main() async {
       expect(tiers(m).keys, containsAll(['exact', 'both', 'sibling']));
     });
 
-    test('multiple origins or no identity: nothing matches', () {
+    test('several domains with none focused, or no identity: nothing matches', () {
       expect(
         compute(md(appId: 'com.android.chrome', browser: true, domains: ['www.bank.com', 'b.com'], dal: true)).isEmpty,
         true,
@@ -179,7 +193,7 @@ Future<void> main() async {
     });
 
     test('app id from the window title: matches are unverified', () {
-      final m = compute(md(appId: 'com.bank.app', trusted: false));
+      final m = compute(md(appId: 'com.bank.app', source: AppIdSource.windowTitle));
       expect(tiers(m).values.toSet(), {AutofillMatchTier.unverified});
     });
 
@@ -192,26 +206,95 @@ Future<void> main() async {
 
   group('learning skips what already matched at full strength', () {
     test('nothing to write when the app id already matched', () {
-      final target = AutofillTarget.fromMetadata(md(appId: 'com.bank.app'));
+      final target = fromMetadata(md(appId: 'com.bank.app'));
       final m = AutofillMatches.compute(target, file.body.rootGroup.getAllEntries().values, file);
       expect(target.associationFor(e['package']!.uuid.uuid, m[e['package']!.uuid.uuid]), isNull);
     });
 
     test('nothing to write when the exact host already matched', () {
-      final target = AutofillTarget.fromMetadata(
-        md(appId: 'com.android.chrome', browser: true, domains: ['www.bank.com'], dal: true),
-      );
+      final target = fromMetadata(md(appId: 'com.android.chrome', browser: true, domains: ['www.bank.com'], dal: true));
       final m = AutofillMatches.compute(target, file.body.rootGroup.getAllEntries().values, file);
       expect(target.associationFor(e['exact']!.uuid.uuid, m[e['exact']!.uuid.uuid]), isNull);
     });
 
     test('a domain-only match is learned as the exact host', () {
-      final target = AutofillTarget.fromMetadata(
-        md(appId: 'com.android.chrome', browser: true, domains: ['www.bank.com'], dal: true),
-      );
+      final target = fromMetadata(md(appId: 'com.android.chrome', browser: true, domains: ['www.bank.com'], dal: true));
       final m = AutofillMatches.compute(target, file.body.rootGroup.getAllEntries().values, file);
       final item = target.associationFor(e['sibling']!.uuid.uuid, m[e['sibling']!.uuid.uuid]);
       expect(item?['domain'], 'www.bank.com');
+    });
+  });
+
+  group('only the focused domain is matched', () {
+    AutofillWebDomain dom(String domain, {bool dal = true, bool focused = false}) =>
+        AutofillWebDomain(scheme: 'https', domain: domain, dalVerified: dal, focused: focused);
+
+    test('an entry matching only a domain that is not focused is not a match', () {
+      final m = compute(
+        md(
+          appId: 'com.android.chrome',
+          browser: true,
+          webDomains: [dom('www.bank.com'), dom('login.microsoftonline.com', focused: true)],
+        ),
+      );
+      expect(tiers(m), {'foreign': AutofillMatchTier.strong});
+    });
+
+    test('the focused domain of a multi-domain browser request matches as usual', () {
+      final m = compute(
+        md(
+          appId: 'com.android.chrome',
+          browser: true,
+          webDomains: [dom('www.bank.com', focused: true), dom('a.com'), dom('login.microsoftonline.com')],
+        ),
+      );
+      expect(tiers(m), {
+        'exact': AutofillMatchTier.strong,
+        'both': AutofillMatchTier.strong,
+        'sibling': AutofillMatchTier.domain,
+      });
+    });
+
+    test('embedded sign-in frame: entries for the surrounding shop do not match, those for the provider do', () {
+      final shop = add('shop', url: 'https://shop.com');
+      final idp = add('idp', url: 'https://idp.com');
+      final m = compute(
+        md(
+          appId: 'com.android.chrome',
+          browser: true,
+          webDomains: [dom('shop.com'), dom('login.idp.com', focused: true)],
+        ),
+      );
+      expect(m[shop.uuid.uuid], isNull);
+      expect(m[idp.uuid.uuid]?.tier, AutofillMatchTier.domain);
+    });
+
+    test('nothing focused: a verified app still matches by package name, never by URL', () {
+      final m = compute(md(appId: 'com.bank.app', webDomains: [dom('www.bank.com'), dom('a.com')]));
+      expect(tiers(m), {
+        'package': AutofillMatchTier.strong,
+        'both': AutofillMatchTier.strong,
+        'excluded': AutofillMatchTier.strong,
+      });
+      expect(m.ordered.every((x) => x.webMatched == null), true);
+    });
+  });
+
+  group('confirmation per entry', () {
+    test('a verified app filling an entry matched only through a site it does not own needs confirming', () {
+      final target = fromMetadata(md(appId: 'com.bank.app', domains: ['login.microsoftonline.com']));
+      final m = AutofillMatches.compute(target, file.body.rootGroup.getAllEntries().values, file);
+      expect(target.requiresConfirmation, false);
+      expect(target.requiresConfirmationFor(m[e['foreign']!.uuid.uuid]), true);
+      expect(target.requiresConfirmationFor(m[e['package']!.uuid.uuid]), false);
+      expect(target.requiresConfirmationFor(null), false);
+    });
+
+    test('nothing verified: every entry needs confirming', () {
+      final target = fromMetadata(md(appId: 'org.niche.browser', browser: true, domains: ['www.bank.com']));
+      final m = AutofillMatches.compute(target, file.body.rootGroup.getAllEntries().values, file);
+      expect(target.requiresConfirmationFor(m[e['exact']!.uuid.uuid]), true);
+      expect(target.requiresConfirmationFor(null), true);
     });
   });
 }
