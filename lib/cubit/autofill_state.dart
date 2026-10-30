@@ -39,9 +39,8 @@ class AutofillRequested extends AutofillModeActive {
 }
 
 class AutofillSaving extends AutofillModeActive {
-  AutofillSaving(super.androidMetadata);
-}
+  /// Different for every save request so that the screen for one request is never reused for another
+  final int requestId;
 
-class AutofillSaved extends AutofillModeActive {
-  AutofillSaved(super.androidMetadata);
+  AutofillSaving(super.androidMetadata, {required this.requestId});
 }

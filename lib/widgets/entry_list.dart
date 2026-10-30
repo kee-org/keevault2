@@ -125,6 +125,11 @@ class EntryListWidget extends StatelessWidget {
       items.add(_buildMutedLine(theme, str.autofillMatchesHiddenBySearch));
     } else {
       items.add(_buildMutedLine(theme, str.autofillNoMatches(targetName)));
+      // e.g. a sign-in or payment frame inside the page the user thinks they are on
+      final surroundingSite = target.surroundingSite;
+      if (surroundingSite != null) {
+        items.add(_buildMutedLine(theme, str.autofillEmbeddedSiteHint(targetName, surroundingSite)));
+      }
     }
 
     if (otherEntries.isNotEmpty) {
@@ -197,6 +202,29 @@ class EntryListHeaderWidget extends StatelessWidget {
   }
 }
 
+/// Why we are asking before filling [match] (a short name for analytics, then the dialog title and body): nothing
+/// identified at all, a match only through a website the verified app hasn't been shown to own, or a target we
+/// identified but couldn't verify.
+(String, String, String) _fillConfirmation(S str, AutofillTarget target, AutofillMatch? match) {
+  final app = target.app;
+  if (app == null && target.web == null) {
+    return ('noIdentity', str.autofillConfirmUnverifiedTitle, str.autofillConfirmUnverifiedBody);
+  }
+  if (target.hasVerifiedSignal && app != null) {
+    final host = match?.matchedUrlHost ?? target.web?.domain.domain ?? '';
+    return (
+      'unverifiedSiteMatch',
+      str.autofillConfirmUnverifiedTargetTitle,
+      str.autofillConfirmUnverifiedSiteMatchBody(host, app.appId),
+    );
+  }
+  return (
+    'unverifiedTarget',
+    str.autofillConfirmUnverifiedTargetTitle,
+    str.autofillConfirmUnverifiedTargetBody(target.displayName ?? str.autofillUnknownTarget),
+  );
+}
+
 class EntryListItemWidget extends StatelessWidget {
   final String uuid;
   const EntryListItemWidget({super.key, required this.uuid});
@@ -231,16 +259,20 @@ class EntryListItemWidget extends StatelessWidget {
                     onTap: () async {
                       final navigator = Navigator.of(context);
                       final autofillCubit = BlocProvider.of<AutofillCubit>(context);
-                      if (autoFillState.target.requiresConfirmation) {
+                      final target = autoFillState.target;
+                      if (target.requiresConfirmationFor(match)) {
+                        final (kind, title, body) = _fillConfirmation(str, target, match);
                         final confirmed = await DialogUtils.showConfirmDialog(
                           context: context,
                           params: ConfirmDialogParams(
-                            title: str.autofillConfirmUnverifiedTitle,
-                            content: str.autofillConfirmUnverifiedBody,
+                            title: title,
+                            content: body,
+                            details: AutofillConcernBanners(target: target),
                             positiveButtonText: str.alertOk,
                             negativeButtonText: str.alertCancel,
                           ),
                         );
+                        autofillCubit.trackConfirmation(kind, confirmed);
                         if (!confirmed || !context.mounted) return;
                       }
 

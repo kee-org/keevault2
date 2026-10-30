@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:file_picker/file_picker.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -46,6 +45,9 @@ class EntryWidget extends StatelessWidget {
   final Function(int index) revertTo;
   final Function(int index) deleteAt;
   final bool savingViaAutofill;
+
+  /// Shown at the top of the screen when [savingViaAutofill]. Explains what will happen and any trust concerns.
+  final Widget? autofillSaveHeader;
   const EntryWidget({
     super.key,
     required this.endEditing,
@@ -54,6 +56,7 @@ class EntryWidget extends StatelessWidget {
     required this.revertTo,
     required this.deleteAt,
     required this.savingViaAutofill,
+    this.autofillSaveHeader,
   });
 
   void changeIcon(BuildContext context, EntryColor? color) async {
@@ -286,7 +289,8 @@ class EntryWidget extends StatelessWidget {
                           leading: IconButton(
                             iconSize: 24,
                             icon: Icon(Icons.arrow_back),
-                            onPressed: () async => await SystemNavigator.pop(),
+                            // Goes through the PopScope below so the user is asked whether to save
+                            onPressed: () async => await Navigator.of(context).maybePop(),
                           ),
                         )
                       : AppBar(
@@ -330,7 +334,7 @@ class EntryWidget extends StatelessWidget {
                           ],
                         ),
                   body: PopScope(
-                    canPop: !entry.isDirty,
+                    canPop: !savingViaAutofill && !entry.isDirty,
                     onPopInvokedWithResult: (bool didPop, Object? result) async {
                       if (didPop) {
                         return;
@@ -339,10 +343,12 @@ class EntryWidget extends StatelessWidget {
                         routeSettings: RouteSettings(),
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text(str.keep_your_changes_question),
+                          title: Text(
+                            savingViaAutofill ? str.autofillSaveEntryQuestion : str.keep_your_changes_question,
+                          ),
                           actions: <Widget>[
                             OutlinedButton(
-                              child: Text(str.keep.toUpperCase()),
+                              child: Text((savingViaAutofill ? str.save : str.keep).toUpperCase()),
                               onPressed: () => Navigator.of(context).pop(true),
                             ),
                             OutlinedButton(
@@ -371,19 +377,9 @@ class EntryWidget extends StatelessWidget {
                                     //TODO:f: mention that Android failed to supply accurate password data if isCompatMode true
                                     !savingViaAutofill
                                         ? const SizedBox(height: 8)
-                                        : Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 32),
-                                                  child: Text(
-                                                    str.autofillNewEntryMakeChangesThenDone,
-                                                    style: theme.textTheme.bodyLarge,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                        : Padding(
+                                            padding: const EdgeInsets.fromLTRB(16.0, 12, 16, 24),
+                                            child: autofillSaveHeader ?? const SizedBox.shrink(),
                                           ),
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -552,7 +548,7 @@ class EntryWidget extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 12.0, top: 4),
                             child: FilledButton.icon(
                               icon: Icon(Icons.check_circle),
-                              label: Text((savingViaAutofill ? str.done : str.saveChanges).toUpperCase()),
+                              label: Text((savingViaAutofill ? str.save : str.saveChanges).toUpperCase()),
                               onPressed: () => endEditing(true),
                             ),
                           ),
@@ -624,7 +620,7 @@ class EntryWidget extends StatelessWidget {
                       visible: (entry.isDirty || savingViaAutofill) && MediaQuery.of(context).viewInsets.bottom <= 0,
                       child: FilledButton.icon(
                         icon: Icon(Icons.check_circle),
-                        label: Text((savingViaAutofill ? str.done : str.saveChanges).toUpperCase()),
+                        label: Text((savingViaAutofill ? str.save : str.saveChanges).toUpperCase()),
                         onPressed: () => endEditing(true),
                       ),
                     ),

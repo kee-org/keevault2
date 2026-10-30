@@ -53,8 +53,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: agp9
-      resolved-ref: da4bb43b0d154ec060ab08c2a9cb1740596357db
+      ref: master
+      resolved-ref: "078d958d6580f380f7ad76e568ed1ec8cbce5cb4"
       url: "https://github.com/kee-org/argon2_ffi.git"
     source: git
     version: "2.0.1"

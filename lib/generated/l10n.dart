@@ -2675,19 +2675,54 @@ class S {
     );
   }
 
-  /// `Entry saved. Make changes below if you want and then click "Done" below.`
-  String get autofillNewEntryMakeChangesThenDone {
+  /// `Check the new entry below, then tap Save to add it to your vault. It has not been saved yet.`
+  String get autofillSaveHeaderTrusted {
     return Intl.message(
-      'Entry saved. Make changes below if you want and then click "Done" below.',
-      name: 'autofillNewEntryMakeChangesThenDone',
+      'Check the new entry below, then tap Save to add it to your vault. It has not been saved yet.',
+      name: 'autofillSaveHeaderTrusted',
       desc: '',
       args: [],
     );
   }
 
-  /// `Done`
-  String get done {
-    return Intl.message('Done', name: 'done', desc: '', args: []);
+  /// `This entry has not been saved. Kee Vault could not verify the app or website that asked to save it, so it has not been linked to this entry. Only tap Save if you are sure it is genuine.`
+  String get autofillSaveHeaderUntrusted {
+    return Intl.message(
+      'This entry has not been saved. Kee Vault could not verify the app or website that asked to save it, so it has not been linked to this entry. Only tap Save if you are sure it is genuine.',
+      name: 'autofillSaveHeaderUntrusted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This entry has not been saved. Kee Vault could not fully verify the app or website that asked to save it, so only the parts that could be verified have been linked to this entry. Only tap Save if you are sure it is genuine.`
+  String get autofillSaveHeaderPartlyTrusted {
+    return Intl.message(
+      'This entry has not been saved. Kee Vault could not fully verify the app or website that asked to save it, so only the parts that could be verified have been linked to this entry. Only tap Save if you are sure it is genuine.',
+      name: 'autofillSaveHeaderPartlyTrusted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android reported the same value for the username and password. Check both before saving.`
+  String get autofillSaveSameValueNotice {
+    return Intl.message(
+      'Android reported the same value for the username and password. Check both before saving.',
+      name: 'autofillSaveSameValueNotice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you want to save this new entry?`
+  String get autofillSaveEntryQuestion {
+    return Intl.message(
+      'Do you want to save this new entry?',
+      name: 'autofillSaveEntryQuestion',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Offer to save passwords`
@@ -3935,10 +3970,10 @@ class S {
     );
   }
 
-  /// `We could not reliably identify this app. The ID shown is a best guess. Check the app is genuine before filling.`
+  /// `Android didn't tell us which app this is. The ID shown is a best guess from the window title, which the app controls. Check the app is genuine before filling.`
   String get autofillWarningAppIdFromTitle {
     return Intl.message(
-      'We could not reliably identify this app. The ID shown is a best guess. Check the app is genuine before filling.',
+      'Android didn\'t tell us which app this is. The ID shown is a best guess from the window title, which the app controls. Check the app is genuine before filling.',
       name: 'autofillWarningAppIdFromTitle',
       desc: '',
       args: [],
@@ -3950,16 +3985,6 @@ class S {
     return Intl.message(
       'This app shows web content that this version of Android cannot verify. Only entries linked to the app are shown as matches.',
       name: 'autofillWarningWebContentNotVerifiable',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `This page contains content from several websites, so we can't tell which one will receive your details.`
-  String get autofillWarningMultipleDomains {
-    return Intl.message(
-      'This page contains content from several websites, so we can\'t tell which one will receive your details.',
-      name: 'autofillWarningMultipleDomains',
       desc: '',
       args: [],
     );
@@ -3995,23 +4020,363 @@ class S {
     );
   }
 
-  /// `Not trusted`
-  String get autofillNotTrustedTitle {
+  /// `Reported by app`
+  String get autofillChipReportedByApp {
     return Intl.message(
-      'Not trusted',
-      name: 'autofillNotTrustedTitle',
+      'Reported by app',
+      name: 'autofillChipReportedByApp',
       desc: '',
       args: [],
     );
   }
 
-  /// `The app or website requesting this save could not be fully verified as trustworthy. Please double check it is legitimate before saving your credentials.`
-  String get autofillSaveNotTrustedBody {
+  /// `Android didn't tell us which app this is, so this is the ID the app reported about itself. Any app can report any ID.`
+  String get autofillChipReportedByAppHint {
     return Intl.message(
-      'The app or website requesting this save could not be fully verified as trustworthy. Please double check it is legitimate before saving your credentials.',
-      name: 'autofillSaveNotTrustedBody',
+      'Android didn\'t tell us which app this is, so this is the ID the app reported about itself. Any app can report any ID.',
+      name: 'autofillChipReportedByAppHint',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Best guess`
+  String get autofillChipBestGuess {
+    return Intl.message(
+      'Best guess',
+      name: 'autofillChipBestGuess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android didn't tell us which app this is, so this ID is a best guess from the window title, which the app controls.`
+  String get autofillChipBestGuessHint {
+    return Intl.message(
+      'Android didn\'t tell us which app this is, so this ID is a best guess from the window title, which the app controls.',
+      name: 'autofillChipBestGuessHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Link setting only`
+  String get autofillChipLinkSettingOnly {
+    return Intl.message(
+      'Link setting only',
+      name: 'autofillChipLinkSettingOnly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You let this app open links for this website, but Android hasn't confirmed that the app owns it.`
+  String get autofillChipLinkSettingOnlyHint {
+    return Intl.message(
+      'You let this app open links for this website, but Android hasn\'t confirmed that the app owns it.',
+      name: 'autofillChipLinkSettingOnlyHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Can't check`
+  String get autofillChipCantCheck {
+    return Intl.message(
+      'Can\'t check',
+      name: 'autofillChipCantCheck',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Won't be filled`
+  String get autofillChipWontBeFilled {
+    return Intl.message(
+      'Won\'t be filled',
+      name: 'autofillChipWontBeFilled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `in an app that says it is {appId}`
+  String autofillClaimsToBeApp(Object appId) {
+    return Intl.message(
+      'in an app that says it is $appId',
+      name: 'autofillClaimsToBeApp',
+      desc: '',
+      args: [appId],
+    );
+  }
+
+  /// `On a page that also shows {domains} (these won't be filled)`
+  String autofillAlsoOnPage(Object domains) {
+    return Intl.message(
+      'On a page that also shows $domains (these won\'t be filled)',
+      name: 'autofillAlsoOnPage',
+      desc: '',
+      args: [domains],
+    );
+  }
+
+  /// `On a page that also shows {domains} and {count} more (these won't be filled)`
+  String autofillAlsoOnPageMore(Object domains, Object count) {
+    return Intl.message(
+      'On a page that also shows $domains and $count more (these won\'t be filled)',
+      name: 'autofillAlsoOnPageMore',
+      desc: '',
+      args: [domains, count],
+    );
+  }
+
+  /// `Web content from {domains}`
+  String autofillWebContentFrom(Object domains) {
+    return Intl.message(
+      'Web content from $domains',
+      name: 'autofillWebContentFrom',
+      desc: '',
+      args: [domains],
+    );
+  }
+
+  /// `Web content from an unidentified website`
+  String get autofillWebContentUnidentified {
+    return Intl.message(
+      'Web content from an unidentified website',
+      name: 'autofillWebContentUnidentified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your details will go to {focused}, not {other}. Entries saved only for {other} aren't matched.`
+  String autofillEmbeddedSiteHint(Object focused, Object other) {
+    return Intl.message(
+      'Your details will go to $focused, not $other. Entries saved only for $other aren\'t matched.',
+      name: 'autofillEmbeddedSiteHint',
+      desc: '',
+      args: [focused, other],
+    );
+  }
+
+  /// `This app reported its own ID ({appId}) because Android didn't supply one. A fake app could report any ID, so check it is genuine before filling.`
+  String autofillWarningAppIdSelfReported(Object appId) {
+    return Intl.message(
+      'This app reported its own ID ($appId) because Android didn\'t supply one. A fake app could report any ID, so check it is genuine before filling.',
+      name: 'autofillWarningAppIdSelfReported',
+      desc: '',
+      args: [appId],
+    );
+  }
+
+  /// `You allowed this app to open {domain} links, but Android hasn't confirmed the app owns {domain}. Any app can ask you to change that setting, so it isn't proof the page is genuine.`
+  String autofillWarningDomainUserSelectedOnly(Object domain) {
+    return Intl.message(
+      'You allowed this app to open $domain links, but Android hasn\'t confirmed the app owns $domain. Any app can ask you to change that setting, so it isn\'t proof the page is genuine.',
+      name: 'autofillWarningDomainUserSelectedOnly',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `Android didn't tell us which app is showing {domain}, so we can't confirm the page is genuine.`
+  String autofillWarningDomainUncheckable(Object domain) {
+    return Intl.message(
+      'Android didn\'t tell us which app is showing $domain, so we can\'t confirm the page is genuine.',
+      name: 'autofillWarningDomainUncheckable',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `This app also shows web content. Only the app's own fields will be filled, not the web pages.`
+  String get autofillWarningFocusedDomainUnknownApp {
+    return Intl.message(
+      'This app also shows web content. Only the app\'s own fields will be filled, not the web pages.',
+      name: 'autofillWarningFocusedDomainUnknownApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We can't tell which website you are filling in, so fields on these web pages won't be filled.`
+  String get autofillWarningFocusedDomainUnknown {
+    return Intl.message(
+      'We can\'t tell which website you are filling in, so fields on these web pages won\'t be filled.',
+      name: 'autofillWarningFocusedDomainUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This version of Android can't tell us which website this browser is showing, so no entries are shown as matches. Check the address bar before filling.`
+  String get autofillWarningWebContentNotVerifiableBrowser {
+    return Intl.message(
+      'This version of Android can\'t tell us which website this browser is showing, so no entries are shown as matches. Check the address bar before filling.',
+      name: 'autofillWarningWebContentNotVerifiableBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This app is showing a page from {domain}, which Android could not confirm it owns. That's normal for apps that use a separate sign-in service, but it is also how a fake app would look. The new entry will be linked to this app but not to {domain}.`
+  String autofillSaveWarningDomainNotOwnedByApp(Object domain) {
+    return Intl.message(
+      'This app is showing a page from $domain, which Android could not confirm it owns. That\'s normal for apps that use a separate sign-in service, but it is also how a fake app would look. The new entry will be linked to this app but not to $domain.',
+      name: 'autofillSaveWarningDomainNotOwnedByApp',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `This browser isn't one we recognise, so we can't confirm the page really is {domain}. The new entry won't be linked to {domain}.`
+  String autofillSaveWarningUnrecognisedBrowser(Object domain) {
+    return Intl.message(
+      'This browser isn\'t one we recognise, so we can\'t confirm the page really is $domain. The new entry won\'t be linked to $domain.',
+      name: 'autofillSaveWarningUnrecognisedBrowser',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `You allowed this app to open {domain} links, but Android hasn't confirmed the app owns {domain}. Any app can ask you to change that setting, so the new entry won't be linked to {domain}.`
+  String autofillSaveWarningDomainUserSelectedOnly(Object domain) {
+    return Intl.message(
+      'You allowed this app to open $domain links, but Android hasn\'t confirmed the app owns $domain. Any app can ask you to change that setting, so the new entry won\'t be linked to $domain.',
+      name: 'autofillSaveWarningDomainUserSelectedOnly',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `Android didn't tell us which app is showing {domain}, so we can't confirm the page is genuine. The new entry won't be linked to {domain}.`
+  String autofillSaveWarningDomainUncheckable(Object domain) {
+    return Intl.message(
+      'Android didn\'t tell us which app is showing $domain, so we can\'t confirm the page is genuine. The new entry won\'t be linked to $domain.',
+      name: 'autofillSaveWarningDomainUncheckable',
+      desc: '',
+      args: [domain],
+    );
+  }
+
+  /// `This app reported its own ID ({appId}) because Android didn't supply one. A fake app could report any ID, so the new entry won't be linked to it.`
+  String autofillSaveWarningAppIdSelfReported(Object appId) {
+    return Intl.message(
+      'This app reported its own ID ($appId) because Android didn\'t supply one. A fake app could report any ID, so the new entry won\'t be linked to it.',
+      name: 'autofillSaveWarningAppIdSelfReported',
+      desc: '',
+      args: [appId],
+    );
+  }
+
+  /// `Android didn't tell us which app this is. We could only guess from the window title, which the app controls, so the new entry won't be linked to any app.`
+  String get autofillSaveWarningAppIdFromTitle {
+    return Intl.message(
+      'Android didn\'t tell us which app this is. We could only guess from the window title, which the app controls, so the new entry won\'t be linked to any app.',
+      name: 'autofillSaveWarningAppIdFromTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This app shows web content that this version of Android cannot verify, so the new entry won't be linked to any website.`
+  String get autofillSaveWarningWebContentNotVerifiable {
+    return Intl.message(
+      'This app shows web content that this version of Android cannot verify, so the new entry won\'t be linked to any website.',
+      name: 'autofillSaveWarningWebContentNotVerifiable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This version of Android can't tell us which website this browser is showing, so the new entry won't be linked to any website.`
+  String get autofillSaveWarningWebContentNotVerifiableBrowser {
+    return Intl.message(
+      'This version of Android can\'t tell us which website this browser is showing, so the new entry won\'t be linked to any website.',
+      name: 'autofillSaveWarningWebContentNotVerifiableBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This app also shows web content. The new entry will be linked to the app only, not to any of the websites.`
+  String get autofillSaveWarningFocusedDomainUnknownApp {
+    return Intl.message(
+      'This app also shows web content. The new entry will be linked to the app only, not to any of the websites.',
+      name: 'autofillSaveWarningFocusedDomainUnknownApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We can't tell which website these details were entered on, so the new entry won't be linked to any website.`
+  String get autofillSaveWarningFocusedDomainUnknown {
+    return Intl.message(
+      'We can\'t tell which website these details were entered on, so the new entry won\'t be linked to any website.',
+      name: 'autofillSaveWarningFocusedDomainUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android did not tell us which app or website is asking to save these details, so the new entry won't be linked to either.`
+  String get autofillSaveWarningNoIdentity {
+    return Intl.message(
+      'Android did not tell us which app or website is asking to save these details, so the new entry won\'t be linked to either.',
+      name: 'autofillSaveWarningNoIdentity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fill into an unverified app or website?`
+  String get autofillConfirmUnverifiedTargetTitle {
+    return Intl.message(
+      'Fill into an unverified app or website?',
+      name: 'autofillConfirmUnverifiedTargetTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We couldn't verify that {target} is genuine. Only continue if you are sure you want to share this entry with it.`
+  String autofillConfirmUnverifiedTargetBody(Object target) {
+    return Intl.message(
+      'We couldn\'t verify that $target is genuine. Only continue if you are sure you want to share this entry with it.',
+      name: 'autofillConfirmUnverifiedTargetBody',
+      desc: '',
+      args: [target],
+    );
+  }
+
+  /// `This entry is saved for {host}, but Android couldn't confirm that {appId} owns that website. A fake app could show a copy of the site to collect your details. Only continue if you trust this app.`
+  String autofillConfirmUnverifiedSiteMatchBody(Object host, Object appId) {
+    return Intl.message(
+      'This entry is saved for $host, but Android couldn\'t confirm that $appId owns that website. A fake app could show a copy of the site to collect your details. Only continue if you trust this app.',
+      name: 'autofillConfirmUnverifiedSiteMatchBody',
+      desc: '',
+      args: [host, appId],
+    );
+  }
+
+  /// `Saved for {host}. You let this app open {host} links, but Android hasn't confirmed it owns that site.`
+  String autofillBadgeTooltipUnverifiedSiteUserSelected(Object host) {
+    return Intl.message(
+      'Saved for $host. You let this app open $host links, but Android hasn\'t confirmed it owns that site.',
+      name: 'autofillBadgeTooltipUnverifiedSiteUserSelected',
+      desc: '',
+      args: [host],
+    );
+  }
+
+  /// `Linked to {appId}, but that ID was reported by the app itself so it could be fake`
+  String autofillBadgeTooltipSelfReportedApp(Object appId) {
+    return Intl.message(
+      'Linked to $appId, but that ID was reported by the app itself so it could be fake',
+      name: 'autofillBadgeTooltipSelfReportedApp',
+      desc: '',
+      args: [appId],
     );
   }
 }

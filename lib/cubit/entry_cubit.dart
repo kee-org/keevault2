@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:keevault/autofill_save_draft.dart';
 import 'package:keevault/extension_methods.dart';
 import 'package:keevault/logging/logger.dart';
 import 'package:keevault/model/entry.dart';
@@ -30,6 +31,28 @@ class EntryCubit extends Cubit<EntryState> {
 
   void startCreating(KdbxFile file) {
     emit(EntryLoaded(EditEntryViewModel.create(file.body.rootGroup)));
+  }
+
+  /// Like [startCreating] but with the values that Android supplied when asking us to save a password. Nothing is added
+  /// to the vault until [endCreating] is called with a file.
+  void startCreatingFromAutofill(KdbxFile file, AutofillSaveDraft draft) {
+    final vm = EditEntryViewModel.create(file.body.rootGroup);
+    final values = <KdbxKey, StringValue>{
+      KdbxKeyCommon.TITLE: PlainValue(draft.title),
+      KdbxKeyCommon.USER_NAME: PlainValue(draft.username),
+      KdbxKeyCommon.PASSWORD: draft.password,
+      if (draft.url != null) KdbxKeyCommon.URL: PlainValue(draft.url!),
+    };
+    emit(
+      EntryLoaded(
+        vm.copyWith(
+          fields: vm.fields.map((f) => values.containsKey(f.key) ? f.copyWith(value: values[f.key]) : f).toList(),
+          androidPackageNames: [if (draft.androidPackageName != null) draft.androidPackageName!],
+          // The user has not agreed to anything yet so there is always something to confirm
+          isDirty: true,
+        ),
+      ),
+    );
   }
 
   void endCreating(KdbxFile? file) {

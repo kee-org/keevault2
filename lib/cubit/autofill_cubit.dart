@@ -4,8 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_autofill_service/flutter_autofill_service.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:keevault/logging/logger.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../autofill_matching.dart';
+import '../autofill_save_draft.dart';
 import '../config/platform.dart';
 import '../vault_file.dart';
 import 'vault_cubit.dart';
@@ -38,6 +41,7 @@ class AutofillCubit extends Cubit<AutofillState> {
     }
 
     await ensureInAppSelectionPreferences();
+    _ownPackageName ??= (await PackageInfo.fromPlatform()).packageName;
 
     bool autofillRequested = await AutofillService().fillRequestedAutomatic;
     bool autofillForceInteractive = await AutofillService().fillRequestedInteractive;
@@ -48,13 +52,9 @@ class AutofillCubit extends Cubit<AutofillState> {
       emit(AutofillAvailable(enabled));
       return;
     }
-    //TODO:f: should below be here? or after potential emit of autofill request for filling?
-    // if (state is AutofillSaved) {
-    //   emit(AutofillAvailable(enabled));
-    //   return;
-    // }
     if (saveRequested) {
-      emit(AutofillSaving(androidMetadata!));
+      _trackTarget('saveRequest', assessTarget(androidMetadata!));
+      emit(AutofillSaving(androidMetadata, requestId: ++_saveRequestCounter));
       return;
     }
 
@@ -65,12 +65,26 @@ class AutofillCubit extends Cubit<AutofillState> {
     // we only call this cubit's function if we have some sort of intent relating to the
     // autofill service so we can now assume the user is asking for us to autofill another app/site
     l.d('Autofill requested. automatic: $autofillRequested, interactive: $autofillForceInteractive');
-    emit(AutofillRequested(AutofillTarget.fromMetadata(androidMetadata), androidMetadata));
+    final target = assessTarget(androidMetadata);
+    _trackTarget('request', target);
+    emit(AutofillRequested(target, androidMetadata));
 
     // A later request can arrive while the vault is already open, in which case nothing else will trigger matching.
     final vault = _vaultForMatching;
     if (vault != null) prepareMatches(vault);
   }
+
+  /// Read once, before any autofill state is emitted
+  String? _ownPackageName;
+
+  @visibleForTesting
+  set ownPackageNameForTesting(String value) => _ownPackageName = value;
+
+  int _saveRequestCounter = 0;
+
+  /// What a fill or save request is for, and how far we can trust it
+  AutofillTarget assessTarget(AutofillMetadata metadata) =>
+      AutofillTarget.fromMetadata(metadata, ownPackageName: _ownPackageName!);
 
   LocalVaultFile? _vaultForMatching;
 
@@ -104,6 +118,7 @@ class AutofillCubit extends Cubit<AutofillState> {
       linkUnverifiedDomain: linkUnverifiedDomain,
     );
     if (association != null) await vaultCubit.addAutofillPersistentQueueItem(association);
+    _track('select', name: s.matches?[entry.uuid.uuid]?.tier.name ?? 'unmatched');
     final ds = entryToPwDataset(entry);
     final ok = await AutofillService().resultWithDataset(
       id: ds.id,
@@ -116,15 +131,40 @@ class AutofillCubit extends Cubit<AutofillState> {
 
   /// Declines the request without filling anything. Android still offers the locked suggestion afterwards.
   Future<void> cancelFill() async {
+    final s = state;
+    if (s is AutofillRequested && !s.target.excluded) _track('cancel');
     final ok = await AutofillService().resultWithDatasets(null);
     l.d('resultWithDatasets(null) $ok');
   }
 
+  /// The user saved the new entry. Autofill mode ends so the app behaves normally if the user returns to it.
   Future<void> finishSaving() async {
     l.t('Autofillcubit.finishSaving');
-    if (state is AutofillSaving || state is AutofillSaved) {
-      emit(AutofillSaved((state as AutofillModeActive).androidMetadata));
-      await AutofillService().onSaveComplete();
+    await _endSaving('saved');
+  }
+
+  /// The user chose not to save, or left the save screen in some other way that discards the new entry. Nothing has been
+  /// added to the vault by then so there is nothing to undo here.
+  Future<void> abandonSaving() async {
+    l.t('Autofillcubit.abandonSaving');
+    await _endSaving('discarded');
+  }
+
+  Future<void> _endSaving(String outcome) async {
+    final s = state;
+    if (s is! AutofillSaving) return;
+    _trackSaveOutcome(outcome, s);
+    emit(AutofillAvailable(true));
+    await AutofillService().onSaveComplete();
+  }
+
+  /// Only the outcome and whether the request was trusted are sent, never an app id, domain or credential.
+  void _trackSaveOutcome(String outcome, AutofillSaving s) {
+    try {
+      final trusted = AutofillSaveDraft.isTrusted(assessTarget(s.androidMetadata));
+      _track('saveOutcome', name: outcome, value: trusted ? 1 : 0);
+    } catch (e) {
+      l.w('Failed to track autofill save outcome', error: e);
     }
   }
 
@@ -183,6 +223,48 @@ class AutofillCubit extends Cubit<AutofillState> {
       await AutofillService().setPreferences(prefs.copyWith(useInAppSelection: true, useEphemeralDataset: true));
     }
     _inAppSelectionPreferencesEnsured = true;
+  }
+
+  /// Records the user's answer when we asked before filling. [kind] says why we asked.
+  void trackConfirmation(String kind, bool accepted) => _track('confirm', name: kind, value: accepted ? 1 : 0);
+
+  /// How trustworthy autofill requests are in practice. Only enum names and counts are sent, never an app id or domain.
+  void _trackTarget(String action, AutofillTarget target) {
+    if (target.excluded) {
+      _track(action, name: 'excluded');
+      return;
+    }
+    final app = target.app;
+    final web = target.web;
+    final appState = app != null
+        ? app.source.name
+        : target.inTrustedBrowser
+        ? 'browser'
+        : target.contextAppId != null
+        ? 'claimedBrowser'
+        : 'none';
+    final webState = web == null
+        ? 'none'
+        : web.trust == SignalTrust.verified
+        ? 'verified'
+        : web.domain.userSelected
+        ? 'userSelected'
+        : 'unverified';
+    final others = target.otherDomains.length;
+    _track(action, name: 'app=$appState web=$webState others=${others > 3 ? '3+' : others}');
+    for (final concern in target.concerns) {
+      _track('${action}Concern', name: concern.name);
+    }
+  }
+
+  void _track(String action, {String? name, num? value}) {
+    try {
+      MatomoTracker.instance.trackEvent(
+        eventInfo: EventInfo(category: 'autofill', action: action, name: name, value: value),
+      );
+    } catch (e) {
+      l.w('Failed to track autofill event $action', error: e);
+    }
   }
 
   PwDataset entryToPwDataset(KdbxEntry entry) {

@@ -122,12 +122,16 @@ class ConfirmDialogParams {
   ConfirmDialogParams({
     this.title,
     required this.content,
+    this.details,
     this.positiveButtonText = 'OK',
     this.negativeButtonText = 'CANCEL',
   });
 
   final String? title;
   final String content;
+
+  /// Shown below [content]
+  final Widget? details;
   final String positiveButtonText;
   final String negativeButtonText;
 }
@@ -141,7 +145,13 @@ class ConfirmDialog extends StatelessWidget with DialogMixin<bool> {
     return AlertDialog(
       scrollable: true,
       title: params.title != null ? Text(params.title!) : null,
-      content: Text(params.content),
+      content: params.details == null
+          ? Text(params.content)
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text(params.content), const SizedBox(height: 12), params.details!],
+            ),
       actions: <Widget>[
         TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(params.negativeButtonText)),
         TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(params.positiveButtonText)),

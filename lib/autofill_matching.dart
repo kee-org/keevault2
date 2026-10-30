@@ -13,7 +13,10 @@ enum SignalTrust { verified, unverified }
 class AppSignal {
   final String appId;
   final SignalTrust trust;
-  const AppSignal(this.appId, this.trust);
+
+  /// Where Android's autofill metadata got [appId] from. Only [AppIdSource.component] is verified.
+  final AppIdSource source;
+  const AppSignal(this.appId, this.trust, this.source);
 }
 
 class WebSignal {
@@ -23,11 +26,14 @@ class WebSignal {
 }
 
 enum AutofillConcern {
+  appIdSelfReported,
   appIdFromTitle,
   domainNotOwnedByApp,
+  domainUserSelectedOnly,
+  domainUncheckable,
   unrecognisedBrowser,
   webContentNotVerifiable,
-  multipleDomains,
+  focusedDomainUnknown,
   noIdentity,
 }
 
@@ -41,68 +47,156 @@ class AutofillTarget {
   /// null = no usable app identity (including when the requesting app is a browser)
   final AppSignal? app;
 
-  /// null = no usable web identity
+  /// The domain of the focused field (the only one the plugin will fill), or null if there is no usable one.
   final WebSignal? web;
 
   /// The requesting app, whatever it is (e.g. the browser). For display only.
   final String? contextAppId;
 
+  /// [contextAppId] was supplied by Android rather than reported by the app itself
+  final bool contextAppIdTrusted;
+
+  /// Every other usable domain in the request. For display only: these are never matched or learned and the plugin
+  /// does not fill their fields.
+  final List<AutofillWebDomain> otherDomains;
+
   final Set<AutofillConcern> concerns;
 
-  const AutofillTarget({this.excluded = false, this.app, this.web, this.contextAppId, this.concerns = const {}});
+  const AutofillTarget({
+    this.excluded = false,
+    this.app,
+    this.web,
+    this.contextAppId,
+    this.contextAppIdTrusted = false,
+    this.otherDomains = const [],
+    this.concerns = const {},
+  });
 
-  static const Set<String> excludedPackages = {
-    'com.keevault.keevault',
-    'android',
-    'com.android.settings',
-    'com.oneplus.applocker',
-  };
+  /// Never filled, along with our own package. The plugin already declines these (and anything in the manifest's
+  /// EXCLUDED_PACKAGES meta-data) so this is defence in depth.
+  static const Set<String> excludedPackages = {'android', 'com.android.settings', 'com.oneplus.applocker'};
 
-  factory AutofillTarget.fromMetadata(AutofillMetadata metadata) {
+  /// [ownPackageName] is the running app's package (which differs between our release channels) so that we never fill
+  /// into ourselves.
+  factory AutofillTarget.fromMetadata(AutofillMetadata metadata, {required String ownPackageName}) {
     final appId = metadata.appId?.trim() ?? '';
     final contextAppId = appId.isEmpty ? null : appId;
 
-    if (excludedPackages.contains(appId)) {
+    if (appId == ownPackageName || excludedPackages.contains(appId)) {
       return AutofillTarget(excluded: true, contextAppId: contextAppId);
     }
 
+    // An id with no recorded source is treated like the least reliable one
+    final source = appId.isEmpty
+        ? AppIdSource.none
+        : metadata.appIdSource == AppIdSource.none
+        ? AppIdSource.windowTitle
+        : metadata.appIdSource;
+    final appIdTrusted = source == AppIdSource.component;
+
     final concerns = <AutofillConcern>{};
 
+    // appIsBrowser can be derived from a self-reported id or a self-declared https intent filter, so when the id is
+    // untrusted we raise only the id concern and never call it a browser.
     AppSignal? app;
-    if (appId.isNotEmpty && !metadata.appIsBrowser) {
-      if (metadata.appIdTrusted) {
-        app = AppSignal(appId, SignalTrust.verified);
+    if (appId.isNotEmpty) {
+      if (appIdTrusted) {
+        if (!metadata.appIsBrowser) app = AppSignal(appId, SignalTrust.verified, source);
       } else {
-        app = AppSignal(appId, SignalTrust.unverified);
-        concerns.add(AutofillConcern.appIdFromTitle);
+        if (!metadata.appIsBrowser) app = AppSignal(appId, SignalTrust.unverified, source);
+        concerns.add(
+          source == AppIdSource.viewNode ? AutofillConcern.appIdSelfReported : AutofillConcern.appIdFromTitle,
+        );
       }
     }
 
+    // Only the focused domain can be matched or learned. The plugin fills nothing outside it.
     WebSignal? web;
     final domains = metadata.webDomains.where((d) => d.domain.trim().isNotEmpty).toList();
-    if (domains.length > 1) {
-      concerns.add(AutofillConcern.multipleDomains);
-    } else if (domains.isEmpty) {
+    final focusedCandidate = metadata.focusedWebDomain;
+    final focused = focusedCandidate != null && isUsableDomain(focusedCandidate.domain) ? focusedCandidate : null;
+    final otherDomains = domains.where((d) => !identical(d, focusedCandidate) && isUsableDomain(d.domain)).toList();
+    if (domains.isEmpty) {
       // API 29/30 strip the domains of non-browser apps while leaving isWebOrigin set
       if (metadata.isWebOrigin) concerns.add(AutofillConcern.webContentNotVerifiable);
-    } else if (metadata.dalVerified) {
-      web = WebSignal(domains.single, SignalTrust.verified);
+    } else if (focused == null) {
+      concerns.add(AutofillConcern.focusedDomainUnknown);
+    } else if (focused.dalVerified) {
+      web = WebSignal(focused, SignalTrust.verified);
     } else {
-      web = WebSignal(domains.single, SignalTrust.unverified);
-      concerns.add(metadata.appIsBrowser ? AutofillConcern.unrecognisedBrowser : AutofillConcern.domainNotOwnedByApp);
+      web = WebSignal(focused, SignalTrust.unverified);
+      concerns.add(
+        focused.userSelected
+            ? AutofillConcern.domainUserSelectedOnly
+            : !appIdTrusted
+            ? AutofillConcern.domainUncheckable
+            : metadata.appIsBrowser
+            ? AutofillConcern.unrecognisedBrowser
+            : AutofillConcern.domainNotOwnedByApp,
+      );
     }
 
     if (app == null && web == null && concerns.isEmpty) {
       concerns.add(AutofillConcern.noIdentity);
     }
 
-    return AutofillTarget(app: app, web: web, contextAppId: contextAppId, concerns: concerns);
+    return AutofillTarget(
+      app: app,
+      web: web,
+      contextAppId: contextAppId,
+      contextAppIdTrusted: appIdTrusted,
+      otherDomains: otherDomains,
+      concerns: concerns,
+    );
+  }
+
+  /// A host we can match against and safely learn: it has a registrable domain or is an IP address. Rules out
+  /// e.g. the literal "null" host that an opaque (sandboxed iframe) origin would produce.
+  @visibleForTesting
+  static bool isUsableDomain(String domain) {
+    final host = domain.trim();
+    if (host.isEmpty) return false;
+    if (UrlMatcher._isIpAddress(host)) return true;
+    return urls.parse('https://$host')?.publicSuffixUrl.domain != null;
+  }
+
+  /// A notice is shown to the user but does not count as a reason to distrust the target
+  bool isNotice(AutofillConcern concern) =>
+      concern == AutofillConcern.focusedDomainUnknown && app?.trust == SignalTrust.verified;
+
+  /// The concerns that are reasons for distrust, i.e. [concerns] without the notices
+  Set<AutofillConcern> get warnings => concerns.where((c) => !isNotice(c)).toSet();
+
+  /// Android identified the requesting app as a browser
+  bool get inTrustedBrowser => app == null && contextAppIdTrusted;
+
+  /// Another site in the same request, on a different registrable domain from the focused one, or null. When the
+  /// focused domain is an embedded frame (e.g. a sign-in or payment provider) this is likely to be the page the user
+  /// thinks they are on, so they may expect entries saved for it to match.
+  String? get surroundingSite {
+    final web = this.web;
+    if (web == null) return null;
+    final focused = _registrableDomain(web.domain.domain);
+    return otherDomains.map((d) => d.domain.trim()).firstWhereOrNull((d) => _registrableDomain(d) != focused);
+  }
+
+  static String _registrableDomain(String host) {
+    final h = host.trim().toLowerCase();
+    if (UrlMatcher._isIpAddress(h)) return h;
+    return urls.parse('https://$h')?.publicSuffixUrl.domain?.toLowerCase() ?? h;
   }
 
   bool get hasVerifiedSignal => app?.trust == SignalTrust.verified || web?.trust == SignalTrust.verified;
 
-  /// No usable signal at all so the user must confirm before we fill anything.
-  bool get requiresConfirmation => app == null && web == null;
+  /// Nothing about the target is verified (no identity at all, or only unverified ones such as an unrecognised browser
+  /// or a link setting) so the user must confirm before we fill anything.
+  bool get requiresConfirmation => !hasVerifiedSignal;
+
+  /// The user must confirm before we fill [match] (null for an entry that did not match): whenever
+  /// [requiresConfirmation], and also when the entry matched only through a website that the verified app has not
+  /// been shown to own, because that is exactly how a fake app showing a copy of a real site would look.
+  bool requiresConfirmationFor(AutofillMatch? match) =>
+      requiresConfirmation || match?.tier == AutofillMatchTier.unverified;
 
   /// Short human-readable name for the target, or null if we don't know what it is.
   String? get displayName => web?.domain.domain ?? app?.appId;
@@ -111,6 +205,8 @@ class AutofillTarget {
   /// written. Each signal is decided on its own:
   ///  - the app id is learned when verified (a browser's id is never present as an app signal);
   ///  - the website is learned when verified, or when unverified but inside a verified app and the user opted in.
+  /// [web] is only ever the focused domain, which is the only one the plugin fills. [otherDomains] are deliberately
+  /// never learned, even when Android verified them.
   /// A signal that already matched at full strength is skipped so we don't dirty the vault for nothing.
   Map<String, dynamic>? associationFor(String entryUuid, AutofillMatch? match, {bool linkUnverifiedDomain = false}) {
     final app = this.app;
