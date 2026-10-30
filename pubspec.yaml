@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.6.0+59
+version: 2.7.0+60
 
 environment:
   sdk: '>=3.12.0 <4.0.0'
@@ -44,11 +44,11 @@ dependencies:
   argon2_ffi:
     git:
       url: https://github.com/kee-org/argon2_ffi.git
-      ref: agp9
+      ref: master
   flutter_autofill_service:
     git:
       url: https://github.com/kee-org/flutter_autofill_service.git
-      ref: flutter-3.47
+      ref: master
   bloc: ^9.2.1
   flutter_bloc: ^9.1.1
   fluro: ^2.0.5
@@ -135,10 +135,8 @@ dev_dependencies:
 dependency_overrides:
   # kdbx:
   #   path: ../kdbx.dart/
-  flutter_autofill_service:
-    path: ../flutter_autofill_service/
-  # argon2_ffi:
-  #   path: ../argon2_ffi/
+  # flutter_autofill_service:
+  #   path: ../flutter_autofill_service/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

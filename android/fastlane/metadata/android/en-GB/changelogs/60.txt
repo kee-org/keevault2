@@ -1,0 +1,4 @@
+* Security fixes
+* Improved Android autofill experience - fewer clicks, better detail regarding suspicious apps, 
+* Updated flutter and other dependencies
+* Improved reliability of username field autocomplete feature
