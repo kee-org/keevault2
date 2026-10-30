@@ -5,7 +5,11 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
+def newBuildDir = rootProject.layout.buildDirectory.dir('../../build').get()
+rootProject.layout.buildDirectory.value(newBuildDir)
+subprojects {
+    project.layout.buildDirectory.value(newBuildDir.dir(project.name))
+}
 subprojects {
     // afterEvaluate {
     //     android {
@@ -13,7 +17,6 @@ subprojects {
     //     }
     // }
 
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')
 }
 
