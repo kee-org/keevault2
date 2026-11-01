@@ -274,7 +274,12 @@ class _EntryTextFieldState extends _EntryFieldState implements FieldDelegate {
       _filteredUsernames = [];
     }
     if (_showAutocomplete) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _showAutocompleteOverlay(context));
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Focus is applied asynchronously (e.g. after picking a suggestion) so by now the field may have lost focus,
+        // or been disposed, and nothing else would remove an overlay inserted at this point.
+        if (!mounted || !_focusNode.hasFocus || !_showAutocomplete) return;
+        _showAutocompleteOverlay(context);
+      });
     } else {
       _removeAutocompleteOverlay();
     }
