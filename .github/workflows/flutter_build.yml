@@ -74,7 +74,7 @@ jobs:
   BuildAndTestIos:
     name: Build ios prod
 
-    runs-on: macos-26
+    runs-on: macos-27
     permissions: write-all
 
     steps:
