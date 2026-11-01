@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -37,7 +37,7 @@ jobs:
         run: flutter --version
 
       - name: Cache pub dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.PUB_CACHE }}
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
@@ -57,7 +57,7 @@ jobs:
 
       - name: Download Android keystore play
         id: android_keystore_play
-        uses: timheuer/base64-to-file@v1.2
+        uses: timheuer/base64-to-file@v2
         with:
           fileDir: /home/runner/
           fileName: keystore-kv-play.pfx
@@ -65,7 +65,7 @@ jobs:
 
       - name: Download Android keystore beta
         id: android_keystore_beta
-        uses: timheuer/base64-to-file@v1.2
+        uses: timheuer/base64-to-file@v2
         with:
           fileDir: /home/runner/
           fileName: keystore-kv-beta.pfx
